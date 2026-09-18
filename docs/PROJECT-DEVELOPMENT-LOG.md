@@ -224,4 +224,21 @@ D:\VsCode\Project\Content-Management-System\
 2. **แยกโฟลเดอร์ใน Backend**: สร้าง `master/backend/src/year4-extensions/` สำหรับ `analytics`, `recommendations`, `trends`
 3. **จัดทำ Integrations Client Template**: สร้าง `master/backend/src/integrations/` สำหรับ `youtube` และ `tiktok` พร้อมทำงานในรูปแบบ Mock จนกว่าจะเชื่อมต่อจริงในปี 4
 
+---
+
+## Phase 8: การจัดการ Git Branching & ปรับปรุงหน้า GitHub Repository สู่มาตรฐานวิชาการ (Academic Clean Presentation)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 19 กันยายน 2026 (01:40 - 01:48 น.)
+
+เพื่อให้หน้า GitHub Repository สะอาด เรียบร้อย ไม่โอ้อวดฟีเจอร์เกินจริง และตรงตามเกณฑ์การตรวจให้คะแนนของอาจารย์อย่างเป็นระเบียบ:
+1. **การจัดสรร Git Branch**:
+   - สร้าง Branch `feature/year4-capstone` และ Push ขึ้นสู่ Remote Origin เพื่อเก็บพิมพ์เขียวและแผนสถาปัตยกรรมปี 4 แยกไว้อย่างชัดเจน
+   - คง Branch `main` ไว้เป็นแกนหลักสำหรับส่งมอบงานในรายวิชาปัจจุบัน
+2. **การปรับปรุง Root README.md**:
+   - ปรับโทนข้อความเป็นวิชาการ สุภาพ เรียบร้อย และกระชับ
+   - จัดหมวดหมู่เอกสารอิงตามหัวข้อที่อาจารย์ระบุในเกณฑ์ 7 รายการหลัก (2.1 Use Case Diagram จนถึง 2.7 Data Dictionary) พร้อมลิงก์เข้าดูไฟล์ใน `docs/academic/` ได้ทันที
+   - ระบุ Tech Stack, วิธีการติดตั้ง และบัญชีทดสอบทั้ง 3 บทบาท (Admin, Manager, Member) ไว้อย่างชัดเจน
+3. **การรักษาความปลอดภัยของโค้ด**:
+   - เพิ่ม `.gitignore` ที่ Root Directory ครอบคลุม `node_modules`, `.env`, build caches, Gradle artifacts ป้องกันข้อมูลหลุดหรือไฟล์ขยะขึ้น Git Repository
+
+
 
