@@ -1,0 +1,227 @@
+# 📜 บันทึกประวัติการพัฒนาระบบ (Project Development & Engineering Log)
+> **โครงการ:** Content Production Management System (ระบบจัดการกระบวนการผลิตสื่อครบวงจร)  
+> **เส้นทางโปรเจกต์:** `D:\VsCode\Project\Content-Management-System`  
+> **ผู้พัฒนา:** คุณ (Developer) & Antigravity (Senior AI Mentor / Pair Programmer)  
+> **อัปเดตล่าสุด:** 19 กันยายน 2026 เวลา 01:12 น.  
+
+---
+
+## 📌 สารบัญภาพรวมตามไทม์ไลน์ (Timeline Index)
+
+| ช่วงเวลา | หัวข้อบันทึก | สถานะ |
+| :--- | :--- | :--- |
+| **17 ก.ย. 2026 (10:00 - 18:30 น.)** | [Phase 1: Backend Foundation (PostgreSQL สู่ MongoDB)](#phase-1-backend-foundation) | สำเร็จ ✅ |
+| **18 ก.ย. 2026 (09:30 - 16:45 น.)** | [Phase 2: Admin Web Development (Next.js .jsx + 100% Interactivity)](#phase-2-admin-web-development) | สำเร็จ ✅ |
+| **18 ก.ย. 2026 (17:00 - 21:30 น.)** | [Phase 3: Mobile App Development (React Native CLI + Role Navigation)](#phase-3-mobile-app-development) | สำเร็จ ✅ |
+| **18 ก.ย. 2026 (21:45 - 22:15 น.)** | [Phase 4: การจัดระเบียบโครงสร้าง Master vs Learning](#phase-4-การจัดระเบียบโครงสร้าง-master-vs-learning) | สำเร็จ ✅ |
+| **18 ก.ย. 2026 (22:15 - 23:50 น.)** | [Phase 5: บันทึกบทเรียนการลงมือเขียนโค้ดด้วยตัวเอง (Learning Progress)](#phase-5-บันทึกบทเรียนการลงมือเขียนโค้ดด้วยตัวเอง) | บทที่ 1-2 ✅ / บทที่ 3 ⏳ |
+| **19 ก.ย. 2026 (00:15 - 01:10 น.)** | [Phase 6: การยกระดับสู่ Senior Capstone & 8 เอกสารวิชาการ UML](#phase-6-การยกระดับสู่-senior-capstone--8-เอกสารวิชาการ-uml) | สำเร็จ ✅ |
+| **19 ก.ย. 2026 (01:15 - 01:20 น.)** | [Phase 7: การจัดแยกโฟลเดอร์สำหรับโครงงานปี 4 (Year 4 Scoping & Isolation)](#phase-7-การจัดแยกโฟลเดอร์สำหรับโครงงานปี-4-year-4-scoping--isolation) | สำเร็จ ✅ |
+| **19 ก.ย. 2026 (01:20 น.)** | [แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)](#แผนที่ไฟล์และดัชนีเอกสารทั้งหมด) | ปัจจุบัน 📍 |
+
+---
+
+## 1. จุดเริ่มต้นและวิสัยทัศน์ของระบบ (System Vision)
+> 🕒 **บันทึกเมื่อ:** 17 กันยายน 2026 (10:00 น.)
+
+ระบบถูกออกแบบขึ้นเพื่อบริหารกระบวนการผลิตสื่อตั้งแต่ต้นจนจบ (End-to-End Media Pipeline):
+$$\text{Idea} \rightarrow \text{Planning} \rightarrow \text{Task Assignment} \rightarrow \text{Production} \rightarrow \text{Legal Check} \rightarrow \text{Review} \rightarrow \text{Revision} \circlearrowleft \rightarrow \text{Approval} \rightarrow \text{Schedule} \rightarrow \text{Publish} \rightarrow \text{Analytics}$$
+
+### 4 เสาหลักของระบบ (4 Core Pillars):
+1. **Content Production Management**: วงจรงานสร้างสรรค์, การแตก Task ย่อย, การตรวจงาน และคิวงาน
+2. **Content Intelligence**: เก็บสถิติ Performance จาก YouTube Data API v3 และ TikTok API
+3. **Recommendation Engine**: วิเคราะห์แนวโน้มเพื่อแนะนำหัวข้อและเวลาโพสต์ที่เหมาะสม
+4. **Legal & Compliance Gatekeeper**: ระบบ Checklist ตรวจสอบลิขสิทธิ์เพลง, PDPA, เครื่องหมายการค้า และกฎชุมชน 100% ก่อนเผยแพร่
+
+---
+
+## Phase 1: Backend Foundation
+> 🕒 **ช่วงเวลาดำเนินงาน:** 17 กันยายน 2026 (10:30 - 18:30 น.)
+
+### 1.1 เริ่มต้นด้วย Relational Database (PostgreSQL) — [17 ก.ย. 2026 \| 10:30 น.]
+- ออกแบบฐานข้อมูลแบบ Relational ในไฟล์ `database/schema.sql`
+- กำหนดตารางมาตรฐาน: `users`, `user_role`, `team`, `content`, `task`, `legal_article`
+- ติดตั้ง Express.js, เชื่อมต่อผ่านไลบรารี `pg` (Connection Pool)
+- สร้างระบบ JWT Authentication และ Middleware ตรวจสอบสิทธิ์ (RBAC: Admin, Manager, Member)
+
+### 1.2 การปรับเปลี่ยนครั้งสำคัญ: สู่ MongoDB + Mongoose (NoSQL) — [17 ก.ย. 2026 \| 15:00 น.]
+- ผู้พัฒนาสั่งการให้เปลี่ยนฐานข้อมูลเป็น MongoDB เพื่อความคล่องตัวในการเก็บข้อมูลมีเดียและ Time-series metrics
+- ถอดไลบรารี `pg` ออก และติดตั้ง `mongoose`
+- สร้าง Mongoose Models (`src/database/models/`):
+  - `User.js`: รองรับ Role `ADMIN`, `MANAGER`, `MEMBER` พร้อม Password Hash
+  - `Content.js`: รองรับฝัง Subdocuments สำหรับ `metrics` (ยอดวิว, ยอดแชร์) และ `legalChecklist`
+  - `Task.js`: บันทึกงานย่อย, ลิงก์ส่งงาน (`submissionUrl`), และสถานะ
+  - `Idea.js`, `Team.js`, `LegalArticle.js`
+- ปรับปรุง Controllers ทั้งหมดเป็นคำสั่ง Mongoose (`.find()`, `.create()`, `.findByIdAndUpdate()`, `.populate()`)
+- **สร้าง Seed Script (`npm run seed`) [17 ก.ย. 2026 \| 18:00 น.]**: สั่งจำลองข้อมูลทั้งระบบอัตโนมัติด้วยคำสั่งเดียว
+
+---
+
+## Phase 2: Admin Web Development (Next.js)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 18 กันยายน 2026 (09:30 - 16:45 น.)
+
+### 2.1 ปรับภาษาเป็น JavaScript (`.jsx`) ล้วน — [18 ก.ย. 2026 \| 09:30 น.]
+- แปลงไฟล์จาก TypeScript (`.tsx`) เป็น **JavaScript (`.jsx`) 100%** เพื่อความคล่องตัวในการพัฒนา
+- เคลียร์แคช `.next` และแก้ปัญหา Typings เก่าตกค้าง
+
+### 2.2 ปรับแก้ Dark Mode Conflict สู่ Light Clean Theme — [18 ก.ย. 2026 \| 11:15 น.]
+- ตรวจพบปัญหาหน้าจอดำจากเบราว์เซอร์ Dark Mode ในภาพถ่ายหน้าจอ
+- แก้ไข `globals.css` ถอด `@media (prefers-color-scheme: dark)` ออก
+- กำหนดโทนสีพื้นหลัง **`bg-slate-100`** ผสานการ์ดตารางสีขาว คมชัด สบายตา
+
+### 2.3 ทำให้ปุ่มทุกปุ่มในระบบใช้งานได้จริง 100% (Full Interactivity) — [18 ก.ย. 2026 \| 14:00 - 16:45 น.]
+- **Dashboard (`/`)**: กรองช่วงเวลา (วันนี้, 7 วัน, 30 วัน), Progress Bar สถานะงาน, Quick Actions
+- **Contents (`/contents`)**: ค้นหา Real-time, กรอง Status, Modal สร้าง Content ใหม่, ดูรายละเอียด (Eye Modal), ปุ่มลบงาน, Custom SVG Icons (YouTube, Instagram, TikTok)
+- **Users & Teams (`/users`)**: ค้นหาพนักงาน, Modal เพิ่มสมาชิก, **ปุ่มสลับ Role อัจฉริยะ (`MEMBER ⟳`)** คลิกเพื่อวนตำแหน่งทันที
+- **Legal Database (`/legal`)**: Category Filter Pills, Modal เพิ่ม/แก้ไขกฎหมาย, อ่านฉบับเต็ม
+- **Task Types (`/tasks`)**: บริหารหมวดหมู่งานผลิต (Scripting, Editing ฯลฯ) พร้อมระยะเวลาเริ่มต้น
+- **System Logs (`/logs`)**: Audit Trail, **ปุ่ม Export CSV ดาวน์โหลดลงเครื่องได้จริง**, ปุ่ม Clear Logs
+- **Settings (`/settings`)**: ปรับชื่อสตูดิโอ, สวิตช์ 2FA, บันทึก API Keys
+- **Topbar**: เมนูกระดิ่งแจ้งเตือน และ Modal ยืนยันการออกจากระบบ
+
+---
+
+## Phase 3: Mobile App Development (React Native CLI)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 18 กันยายน 2026 (17:00 - 21:30 น.)
+
+### 3.1 วางโครงสร้างแอปด้วย React Native Community CLI — [18 ก.ย. 2026 \| 17:00 น.]
+- ใช้โครงสร้าง React Native CLI สำหรับเปิดใน Android Studio
+- ปรับโค้ดทุกหน้าเป็น JavaScript XML (`.jsx`) ล้วน
+- โฟลเดอร์: `src/features/`, `src/navigation/`, `src/services/api.js`
+
+### 3.2 สร้างระบบ Role-Based Screen Switcher — [18 ก.ย. 2026 \| 19:30 น.]
+- **`App.jsx`**: ตรวจสอบ Role เพื่อแสดงหน้าต่าง Manager หรือ Member
+- **`LoginScreen.jsx`**: เพิ่ม Fast Role Switcher สำหรับกดทดสอบสลับบทบาทได้ทันที
+- **`ManagerDashboard.jsx`**: หน้าคิว Review งาน, ปุ่ม Approve, ปุ่ม Revision
+- **`MemberTaskList.jsx`**: หน้าดูงานที่ตนเองได้รับมอบหมาย พร้อมช่องแนบ Submission URL
+- **`IdeaListScreen.jsx`**: หน้ากระดานไอเดียคอนเทนต์
+- **`LegalChecklistScreen.jsx`**: หน้าระบบตรวจสอบข้อกำหนดกฎหมาย 5 ข้อ
+
+### 3.3 เคลียร์ปัญหา Gradle Path & SafeAreaProvider — [18 ก.ย. 2026 \| 21:00 น.]
+- เคลียร์ Cache ใน `android/build` และ `.cxx` แก้ปัญหา `react-native-safe-area-context` path mismatch
+- ห่อหุ้ม `<SafeAreaProvider>` ใน `App.jsx` แก้ปัญหาขอบบนทับกับ Status Bar / Notch
+
+---
+
+## Phase 4: การจัดระเบียบโครงสร้าง Master vs Learning
+> 🕒 **ช่วงเวลาดำเนินงาน:** 18 กันยายน 2026 (21:45 - 22:15 น.)
+
+เพื่อเปิดโอกาสให้ผู้พัฒนาได้ลงมือเขียนโค้ดด้วยตนเองโดยมี AI เป็น Mentor จึงแยกโฟลเดอร์:
+```text
+D:\VsCode\Project\Content-Management-System\
+├── master/                      <-- [ระบบเต็มฉบับสมบูรณ์] โค้ดอ้างอิงและตัวเฉลย
+│   ├── backend/                 <-- Node.js + MongoDB API
+│   ├── admin-web/               <-- Next.js Admin Dashboard (.jsx)
+│   ├── mobile-app/              <-- React Native (.jsx) สำหรับ Android Studio
+│   └── database/                <-- SQL Schema ดั้งเดิม
+│
+├── learning/                    <-- [พื้นที่ฝึกฝน] ลงมือพิมพ์โค้ดเองทีละบรรทัด
+│   └── backend/                 <-- ปัจจุบันอยู่ที่บทเรียน Backend
+│
+└── docs/                        <-- คลังเอกสารและรายงานโครงงานทั้งหมด
+```
+
+---
+
+## Phase 5: บันทึกบทเรียนการลงมือเขียนโค้ดด้วยตัวเอง
+> 🕒 **ช่วงเวลาดำเนินงาน:** 18 กันยายน 2026 (22:15 - 23:50 น.)
+
+### 🟢 Lesson 1: Server Setup & First Express Route — [18 ก.ย. 2026 \| 22:15 น.] ✅
+- ติดตั้ง `express`, สร้าง `server.js` ด้วยมือตัวเอง
+- เขียน `app.get('/')`, `app.listen(5000)` และรันผ่านฉลุยบน `http://localhost:5000`
+
+### 🟢 Lesson 2: Nodemon, .env และ Middleware — [18 ก.ย. 2026 \| 22:50 น.] ✅
+- ติดตั้ง `nodemon`, `dotenv` และเซตคำสั่ง `"dev": "nodemon src/server.js"`
+- สร้าง `.env` กำหนด `PORT=5000`
+- เสียบ Middleware `express.json()` อ่านข้อมูล POST Body
+
+### 🟡 Lesson 3: MongoDB & Mongoose Database Layer — [18 ก.ย. 2026 \| 23:30 น.] ⏳
+- ติดตั้ง `mongoose` (`^9.10.1`), สร้างตัวเชื่อมต่อ `src/config/db.js` เชื่อมต่อสำเร็จ
+- สร้าง Model แรก: `src/database/models/User.js`
+- ยกระดับสู่ Modular Architecture: แยก `users.routes.js`, `users.controller.js` และคลีน `server.js` เหลือ 27 บรรทัด
+
+---
+
+## Phase 6: การยกระดับสู่ Senior Capstone & 8 เอกสารวิชาการ UML
+> 🕒 **ช่วงเวลาดำเนินงาน:** 19 กันยายน 2026 (00:15 - 01:10 น.)
+
+### 6.1 จัดทำ 8 เอกสารวิชาการมาตรฐานสากล (`docs/academic/`) — [19 ก.ย. 2026 \| 00:30 น.]
+จัดทำเอกสารเพื่อส่งอาจารย์และเตรียมขึ้น Figma 1:1:
+1. **[`01-Use-Case-Diagram.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/01-Use-Case-Diagram.md)**: Use Case Diagram ครอบคลุม 3 Actors + Platform APIs
+2. **[`02-Use-Case-Descriptions.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/02-Use-Case-Descriptions.md)**: Fully Dressed Use Case Specification (Cockburn/IEEE) 6 เวิร์กโฟลว์หลัก
+3. **[`03-Activity-Diagram.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/03-Activity-Diagram.md)**: Activity Swimlanes 4 เลน + Finite State Machine Lifecycle
+4. **[`04-Domain-Class-Diagram.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/04-Domain-Class-Diagram.md)**: Class Diagram 11 โดเมนเอนทิตี พร้อม Visibility, Attributes, Multiplicities, Methods
+5. **[`05-Sequence-Diagrams.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/05-Sequence-Diagrams.md)**: 3 Sequence Diagrams บน Critical Paths (Task Assignment, Revision, Legal Gatekeeper)
+6. **[`06-Entity-Relationship-Diagram.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/06-Entity-Relationship-Diagram.md)**: Crow's Foot Relational ERD + คำอธิบายสถาปัตยกรรม Hybrid (SQL + NoSQL)
+7. **[`07-Data-Dictionary.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/07-Data-Dictionary.md)**: พจนานุกรมข้อมูลครบถ้วน 12 ตารางหลัก
+8. **[`08-Figma-Design-Tokens-And-Wireframes.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/08-Figma-Design-Tokens-And-Wireframes.md)**: Design Tokens (Colors, Typography, Spacing 8pt Grid) และพิมพ์เขียวผังหน้าจอ
+
+### 6.2 บังคับใช้ Finite State Machine Guard ใน Backend — [19 ก.ย. 2026 \| 00:50 น.]
+- ใน [`contents.controller.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/contents/contents.controller.js): เพิ่ม `ALLOWED_TRANSITIONS` ป้องกันการข้ามสถานะโดยพลการ (ห้าม `PLANNING` $\rightarrow$ `PUBLISHED`)
+- **Legal Gatekeeper Engine**: เพิ่ม Endpoint `PUT /api/contents/:id/legal-check` และ `POST /api/contents/:id/review` โดยจะบล็อกการอนุมัติหาก Checklist กฎหมาย 5 ข้อไม่ผ่าน 100%
+- ใน [`tasks.controller.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/tasks/tasks.controller.js): เมื่อส่งงาน (`submissionUrl`) ระบบจะบันทึกเวอร์ชันและขยับ Content แม่เป็น `REVIEW` อัตโนมัติ
+
+### 6.3 ปรับปรุง Mobile Navigation สู่ Bottom Tab Bar เต็มรูปแบบ — [19 ก.ย. 2026 \| 01:05 น.]
+- ใน [`ManagerNavigator.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/navigation/ManagerNavigator.jsx): เพิ่มแถบเมนูด้านล่าง 4 แท็บ (`[📊 Pipeline]`, `[💡 Idea Board]`, `[⚖️ Legal Audit]`, `[🚪 ออกระบบ]`) สลับไปมาได้ลื่นไหล ไม่เจอปัญหาหน้าจอตัน
+- ใน [`MemberNavigator.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/navigation/MemberNavigator.jsx): เพิ่มแถบเมนูด้านล่าง 3 แท็บ (`[📋 My Tasks]`, `[💡 Idea Board]`, `[🚪 ออกระบบ]`)
+- ใน [`LegalChecklistScreen.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/legal/LegalChecklistScreen.jsx): เชื่อมต่อข้อมูล `targetContent` จาก Dashboard และบันทึกผลลง MongoDB จริง
+- ใน [`ManagerDashboard.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/dashboard/ManagerDashboard.jsx): เพิ่มปุ่ม `[⚖️ ตรวจ Legal]`, `[🔄 ส่งกลับแก้]`, `[✅ อนุมัติ]` และ `[🚀 เผยแพร่ทันที (Publish)]`
+
+---
+
+## แผนที่ไฟล์และดัชนีเอกสารทั้งหมด
+> 🕒 **สถานะปัจจุบัน:** 19 กันยายน 2026 (01:12 น.)
+
+### 📁 หมวดหมู่ที่ 1: `docs/master/` (เอกสารสถาปัตยกรรมระบบเต็ม)
+1. `Phase-1-Backend.md` - สรุปสถาปัตยกรรม Backend
+2. `Phase-2-AdminWeb.md` - สรุปหน้าเว็บ Admin Web
+3. `Phase-3-MobileApp.md` - สรุปแอปมือถือ
+4. `Phase-4-ContentIntelligence.md` - สรุประบบ AI และ Metrics
+5. `How-It-Works-Database.md` - การทำงานของฐานข้อมูล
+6. `How-It-Works-Backend-API.md` - Request Lifecycle ของ Express
+7. `How-It-Works-AdminWeb.md` - การทำงานของ Next.js Layout
+8. `How-It-Works-Admin-Users-Page.md` - หน้า Users Data Table
+9. `How-It-Works-Admin-Contents-Legal.md` - หน้า Contents & Legal
+10. `How-It-Works-Admin-Logs-Tasks.md` - หน้า Logs & Task Types
+11. `How-It-Works-UI-Design-And-Interactivity.md` - การแก้ปัญหาสีและ Dark Mode
+12. `How-It-Works-All-Interactive-Buttons.md` - คู่มือปุ่มตอบโต้ทั้งหมดในระบบ
+13. `How-It-Works-Mobile-App.md` - โครงสร้างแอปมือถือ React Native (.jsx)
+14. `How-To-Run-In-Android-Studio.md` - คู่มือการเปิดและรันบน Android Studio
+15. `How-It-Works-MongoDB.md` - โครงสร้าง Mongoose Models และการย้ายสู่ MongoDB
+
+### 📁 หมวดหมู่ที่ 2: `docs/learning/` (บทเรียนเจาะลึกที่คุณกำลังเขียนโค้ดด้วยตัวเอง)
+1. [`Lesson-01-Server-Setup.md`](file:///d:/VsCode/Project/Content-Management-System/docs/learning/Lesson-01-Server-Setup.md) - สถาปัตยกรรม Server สู่ Express Route แรก
+2. [`Lesson-02-Nodemon-Dotenv-Middleware.md`](file:///d:/VsCode/Project/Content-Management-System/docs/learning/Lesson-02-Nodemon-Dotenv-Middleware.md) - เบื้องหลัง Process Watcher, Twelve-Factor Config, Middleware Parsing
+3. [`Lesson-03-MongoDB-Mongoose.md`](file:///d:/VsCode/Project/Content-Management-System/docs/learning/Lesson-03-MongoDB-Mongoose.md) - สถาปัตยกรรมฐานข้อมูล NoSQL, Mongoose ODM, และ Modular Architecture
+
+### 📁 หมวดหมู่ที่ 3: `docs/academic/` (เอกสารสถาปัตยกรรม & ไดอะแกรมสำหรับส่งอาจารย์และขึ้น Figma)
+1. [`01-Use-Case-Diagram.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/01-Use-Case-Diagram.md) - แผนภาพ Use Case Diagram (UML) ครอบคลุม 3 Actors + Platform APIs
+2. [`02-Use-Case-Descriptions.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/02-Use-Case-Descriptions.md) - Fully Dressed Use Case Specification (Cockburn/IEEE)
+3. [`03-Activity-Diagram.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/03-Activity-Diagram.md) - Activity Swimlanes 4 เลน + State Machine Lifecycle
+4. [`04-Domain-Class-Diagram.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/04-Domain-Class-Diagram.md) - Class Diagram 11 โดเมนเอนทิตี
+5. [`05-Sequence-Diagrams.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/05-Sequence-Diagrams.md) - 3 Sequence Diagrams บน Critical Paths
+6. [`06-Entity-Relationship-Diagram.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/06-Entity-Relationship-Diagram.md) - Crow's Foot Relational ERD + คำอธิบายสถาปัตยกรรม Hybrid (SQL + NoSQL)
+7. [`07-Data-Dictionary.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/07-Data-Dictionary.md) - พจนานุกรมข้อมูลครบถ้วน 12 ตารางหลัก
+8. [`08-Figma-Design-Tokens-And-Wireframes.md`](file:///d:/VsCode/Project/Content-Management-System/docs/academic/08-Figma-Design-Tokens-And-Wireframes.md) - Design Tokens และพิมพ์เขียวผังหน้าจอสำหรับขึ้น Figma 1:1
+
+---
+
+### 📁 หมวดหมู่ที่ 4: `docs/year-4-capstone/` (พิมพ์เขียวและสถาปัตยกรรมสำหรับโครงงานปริญญานิพนธ์ปี 4)
+1. [`01-Scope-And-Phasing-Matrix.md`](file:///d:/VsCode/Project/Content-Management-System/docs/year-4-capstone/01-Scope-And-Phasing-Matrix.md) - การแบ่งขอบเขตงานระบบหลัก (ปัจจุบัน) vs ระบบอัจฉริยะ (ปี 4) พร้อมเหตุผลทางวิศวกรรม
+2. [`02-Content-Intelligence-Specification.md`](file:///d:/VsCode/Project/Content-Management-System/docs/year-4-capstone/02-Content-Intelligence-Specification.md) - สเปกการเชื่อมต่อ YouTube Data API v3 & TikTok Display API และ Ingestion Worker
+3. [`03-Recommendation-Engine-Architecture.md`](file:///d:/VsCode/Project/Content-Management-System/docs/year-4-capstone/03-Recommendation-Engine-Architecture.md) - สถาปัตยกรรมระบบแนะนำ: จาก Rule-based Scoring สู่ Machine Learning Clustering
+4. [`04-Automated-Legal-AI-Audit.md`](file:///d:/VsCode/Project/Content-Management-System/docs/year-4-capstone/04-Automated-Legal-AI-Audit.md) - ระบบตรวจสอบข้อกฎหมายอัตโนมัติ (Audio Fingerprinting, Face/PDPA Detection, OCR Logo)
+5. [`05-Cloud-Object-Storage-Pipeline.md`](file:///d:/VsCode/Project/Content-Management-System/docs/year-4-capstone/05-Cloud-Object-Storage-Pipeline.md) - สถาปัตยกรรม Direct-to-Cloud Upload ด้วย Presigned URLs (AWS S3 / Cloud Storage)
+6. [`06-PostgreSQL-Prisma-Migration-Schema.md`](file:///d:/VsCode/Project/Content-Management-System/docs/year-4-capstone/06-PostgreSQL-Prisma-Migration-Schema.md) - ไฟล์ Prisma Schema (`schema.prisma`) 100% สำหรับการย้ายฐานข้อมูลสู่ PostgreSQL ในปี 4
+
+---
+
+## Phase 7: การจัดแยกโฟลเดอร์สำหรับโครงงานปี 4 (Year 4 Scoping & Isolation)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 19 กันยายน 2026 (01:15 - 01:20 น.)
+
+เพื่อรักษาความเสถียรของระบบ Core ที่ต้องส่งอาจารย์ในเทอมปัจจุบัน และป้องกันไม่ให้โค้ดส่วนต่อขยายสร้างผลข้างเคียง (Side Effects):
+1. **จัดสรรเอกสารพิมพ์เขียวปี 4**: รวบรวมไว้ใน `docs/year-4-capstone/` ทั้งหมด 6 ฉบับ
+2. **แยกโฟลเดอร์ใน Backend**: สร้าง `master/backend/src/year4-extensions/` สำหรับ `analytics`, `recommendations`, `trends`
+3. **จัดทำ Integrations Client Template**: สร้าง `master/backend/src/integrations/` สำหรับ `youtube` และ `tiktok` พร้อมทำงานในรูปแบบ Mock จนกว่าจะเชื่อมต่อจริงในปี 4
+
+

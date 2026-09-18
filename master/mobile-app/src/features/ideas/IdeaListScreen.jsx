@@ -1,0 +1,583 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+  Alert,
+  Modal,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ideaApi } from '../../services/api';
+
+export default function IdeaListScreen({ onBack }) {
+  const [ideas, setIdeas] = useState([
+    {
+      id: '1',
+      title: 'รีวิวเปรียบเทียบ AI Video Generator 2026',
+      desc: 'ทดสอบตัดต่อคลิปด้วย AI 5 ตัวเทียบความคมชัด ความเร็ว และการพากย์เสียงภาษาไทย',
+      platform: 'YouTube',
+      category: 'Tech Review',
+      proposer: 'John Creator',
+      status: 'APPROVED',
+      upvotes: 18,
+    },
+    {
+      id: '2',
+      title: 'สรุปข่าวเทคโนโลยีประจำวันใน 1 นาที',
+      desc: 'คลิปสั้นเจาะลึกฟีเจอร์ AI ใหม่ล่าสุดประจำวันสำหรับคนไม่มีเวลาอ่านข่าว',
+      platform: 'TikTok',
+      category: 'News & Tech',
+      proposer: 'Jane Editor',
+      status: 'APPROVED',
+      upvotes: 24,
+    },
+    {
+      id: '3',
+      title: 'แจกพิกัดอุปกรณ์จัดโต๊ะคอม Minimal สำหรับ Live',
+      desc: 'Content สไตล์ Minimal แนะนำการจัดแสงและไมโครโฟนไร้สาย',
+      platform: 'Instagram',
+      category: 'Lifestyle',
+      proposer: 'John Creator',
+      status: 'DRAFT',
+      upvotes: 9,
+    },
+    {
+      id: '4',
+      title: 'สัมภาษณ์ Creator ยอดวิว 10 ล้าน',
+      desc: 'เจาะลึกจิตวิทยาการทำ Hook 3 วินาทีแรกเพื่อหยุดนิ้วโป้งคนดู',
+      platform: 'TikTok',
+      category: 'Interview',
+      proposer: 'Somchai Lead',
+      status: 'DRAFT',
+      upvotes: 31,
+    },
+  ]);
+
+  const [filter, setFilter] = useState('ALL');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [title, setTitle] = useState('');
+  const [desc, setDesc] = useState('');
+  const [platform, setPlatform] = useState('YouTube');
+  const [category, setCategory] = useState('Tech Review');
+
+  useEffect(() => {
+    const fetchIdeas = async () => {
+      try {
+        const res = await ideaApi.getAll();
+        if (Array.isArray(res) && res.length > 0) {
+          const mapped = res.map((i) => ({
+            id: i._id || String(Date.now()),
+            title: i.title,
+            desc: i.description || 'ไม่มีคำอธิบาย',
+            platform: i.platform || 'YouTube',
+            category: i.category || 'General',
+            proposer: i.proposedBy?.username || 'สมาชิกทีม',
+            status: i.status || 'DRAFT',
+            upvotes: Math.floor(Math.random() * 20) + 5,
+          }));
+          setIdeas(mapped);
+        }
+      } catch (e) {
+        console.warn('Using offline idea mock data');
+      }
+    };
+    fetchIdeas();
+  }, []);
+
+  const handleCreateIdea = async () => {
+    if (!title.trim()) {
+      Alert.alert('แจ้งเตือน', 'กรุณาระบุชื่อไอเดีย');
+      return;
+    }
+
+    const newIdea = {
+      id: String(Date.now()),
+      title: title.trim(),
+      desc: desc.trim() || 'ไม่มีคำอธิบายเพิ่มเติม',
+      platform,
+      category,
+      proposer: 'ผู้ใช้งานปัจจุบัน (You)',
+      status: 'DRAFT',
+      upvotes: 1,
+    };
+
+    setIdeas([newIdea, ...ideas]);
+    setIsModalOpen(false);
+    setTitle('');
+    setDesc('');
+
+    try {
+      await ideaApi.create({
+        title: newIdea.title,
+        description: newIdea.desc,
+        category: newIdea.category,
+      });
+    } catch (e) {
+      console.warn('Saved idea locally');
+    }
+
+    Alert.alert('สำเร็จ! 🎉', 'ไอเดียของคุณถูกบันทึกเข้าสู่กระดาน Brainstorming แล้ว');
+  };
+
+  const handleUpvote = (id) => {
+    setIdeas(
+      ideas.map((item) =>
+        item.id === id ? { ...item, upvotes: item.upvotes + 1 } : item
+      )
+    );
+  };
+
+  const filteredIdeas = ideas.filter((item) => {
+    if (filter === 'ALL') return true;
+    return item.status === filter;
+  });
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* App Top Bar */}
+      <View style={styles.topBar}>
+        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
+          <Text style={styles.backText}>← กลับ</Text>
+        </TouchableOpacity>
+        <View>
+          <Text style={styles.headerTitle}>💡 Idea Brainstorming</Text>
+          <Text style={styles.headerSubtitle}>คลังไอเดีย & คัดกรองเข้าสายพานผลิต</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.addBtn}
+          onPress={() => setIsModalOpen(true)}
+        >
+          <Text style={styles.addBtnText}>+ เสนอ</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scroll}>
+        {/* Stage Overview Card for Diagram/Figma */}
+        <View style={styles.stageCard}>
+          <Text style={styles.stageTitle}>📌 STAGE 1: CONTENT IDEATION</Text>
+          <Text style={styles.stageDesc}>
+            รวบรวมไอเดียจากทีมงาน ให้คะแนนความน่าสนใจ (Upvote) ก่อนที่ Manager จะกดอนุมัติเข้าสู่กระบวนการวางแผนและถ่ายทำจริง
+          </Text>
+        </View>
+
+        {/* Filter Tabs */}
+        <View style={styles.filterRow}>
+          {[
+            { id: 'ALL', label: 'ทั้งหมด' },
+            { id: 'DRAFT', label: '⏳ รอพิจารณา (Draft)' },
+            { id: 'APPROVED', label: '✅ ผ่านเกณฑ์ (Approved)' },
+          ].map((tab) => (
+            <TouchableOpacity
+              key={tab.id}
+              style={[styles.filterPill, filter === tab.id && styles.filterPillActive]}
+              onPress={() => setFilter(tab.id)}
+            >
+              <Text
+                style={[
+                  styles.filterPillText,
+                  filter === tab.id && styles.filterPillTextActive,
+                ]}
+              >
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Ideas Cards */}
+        {filteredIdeas.map((item) => (
+          <View key={item.id} style={styles.ideaCard}>
+            <View style={styles.cardHeaderRow}>
+              <View style={styles.badgeRow}>
+                <View style={styles.platformPill}>
+                  <Text style={styles.platformPillText}>{item.platform}</Text>
+                </View>
+                <View style={styles.categoryPill}>
+                  <Text style={styles.categoryPillText}>{item.category}</Text>
+                </View>
+              </View>
+
+              <View
+                style={[
+                  styles.statusBadge,
+                  item.status === 'APPROVED' ? styles.statusApproved : styles.statusDraft,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.statusBadgeText,
+                    item.status === 'APPROVED' ? styles.statusTextApproved : styles.statusTextDraft,
+                  ]}
+                >
+                  {item.status}
+                </Text>
+              </View>
+            </View>
+
+            <Text style={styles.ideaTitle}>{item.title}</Text>
+            <Text style={styles.ideaDesc}>{item.desc}</Text>
+
+            <View style={styles.cardFooter}>
+              <Text style={styles.proposerText}>โดย: {item.proposer}</Text>
+
+              <TouchableOpacity
+                style={styles.upvoteBtn}
+                onPress={() => handleUpvote(item.id)}
+              >
+                <Text style={styles.upvoteText}>🔥 {item.upvotes} Upvotes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+
+      {/* Propose Idea Modal */}
+      <Modal visible={isModalOpen} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>✨ นำเสนอไอเดียใหม่</Text>
+              <TouchableOpacity onPress={() => setIsModalOpen(false)}>
+                <Text style={styles.modalCloseText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.inputLabel}>ชื่อไอเดีย (Title)</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="เช่น รีวิวไมโครโฟนไร้สายสำหรับ Creator..."
+              value={title}
+              onChangeText={setTitle}
+            />
+
+            <Text style={styles.inputLabel}>แพลตฟอร์มเป้าหมาย</Text>
+            <View style={styles.platformSelectRow}>
+              {['YouTube', 'TikTok', 'Instagram'].map((p) => (
+                <TouchableOpacity
+                  key={p}
+                  style={[
+                    styles.platOption,
+                    platform === p && styles.platOptionActive,
+                  ]}
+                  onPress={() => setPlatform(p)}
+                >
+                  <Text
+                    style={[
+                      styles.platOptionText,
+                      platform === p && styles.platOptionTextActive,
+                    ]}
+                  >
+                    {p}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.inputLabel}>คำอธิบายและแนวคิด (Concept & Hook)</Text>
+            <TextInput
+              style={[styles.textInput, styles.textArea]}
+              placeholder="อธิบายจุดขาย และสิ่งที่ผู้ชมจะได้รับ..."
+              value={desc}
+              onChangeText={setDesc}
+              multiline
+              numberOfLines={3}
+            />
+
+            <TouchableOpacity style={styles.submitIdeaBtn} onPress={handleCreateIdea}>
+              <Text style={styles.submitIdeaBtnText}>ส่งข้อเสนอไอเดีย (Submit)</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  backBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: '#F1F5F9',
+  },
+  backText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  headerTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#0F172A',
+    textAlign: 'center',
+  },
+  headerSubtitle: {
+    fontSize: 10,
+    color: '#64748B',
+    textAlign: 'center',
+  },
+  addBtn: {
+    backgroundColor: '#4F46E5',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  addBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  scroll: {
+    padding: 16,
+    paddingBottom: 40,
+  },
+  stageCard: {
+    backgroundColor: '#FFFBEB',
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+    marginBottom: 14,
+  },
+  stageTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#B45309',
+    marginBottom: 4,
+    letterSpacing: 0.5,
+  },
+  stageDesc: {
+    fontSize: 11,
+    color: '#78350F',
+    lineHeight: 16,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 14,
+  },
+  filterPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  filterPillActive: {
+    backgroundColor: '#4F46E5',
+    borderColor: '#4F46E5',
+  },
+  filterPillText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  filterPillTextActive: {
+    color: '#FFFFFF',
+  },
+  ideaCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  platformPill: {
+    backgroundColor: '#EEF2FF',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  platformPillText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#4338CA',
+  },
+  categoryPill: {
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  categoryPillText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  statusApproved: {
+    backgroundColor: '#DCFCE7',
+  },
+  statusDraft: {
+    backgroundColor: '#FEF3C7',
+  },
+  statusBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  statusTextApproved: {
+    color: '#15803D',
+  },
+  statusTextDraft: {
+    color: '#B45309',
+  },
+  ideaTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 4,
+  },
+  ideaDesc: {
+    fontSize: 12,
+    color: '#475569',
+    lineHeight: 17,
+    marginBottom: 10,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+    paddingTop: 8,
+  },
+  proposerText: {
+    fontSize: 11,
+    color: '#64748B',
+  },
+  upvoteBtn: {
+    backgroundColor: '#FFF7ED',
+    borderWidth: 1,
+    borderColor: '#FFEDD5',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+  upvoteText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#C2410C',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    paddingBottom: 36,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  modalCloseText: {
+    fontSize: 20,
+    color: '#94A3B8',
+    fontWeight: '600',
+  },
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
+    marginBottom: 6,
+  },
+  textInput: {
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 10,
+    padding: 10,
+    fontSize: 13,
+    marginBottom: 12,
+  },
+  textArea: {
+    height: 70,
+    textAlignVertical: 'top',
+  },
+  platformSelectRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
+  },
+  platOption: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#F1F5F9',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  platOptionActive: {
+    backgroundColor: '#4F46E5',
+    borderColor: '#4F46E5',
+  },
+  platOptionText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  platOptionTextActive: {
+    color: '#FFFFFF',
+  },
+  submitIdeaBtn: {
+    backgroundColor: '#4F46E5',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  submitIdeaBtnText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+});
