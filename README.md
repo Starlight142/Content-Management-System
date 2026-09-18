@@ -1,148 +1,123 @@
 <div align="center">
 
 # 🎬 Content Production Management System (CMS)
-### Enterprise Media Lifecycle Architecture • Finite State Machine • Legal Gatekeeper • Cross-Platform
+### Enterprise Media Lifecycle Architecture • Finite State Machine • Legal Compliance Gatekeeper
 
 [![Node.js Version](https://img.shields.io/badge/Node.js-v20+-68a063?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express.js-Backend_API-black?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com)
 [![React Native](https://img.shields.io/badge/React_Native-CLI_0.87-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://reactnative.dev)
 [![Next.js](https://img.shields.io/badge/Next.js-Admin_Web-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose_v9-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com)
-[![PostgreSQL & Prisma Ready](https://img.shields.io/badge/PostgreSQL-Prisma_Ready-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://prisma.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 <p align="center">
-  ระบบบริหารจัดการกระบวนการผลิตสื่อครบวงจรระดับองค์กร (End-to-End Media Pipeline) ออกแบบตามหลักวิศวกรรมซอฟต์แวร์ (Software Engineering Standards)<br>
-  พร้อมชุดเอกสารวิชาการมาตรฐานสากล (UML 2.5 / IEEE / Cockburn) สำหรับการประเมินผลและการต่อยอดสู่โครงงานปริญญานิพนธ์ปี 4 (Senior Capstone Project)
+  ระบบบริหารจัดการกระบวนการผลิตสื่อครบวงจรระดับองค์กร (End-to-End Media Pipeline) ออกแบบตามหลักวิศวกรรมซอฟต์แวร์จริง<br>
+  ควบคุมสายการผลิตด้วย Finite State Machine, ระบบตรวจสอบสิทธิ์ทางกฎหมาย 5 เสาหลัก และชุดเอกสารวิชาการ 7 รายการตามมาตรฐานสากล
 </p>
 
-[📌 ภาพรวมระบบ](#-ภาพรวมระบบ-system-overview) •
-[🏛️ สถาปัตยกรรม](#️-สถาปัตยกรรมระบบ-architecture) •
+[📌 วงจรการผลิต](#-วงจรการผลิตสื่อ-production-lifecycle) •
+[🏛️ สถาปัตยกรรมระบบ](#️-สถาปัตยกรรมระบบ-system-architecture) •
 [👥 สิทธิ์ผู้ใช้ (RBAC)](#-บทบาทและสิทธิ์ผู้ใช้งาน-rbac) •
-[📚 8 เอกสารวิชาการ](#-ชุดเอกสารวิชาการ-academic-deliverables) •
-[🚀 พิมพ์เขียวปี 4](#-พิมพ์เขียวโครงงานปี-4-senior-capstone-blueprint) •
-[⚡ วิธีการติดตั้งและรัน](#-วิธีการติดตั้งและเริ่มต้นใช้งาน-quickstart)
+[📚 7 เอกสารวิชาการ](#-ชุดเอกสารวิชาการ-7-รายการ-academic-deliverables) •
+[⚡ วิธีการติดตั้งและรัน](#-วิธีการติดตั้งและเริ่มต้นใช้งาน-quickstart) •
+[🚀 แผนงานต่อยอดปี 4](#-แผนงานต่อยอดปี-4-future-capstone-roadmap)
 
 ---
 
 </div>
 
-## 📌 ภาพรวมระบบ (System Overview)
+## 📌 วงจรการผลิตสื่อ (Production Lifecycle)
 
-**Content Production Management System** ถูกออกแบบขึ้นเพื่อแก้ปัญหาความวุ่นวาย (Spaghetti Operations) ในสตูดิโอผู้ผลิตสื่อ โดยเปลี่ยนการทำงานที่กระจัดกระจายบนแชตและชีต สู่ **ระบบสายการผลิตสื่อแบบ State Machine อัจฉริยะ**:
+ระบบถูกออกแบบมาเพื่อควบคุมกระบวนการผลิตสื่อตั้งแต่ต้นจนจบ โดยเปลี่ยนการทำงานที่กระจัดกระจาย สู่ **สายการผลิตที่เป็นระบบ (Finite State Machine)**:
 
-$$\text{Idea} \rightarrow \text{Planning} \rightarrow \text{Task Assignment} \rightarrow \text{Production} \rightarrow \text{Legal Check} \rightarrow \text{Review} \rightarrow \text{Revision} \circlearrowleft \rightarrow \text{Approval} \rightarrow \text{Schedule} \rightarrow \text{Publish} \rightarrow \text{Analytics}$$
+$$\text{Idea} \rightarrow \text{Planning} \rightarrow \text{Task Assignment} \rightarrow \text{Production} \rightarrow \text{Legal Check} \rightarrow \text{Review} \rightarrow \text{Revision} \circlearrowleft \rightarrow \text{Approval} \rightarrow \text{Schedule} \rightarrow \text{Publish}$$
 
-### 🌟 ฟีเจอร์เด่นระดับ Enterprise (Core Capabilities)
-1. **🛡️ Finite State Machine (FSM) Guard**: ป้องกันการข้ามขั้นตอนโดยพลการ (เช่น บล็อกไม่ให้กระโดดจาก `PLANNING` ตรงไป `PUBLISHED` โดยไม่มีชิ้นงานหรือการตรวจรับรอง)
-2. **⚖️ 5-Pillar Legal & Compliance Gatekeeper**: ด่านตรวจข้อกฎหมายภาคบังคับ 5 ประการ (Music License, Stock Footage, PDPA Consent, Trademark Disclosure, Community Rules) **บล็อกการอนุมัติและเผยแพร่เด็ดขาดหากไม่ผ่านเกณฑ์ 100%**
-3. **🔄 Real-time Review & Revision Loop**: ระบบตรวจงานที่ Creator แนบ Submission Link (Drive / Frame.io) $\rightarrow$ ระบบอัปเดตเวอร์ชันใหม่ (v1, v2...) และส่งต่อเข้าสู่คิวตรวจของ Manager พร้อมประวัติบันทึกการสั่งแก้ (Review History)
+### 🌟 ฟังก์ชันหลักที่ทำงานได้จริง 100% (Core System Features)
+1. **🛡️ Finite State Machine (FSM) Guard**: ตรวจสอบการเปลี่ยนสถานะที่ Backend ป้องกันการข้ามขั้นตอนโดยพลการ (บล็อกไม่ให้ข้ามจาก `PLANNING` ตรงไป `PUBLISHED`)
+2. **⚖️ 5-Pillar Legal & Compliance Gatekeeper**: ด่านตรวจสิทธิ์ทางกฎหมาย 5 ประการก่อนเผยแพร่สื่อ (ลิขสิทธิ์เพลง, ลิขสิทธิ์ฟุตเทจ, PDPA ยินยอมใบหน้า, เครื่องหมายการค้าสปอนเซอร์, และนโยบายชุมชน) **ระบบบล็อกการอนุมัติและเผยแพร่เด็ดขาดหากไม่ผ่านครบ 5/5 ข้อ**
+3. **🔄 Review & Revision Loop**: เมื่อ Creator แนบลิงก์ผลงาน (Drive / Frame.io) ส่งตรวจ ระบบจะขยับเข้าคิวตรวจของ Manager โดยอัตโนมัติ พร้อมรองรับการสั่งแก้ไขงาน (Revision Notes) และบันทึกประวัติการสั่งแก้
 4. **📱 Multi-Platform Client Ecosystem**:
-   - **Admin Web (Next.js)**: สำหรับควบคุมนโยบาย, จัดการ Users/Teams, Task Types, กฎหมาย และ System Audit Logs
-   - **Mobile App (React Native)**: มี Bottom Tab Bar รองรับทั้งมุมมอง **Manager Dashboard** (ภาพรวมสายการผลิต) และ **Creator Workbench** (โต๊ะทำงานส่งมอบผลงาน)
+   - **Admin Web (Next.js)**: จัดการผู้ใช้งาน, จัดการทีม, กำหนดประเภทงาน, บริหารข้อกฎหมาย, และตรวจสอบ System Audit Logs
+   - **Mobile App (React Native)**: เมนู Bottom Tab Bar รองรับทั้งมุมมอง **Manager Dashboard** (คิวงานและอนุมัติ) และ **Creator Workbench** (รับงานและส่งมอบผลงาน)
 
 ---
 
-## 🏛️ สถาปัตยกรรมระบบ (Architecture)
+## 🏛️ สถาปัตยกรรมระบบ (System Architecture)
+
+สถาปัตยกรรมของระบบปัจจุบันที่ทำงานร่วมกันแบบ Real-time:
 
 ```mermaid
 flowchart TD
-    %% Clients Layer
-    subgraph Clients["📱 Client Layer"]
-        MobileManager["📱 Mobile App (Manager)\nPipeline • Idea Board • Legal Audit"]
-        MobileCreator["📱 Mobile App (Creator)\nMy Tasks • Submission • Profile"]
-        WebAdmin["💻 Admin Web (Next.js)\nUsers • Teams • Audit Logs • Governance"]
+    %% Client Layer
+    subgraph Clients["📱 Client Application Layer"]
+        ManagerApp["📱 Mobile App (Manager View)\nPipeline Dashboard • Idea Backlog • Legal Audit"]
+        CreatorApp["📱 Mobile App (Creator View)\nMy Tasks • Deliverable Submission • Profile"]
+        AdminWeb["💻 Admin Web (Next.js App Router)\nUsers & Roles • Teams • System Logs • Settings"]
     end
 
-    %% Backend Layer
-    subgraph BackendEngine["⚙️ Backend Layer (Node.js & Express Modular Architecture)"]
-        AuthMiddleware["🛡️ JWT & RBAC Middleware\n(Admin / Manager / Member)"]
-        FSMGuard["🛡️ Finite State Machine Guard\n(Workflow State Transitions)"]
-        LegalEngine["⚖️ Legal Gatekeeper Engine\n(5-Pillar Compliance Verifier)"]
+    %% Backend Engine
+    subgraph Backend["⚙️ Backend Layer (Node.js & Express Modular Architecture)"]
+        AuthMiddleware["🛡️ JWT & RBAC Guard\n(ADMIN / MANAGER / MEMBER)"]
+        StateGuard["🛡️ Finite State Machine Guard\n(Workflow State Progression)"]
+        LegalGatekeeper["⚖️ Legal Gatekeeper Engine\n(5-Pillar Compliance Check)"]
         
-        subgraph CoreModules["Core Modules (Phase 1)"]
-            M_Auth["/api/auth"]
-            M_Users["/api/users"]
-            M_Teams["/api/teams"]
-            M_Ideas["/api/ideas"]
-            M_Contents["/api/contents"]
-            M_Tasks["/api/tasks"]
-            M_Legal["/api/legal"]
-        end
-
-        subgraph Year4Modules["Year 4 Extensions (Isolated)"]
-            Ext_Analytics["/api/analytics"]
-            Ext_Rec["/api/recommendations"]
-            Ext_Trends["/api/trends"]
-            Client_YT["YouTube Client"]
-            Client_TT["TikTok Client"]
+        subgraph CoreAPIs["Core REST Modules"]
+            API_Auth["/api/auth"]
+            API_Users["/api/users"]
+            API_Teams["/api/teams"]
+            API_Ideas["/api/ideas"]
+            API_Contents["/api/contents"]
+            API_Tasks["/api/tasks"]
+            API_Legal["/api/legal"]
         end
     end
 
     %% Database Layer
-    subgraph DataStorage["🗄️ Database & Storage Layer"]
-        MongoDB[("🍃 MongoDB (Mongoose)\nDocuments & Time-series Metrics")]
-        PostgresPrisma[("🐘 PostgreSQL / Prisma Ready\nRelational Schema for Year 4")]
+    subgraph Database["🗄️ Database Layer"]
+        MongoDB[("🍃 MongoDB Database\nUsers • Teams • Contents • Tasks • Legal")]
     end
 
     Clients --> AuthMiddleware
-    AuthMiddleware --> FSMGuard
-    FSMGuard --> CoreModules
-    LegalEngine --> M_Contents
-    CoreModules --> MongoDB
-    Year4Modules -.-> MongoDB
-    MongoDB -.->|Year 4 Migration| PostgresPrisma
+    AuthMiddleware --> StateGuard
+    StateGuard --> CoreAPIs
+    LegalGatekeeper --> API_Contents
+    CoreAPIs --> MongoDB
 ```
 
 ---
 
 ## 👥 บทบาทและสิทธิ์ผู้ใช้งาน (RBAC)
 
-ระบบใช้มาตรฐาน Role-Based Access Control ตรวจสอบสิทธิ์ที่ Backend เสมอ:
-
-| สิทธิ์การใช้งาน (Permissions) | 👤 Admin (Web) | 👔 Manager (Mobile) | 🎨 Member (Mobile) |
+| ฟังก์ชันการทำงาน (Capabilities) | 👤 Admin (Web) | 👔 Manager (Mobile) | 🎨 Member (Mobile) |
 | :--- | :---: | :---: | :---: |
-| **เข้าสู่ระบบ (Login / 2FA)** | ✅ | ✅ | ✅ |
-| **จัดการผู้ใช้งานและสิทธิ์ (Manage Users)** | ✅ | ❌ | ❌ |
-| **จัดการโครงสร้างทีม (Manage Teams)** | ✅ | ✅ | ❌ |
-| **เสนอและโหวตไอเดีย (Propose & Vote Ideas)** | ✅ | ✅ | ✅ |
-| **อนุมัติไอเดียเป็นชิ้นงาน (Approve Ideas)** | ✅ | ✅ | ❌ |
-| **สร้าง Content และมอบหมาย Task** | ✅ | ✅ | ❌ |
-| **รับงานและส่งมอบผลงาน (Submit Deliverable)** | ❌ | ❌ | ✅ |
+| **เข้าสู่ระบบ (Authentication)** | ✅ | ✅ | ✅ |
+| **จัดการผู้ใช้งานและสลับ Role (Users Management)** | ✅ | ❌ | ❌ |
+| **จัดการโครงสร้างทีม (Team Management)** | ✅ | ✅ | ❌ |
+| **เสนอและโหวตไอเดีย (Propose Ideas)** | ✅ | ✅ | ✅ |
+| **อนุมัติไอเดียเข้าสู่สายการผลิต (Approve Ideas)** | ✅ | ✅ | ❌ |
+| **สร้าง Content และมอบหมาย Task ย่อย** | ✅ | ✅ | ❌ |
+| **รับงานและแนบลิงก์ส่งงาน (Submit Deliverable)** | ❌ | ❌ | ✅ |
 | **ตรวจงานและสั่งแก้ไข (Review & Request Revision)** | ❌ | ✅ | ❌ |
-| **ตรวจสิทธิ์กฎหมาย (Audit Legal Checklist)** | ❌ | ✅ | ❌ |
+| **ตรวจสิทธิ์กฎหมาย 5 ข้อ (Audit Legal Checklist)** | ❌ | ✅ | ❌ |
 | **อนุมัติขั้นสุดท้ายและเผยแพร่ (Approve & Publish)** | ❌ | ✅ | ❌ |
-| **ตรวจสอบ Audit Logs และ System Monitor** | ✅ | ❌ | ❌ |
+| **ตรวจสอบ Audit Trail และ System Monitor** | ✅ | ❌ | ❌ |
 
 ---
 
-## 📚 ชุดเอกสารวิชาการ (Academic Deliverables)
+## 📚 ชุดเอกสารวิชาการ 7 รายการ (Academic Deliverables)
 
-เอกสารทั้ง 8 ฉบับถูกจัดทำตามระเบียบแบบแผน Software Engineering เพื่อใช้ส่งอาจารย์และนำไปขึ้น Figma Prototype 1:1:
+เอกสารการวิเคราะห์และออกแบบระบบตามข้อกำหนดของรายวิชา (Software Engineering & Senior Capstone Rubric):
 
-| เอกสารวิชาการ | รายละเอียดเนื้อหา | ลิงก์เอกสาร |
-| :--- | :--- | :---: |
-| **1. Use Case Diagram** | แผนภาพ Use Case Diagram (UML) ครอบคลุม 3 Actors + External APIs พร้อม Include/Extend | [📄 ดูเอกสาร](docs/academic/01-Use-Case-Diagram.md) |
-| **2. Use Case Descriptions** | Fully Dressed Specification (Cockburn/IEEE) สำหรับ 6 เวิร์กโฟลว์หลัก | [📄 ดูเอกสาร](docs/academic/02-Use-Case-Descriptions.md) |
-| **3. Activity Diagram** | Swimlane 4 เลน (Creator, Manager, System, Platform) + FSM Lifecycle | [📄 ดูเอกสาร](docs/academic/03-Activity-Diagram.md) |
-| **4. Domain Class Diagram** | แผนภาพคลาส 11 โดเมนเอนทิตี พร้อม Attributes, Visibility, Multiplicities | [📄 ดูเอกสาร](docs/academic/04-Domain-Class-Diagram.md) |
-| **5. Sequence Diagrams** | 3 ไดอะแกรมสำหรับ Critical Paths (Task Assignment, Revision, Legal Gatekeeper) | [📄 ดูเอกสาร](docs/academic/05-Sequence-Diagrams.md) |
-| **6. Relational ERD** | Crow's Foot ERD 12 ตาราง พร้อมบทวิเคราะห์สถาปัตยกรรม Hybrid Database | [📄 ดูเอกสาร](docs/academic/06-Entity-Relationship-Diagram.md) |
-| **7. Data Dictionary** | พจนานุกรมข้อมูลครบถ้วนทุกคอลัมน์ ชนิดข้อมูล ข้อจำกัด และค่าเริ่มต้น | [📄 ดูเอกสาร](docs/academic/07-Data-Dictionary.md) |
-| **8. Figma Blueprint** | Design Tokens (Colors, Typography, 8pt Grid) และผังหน้าจอสำหรับขึ้น Figma | [📄 ดูเอกสาร](docs/academic/08-Figma-Design-Tokens-And-Wireframes.md) |
-
----
-
-## 🚀 พิมพ์เขียวโครงงานปี 4 (Senior Capstone Blueprint)
-
-เพื่อไม่ให้โค้ดส่วนต่อขยายมารบกวนระบบ Core ในเทอมปัจจุบัน จึงได้แยกพิมพ์เขียวสำหรับปี 4 ไว้ใน [`docs/year-4-capstone/`](docs/year-4-capstone/):
-
-1. **[01-Scope-And-Phasing-Matrix.md](docs/year-4-capstone/01-Scope-And-Phasing-Matrix.md)** — ตารางเปรียบเทียบขอบเขตงานระบบปัจจุบัน vs ระบบอัจฉริยะปี 4
-2. **[02-Content-Intelligence-Specification.md](docs/year-4-capstone/02-Content-Intelligence-Specification.md)** — สเปกเชื่อมต่อ YouTube Data API v3 & TikTok Display API และ Ingestion Worker
-3. **[03-Recommendation-Engine-Architecture.md](docs/year-4-capstone/03-Recommendation-Engine-Architecture.md)** — สถาปัตยกรรมระบบแนะนำ: Rule-Based Heuristic สู่ Machine Learning
-4. **[04-Automated-Legal-AI-Audit.md](docs/year-4-capstone/04-Automated-Legal-AI-Audit.md)** — ระบบ AI ตรวจลิขสิทธิ์เพลง (Audio Fingerprinting), PDPA (Face Detection) และ OCR
-5. **[05-Cloud-Object-Storage-Pipeline.md](docs/year-4-capstone/05-Cloud-Object-Storage-Pipeline.md)** — สถาปัตยกรรม Direct-to-Cloud Upload ด้วย Presigned URLs (AWS S3)
-6. **[06-PostgreSQL-Prisma-Migration-Schema.md](docs/year-4-capstone/06-PostgreSQL-Prisma-Migration-Schema.md)** — Prisma Schema (`schema.prisma`) ฉบับสมบูรณ์ 100% สำหรับการย้ายฐานข้อมูลสู่ PostgreSQL ในปี 4
+| ลำดับ | รายการเอกสารวิชาการ | คำอธิบายมาตรฐาน | ลิงก์เอกสาร |
+| :---: | :--- | :--- | :---: |
+| **1** | **Use Case Diagram** | แผนภาพ Use Case Diagram (UML 2.5) แสดง 3 Actors พร้อม Include/Extend | [📄 เปิดดู](docs/academic/01-Use-Case-Diagram.md) |
+| **2** | **Use Case Descriptions** | Fully Dressed Specification (Cockburn / IEEE) ครบทั้ง 6 ฟังก์ชันวิกฤต | [📄 เปิดดู](docs/academic/02-Use-Case-Descriptions.md) |
+| **3** | **Activity Diagram** | Swimlanes 4 เลน และ Finite State Machine Lifecycle แสดงเงื่อนไขการวนลูป | [📄 เปิดดู](docs/academic/03-Activity-Diagram.md) |
+| **4** | **Domain Class Diagram** | แผนภาพคลาส 11 เอนทิตี พร้อม Visibility (`+`, `-`), Multiplicities, และ Methods | [📄 เปิดดู](docs/academic/04-Domain-Class-Diagram.md) |
+| **5** | **Sequence Diagrams** | แผนภาพลำดับขั้น 3 ไดอะแกรมสำหรับ Critical Paths (Task, Revision, Legal Gatekeeper) | [📄 เปิดดู](docs/academic/05-Sequence-Diagrams.md) |
+| **6** | **Entity-Relationship Diagram (ERD)** | Crow's Foot Relational ERD 12 ตาราง พร้อมบทวิเคราะห์สถาปัตยกรรม Hybrid | [📄 เปิดดู](docs/academic/06-Entity-Relationship-Diagram.md) |
+| **7** | **Data Dictionary** | พจนานุกรมข้อมูลครบถ้วนทุกตาราง ทุกคอลัมน์ ข้อจำกัด PK/FK, Nullable, Default | [📄 เปิดดู](docs/academic/07-Data-Dictionary.md) |
+| **+** | **Figma Blueprint & Tokens** | Design Tokens (Colors, Typography, 8pt Grid) และผังหน้าจอสำหรับขึ้น Figma | [📄 เปิดดู](docs/academic/08-Figma-Design-Tokens-And-Wireframes.md) |
 
 ---
 
@@ -150,8 +125,8 @@ flowchart TD
 
 ```text
 Content-Management-System/
-├── docs/                           <-- 📚 คลังเอกสารรายงานและพิมพ์เขียววิชาการ
-│   ├── academic/                   <-- 7 UML Diagrams + Figma Blueprint (ส่งอาจารย์)
+├── docs/                           <-- 📚 คลังเอกสารรายงานและไดอะแกรมวิชาการ
+│   ├── academic/                   <-- 7 UML Diagrams + Data Dictionary (ส่งอาจารย์)
 │   ├── year-4-capstone/            <-- พิมพ์เขียวและสถาปัตยกรรมสำหรับต่อยอดปี 4
 │   ├── master/                     <-- คู่มืออธิบายการทำงานของระบบ Master
 │   ├── learning/                   <-- บทเรียนลงมือเขียนโค้ดด้วยตัวเองทีละบรรทัด
@@ -178,7 +153,7 @@ Content-Management-System/
 ### 1. ความต้องการของระบบ (Prerequisites)
 - **Node.js**: v20.x ขึ้นไป
 - **MongoDB**: Community Server รันอยู่ที่ `mongodb://127.0.0.1:27017`
-- **Android Studio**: สำหรับเปิดรัน Android Emulator (API 34+)
+- **Android Studio**: สำหรับรัน Android Emulator (API 34+)
 
 ---
 
@@ -187,7 +162,7 @@ Content-Management-System/
 cd master/backend
 npm install
 
-# จำลองข้อมูล Mock Data เริ่มต้น (Users, Teams, Ideas, Contents, Tasks)
+# จำลองข้อมูลระบบเริ่มต้น (Users, Teams, Ideas, Contents, Tasks)
 npm run seed
 
 # เริ่มต้นเซิร์ฟเวอร์ (รันบน Port 5000)
@@ -213,13 +188,13 @@ npm run dev
 cd master/mobile-app
 npm install
 
-# Start Metro Bundler
+# เริ่มต้น Metro Bundler
 npm start
 
 # รันแอปพลิเคชันลงใน Android Emulator (เปิด Emulator ทิ้งไว้ก่อนรันคำสั่ง)
 npm run android
 ```
-*(หมายเหตุ: บน Android Emulator ตัวแอปเชื่อมต่อ Backend ที่เครื่อง Host ผ่าน `http://10.0.2.2:5000/api` อัตโนมัติ)*
+*(บน Android Emulator ตัวแอปพลิเคชันเชื่อมต่อ Backend ที่เครื่อง Host ผ่าน `http://10.0.2.2:5000/api` อัตโนมัติ)*
 
 ---
 
@@ -230,16 +205,24 @@ npm run android
 | บทบาท (Role) | อีเมล (Email) | รหัสผ่าน (Password) | ฟังก์ชันหลักที่เข้าถึงได้ |
 | :--- | :--- | :--- | :--- |
 | **Manager** | `manager@studio.com` | `123456` | Pipeline Dashboard, อนุมัติไอเดีย, ตรวจงาน, Legal Audit, Publish |
-| **Member** | `member@studio.com` | `123456` | โต๊ะทำงาน Creator, ส่งมอบ Submission URL, เสนอไอเดีย |
+| **Member** | `member@studio.com` | `123456` | โต๊ะทำงาน Creator, แนบ Submission URL ส่งงาน, เสนอไอเดีย |
 | **Admin** | `admin@studio.com` | `123456` | จัดการผู้ใช้งาน, จัดการทีม, กำหนดประเภทงาน, ดู Audit Logs |
 
 *(บน Mobile App มีปุ่ม **Fast Role Switcher** ในหน้า Login ให้สามารถคลิกเพื่อสลับบทบาททดสอบได้ทันที)*
 
 ---
 
-## 📜 บันทึกประวัติการพัฒนา (Development Log)
-ประวัติการพัฒนาทีละขั้นตอนพร้อมระบุวันและเวลาอย่างละเอียด บันทึกไว้ใน:
-👉 **[PROJECT-DEVELOPMENT-LOG.md](docs/PROJECT-DEVELOPMENT-LOG.md)**
+## 🚀 แผนงานต่อยอดปี 4 (Future Capstone Roadmap)
+
+เพื่อความเป็นระเบียบและไม่ปะปนกับระบบ Core ที่ส่งมอบในเทอมปัจจุบัน สถาปัตยกรรมและพิมพ์เขียวสำหรับปี 4 ได้ถูกแยกไว้ใน Branch เฉพาะ:
+
+👉 **Branch:** [`feature/year4-capstone`](https://github.com/Starlight142/Content-Management-System/tree/feature/year4-capstone)  
+👉 **เอกสารพิมพ์เขียว:** [`docs/year-4-capstone/`](docs/year-4-capstone/)
+- การเชื่อมต่อ **YouTube Data API v3 & TikTok Display API**
+- ระบบ **Recommendation Engine** (Rule-Based สู่ Machine Learning)
+- ระบบ **Automated Legal & AI Compliance** (Audio Fingerprinting, Face/PDPA Detection, OCR)
+- สถาปัตยกรรม **Direct-to-Cloud Upload** ด้วย Presigned URLs (AWS S3)
+- การย้ายสู่ **PostgreSQL & Prisma ORM** (`schema.prisma` ฉบับสมบูรณ์)
 
 ---
 
