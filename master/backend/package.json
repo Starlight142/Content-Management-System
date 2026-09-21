@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "draftly-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "RESTful API Server for Draftly Content Production Management System",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

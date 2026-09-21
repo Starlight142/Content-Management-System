@@ -60,9 +60,9 @@ export default function LoginScreen({ onLoginSuccess }) {
       >
         <View style={styles.header}>
           <View style={styles.logoBadge}>
-            <Text style={styles.logoText}>CMS</Text>
+            <Text style={styles.logoText}>D</Text>
           </View>
-          <Text style={styles.title}>Content Studio Mobile</Text>
+          <Text style={styles.title}>Draftly</Text>
           <Text style={styles.subtitle}>ระบบบริหารงานผลิต Content สำหรับทีมงาน</Text>
         </View>
 

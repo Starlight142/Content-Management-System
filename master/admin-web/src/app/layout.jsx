@@ -6,8 +6,8 @@ import Topbar from "@/components/Topbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "CMS Admin Dashboard",
-  description: "Admin panel for Content Production Management System",
+  title: "Draftly - Content Admin Dashboard",
+  description: "Admin panel for Draftly Content Production Management System",
 };
 
 export default function RootLayout({ children }) {

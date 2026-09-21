@@ -283,7 +283,7 @@ export default function ManagerDashboard({ user, onNavigate, onLogout }) {
                   </View>
                 </View>
                 <Text style={styles.headerTitle}>{user?.name || 'สมศรี (Content Lead)'}</Text>
-                <Text style={styles.headerSubtitle}>StudioFlow Production Management</Text>
+                <Text style={styles.headerSubtitle}>Draftly Production Management</Text>
               </View>
             </View>
 

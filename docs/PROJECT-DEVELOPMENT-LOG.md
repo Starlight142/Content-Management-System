@@ -240,5 +240,25 @@ D:\VsCode\Project\Content-Management-System\
 3. **การรักษาความปลอดภัยของโค้ด**:
    - เพิ่ม `.gitignore` ที่ Root Directory ครอบคลุม `node_modules`, `.env`, build caches, Gradle artifacts ป้องกันข้อมูลหลุดหรือไฟล์ขยะขึ้น Git Repository
 
+---
+
+## Phase 9: การปรับปรุงอัตลักษณ์และเปลี่ยนชื่อระบบสู่ "Draftly" (Application Rebranding)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 21 กันยายน 2026 (22:50 - 23:00 น.)
+
+เปลี่ยนชื่อแอปพลิเคชันและระบบเป็น **"Draftly"** (Content Production Management System) เพื่อสร้างอัตลักษณ์ที่จดจำง่าย ทันสมัย สไตล์สตูดิโอครีเอเตอร์ยุคใหม่:
+1. **ความหมายและแนวคิดของชื่อ**:
+   - สะท้อนกระบวนการทำงานตั้งแต่การ "Draft" ไอเดียเบื้องต้น, มอบหมายงานและส่งดราฟต์ตรวจ (Draft Submission), การสั่งแก้ไข (Revision Loops) จนถึง Final ชิ้นงานที่ผ่านการตรวจสอบสิทธิ์กฎหมายและเผยแพร่อย่างสมบูรณ์
+2. **การอัปเดตระบบ Mobile Application**:
+   - ปรับ `displayName` ใน `master/mobile-app/app.json` เป็น `"Draftly"`
+   - ปรับชื่อแอปพลิเคชันบนระบบปฏิบัติการ Android (`strings.xml`) เป็น `"Draftly"`
+   - ปรับแต่งหน้าเข้าสู่ระบบ (`LoginScreen.jsx`) ให้แสดงโลโก้สัญลักษณ์และชื่อแบรนด์ `"Draftly"`
+   - ปรับแต่ง Dashboard ของ Manager ให้ระบุ `"Draftly Production Management"`
+3. **การอัปเดต Admin Web Dashboard**:
+   - ปรับแต่ง Metadata ชื่อหน้าเว็บ (`layout.jsx`) เป็น `"Draftly - Content Admin Dashboard"`
+   - ปรับแถบเมนูด้านข้าง (`Sidebar.jsx`) ให้แสดงโลโก้และชื่อ `"Draftly Admin"`
+4. **การอัปเดตเอกสารโครงการ**:
+   - ปรับหัวข้อและคำอธิบายใน `README.md` เป็น `"Draftly — Content Production Management System"`
+
+
 
 

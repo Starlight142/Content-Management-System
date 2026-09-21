@@ -29,11 +29,11 @@ const Sidebar = () => {
     <aside className="w-64 bg-slate-900 text-white h-screen flex flex-col shrink-0 border-r border-slate-800 select-none">
       <div className="p-6 flex items-center gap-3 border-b border-slate-800/80">
         <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-white shadow-md">
-          CMS
+          D
         </div>
         <div>
-          <h1 className="text-base font-bold tracking-tight text-white leading-tight">Content Admin</h1>
-          <p className="text-[11px] text-slate-400">Production Studio</p>
+          <h1 className="text-base font-bold tracking-tight text-white leading-tight">Draftly Admin</h1>
+          <p className="text-[11px] text-slate-400">Content Studio</p>
         </div>
       </div>
       
