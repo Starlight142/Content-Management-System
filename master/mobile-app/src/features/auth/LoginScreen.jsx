@@ -156,18 +156,18 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 20,
-    backgroundColor: '#2563EB',
+    backgroundColor: '#0F172A',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
-    shadowColor: '#2563EB',
+    shadowColor: '#0F172A',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.15,
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 4,
   },
   logoText: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
@@ -205,8 +205,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   roleBtnActive: {
-    borderColor: '#2563EB',
-    backgroundColor: '#EFF6FF',
+    borderColor: '#0F172A',
+    backgroundColor: '#F1F5F9',
   },
   roleBtnText: {
     fontSize: 12,
@@ -214,7 +214,8 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   roleBtnTextActive: {
-    color: '#2563EB',
+    color: '#0F172A',
+    fontWeight: '700',
   },
   form: {
     backgroundColor: '#FFFFFF',
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   submitBtn: {
-    backgroundColor: '#2563EB',
+    backgroundColor: '#0F172A',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',

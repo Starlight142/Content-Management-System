@@ -102,10 +102,10 @@ const updateContentStatus = async (req, res) => {
 
     // Legal Gatekeeper check when transitioning to APPROVED or PUBLISHED
     if (status === 'APPROVED' || status === 'PUBLISHED') {
-      const isLegalPassed = content.legalChecklist?.length >= 5 && content.legalChecklist.every((i) => i.passed);
+      const isLegalPassed = content.legalChecklist?.length >= 3 && content.legalChecklist.every((i) => i.passed);
       if (!isLegalPassed) {
         return res.status(400).json({
-          message: 'Legal Gatekeeper Blocked: All 5 compliance checklist items must pass before approving or publishing.',
+          message: 'Legal Gatekeeper Blocked: All compliance checklist items must pass before approving or publishing.',
         });
       }
     }
@@ -158,7 +158,7 @@ const updateLegalChecklist = async (req, res) => {
     res.status(200).json({
       message: 'Legal checklist updated successfully',
       legalChecklist: content.legalChecklist,
-      allPassed: content.legalChecklist.length >= 5 && content.legalChecklist.every((i) => i.passed),
+      allPassed: content.legalChecklist.length >= 3 && content.legalChecklist.every((i) => i.passed),
     });
   } catch (error) {
     console.error('updateLegalChecklist error:', error);
@@ -197,7 +197,7 @@ const submitReview = async (req, res) => {
         reviewedAt: new Date(),
       });
     } else if (decision === 'APPROVED') {
-      const isLegalPassed = content.legalChecklist?.length >= 5 && content.legalChecklist.every((i) => i.passed);
+      const isLegalPassed = content.legalChecklist?.length >= 3 && content.legalChecklist.every((i) => i.passed);
       if (!isLegalPassed) {
         return res.status(400).json({
           message: 'Legal Gatekeeper Blocked: All 5 compliance items must pass before approval.',

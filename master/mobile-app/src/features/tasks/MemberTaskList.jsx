@@ -114,13 +114,13 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
   const getStatusColor = (status) => {
     switch (status) {
       case 'IN_PROGRESS':
-        return { bg: '#FEF3C7', text: '#B45309', label: 'กำลังทำ (IN PROGRESS)' };
+        return { bg: '#FEF3C7', text: '#D97706', label: 'กำลังทำ' };
       case 'TODO':
-        return { bg: '#F1F5F9', text: '#475569', label: 'รอดำเนินการ (TODO)' };
+        return { bg: '#F1F5F9', text: '#64748B', label: 'คิวงานใหม่' };
       case 'REVIEW':
-        return { bg: '#DBEAFE', text: '#1D4ED8', label: 'ส่งตรวจแล้ว (IN REVIEW)' };
+        return { bg: '#FEF3C7', text: '#D97706', label: 'รอตรวจ' };
       case 'DONE':
-        return { bg: '#DCFCE7', text: '#15803D', label: 'เสร็จสมบูรณ์ (DONE)' };
+        return { bg: '#DCFCE7', text: '#16A34A', label: 'เสร็จสิ้น' };
       default:
         return { bg: '#F1F5F9', text: '#64748B', label: status };
     }
@@ -128,23 +128,20 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Top Header Card */}
+      {/* Top Header Bar */}
       <View style={styles.header}>
-        <View style={styles.avatarRow}>
-          <View style={styles.avatarCircle}>
-            <Text style={styles.avatarText}>🎬</Text>
-          </View>
-          <View>
-            <View style={styles.roleTag}>
-              <Text style={styles.roleTagText}>CREATOR & EDITOR</Text>
-            </View>
-            <Text style={styles.userName}>{user?.name || 'จอห์น (Creator / Editor)'}</Text>
-            <Text style={styles.userSub}>โต๊ะทำงานฝ่ายผลิตสื่อ (Creator Workbench)</Text>
-          </View>
+        <View>
+          <Text style={styles.userName}>{user?.name || 'จอห์น'}</Text>
+          <Text style={styles.userSub}>ทีมงานฝ่ายผลิตสื่อ (Creator & Member)</Text>
         </View>
 
-        <TouchableOpacity style={styles.logoutBtn} onPress={onLogout}>
-          <Text style={styles.logoutText}>ออก</Text>
+        <TouchableOpacity
+          style={styles.avatarButton}
+          onPress={() => onNavigate && onNavigate('profile')}
+        >
+          <Text style={styles.avatarButtonText}>
+            {user?.name ? user.name.charAt(0).toUpperCase() : 'M'}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -273,57 +270,28 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
-  avatarRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  avatarCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#EEF2FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#C7D2FE',
-  },
-  avatarText: {
-    fontSize: 20,
-  },
-  roleTag: {
-    backgroundColor: '#0F172A',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    alignSelf: 'flex-start',
-    marginBottom: 2,
-  },
-  roleTagText: {
-    color: '#FFFFFF',
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-  },
   userName: {
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: 16,
+    fontWeight: '700',
     color: '#0F172A',
   },
   userSub: {
-    fontSize: 11,
-    color: '#64748B',
-  },
-  logoutBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    backgroundColor: '#F1F5F9',
-  },
-  logoutText: {
     fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  avatarButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#0F172A',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarButtonText: {
+    fontSize: 15,
     fontWeight: '700',
-    color: '#DC2626',
+    color: '#FFFFFF',
   },
   scroll: {
     padding: 16,

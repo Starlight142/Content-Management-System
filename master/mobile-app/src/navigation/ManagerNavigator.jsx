@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import ManagerDashboard from '../features/dashboard/ManagerDashboard';
 import IdeaListScreen from '../features/ideas/IdeaListScreen';
 import LegalChecklistScreen from '../features/legal/LegalChecklistScreen';
+import ProfileScreen from '../features/profile/ProfileScreen';
 
 export default function ManagerNavigator({ user, onLogout }) {
   const [currentScreen, setCurrentScreen] = useState('dashboard');
@@ -24,7 +25,6 @@ export default function ManagerNavigator({ user, onLogout }) {
           <ManagerDashboard
             user={user}
             onNavigate={handleNavigate}
-            onLogout={onLogout}
           />
         )}
         {currentScreen === 'ideas' && (
@@ -37,16 +37,22 @@ export default function ManagerNavigator({ user, onLogout }) {
             onAuditComplete={handleAuditComplete}
           />
         )}
+        {currentScreen === 'profile' && (
+          <ProfileScreen
+            user={user}
+            onLogout={onLogout}
+          />
+        )}
       </View>
 
-      {/* Persistent Bottom Tab Navigation Bar (Academic & Figma Standard) */}
+      {/* Persistent Bottom Tab Navigation Bar */}
       <View style={styles.bottomBar}>
         <TouchableOpacity
           style={[styles.tabItem, currentScreen === 'dashboard' && styles.tabActive]}
           onPress={() => setCurrentScreen('dashboard')}
         >
-          <Text style={[styles.tabIcon, currentScreen === 'dashboard' && styles.tabIconActive]}>📊</Text>
-          <Text style={[styles.tabLabel, currentScreen === 'dashboard' && styles.tabLabelActive]}>Pipeline</Text>
+          <Text style={[styles.tabIcon, currentScreen === 'dashboard' && styles.tabIconActive]}>📋</Text>
+          <Text style={[styles.tabLabel, currentScreen === 'dashboard' && styles.tabLabelActive]}>งานผลิต</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -54,7 +60,7 @@ export default function ManagerNavigator({ user, onLogout }) {
           onPress={() => setCurrentScreen('ideas')}
         >
           <Text style={[styles.tabIcon, currentScreen === 'ideas' && styles.tabIconActive]}>💡</Text>
-          <Text style={[styles.tabLabel, currentScreen === 'ideas' && styles.tabLabelActive]}>Idea Board</Text>
+          <Text style={[styles.tabLabel, currentScreen === 'ideas' && styles.tabLabelActive]}>ไอเดีย</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -65,15 +71,15 @@ export default function ManagerNavigator({ user, onLogout }) {
           }}
         >
           <Text style={[styles.tabIcon, currentScreen === 'legal' && styles.tabIconActive]}>⚖️</Text>
-          <Text style={[styles.tabLabel, currentScreen === 'legal' && styles.tabLabelActive]}>Legal Audit</Text>
+          <Text style={[styles.tabLabel, currentScreen === 'legal' && styles.tabLabelActive]}>ตรวจสอบ</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.tabItem}
-          onPress={onLogout}
+          style={[styles.tabItem, currentScreen === 'profile' && styles.tabActive]}
+          onPress={() => setCurrentScreen('profile')}
         >
-          <Text style={styles.tabIcon}>🚪</Text>
-          <Text style={styles.tabLabel}>ออกระบบ</Text>
+          <Text style={[styles.tabIcon, currentScreen === 'profile' && styles.tabIconActive]}>👤</Text>
+          <Text style={[styles.tabLabel, currentScreen === 'profile' && styles.tabLabelActive]}>โปรไฟล์</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -110,12 +116,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   tabActive: {
-    backgroundColor: '#EEF2FF',
+    backgroundColor: '#F1F5F9',
   },
   tabIcon: {
-    fontSize: 20,
+    fontSize: 18,
     marginBottom: 2,
-    opacity: 0.6,
+    opacity: 0.5,
   },
   tabIconActive: {
     opacity: 1,
@@ -123,10 +129,10 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 11,
     color: '#64748B',
-    fontWeight: '600',
+    fontWeight: '500',
   },
   tabLabelActive: {
-    color: '#4F46E5',
+    color: '#0F172A',
     fontWeight: '700',
   },
 });
