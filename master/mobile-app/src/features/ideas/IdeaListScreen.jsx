@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
   Modal,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ideaApi } from '../../services/api';
@@ -57,35 +58,44 @@ export default function IdeaListScreen({ onBack }) {
   ]);
 
   const [filter, setFilter] = useState('ALL');
+  const [refreshing, setRefreshing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [platform, setPlatform] = useState('YouTube');
   const [category, setCategory] = useState('Tech Review');
 
-  useEffect(() => {
-    const fetchIdeas = async () => {
-      try {
-        const res = await ideaApi.getAll();
-        if (Array.isArray(res) && res.length > 0) {
-          const mapped = res.map((i) => ({
-            id: i._id || String(Date.now()),
-            title: i.title,
-            desc: i.description || 'ไม่มีคำอธิบาย',
-            platform: i.platform || 'YouTube',
-            category: i.category || 'General',
-            proposer: i.proposedBy?.username || 'สมาชิกทีม',
-            status: i.status || 'DRAFT',
-            upvotes: Math.floor(Math.random() * 20) + 5,
-          }));
-          setIdeas(mapped);
-        }
-      } catch (e) {
-        console.warn('Using offline idea mock data');
+  const fetchIdeas = async () => {
+    try {
+      const res = await ideaApi.getAll();
+      const list = Array.isArray(res) ? res : (res?.ideas || []);
+      if (Array.isArray(list) && list.length > 0) {
+        const mapped = list.map((i) => ({
+          id: i._id || String(Date.now()),
+          title: i.title,
+          desc: i.description || 'ไม่มีคำอธิบาย',
+          platform: i.platform || 'YouTube',
+          category: i.category || 'General',
+          proposer: i.proposedBy?.username || 'สมาชิกทีม',
+          status: i.status || 'DRAFT',
+          upvotes: Math.floor(Math.random() * 20) + 5,
+        }));
+        setIdeas(mapped);
       }
-    };
+    } catch (e) {
+      console.warn('Using offline idea mock data');
+    }
+  };
+
+  useEffect(() => {
     fetchIdeas();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchIdeas();
+    setRefreshing(false);
+  };
 
   const handleCreateIdea = async () => {
     if (!title.trim()) {
@@ -119,7 +129,7 @@ export default function IdeaListScreen({ onBack }) {
       console.warn('Saved idea locally');
     }
 
-    Alert.alert('สำเร็จ! 🎉', 'ไอเดียของคุณถูกบันทึกเข้าสู่กระดาน Brainstorming แล้ว');
+    Alert.alert('สำเร็จ', 'ไอเดียของคุณถูกบันทึกเข้าสู่กระดาน Brainstorming แล้ว');
   };
 
   const handleUpvote = (id) => {
@@ -143,8 +153,8 @@ export default function IdeaListScreen({ onBack }) {
           <Text style={styles.backText}>← กลับ</Text>
         </TouchableOpacity>
         <View>
-          <Text style={styles.headerTitle}>💡 Idea Brainstorming</Text>
-          <Text style={styles.headerSubtitle}>คลังไอเดีย & คัดกรองเข้าสายพานผลิต</Text>
+          <Text style={styles.headerTitle}>คลังไอเดีย (Idea Brainstorming)</Text>
+          <Text style={styles.headerSubtitle}>ระดมไอเดียและคัดกรองเข้าสายพานผลิต</Text>
         </View>
         <TouchableOpacity
           style={styles.addBtn}
@@ -154,12 +164,15 @@ export default function IdeaListScreen({ onBack }) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Stage Overview Card for Diagram/Figma */}
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
+        {/* Stage Overview Card */}
         <View style={styles.stageCard}>
-          <Text style={styles.stageTitle}>📌 STAGE 1: CONTENT IDEATION</Text>
+          <Text style={styles.stageTitle}>ขั้นตอนที่ 1: เสนอและรวบรวมไอเดีย (Content Ideation)</Text>
           <Text style={styles.stageDesc}>
-            รวบรวมไอเดียจากทีมงาน ให้คะแนนความน่าสนใจ (Upvote) ก่อนที่ Manager จะกดอนุมัติเข้าสู่กระบวนการวางแผนและถ่ายทำจริง
+            รวบรวมไอเดียจากทีมงาน ให้คะแนนความน่าสนใจ (Upvote) ก่อนที่ Manager จะอนุมัติเข้าสู่กระบวนการวางแผนและถ่ายทำจริง
           </Text>
         </View>
 
@@ -167,8 +180,8 @@ export default function IdeaListScreen({ onBack }) {
         <View style={styles.filterRow}>
           {[
             { id: 'ALL', label: 'ทั้งหมด' },
-            { id: 'DRAFT', label: '⏳ รอพิจารณา (Draft)' },
-            { id: 'APPROVED', label: '✅ ผ่านเกณฑ์ (Approved)' },
+            { id: 'DRAFT', label: 'รอพิจารณา (Draft)' },
+            { id: 'APPROVED', label: 'ผ่านเกณฑ์ (Approved)' },
           ].map((tab) => (
             <TouchableOpacity
               key={tab.id}

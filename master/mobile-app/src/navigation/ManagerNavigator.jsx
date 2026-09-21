@@ -9,6 +9,7 @@ import TabIcon from '../components/TabIcon';
 export default function ManagerNavigator({ user, onLogout }) {
   const [currentScreen, setCurrentScreen] = useState('dashboard');
   const [targetContent, setTargetContent] = useState(null);
+  const [dashboardRefreshKey, setDashboardRefreshKey] = useState(0);
 
   const handleNavigate = (screen, content = null) => {
     if (content) setTargetContent(content);
@@ -16,6 +17,7 @@ export default function ManagerNavigator({ user, onLogout }) {
   };
 
   const handleAuditComplete = () => {
+    setDashboardRefreshKey((prev) => prev + 1);
     setCurrentScreen('dashboard');
   };
 
@@ -26,6 +28,7 @@ export default function ManagerNavigator({ user, onLogout }) {
           <ManagerDashboard
             user={user}
             onNavigate={handleNavigate}
+            refreshKey={dashboardRefreshKey}
           />
         )}
         {currentScreen === 'ideas' && (

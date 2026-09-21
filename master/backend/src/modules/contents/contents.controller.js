@@ -200,7 +200,7 @@ const submitReview = async (req, res) => {
       const isLegalPassed = content.legalChecklist?.length >= 3 && content.legalChecklist.every((i) => i.passed);
       if (!isLegalPassed) {
         return res.status(400).json({
-          message: 'Legal Gatekeeper Blocked: All 5 compliance items must pass before approval.',
+          message: 'Legal Gatekeeper Blocked: All compliance items must pass before approval.',
         });
       }
       content.status = 'APPROVED';

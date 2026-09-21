@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TextInput,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { taskApi } from '../../services/api';
@@ -46,31 +47,39 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
   ]);
 
   const [submissionInputs, setSubmissionInputs] = useState({});
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchTasks = async () => {
+    try {
+      const res = await taskApi.getAll();
+      const list = Array.isArray(res) ? res : (res?.tasks || []);
+      if (Array.isArray(list) && list.length > 0) {
+        const mapped = list.map((t) => ({
+          id: t._id || String(Date.now()),
+          title: t.title,
+          contentTitle: t.contentId?.title || 'ชิ้นงานคอนเทนต์หลัก',
+          platform: t.contentId?.platform || 'YouTube',
+          status: t.status || 'TODO',
+          dueDate: t.dueDate ? t.dueDate.split('T')[0] : 'เร็วๆ นี้',
+          type: t.taskType || 'Production',
+          submissionUrl: t.submissionUrl || '',
+        }));
+        setTasks(mapped);
+      }
+    } catch (err) {
+      console.warn('Using fallback tasks:', err.message);
+    }
+  };
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const res = await taskApi.getAll();
-        if (Array.isArray(res) && res.length > 0) {
-          const mapped = res.map((t) => ({
-            id: t._id || String(Date.now()),
-            title: t.title,
-            contentTitle: t.contentId?.title || 'ชิ้นงานคอนเทนต์หลัก',
-            platform: t.contentId?.platform || 'YouTube',
-            status: t.status || 'TODO',
-            dueDate: t.dueDate ? t.dueDate.split('T')[0] : 'เร็วๆ นี้',
-            type: t.taskType || 'Production',
-            submissionUrl: t.submissionUrl || '',
-          }));
-          setTasks(mapped);
-        }
-      } catch (err) {
-        console.warn('Using fallback tasks:', err.message);
-      }
-    };
-
     fetchTasks();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchTasks();
+    setRefreshing(false);
+  };
 
   const handleStartTask = async (taskId) => {
     setTasks(
@@ -106,7 +115,7 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
     }
 
     Alert.alert(
-      'ส่งงานสำเร็จ! 🚀',
+      'ส่งงานสำเร็จ',
       'ผลงานถูกส่งเข้าสู่คิว Review ของ Manager บน Dashboard เรียบร้อยแล้ว'
     );
   };
@@ -145,7 +154,10 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
         {/* Creator KPI Bar */}
         <View style={styles.kpiRow}>
           <View style={styles.kpiBox}>

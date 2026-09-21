@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { contentApi } from '../../services/api';
 
-export default function ManagerDashboard({ user, onNavigate }) {
+export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   const [pipeline, setPipeline] = useState([
     {
       _id: '1',
@@ -62,34 +62,64 @@ export default function ManagerDashboard({ user, onNavigate }) {
   const fetchLivePipeline = async () => {
     try {
       const res = await contentApi.getAll();
-      if (res && res.contents && res.contents.length > 0) {
-        const mapped = res.contents.map((c) => ({
+      const list = Array.isArray(res) ? res : (res?.contents || []);
+      if (Array.isArray(list) && list.length > 0) {
+        const mapped = list.map((c) => ({
           _id: c._id,
           title: c.title,
           description: c.description || 'ไม่มีรายละเอียดเนื้อหา',
           platform: c.platform || 'General',
           status: c.status || 'PLANNING',
           category: c.category || 'General',
-          creator: c.createdBy?.firstName || c.createdBy?.username || 'Creator',
+          creator: c.createdBy?.firstName ? `${c.createdBy.firstName} ${c.createdBy.lastName || ''}`.trim() : (c.createdBy?.username || 'Creator'),
           dueDate: c.dueDate ? c.dueDate.split('T')[0] : '2026-09-30',
           legalChecklist: c.legalChecklist || [],
+          reviewHistory: c.reviewHistory || [],
         }));
         setPipeline(mapped);
         setIsLiveConnected(true);
+      } else if (Array.isArray(list)) {
+        setPipeline([]);
+        setIsLiveConnected(true);
       }
     } catch (e) {
+      console.warn('Live API error, using local fallback:', e.message);
       setIsLiveConnected(false);
     }
   };
 
   useEffect(() => {
     fetchLivePipeline();
-  }, []);
+  }, [refreshKey]);
 
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchLivePipeline();
     setRefreshing(false);
+  };
+
+  const handleStartProduction = async (item) => {
+    setPipeline((prev) =>
+      prev.map((c) => (c._id === item._id ? { ...c, status: 'PRODUCTION' } : c))
+    );
+    try {
+      await contentApi.updateStatus(item._id, 'PRODUCTION');
+    } catch (e) {
+      console.warn('Updated locally:', e.message);
+    }
+    Alert.alert('เริ่มงานผลิต', `ส่ง "${item.title}" เข้าสู่ขั้นตอนกำลังผลิตแล้ว`);
+  };
+
+  const handleSendToReview = async (item) => {
+    setPipeline((prev) =>
+      prev.map((c) => (c._id === item._id ? { ...c, status: 'REVIEW' } : c))
+    );
+    try {
+      await contentApi.updateStatus(item._id, 'REVIEW');
+    } catch (e) {
+      console.warn('Updated locally:', e.message);
+    }
+    Alert.alert('ส่งตรวจสอบ', `ส่ง "${item.title}" เข้าสู่คิวการตรวจสอบของ Manager เรียบร้อย`);
   };
 
   const handlePublishNow = async (item) => {
@@ -107,7 +137,7 @@ export default function ManagerDashboard({ user, onNavigate }) {
             try {
               await contentApi.updateStatus(item._id, 'PUBLISHED');
             } catch (e) {
-              console.warn('Updated locally');
+              console.warn('Updated locally:', e.message);
             }
             Alert.alert('สำเร็จ', 'ชิ้นงานถูกเผยแพร่สู่สาธารณะเรียบร้อยแล้ว');
           },
@@ -154,7 +184,7 @@ export default function ManagerDashboard({ user, onNavigate }) {
                   prev.map((c) => (c._id === item._id ? { ...c, status: 'REVISION' } : c))
                 );
                 try {
-                  await contentApi.updateStatus(item._id, 'REVISION');
+                  await contentApi.submitReview(item._id, 'REVISION', 'ส่งกลับแก้ไขตามข้อคิดเห็น');
                 } catch (e) {
                   console.warn('Updated locally');
                 }
@@ -299,6 +329,24 @@ export default function ManagerDashboard({ user, onNavigate }) {
               </View>
 
               {/* Manager Actions based on status */}
+              {item.status === 'PLANNING' && (
+                <TouchableOpacity
+                  style={styles.btnStartProd}
+                  onPress={() => handleStartProduction(item)}
+                >
+                  <Text style={styles.btnStartProdText}>เริ่มขั้นตอนผลิต (Start Production)</Text>
+                </TouchableOpacity>
+              )}
+
+              {item.status === 'PRODUCTION' && (
+                <TouchableOpacity
+                  style={styles.btnReviewProd}
+                  onPress={() => handleSendToReview(item)}
+                >
+                  <Text style={styles.btnReviewProdText}>ส่งเข้าสู่การตรวจสอบ (Move to Review)</Text>
+                </TouchableOpacity>
+              )}
+
               {item.status === 'REVIEW' && (
                 <View style={styles.actionRow}>
                   <TouchableOpacity
@@ -326,11 +374,35 @@ export default function ManagerDashboard({ user, onNavigate }) {
                 </TouchableOpacity>
               )}
 
-              {item.status === 'REVISION' && (
-                <View style={styles.revisionNotice}>
-                  <Text style={styles.revisionNoticeText}>
-                    อยู่ในระหว่างผู้ผลิตนำกลับไปปรับปรุงแก้ไข
+              {item.status === 'PUBLISHED' && (
+                <View style={styles.publishedNotice}>
+                  <Text style={styles.publishedNoticeText}>
+                    เผยแพร่สู่สาธารณะเรียบร้อยแล้ว
                   </Text>
+                </View>
+              )}
+
+              {item.status === 'REVISION' && (
+                <View style={{ gap: 8 }}>
+                  <View style={styles.revisionNotice}>
+                    <Text style={styles.revisionNoticeText}>
+                      อยู่ในระหว่างผู้ผลิตนำกลับไปปรับปรุงแก้ไข
+                    </Text>
+                  </View>
+                  <View style={styles.actionRow}>
+                    <TouchableOpacity
+                      style={styles.btnSecondary}
+                      onPress={() => handleStartProduction(item)}
+                    >
+                      <Text style={styles.btnSecondaryText}>เริ่มผลิตซ้ำ</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.btnPrimary}
+                      onPress={() => handleSendToReview(item)}
+                    >
+                      <Text style={styles.btnPrimaryText}>ส่งตรวจอีกครั้ง</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               )}
             </View>
@@ -612,6 +684,40 @@ const styles = StyleSheet.create({
   revisionNoticeText: {
     fontSize: 12,
     color: '#DC2626',
+    textAlign: 'center',
+  },
+  btnStartProd: {
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: '#0F172A',
+    alignItems: 'center',
+  },
+  btnStartProdText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  btnReviewProd: {
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: '#D97706',
+    alignItems: 'center',
+  },
+  btnReviewProdText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  publishedNotice: {
+    backgroundColor: '#DCFCE7',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  publishedNoticeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#16A34A',
     textAlign: 'center',
   },
 });

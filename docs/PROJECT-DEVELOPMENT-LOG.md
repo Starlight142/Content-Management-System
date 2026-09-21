@@ -306,8 +306,28 @@ D:\VsCode\Project\Content-Management-System\
    - คงไว้เฉพาะสัญลักษณ์ที่สื่อความหมายโดยตรง เช่น สัญลักษณ์แนบลิงก์ (🔗) เพื่อให้ช่องแนบไฟล์ผลงานดูชัดเจนและเข้าใจง่าย
    - นำอีโมจิออกจากปุ่มสลับสิทธิ์ใน [`LoginScreen.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/auth/LoginScreen.jsx) และหน้าโปรไฟล์ ให้ภาพรวมดูเป็นระบบวิศวกรรมซอฟต์แวร์จริง
 
+---
 
+## Phase 12: การเชื่อมต่อระบบและการทำงานครบวงจร 100% (Full End-to-End System Integration)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 22 กันยายน 2026 (00:00 - 00:15 น.)
 
-
-
-
+เชื่อมต่อและทดสอบการทำงานของระบบกระบวนการผลิตคอนเทนต์ให้ทำงานได้ครบวงจร 100% ตั้งแต่ต้นจนจบ พร้อมรองรับการทำงานร่วมกันระหว่าง Mobile App และ Express/MongoDB Backend:
+1. **แก้ไข Mongoose Enum & Database Seeding**:
+   - ปรับ `taskType` ใน [`seed.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/database/seed.js) ให้ตรงกับ Enum ใน [`Task.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/database/models/Task.js) (`'Sound Design'`) ทำให้ Seed ฐานข้อมูลจำลอง User, Team, Idea, Content, Task และ Legal Article ได้สำเร็จ 100%
+2. **แก้ไขการ Parse ข้อมูล API Response แบบ Array**:
+   - แก้ไข [`ManagerDashboard.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/dashboard/ManagerDashboard.jsx), [`MemberTaskList.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/tasks/MemberTaskList.jsx) และ [`IdeaListScreen.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/ideas/IdeaListScreen.jsx) ให้รองรับข้อมูล Array ที่ส่งตรงจาก Controller ทำให้การแสดงผลเปลี่ยนจาก Mock Data เป็นข้อมูลสดจากฐานข้อมูล MongoDB ทันที
+3. **เติมเต็ม Action ควบคุมวงจรชีวิตชิ้นงาน (Full Lifecycle Transitions)**:
+   - เพิ่มปุ่ม Action ครบทุกสถานะงานใน [`ManagerDashboard.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/dashboard/ManagerDashboard.jsx):
+     - `PLANNING` ➔ ปุ่ม "เริ่มขั้นตอนผลิต" (Start Production)
+     - `PRODUCTION` ➔ ปุ่ม "ส่งเข้าสู่การตรวจสอบ" (Move to Review)
+     - `REVIEW` ➔ ปุ่ม "ส่งกลับแก้ไข" (Request Revision) & "ตรวจความถูกต้อง" (Inspect)
+     - `APPROVED` ➔ ปุ่ม "เผยแพร่ชิ้นงาน" (Publish Now)
+     - `PUBLISHED` ➔ แถบสถานะ "เผยแพร่สู่สาธารณะเรียบร้อยแล้ว"
+     - `REVISION` ➔ ปุ่ม "เริ่มผลิตซ้ำ" หรือ "ส่งตรวจอีกครั้ง"
+4. **การรีเฟรชข้อมูลอัตโนมัติ (Live Refresh & State Synchronization)**:
+   - เพิ่ม `dashboardRefreshKey` ใน [`ManagerNavigator.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/navigation/ManagerNavigator.jsx) เพื่อให้ Dashboard ดึงข้อมูลอัปเดตจากฐานข้อมูลทันทีเมื่อผู้จัดการตรวจสอบเสร็จสิ้น
+   - เพิ่มระบบ Pull-to-Refresh (`RefreshControl`) ในทุกหน้าจอเพื่อดึงข้อมูลสดได้ตลอดเวลา
+5. **การจัดการ Session และ Token Cleanup**:
+   - เพิ่ม `setAuthToken(null)` ใน [`App.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/App.jsx) เมื่อออกจากระบบ เพื่อเคลียร์ Token ป้องกันสิทธิ์ผู้ใช้ชนกันเมื่อสลับบัญชี
+6. **การทดสอบยืนยันผล 100% (End-to-End Automated Verification)**:
+   - เขียนและรันสคริปต์ทดสอบครบวงจร (Login ➔ Pipeline Fetch ➔ Production Start ➔ Deliverable Submit ➔ Legal Audit ➔ Approve ➔ Publish) ผ่านฉลากครบ 100% ทุกขั้นตอน

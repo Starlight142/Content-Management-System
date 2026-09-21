@@ -117,18 +117,43 @@ const seedDatabase = async () => {
 
     const content2 = await Content.create({
       title: 'สรุปข่าว AI ภายใน 1 นาที',
-      description: 'คลิปสั้นเจาะลึกฟีเจอร์ใหม่',
+      description: 'คลิปสั้นเจาะลึกฟีเจอร์ AI Tool ใหม่ล่าสุดประจำสัปดาห์',
       platform: 'TikTok',
       status: 'REVIEW',
       category: 'News',
       createdBy: memberUser1._id,
       ideaId: idea2._id,
       dueDate: new Date('2026-09-20'),
+      legalChecklist: [
+        { ruleTitle: 'ตรวจสอบลิขสิทธิ์เพลงและเสียงประกอบ', passed: true, note: 'ใช้เพลงจากคลังที่ได้รับอนุญาต' },
+        { ruleTitle: 'ตรวจสอบสิทธิ์ของภาพและฟุตเทจ', passed: true, note: 'ภาพถ่ายทำเอง' },
+        { ruleTitle: 'ตรวจสอบความเหมาะสมของเนื้อหา', passed: false, note: 'นาทีที่ 0:35 ให้ปรับความกระชับ' },
+      ],
       metrics: [
         { views: 88000, likes: 12400, comments: 950, shares: 3100, engagementRate: 18.7 }
       ]
     });
-    console.log('✅ Created 2 Contents');
+
+    const content3 = await Content.create({
+      title: 'Vlog เบื้องหลังกองถ่ายทำภาพยนตร์สั้น',
+      description: 'พาดูมุมกล้องและเทคนิคการจัดแสงหลังสตู',
+      platform: 'Instagram',
+      status: 'PRODUCTION',
+      category: 'Behind the Scenes',
+      createdBy: memberUser2._id,
+      dueDate: new Date('2026-09-28'),
+    });
+
+    const content4 = await Content.create({
+      title: 'Unbox ไมโครโฟนไร้สายสตูดิโอ 8K',
+      description: 'แกะกล่องและทดสอบเสียงพูดในที่เสียงดัง',
+      platform: 'YouTube',
+      status: 'PLANNING',
+      category: 'Unboxing',
+      createdBy: memberUser1._id,
+      dueDate: new Date('2026-10-02'),
+    });
+    console.log('✅ Created 4 Contents across all lifecycle stages');
 
     // 5. Seed Tasks
     await Task.create({
@@ -142,15 +167,25 @@ const seedDatabase = async () => {
     });
 
     await Task.create({
+      title: 'ถ่ายทำฟุตเทจ B-Roll เพิ่มเติม',
+      contentId: content3._id,
+      taskType: 'Filming',
+      assignedTo: memberUser1._id,
+      status: 'TODO',
+      dueDate: new Date('2026-09-27'),
+      submissionUrl: '',
+    });
+
+    await Task.create({
       title: 'บันทึกเสียง Voiceover',
       contentId: content1._id,
-      taskType: 'Filming',
+      taskType: 'Sound Design',
       assignedTo: memberUser1._id,
       status: 'DONE',
       dueDate: new Date('2026-09-16'),
       submissionUrl: 'https://drive.google.com/sample_voiceover.wav',
     });
-    console.log('✅ Created 2 Tasks');
+    console.log('✅ Created 3 Tasks');
 
     // 6. Seed Legal Articles
     await LegalArticle.create([

@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import ManagerNavigator from './src/navigation/ManagerNavigator';
 import MemberNavigator from './src/navigation/MemberNavigator';
+import { setAuthToken } from './src/services/api';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -13,6 +14,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    setAuthToken(null);
     setCurrentUser(null);
   };
 
