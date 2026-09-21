@@ -288,6 +288,25 @@ D:\VsCode\Project\Content-Management-System\
      3. ความเหมาะสมของเนื้อหาและข้อกำหนด (Content Guidelines)
    - อัปเดตเกณฑ์ตรวจสอบของ Backend API ใน [`contents.controller.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/contents/contents.controller.js) ให้สอดคล้องกัน (เกณฑ์ผ่าน $\ge 3$ ข้อ)
 
+---
+
+## Phase 11: เพิ่มระบบคอมเมนต์ตรวจงานของ Manager, ออกแบบ Custom Single-Tone Tab Icons, และลดไอคอนฟุ่มเฟือย
+> 🕒 **ช่วงเวลาดำเนินงาน:** 21 กันยายน 2026 (23:30 - 23:45 น.)
+
+ยกระดับความยืดหยุ่นในกระบวนการตรวจงานจริงของหัวหน้าทีม พร้อมทั้งขัดเกลาการออกแบบตามหลัก Visual Hierarchy:
+1. **ระบบคอมเมนต์ตรวจงานเจาะลึกเฉพาะแต่ละคลิป (Detailed Review Commenting)**:
+   - ใน [`LegalChecklistScreen.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/legal/LegalChecklistScreen.jsx): เพิ่มช่องกรอกความคิดเห็นเฉพาะเจาะจงในแต่ละข้อตรวจสอบ (เช่น ข้อเพลง, ข้อภาพ, ข้อเนื้อหา) เพื่อให้ Manager สามารถระบุ Timestamp หรือจุดที่ต้องปรับแก้ได้ตามลักษณะของแต่ละคลิป
+   - เพิ่มพื้นที่ข้อความสำหรับ "คำแนะนำภาพรวมถึงสมาชิกในทีม" (General Feedback Notes)
+   - เพิ่มปุ่ม "ส่งกลับแก้ไขพร้อมคอมเมนต์" (Request Revision) เพื่อบันทึกผลและส่งคอมเมนต์กลับไปให้สมาชิกปรับปรุงงานได้ทันที
+2. **ออกแบบ Custom TabIcon คุมสีโทนเดียวกัน 100% (Single-Tone Navigation)**:
+   - สร้างคอมโพเนนต์ [`TabIcon.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/components/TabIcon.jsx) โดยใช้ Pure React Native View Geometry แก้ปัญหา Emoji ที่แสดงผลหลากสีกลายเป็นไอคอนสีโมโนโครม
+   - ควบคุมสีไอคอนและตัวหนังสือให้เป็นโทน Slate เดียวกัน (`#0F172A` เมื่อ Active, `#94A3B8` เมื่อ Inactive) ในทั้ง [`ManagerNavigator.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/navigation/ManagerNavigator.jsx) และ [`MemberNavigator.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/navigation/MemberNavigator.jsx)
+3. **ลดการใช้ไอคอนและอีโมจิฟุ่มเฟือย (Minimalist & Professional Design)**:
+   - ปรับหน้า [`MemberTaskList.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/tasks/MemberTaskList.jsx) นำไอคอนบนปุ่มออก เหลือเฉพาะปุ่มข้อความที่ชัดเจน ("เริ่มทำงาน", "ส่งมอบงานให้ตรวจสอบ")
+   - คงไว้เฉพาะสัญลักษณ์ที่สื่อความหมายโดยตรง เช่น สัญลักษณ์แนบลิงก์ (🔗) เพื่อให้ช่องแนบไฟล์ผลงานดูชัดเจนและเข้าใจง่าย
+   - นำอีโมจิออกจากปุ่มสลับสิทธิ์ใน [`LoginScreen.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/auth/LoginScreen.jsx) และหน้าโปรไฟล์ ให้ภาพรวมดูเป็นระบบวิศวกรรมซอฟต์แวร์จริง
+
+
 
 
 

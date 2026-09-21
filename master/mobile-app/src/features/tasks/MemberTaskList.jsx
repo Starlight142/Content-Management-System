@@ -169,9 +169,9 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
         </View>
 
         {/* Section Header */}
-        <Text style={styles.sectionTitle}>📋 งานที่ได้รับมอบหมาย (Assigned Tasks)</Text>
+        <Text style={styles.sectionTitle}>งานที่ได้รับมอบหมาย</Text>
         <Text style={styles.sectionSubtitle}>
-          อัปเดตสถานะและแนบลิงก์ส่งงานให้ Manager ตรวจสอบ
+          อัปเดตสถานะและแนบลิงก์ส่งงานให้หัวหน้าทีมตรวจสอบ
         </Text>
 
         {/* Task Cards */}
@@ -194,14 +194,14 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
               {/* Task Title & Parent Content */}
               <Text style={styles.taskTitle}>{item.title}</Text>
               <View style={styles.parentContentBox}>
-                <Text style={styles.parentContentLabel}>ชิ้นงานหลัก:</Text>
+                <Text style={styles.parentContentLabel}>ชิ้นงาน:</Text>
                 <Text style={styles.parentContentTitle}>
-                  🎬 {item.contentTitle} ({item.platform})
+                  {item.contentTitle} ({item.platform})
                 </Text>
               </View>
 
               <View style={styles.dueRow}>
-                <Text style={styles.dueText}>⏰ กำหนดส่ง: {item.dueDate}</Text>
+                <Text style={styles.dueText}>กำหนดส่ง: {item.dueDate}</Text>
               </View>
 
               {/* Action Area based on status */}
@@ -210,27 +210,31 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
                   style={styles.startBtn}
                   onPress={() => handleStartTask(item.id)}
                 >
-                  <Text style={styles.startBtnText}>▶️ เริ่มทำงานนี้ (Start Task)</Text>
+                  <Text style={styles.startBtnText}>เริ่มทำงาน</Text>
                 </TouchableOpacity>
               )}
 
               {item.status === 'IN_PROGRESS' && (
                 <View style={styles.submitSection}>
-                  <Text style={styles.inputPrompt}>🔗 แนบลิงก์ผลงาน (Drive / Frame.io):</Text>
+                  <View style={styles.linkPromptRow}>
+                    <Text style={styles.linkIconText}>🔗</Text>
+                    <Text style={styles.inputPrompt}>แนบลิงก์ไฟล์งาน (Drive / Cloud URL):</Text>
+                  </View>
                   <TextInput
                     style={styles.urlInput}
-                    placeholder="https://drive.google.com/file/d/..."
+                    placeholder="วางลิงก์ไฟล์ผลงานที่นี่..."
                     value={submissionInputs[item.id] || ''}
                     onChangeText={(val) =>
                       setSubmissionInputs({ ...submissionInputs, [item.id]: val })
                     }
                     autoCapitalize="none"
+                    placeholderTextColor="#94A3B8"
                   />
                   <TouchableOpacity
                     style={styles.submitBtn}
                     onPress={() => handleSubmitTask(item.id)}
                   >
-                    <Text style={styles.submitBtnText}>🚀 ส่งตรวจงานให้ Manager (Submit)</Text>
+                    <Text style={styles.submitBtnText}>ส่งมอบงานให้ตรวจสอบ</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -238,7 +242,7 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
               {item.status === 'REVIEW' && (
                 <View style={styles.submittedBox}>
                   <Text style={styles.submittedText}>
-                    ✅ ส่งงานเรียบร้อย: อยู่ในคิวรอ Manager กดอนุมัติ
+                    ส่งงานเรียบร้อย • อยู่ในคิวรอการตรวจสอบ
                   </Text>
                   {item.submissionUrl ? (
                     <Text style={styles.submittedUrl} numberOfLines={1}>
@@ -402,63 +406,72 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   startBtn: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#0F172A',
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
   },
   startBtnText: {
     color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '600',
   },
   submitSection: {
     borderTopWidth: 1,
     borderTopColor: '#F1F5F9',
     paddingTop: 10,
   },
-  inputPrompt: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#334155',
+  linkPromptRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     marginBottom: 6,
+  },
+  linkIconText: {
+    fontSize: 13,
+  },
+  inputPrompt: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#334155',
   },
   urlInput: {
     backgroundColor: '#F8FAFC',
     borderWidth: 1,
     borderColor: '#CBD5E1',
     borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    fontSize: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    fontSize: 13,
+    color: '#0F172A',
     marginBottom: 8,
   },
   submitBtn: {
-    backgroundColor: '#10B981',
+    backgroundColor: '#0F172A',
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
   },
   submitBtnText: {
     color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '600',
   },
   submittedBox: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: '#F8FAFC',
     borderRadius: 8,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
+    borderColor: '#E2E8F0',
   },
   submittedText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#1D4ED8',
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#16A34A',
   },
   submittedUrl: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#64748B',
-    marginTop: 2,
+    marginTop: 3,
   },
 });

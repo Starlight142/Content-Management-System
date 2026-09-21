@@ -4,6 +4,7 @@ import ManagerDashboard from '../features/dashboard/ManagerDashboard';
 import IdeaListScreen from '../features/ideas/IdeaListScreen';
 import LegalChecklistScreen from '../features/legal/LegalChecklistScreen';
 import ProfileScreen from '../features/profile/ProfileScreen';
+import TabIcon from '../components/TabIcon';
 
 export default function ManagerNavigator({ user, onLogout }) {
   const [currentScreen, setCurrentScreen] = useState('dashboard');
@@ -51,7 +52,7 @@ export default function ManagerNavigator({ user, onLogout }) {
           style={[styles.tabItem, currentScreen === 'dashboard' && styles.tabActive]}
           onPress={() => setCurrentScreen('dashboard')}
         >
-          <Text style={[styles.tabIcon, currentScreen === 'dashboard' && styles.tabIconActive]}>📋</Text>
+          <TabIcon name="pipeline" active={currentScreen === 'dashboard'} />
           <Text style={[styles.tabLabel, currentScreen === 'dashboard' && styles.tabLabelActive]}>งานผลิต</Text>
         </TouchableOpacity>
 
@@ -59,7 +60,7 @@ export default function ManagerNavigator({ user, onLogout }) {
           style={[styles.tabItem, currentScreen === 'ideas' && styles.tabActive]}
           onPress={() => setCurrentScreen('ideas')}
         >
-          <Text style={[styles.tabIcon, currentScreen === 'ideas' && styles.tabIconActive]}>💡</Text>
+          <TabIcon name="ideas" active={currentScreen === 'ideas'} />
           <Text style={[styles.tabLabel, currentScreen === 'ideas' && styles.tabLabelActive]}>ไอเดีย</Text>
         </TouchableOpacity>
 
@@ -70,7 +71,7 @@ export default function ManagerNavigator({ user, onLogout }) {
             setCurrentScreen('legal');
           }}
         >
-          <Text style={[styles.tabIcon, currentScreen === 'legal' && styles.tabIconActive]}>⚖️</Text>
+          <TabIcon name="audit" active={currentScreen === 'legal'} />
           <Text style={[styles.tabLabel, currentScreen === 'legal' && styles.tabLabelActive]}>ตรวจสอบ</Text>
         </TouchableOpacity>
 
@@ -78,7 +79,7 @@ export default function ManagerNavigator({ user, onLogout }) {
           style={[styles.tabItem, currentScreen === 'profile' && styles.tabActive]}
           onPress={() => setCurrentScreen('profile')}
         >
-          <Text style={[styles.tabIcon, currentScreen === 'profile' && styles.tabIconActive]}>👤</Text>
+          <TabIcon name="profile" active={currentScreen === 'profile'} />
           <Text style={[styles.tabLabel, currentScreen === 'profile' && styles.tabLabelActive]}>โปรไฟล์</Text>
         </TouchableOpacity>
       </View>

@@ -78,7 +78,7 @@ export default function LoginScreen({ onLoginSuccess }) {
               }}
             >
               <Text style={[styles.roleBtnText, selectedRole === 'MANAGER' && styles.roleBtnTextActive]}>
-                👔 Manager (หัวหน้าทีม)
+                Manager (หัวหน้าทีม)
               </Text>
             </TouchableOpacity>
 
@@ -90,7 +90,7 @@ export default function LoginScreen({ onLoginSuccess }) {
               }}
             >
               <Text style={[styles.roleBtnText, selectedRole === 'MEMBER' && styles.roleBtnTextActive]}>
-                🎬 Member (ทีมผลิตงาน)
+                Member (ทีมงานสร้างสรรค์)
               </Text>
             </TouchableOpacity>
           </View>

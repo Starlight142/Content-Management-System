@@ -47,7 +47,7 @@ export default function ProfileScreen({ user, onLogout }) {
             <Text style={styles.userEmail}>{user?.email || 'user@studio.com'}</Text>
             <View style={styles.roleBadge}>
               <Text style={styles.roleText}>
-                {isManager ? '👔 ผู้จัดการฝ่ายผลิต (Manager)' : '🎬 ทีมงานสร้างสรรค์ (Member)'}
+                {isManager ? 'ผู้จัดการฝ่ายผลิต (Manager)' : 'ทีมงานสร้างสรรค์ (Member)'}
               </Text>
             </View>
           </View>

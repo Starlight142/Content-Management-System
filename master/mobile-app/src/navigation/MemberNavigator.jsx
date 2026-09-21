@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import MemberTaskList from '../features/tasks/MemberTaskList';
 import IdeaListScreen from '../features/ideas/IdeaListScreen';
 import ProfileScreen from '../features/profile/ProfileScreen';
+import TabIcon from '../components/TabIcon';
 
 export default function MemberNavigator({ user, onLogout }) {
   const [currentScreen, setCurrentScreen] = useState('tasks');
@@ -33,7 +34,7 @@ export default function MemberNavigator({ user, onLogout }) {
           style={[styles.tabItem, currentScreen === 'tasks' && styles.tabActive]}
           onPress={() => setCurrentScreen('tasks')}
         >
-          <Text style={[styles.tabIcon, currentScreen === 'tasks' && styles.tabIconActive]}>📋</Text>
+          <TabIcon name="tasks" active={currentScreen === 'tasks'} />
           <Text style={[styles.tabLabel, currentScreen === 'tasks' && styles.tabLabelActive]}>งานของฉัน</Text>
         </TouchableOpacity>
 
@@ -41,7 +42,7 @@ export default function MemberNavigator({ user, onLogout }) {
           style={[styles.tabItem, currentScreen === 'ideas' && styles.tabActive]}
           onPress={() => setCurrentScreen('ideas')}
         >
-          <Text style={[styles.tabIcon, currentScreen === 'ideas' && styles.tabIconActive]}>💡</Text>
+          <TabIcon name="ideas" active={currentScreen === 'ideas'} />
           <Text style={[styles.tabLabel, currentScreen === 'ideas' && styles.tabLabelActive]}>ไอเดีย</Text>
         </TouchableOpacity>
 
@@ -49,7 +50,7 @@ export default function MemberNavigator({ user, onLogout }) {
           style={[styles.tabItem, currentScreen === 'profile' && styles.tabActive]}
           onPress={() => setCurrentScreen('profile')}
         >
-          <Text style={[styles.tabIcon, currentScreen === 'profile' && styles.tabIconActive]}>👤</Text>
+          <TabIcon name="profile" active={currentScreen === 'profile'} />
           <Text style={[styles.tabLabel, currentScreen === 'profile' && styles.tabLabelActive]}>โปรไฟล์</Text>
         </TouchableOpacity>
       </View>
