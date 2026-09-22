@@ -25,7 +25,8 @@
 | **22 ก.ย. 2026 (14:05 - 14:30 น.)** | [Phase 13: การย้ายสู่เครื่องพัฒนาเครื่องใหม่ & การตั้งค่า Android Environment](#phase-13-การย้ายสู่เครื่องพัฒนาเครื่องใหม่--การตั้งค่า-android-environment-fresh-machine-migration) | สำเร็จ ✅ |
 | **22 ก.ย. 2026 (14:45 - 15:15 น.)** | [Phase 14: การยกระดับสถาปัตยกรรมสู่ Team-Based Workspace & การยกเลิก Mock Data สู่ MongoDB 100%](#phase-14-การยกระดับสถาปัตยกรรมสู่-team-based-workspace--การยกเลิก-mock-data-สู่-mongodb-100) | สำเร็จ ✅ |
 | **23 ก.ย. 2026 (02:00 - 02:25 น.)** | [Phase 15: ระบบสลับโหมด Dark Mode และ Light Mode (Dynamic Theming System)](#phase-15-ระบบสลับโหมด-dark-mode-และ-light-mode-dynamic-theming-system) | สำเร็จ ✅ |
-| **23 ก.ย. 2026 (02:25 น.)** | [แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)](#แผนที่ไฟล์และดัชนีเอกสารทั้งหมด) | ปัจจุบัน 📍 |
+| **23 ก.ย. 2026 (02:30 - 02:40 น.)** | [Phase 16: การจัดระยะความสวยงามและปรับปรุงสัดส่วนการจัดวาง UI (UI Ergonomics & Layout Spacing Optimization)](#phase-16-การจัดระยะความสวยงามและปรับปรุงสัดส่วนการจัดวาง-ui-ui-ergonomics--layout-spacing-optimization) | สำเร็จ ✅ |
+| **23 ก.ย. 2026 (02:40 น.)** | [แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)](#แผนที่ไฟล์และดัชนีเอกสารทั้งหมด) | ปัจจุบัน 📍 |
 
 ---
 
@@ -437,3 +438,29 @@ D:\VsCode\Project\Content-Management-System\
 5. **การทดสอบความถูกต้องและคุณภาพโค้ด (Quality Assurance)**:
    - ผ่านการตรวจสอบความถูกต้องด้วย ESLint (`npm run lint`): **0 errors**
    - ปรับแต่ง Jest Config (`jest.config.js`) ให้รองรับการแปลง JSX: **100% Pass** (`App.test.js`)
+
+---
+
+### Phase 16: การจัดระยะความสวยงามและปรับปรุงสัดส่วนการจัดวาง UI (UI Ergonomics & Layout Spacing Optimization)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 23 กันยายน 2026 (02:30 - 02:40 น.)
+
+ปรับปรุงการเว้นระยะขอบ (Spacing, Margins & Padding) และการจัดวางโครงสร้าง Flexbox ขององค์ประกอบการ์ดบน Mobile Application เพื่อแก้ไขปัญหาข้อความและปุ่มกดเบียดชิดกันเกินไปตามข้อเสนอแนะของผู้ใช้งาน:
+
+1. **การวินิจฉัยและแก้ไขข้อผิดพลาดของสไตล์ชีต (Root Cause Diagnosis)**:
+   - ตรวจพบว่าคลาสใน JSX ของ [`ManagerDashboard.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/dashboard/ManagerDashboard.jsx) อ้างอิงชื่อ `styles.metaRow` แต่ใน StyleSheet ถูกตั้งชื่อไว้เป็น `cardMetaRow`
+   - ส่งผลให้คอมโพเนนต์ขาดการกำหนดสไตล์ (`undefined`), ข้อความชื่อผู้รับผิดชอบ (`👤 Creator`) และกำหนดส่ง (`📅 Due Date`) เรียงตัวซ้อนกันในแนวตั้ง และไม่มีระยะเว้นด้านล่าง (`marginBottom: 0`) ทำให้ปุ่มกด Action ชิดติดกับข้อความวันที่โดยตรง
+2. **การจัดวางโครงสร้าง Side-by-Side Flex Layout**:
+   - ปรับ `metaRow` ให้ใช้ `flexDirection: 'row'`, `justifyContent: 'space-between'`, `alignItems: 'center'`, `flexWrap: 'wrap'` และ `gap: 8`
+   - แบ่งข้อมูลผู้รับผิดชอบไว้ทางซ้าย และกำหนดส่งไว้ทางขวาอย่างสมดุลเป็นระเบียบ
+   - เพิ่มเส้นคั่นด้านบนพร้อมระยะเว้น `paddingTop: 12` และ `marginTop: 4`
+3. **การเพิ่มระยะเว้นเพื่อความโปร่งตา (Breathing Room & Ergonomics)**:
+   - เพิ่มระยะห่างด้านล่าง `marginBottom: 16` ก่อนถึงปุ่ม Action เพื่อไม่ให้ปุ่มเบียดหรือติดกับข้อความข้อมูล
+   - เพิ่มระยะห่างระหว่างปุ่ม Action คู่ใน `actionRow` เป็น `gap: 12`
+   - ขยายความสูงปุ่มด้วย `paddingVertical: 12` และ `minHeight: 44` สอดคล้องกับมาตรฐาน Minimum Touch Target Size (44x44 dp) ของ Apple HIG และ Android Material Design
+   - ปรับความโค้งมนของปุ่มเป็น `borderRadius: 10` ให้สอดรับกับมุมโค้งมนของการ์ด
+4. **การปรับปรุงความสม่ำเสมอใน MemberTaskList**:
+   - ปรับปรุง [`MemberTaskList.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/tasks/MemberTaskList.jsx) ให้มี `dueRow` เว้นระยะ `marginBottom: 14` ก่อนถึงปุ่มกดเริ่มงานและกล่องส่งงาน
+   - ขยายปุ่มเริ่มงาน (`startBtn`) และปุ่มส่งงาน (`submitBtn`) ให้มีความสูงสัมผัส `minHeight: 44` และ `paddingVertical: 12` เท่าเทียมกันทั้งระบบ
+5. **การทดสอบความถูกต้อง (Testing & Verification)**:
+   - ตรวจสอบความถูกต้องของสไตล์และโครงสร้าง JSX: ESLint ผ่านฉลุย **0 errors**
+   - รันชุดทดสอบ Jest อัตโนมัติ: **100% Pass**
