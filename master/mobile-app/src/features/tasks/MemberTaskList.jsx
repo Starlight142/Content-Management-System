@@ -419,7 +419,8 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   dueRow: {
-    marginBottom: 10,
+    marginTop: 4,
+    marginBottom: 14,
   },
   dueText: {
     fontSize: 11,
@@ -428,19 +429,22 @@ const styles = StyleSheet.create({
   },
   startBtn: {
     backgroundColor: '#0F172A',
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 12,
+    borderRadius: 10,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
   },
   startBtnText: {
     color: '#FFFFFF',
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   submitSection: {
     borderTopWidth: 1,
     borderTopColor: '#F1F5F9',
-    paddingTop: 10,
+    paddingTop: 12,
+    marginTop: 4,
   },
   linkPromptRow: {
     flexDirection: 'row',

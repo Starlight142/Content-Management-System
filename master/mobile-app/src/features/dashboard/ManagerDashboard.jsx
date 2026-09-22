@@ -310,8 +310,12 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
 
                 {/* Meta details */}
                 <View style={[styles.metaRow, { borderTopColor: colors.border }]}>
-                  <Text style={[styles.metaText, { color: colors.textSecondary }]}>👤 {item.creator}</Text>
-                  <Text style={[styles.metaText, { color: colors.textSecondary }]}>📅 กำหนดส่ง: {item.dueDate}</Text>
+                  <View style={styles.metaItem}>
+                    <Text style={[styles.metaText, { color: colors.textSecondary }]}>👤 {item.creator}</Text>
+                  </View>
+                  <View style={styles.metaItem}>
+                    <Text style={[styles.metaText, { color: colors.textSecondary }]}>📅 กำหนดส่ง: {item.dueDate}</Text>
+                  </View>
                 </View>
 
                 {/* Contextual Action Buttons based on Status */}
@@ -606,19 +610,28 @@ const styles = StyleSheet.create({
   cardDesc: {
     fontSize: 13,
     color: '#64748B',
-    lineHeight: 18,
-    marginBottom: 12,
+    lineHeight: 19,
+    marginBottom: 10,
   },
-  cardMetaRow: {
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+    marginTop: 4,
+    marginBottom: 16,
+  },
+  metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#F8FAFC',
-    marginBottom: 12,
   },
   metaText: {
     fontSize: 12,
+    fontWeight: '500',
     color: '#64748B',
   },
   metaDot: {
@@ -628,83 +641,105 @@ const styles = StyleSheet.create({
   },
   actionRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 12,
+    marginTop: 2,
   },
   btnSecondary: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#FCA5A5',
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
   },
   btnSecondaryText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#DC2626',
   },
   btnPrimary: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 10,
     backgroundColor: '#0F172A',
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
   },
   btnPrimaryText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#FFFFFF',
   },
   btnPublish: {
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
     backgroundColor: '#16A34A',
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
+    marginTop: 2,
   },
   btnPublishText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#FFFFFF',
   },
   revisionNotice: {
     backgroundColor: '#FEF2F2',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    marginBottom: 8,
   },
   revisionNoticeText: {
     fontSize: 12,
     color: '#DC2626',
     textAlign: 'center',
+    fontWeight: '500',
   },
   btnStartProd: {
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
     backgroundColor: '#0F172A',
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
+    marginTop: 2,
   },
   btnStartProdText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#FFFFFF',
   },
   btnReviewProd: {
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
     backgroundColor: '#D97706',
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
+    marginTop: 2,
   },
   btnReviewProdText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#FFFFFF',
   },
   publishedNotice: {
     backgroundColor: '#DCFCE7',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    marginTop: 2,
   },
   publishedNoticeText: {
     fontSize: 12,
