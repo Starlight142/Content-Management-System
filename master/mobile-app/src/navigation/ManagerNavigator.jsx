@@ -6,11 +6,13 @@ import IdeaListScreen from '../features/ideas/IdeaListScreen';
 import LegalChecklistScreen from '../features/legal/LegalChecklistScreen';
 import ProfileScreen from '../features/profile/ProfileScreen';
 import TabIcon from '../components/TabIcon';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function ManagerNavigator({ user, onLogout }) {
   const [currentScreen, setCurrentScreen] = useState('dashboard');
   const [targetContent, setTargetContent] = useState(null);
   const [dashboardRefreshKey, setDashboardRefreshKey] = useState(0);
+  const { colors } = useTheme();
 
   const handleNavigate = (screen, content = null) => {
     if (content) setTargetContent(content);
@@ -23,7 +25,7 @@ export default function ManagerNavigator({ user, onLogout }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
         {currentScreen === 'dashboard' && (
           <ManagerDashboard
@@ -57,37 +59,69 @@ export default function ManagerNavigator({ user, onLogout }) {
       </View>
 
       {/* Persistent Bottom Tab Navigation Bar for Manager */}
-      <View style={styles.bottomBar}>
+      <View style={[styles.bottomBar, { backgroundColor: colors.tabBg, borderTopColor: colors.tabBorder }]}>
         <TouchableOpacity
-          style={[styles.tabItem, currentScreen === 'dashboard' && styles.tabActive]}
+          style={[styles.tabItem, currentScreen === 'dashboard' && { backgroundColor: colors.tabActive }]}
           onPress={() => setCurrentScreen('dashboard')}
         >
           <TabIcon name="pipeline" active={currentScreen === 'dashboard'} />
-          <Text style={[styles.tabLabel, currentScreen === 'dashboard' && styles.tabLabelActive]}>งานผลิต</Text>
+          <Text
+            style={[
+              styles.tabLabel,
+              { color: currentScreen === 'dashboard' ? colors.tabIconActive : colors.tabIconInactive },
+              currentScreen === 'dashboard' && styles.tabLabelActive,
+            ]}
+          >
+            งานผลิต
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.tabItem, currentScreen === 'team' && styles.tabActive]}
+          style={[styles.tabItem, currentScreen === 'team' && { backgroundColor: colors.tabActive }]}
           onPress={() => setCurrentScreen('team')}
         >
           <TabIcon name="team" active={currentScreen === 'team'} />
-          <Text style={[styles.tabLabel, currentScreen === 'team' && styles.tabLabelActive]}>ภาพรวมทีม</Text>
+          <Text
+            style={[
+              styles.tabLabel,
+              { color: currentScreen === 'team' ? colors.tabIconActive : colors.tabIconInactive },
+              currentScreen === 'team' && styles.tabLabelActive,
+            ]}
+          >
+            ภาพรวมทีม
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.tabItem, currentScreen === 'ideas' && styles.tabActive]}
+          style={[styles.tabItem, currentScreen === 'ideas' && { backgroundColor: colors.tabActive }]}
           onPress={() => setCurrentScreen('ideas')}
         >
           <TabIcon name="ideas" active={currentScreen === 'ideas'} />
-          <Text style={[styles.tabLabel, currentScreen === 'ideas' && styles.tabLabelActive]}>ไอเดีย</Text>
+          <Text
+            style={[
+              styles.tabLabel,
+              { color: currentScreen === 'ideas' ? colors.tabIconActive : colors.tabIconInactive },
+              currentScreen === 'ideas' && styles.tabLabelActive,
+            ]}
+          >
+            ไอเดีย
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.tabItem, currentScreen === 'profile' && styles.tabActive]}
+          style={[styles.tabItem, currentScreen === 'profile' && { backgroundColor: colors.tabActive }]}
           onPress={() => setCurrentScreen('profile')}
         >
           <TabIcon name="profile" active={currentScreen === 'profile'} />
-          <Text style={[styles.tabLabel, currentScreen === 'profile' && styles.tabLabelActive]}>โปรไฟล์</Text>
+          <Text
+            style={[
+              styles.tabLabel,
+              { color: currentScreen === 'profile' ? colors.tabIconActive : colors.tabIconInactive },
+              currentScreen === 'profile' && styles.tabLabelActive,
+            ]}
+          >
+            โปรไฟล์
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

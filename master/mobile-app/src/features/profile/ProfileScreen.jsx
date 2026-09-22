@@ -6,10 +6,14 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '../../theme/ThemeContext';
 
 export default function ProfileScreen({ user, onLogout }) {
+  const { isDark, toggleTheme, colors } = useTheme();
+
   const handleConfirmLogout = () => {
     Alert.alert(
       'ออกจากระบบ',
@@ -28,46 +32,65 @@ export default function ProfileScreen({ user, onLogout }) {
   const isManager = user?.role === 'MANAGER';
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Top Bar Header */}
-      <View style={styles.topBar}>
-        <Text style={styles.topBarTitle}>ข้อมูลส่วนตัวและตั้งค่า</Text>
+      <View style={[styles.topBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        <Text style={[styles.topBarTitle, { color: colors.textPrimary }]}>ข้อมูลส่วนตัวและตั้งค่า</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* User Card */}
-        <View style={styles.userCard}>
-          <View style={styles.avatar}>
+        <View style={[styles.userCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <View style={[styles.avatar, { backgroundColor: isDark ? colors.surfaceSubtle : '#0F172A' }]}>
             <Text style={styles.avatarText}>
               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </Text>
           </View>
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{user?.name || 'ผู้ใช้งาน Draftly'}</Text>
-            <Text style={styles.userEmail}>{user?.email || 'user@studio.com'}</Text>
-            <View style={styles.roleBadge}>
-              <Text style={styles.roleText}>
+            <Text style={[styles.userName, { color: colors.textPrimary }]}>{user?.name || 'ผู้ใช้งาน Draftly'}</Text>
+            <Text style={[styles.userEmail, { color: colors.textSecondary }]}>{user?.email || 'user@studio.com'}</Text>
+            <View style={[styles.roleBadge, { backgroundColor: colors.surfaceSubtle }]}>
+              <Text style={[styles.roleText, { color: colors.textPrimary }]}>
                 {isManager ? 'ผู้จัดการฝ่ายผลิต (Manager)' : 'ทีมงานสร้างสรรค์ (Member)'}
               </Text>
             </View>
           </View>
         </View>
 
+        {/* Section: Appearance / Theme Settings */}
+        <Text style={[styles.sectionHeader, { color: colors.textSecondary }]}>การแสดงผลและธีม</Text>
+        <View style={[styles.menuGroup, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+          <View style={styles.menuItem}>
+            <View>
+              <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>โหมดมืด (Dark Mode)</Text>
+              <Text style={[styles.menuSubLabel, { color: colors.textSecondary }]}>
+                {isDark ? 'เปิดใช้งานอยู่' : 'ปิดใช้งานอยู่'}
+              </Text>
+            </View>
+            <Switch
+              value={isDark}
+              onValueChange={toggleTheme}
+              trackColor={{ false: '#CBD5E1', true: colors.primary }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
+        </View>
+
         {/* Section: Profile Info */}
-        <Text style={styles.sectionHeader}>ข้อมูลบัญชี</Text>
-        <View style={styles.menuGroup}>
+        <Text style={[styles.sectionHeader, { color: colors.textSecondary }]}>ข้อมูลบัญชี</Text>
+        <View style={[styles.menuGroup, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
           <View style={styles.menuItem}>
-            <Text style={styles.menuLabel}>รหัสผู้ใช้งาน</Text>
-            <Text style={styles.menuValue}>#{user?.id || '2026-01'}</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>รหัสผู้ใช้งาน</Text>
+            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>#{user?.id || '2026-01'}</Text>
           </View>
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
           <View style={styles.menuItem}>
-            <Text style={styles.menuLabel}>สังกัดทีม</Text>
-            <Text style={styles.menuValue}>Creative Production Team A</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>สังกัดทีม</Text>
+            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>Content Team A</Text>
           </View>
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
           <View style={styles.menuItem}>
-            <Text style={styles.menuLabel}>สถานะบัญชี</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>สถานะบัญชี</Text>
             <View style={styles.statusRow}>
               <View style={styles.activeDot} />
               <Text style={styles.statusText}>กำลังใช้งาน (Active)</Text>
@@ -76,34 +99,40 @@ export default function ProfileScreen({ user, onLogout }) {
         </View>
 
         {/* Section: Application Info */}
-        <Text style={styles.sectionHeader}>เกี่ยวกับระบบ</Text>
-        <View style={styles.menuGroup}>
+        <Text style={[styles.sectionHeader, { color: colors.textSecondary }]}>เกี่ยวกับระบบ</Text>
+        <View style={[styles.menuGroup, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
           <View style={styles.menuItem}>
-            <Text style={styles.menuLabel}>ชื่อระบบ</Text>
-            <Text style={styles.menuValue}>Draftly CMS</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>ชื่อระบบ</Text>
+            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>Draftly CMS</Text>
           </View>
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
           <View style={styles.menuItem}>
-            <Text style={styles.menuLabel}>เวอร์ชันแอปพลิเคชัน</Text>
-            <Text style={styles.menuValue}>v1.0.0 (Production Core)</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>เวอร์ชันแอปพลิเคชัน</Text>
+            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>v1.0.0 (Production Core)</Text>
           </View>
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
           <View style={styles.menuItem}>
-            <Text style={styles.menuLabel}>การเชื่อมต่อฐานข้อมูล</Text>
-            <Text style={styles.menuValue}>MongoDB / Express API</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>การเชื่อมต่อฐานข้อมูล</Text>
+            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>MongoDB / Express API</Text>
           </View>
         </View>
 
         {/* Section: Logout Action */}
         <View style={styles.logoutContainer}>
           <TouchableOpacity
-            style={styles.logoutButton}
+            style={[
+              styles.logoutButton,
+              {
+                backgroundColor: colors.cardBg,
+                borderColor: isDark ? '#7F1D1D' : '#FCA5A5',
+              },
+            ]}
             onPress={handleConfirmLogout}
             activeOpacity={0.8}
           >
-            <Text style={styles.logoutButtonText}>ออกจากระบบ</Text>
+            <Text style={[styles.logoutButtonText, { color: isDark ? '#F87171' : '#DC2626' }]}>ออกจากระบบ</Text>
           </TouchableOpacity>
-          <Text style={styles.logoutHint}>
+          <Text style={[styles.logoutHint, { color: colors.textMuted }]}>
             เมื่อออกจากระบบ คุณจะต้องเข้าสู่ระบบใหม่ด้วยอีเมลและรหัสผ่าน
           </Text>
         </View>
@@ -210,6 +239,11 @@ const styles = StyleSheet.create({
   menuLabel: {
     fontSize: 14,
     color: '#334155',
+  },
+  menuSubLabel: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
   },
   menuValue: {
     fontSize: 14,

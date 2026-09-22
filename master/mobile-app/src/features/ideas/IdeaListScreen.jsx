@@ -13,8 +13,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ideaApi } from '../../services/api';
+import { useTheme } from '../../theme/ThemeContext';
 
 export default function IdeaListScreen({ onBack }) {
+  const { isDark, colors } = useTheme();
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL');
@@ -109,18 +111,18 @@ export default function IdeaListScreen({ onBack }) {
   });
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* App Top Bar */}
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
-          <Text style={styles.backText}>← กลับ</Text>
+      <View style={[styles.topBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        <TouchableOpacity onPress={onBack} style={[styles.backBtn, { backgroundColor: colors.surfaceSubtle }]}>
+          <Text style={[styles.backText, { color: colors.textPrimary }]}>← กลับ</Text>
         </TouchableOpacity>
         <View>
-          <Text style={styles.headerTitle}>คลังไอเดีย (Idea Brainstorming)</Text>
-          <Text style={styles.headerSubtitle}>ระดมไอเดียและคัดกรองเข้าสายพานผลิต</Text>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>คลังไอเดีย (Idea Brainstorming)</Text>
+          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>ระดมไอเดียและคัดกรองเข้าสายพานผลิต</Text>
         </View>
         <TouchableOpacity
-          style={styles.addBtn}
+          style={[styles.addBtn, { backgroundColor: colors.primary }]}
           onPress={() => setIsModalOpen(true)}
         >
           <Text style={styles.addBtnText}>+ เสนอ</Text>
@@ -140,13 +142,18 @@ export default function IdeaListScreen({ onBack }) {
           ].map((tab) => (
             <TouchableOpacity
               key={tab.id}
-              style={[styles.filterPill, filter === tab.id && styles.filterPillActive]}
+              style={[
+                styles.filterPill,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                filter === tab.id && { backgroundColor: colors.primary, borderColor: colors.primary },
+              ]}
               onPress={() => setFilter(tab.id)}
             >
               <Text
                 style={[
                   styles.filterPillText,
-                  filter === tab.id && styles.filterPillTextActive,
+                  { color: colors.textSecondary },
+                  filter === tab.id && { color: '#FFFFFF' },
                 ]}
               >
                 {tab.label}
@@ -158,43 +165,93 @@ export default function IdeaListScreen({ onBack }) {
         {/* Ideas Cards */}
         {loading ? (
           <View style={{ padding: 32, alignItems: 'center' }}>
-            <ActivityIndicator size="small" color="#0F172A" />
-            <Text style={{ marginTop: 8, fontSize: 13, color: '#64748B' }}>
+            <ActivityIndicator size="small" color={colors.textPrimary} />
+            <Text style={{ marginTop: 8, fontSize: 13, color: colors.textSecondary }}>
               กำลังโหลดไอเดียคอนเทนต์จาก MongoDB...
             </Text>
           </View>
         ) : filteredIdeas.length === 0 ? (
-          <View style={{ padding: 32, alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, marginTop: 12, borderWidth: 1, borderColor: '#E2E8F0' }}>
-            <Text style={{ fontSize: 14, fontWeight: '700', color: '#0F172A', textAlign: 'center' }}>
+          <View
+            style={{
+              padding: 32,
+              alignItems: 'center',
+              backgroundColor: colors.surface,
+              borderRadius: 12,
+              marginTop: 12,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+          >
+            <Text style={{ fontSize: 14, fontWeight: '700', color: colors.textPrimary, textAlign: 'center' }}>
               ยังไม่มีไอเดียในหมวดหมู่นี้
             </Text>
-            <Text style={{ fontSize: 12, color: '#64748B', marginTop: 4, textAlign: 'center' }}>
+            <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 4, textAlign: 'center' }}>
               กดปุ่ม "+ เสนอไอเดียใหม่" ด้านบนเพื่อเริ่มเสนอไอเดียเข้าสู่คลังของทีม
             </Text>
           </View>
         ) : (
           filteredIdeas.map((item) => (
-            <View key={item.id} style={styles.ideaCard}>
+            <View
+              key={item.id}
+              style={[
+                styles.ideaCard,
+                { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
+              ]}
+            >
               <View style={styles.cardHeaderRow}>
                 <View style={styles.badgeRow}>
-                  <View style={styles.platformPill}>
-                    <Text style={styles.platformPillText}>{item.platform}</Text>
+                  <View
+                    style={[
+                      styles.platformPill,
+                      { backgroundColor: isDark ? '#312E81' : '#EEF2FF' },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.platformPillText,
+                        { color: isDark ? '#C7D2FE' : '#4338CA' },
+                      ]}
+                    >
+                      {item.platform}
+                    </Text>
                   </View>
-                  <View style={styles.categoryPill}>
-                    <Text style={styles.categoryPillText}>{item.category}</Text>
+                  <View
+                    style={[
+                      styles.categoryPill,
+                      { backgroundColor: colors.surfaceSubtle },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.categoryPillText,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
+                      {item.category}
+                    </Text>
                   </View>
                 </View>
 
                 <View
                   style={[
                     styles.statusBadge,
-                    item.status === 'APPROVED' ? styles.statusApproved : styles.statusDraft,
+                    {
+                      backgroundColor:
+                        item.status === 'APPROVED'
+                          ? colors.statusApprovedBg
+                          : colors.statusReviewBg,
+                    },
                   ]}
                 >
                   <Text
                     style={[
                       styles.statusBadgeText,
-                      item.status === 'APPROVED' ? styles.statusTextApproved : styles.statusTextDraft,
+                      {
+                        color:
+                          item.status === 'APPROVED'
+                            ? colors.statusApprovedText
+                            : colors.statusReviewText,
+                      },
                     ]}
                   >
                     {item.status}
@@ -202,17 +259,30 @@ export default function IdeaListScreen({ onBack }) {
                 </View>
               </View>
 
-              <Text style={styles.ideaTitle}>{item.title}</Text>
-              <Text style={styles.ideaDesc}>{item.desc}</Text>
+              <Text style={[styles.ideaTitle, { color: colors.textPrimary }]}>{item.title}</Text>
+              <Text style={[styles.ideaDesc, { color: colors.textSecondary }]}>{item.desc}</Text>
 
-              <View style={styles.cardFooter}>
-                <Text style={styles.proposerText}>โดย: {item.proposer}</Text>
+              <View style={[styles.cardFooter, { borderTopColor: colors.divider }]}>
+                <Text style={[styles.proposerText, { color: colors.textSecondary }]}>โดย: {item.proposer}</Text>
 
                 <TouchableOpacity
-                  style={styles.upvoteBtn}
+                  style={[
+                    styles.upvoteBtn,
+                    {
+                      backgroundColor: isDark ? '#331B0B' : '#FFF7ED',
+                      borderColor: isDark ? '#7C2D12' : '#FFEDD5',
+                    },
+                  ]}
                   onPress={() => handleUpvote(item.id)}
                 >
-                  <Text style={styles.upvoteText}>🔥 {item.upvotes} Upvotes</Text>
+                  <Text
+                    style={[
+                      styles.upvoteText,
+                      { color: isDark ? '#FB923C' : '#C2410C' },
+                    ]}
+                  >
+                    🔥 {item.upvotes} Upvotes
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -222,38 +292,58 @@ export default function IdeaListScreen({ onBack }) {
 
       {/* Propose Idea Modal */}
       <Modal visible={isModalOpen} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <View
+          style={[
+            styles.modalOverlay,
+            { backgroundColor: isDark ? 'rgba(0,0,0,0.75)' : 'rgba(15, 23, 42, 0.6)' },
+          ]}
+        >
+          <View
+            style={[
+              styles.modalContent,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>✨ นำเสนอไอเดียใหม่</Text>
+              <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>✨ นำเสนอไอเดียใหม่</Text>
               <TouchableOpacity onPress={() => setIsModalOpen(false)}>
-                <Text style={styles.modalCloseText}>✕</Text>
+                <Text style={[styles.modalCloseText, { color: colors.textMuted }]}>✕</Text>
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.inputLabel}>ชื่อไอเดีย (Title)</Text>
+            <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>ชื่อไอเดีย (Title)</Text>
             <TextInput
-              style={styles.textInput}
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor: colors.inputBg,
+                  borderColor: colors.inputBorder,
+                  color: colors.textPrimary,
+                },
+              ]}
               placeholder="เช่น รีวิวไมโครโฟนไร้สายสำหรับ Creator..."
+              placeholderTextColor={colors.textMuted}
               value={title}
               onChangeText={setTitle}
             />
 
-            <Text style={styles.inputLabel}>แพลตฟอร์มเป้าหมาย</Text>
+            <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>แพลตฟอร์มเป้าหมาย</Text>
             <View style={styles.platformSelectRow}>
               {['YouTube', 'TikTok', 'Instagram'].map((p) => (
                 <TouchableOpacity
                   key={p}
                   style={[
                     styles.platOption,
-                    platform === p && styles.platOptionActive,
+                    { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+                    platform === p && { backgroundColor: colors.primary, borderColor: colors.primary },
                   ]}
                   onPress={() => setPlatform(p)}
                 >
                   <Text
                     style={[
                       styles.platOptionText,
-                      platform === p && styles.platOptionTextActive,
+                      { color: colors.textSecondary },
+                      platform === p && { color: '#FFFFFF' },
                     ]}
                   >
                     {p}
@@ -262,17 +352,29 @@ export default function IdeaListScreen({ onBack }) {
               ))}
             </View>
 
-            <Text style={styles.inputLabel}>คำอธิบายและแนวคิด (Concept & Hook)</Text>
+            <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>คำอธิบายและแนวคิด (Concept & Hook)</Text>
             <TextInput
-              style={[styles.textInput, styles.textArea]}
+              style={[
+                styles.textInput,
+                styles.textArea,
+                {
+                  backgroundColor: colors.inputBg,
+                  borderColor: colors.inputBorder,
+                  color: colors.textPrimary,
+                },
+              ]}
               placeholder="อธิบายจุดขาย และสิ่งที่ผู้ชมจะได้รับ..."
+              placeholderTextColor={colors.textMuted}
               value={desc}
               onChangeText={setDesc}
               multiline
               numberOfLines={3}
             />
 
-            <TouchableOpacity style={styles.submitIdeaBtn} onPress={handleCreateIdea}>
+            <TouchableOpacity
+              style={[styles.submitIdeaBtn, { backgroundColor: colors.primary }]}
+              onPress={handleCreateIdea}
+            >
               <Text style={styles.submitIdeaBtnText}>ส่งข้อเสนอไอเดีย (Submit)</Text>
             </TouchableOpacity>
           </View>

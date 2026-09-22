@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function TabIcon({ name, active }) {
-  const color = active ? '#0F172A' : '#94A3B8';
+  const { colors } = useTheme();
+  const color = active ? colors.tabIconActive : colors.tabIconInactive;
 
   switch (name) {
     case 'tasks':

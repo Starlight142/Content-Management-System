@@ -11,8 +11,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { contentApi } from '../../services/api';
+import { useTheme } from '../../theme/ThemeContext';
 
 export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
+  const { isDark, colors } = useTheme();
   const [pipeline, setPipeline] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL');
@@ -163,17 +165,17 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'APPROVED':
-        return { bg: '#DCFCE7', text: '#16A34A', label: 'ผ่านการอนุมัติ' };
+        return { bg: colors.statusApprovedBg, text: colors.statusApprovedText, label: 'ผ่านการอนุมัติ' };
       case 'PUBLISHED':
-        return { bg: '#DCFCE7', text: '#16A34A', label: 'เผยแพร่แล้ว' };
+        return { bg: colors.statusApprovedBg, text: colors.statusApprovedText, label: 'เผยแพร่แล้ว' };
       case 'REVISION':
-        return { bg: '#FEE2E2', text: '#DC2626', label: 'ไม่ผ่าน (ต้องแก้ไข)' };
+        return { bg: colors.statusRevisionBg, text: colors.statusRevisionText, label: 'ไม่ผ่าน (ต้องแก้ไข)' };
       case 'REVIEW':
-        return { bg: '#FEF3C7', text: '#D97706', label: 'รอตรวจสอบ' };
+        return { bg: colors.statusReviewBg, text: colors.statusReviewText, label: 'รอตรวจสอบ' };
       case 'PRODUCTION':
-        return { bg: '#F1F5F9', text: '#475569', label: 'กำลังผลิต' };
+        return { bg: colors.statusProdBg, text: colors.statusProdText, label: 'กำลังผลิต' };
       default:
-        return { bg: '#F1F5F9', text: '#64748B', label: status || 'วางแผน' };
+        return { bg: colors.surfaceSubtle, text: colors.textSecondary, label: status || 'วางแผน' };
     }
   };
 
@@ -182,13 +184,13 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   const approvedCount = pipeline.filter((c) => c.status === 'APPROVED' || c.status === 'PUBLISHED').length;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Top Header Bar */}
-      <View style={styles.topHeader}>
+      <View style={[styles.topHeader, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>{user?.name || 'สมศรี'}</Text>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{user?.name || 'สมศรี'}</Text>
           <View style={styles.roleRow}>
-            <Text style={styles.headerSubtitle}>ผู้จัดการฝ่ายผลิต (Manager)</Text>
+            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>ผู้จัดการฝ่ายผลิต (Manager)</Text>
             <View style={[styles.dbBadge, isLiveConnected ? styles.dbLive : styles.dbMock]}>
               <View style={[styles.dbDot, isLiveConnected ? styles.dotLive : styles.dotMock]} />
               <Text style={styles.dbText}>{isLiveConnected ? 'API Live' : 'Offline'}</Text>
@@ -197,7 +199,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         </View>
 
         <TouchableOpacity
-          style={styles.avatarButton}
+          style={[styles.avatarButton, { backgroundColor: isDark ? colors.surfaceSubtle : '#0F172A' }]}
           onPress={() => onNavigate('profile')}
           title="โปรไฟล์"
         >
@@ -213,26 +215,26 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
       >
         {/* KPI Summary Cards */}
         <View style={styles.kpiContainer}>
-          <View style={[styles.kpiBox, styles.kpiReview]}>
+          <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: isDark ? colors.border : '#FDE68A' }]}>
             <Text style={[styles.kpiNumber, { color: '#D97706' }]}>{reviewCount}</Text>
-            <Text style={styles.kpiLabel}>รอตรวจทาน</Text>
+            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>รอตรวจทาน</Text>
           </View>
 
-          <View style={[styles.kpiBox, styles.kpiProd]}>
-            <Text style={[styles.kpiNumber, { color: '#475569' }]}>{prodCount}</Text>
-            <Text style={styles.kpiLabel}>กำลังผลิต</Text>
+          <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: isDark ? colors.border : '#E2E8F0' }]}>
+            <Text style={[styles.kpiNumber, { color: isDark ? '#94A3B8' : '#475569' }]}>{prodCount}</Text>
+            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>กำลังผลิต</Text>
           </View>
 
-          <View style={[styles.kpiBox, styles.kpiApproved]}>
+          <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: isDark ? colors.border : '#BBF7D0' }]}>
             <Text style={[styles.kpiNumber, { color: '#16A34A' }]}>{approvedCount}</Text>
-            <Text style={styles.kpiLabel}>ผ่าน/อนุมัติ</Text>
+            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>ผ่าน/อนุมัติ</Text>
           </View>
         </View>
 
         {/* Section Header */}
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>รายการงานผลิต</Text>
-          <Text style={styles.sectionCount}>{filteredPipeline.length} ชิ้นงาน</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>รายการงานผลิต</Text>
+          <Text style={[styles.sectionCount, { color: colors.textSecondary }]}>{filteredPipeline.length} ชิ้นงาน</Text>
         </View>
 
         {/* Filter Tabs */}
@@ -246,11 +248,19 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
           ].map((tab) => (
             <TouchableOpacity
               key={tab.id}
-              style={[styles.filterPill, filter === tab.id && styles.filterPillActive]}
+              style={[
+                styles.filterPill,
+                { backgroundColor: colors.surfaceSubtle },
+                filter === tab.id && { backgroundColor: colors.primary },
+              ]}
               onPress={() => setFilter(tab.id)}
             >
               <Text
-                style={[styles.filterPillText, filter === tab.id && styles.filterPillTextActive]}
+                style={[
+                  styles.filterPillText,
+                  { color: colors.textSecondary },
+                  filter === tab.id && { color: '#FFFFFF', fontWeight: '700' },
+                ]}
               >
                 {tab.label}
               </Text>
@@ -261,17 +271,17 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         {/* Content Production Cards */}
         {loading ? (
           <View style={{ padding: 32, alignItems: 'center' }}>
-            <ActivityIndicator size="small" color="#0F172A" />
-            <Text style={{ marginTop: 8, fontSize: 13, color: '#64748B' }}>
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Text style={{ marginTop: 8, fontSize: 13, color: colors.textSecondary }}>
               กำลังโหลดสถานะกระบวนการผลิตจาก MongoDB...
             </Text>
           </View>
         ) : filteredPipeline.length === 0 ? (
-          <View style={{ padding: 32, alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, marginTop: 12, borderWidth: 1, borderColor: '#E2E8F0' }}>
-            <Text style={{ fontSize: 14, fontWeight: '700', color: '#0F172A', textAlign: 'center' }}>
+          <View style={{ padding: 32, alignItems: 'center', backgroundColor: colors.cardBg, borderRadius: 12, marginTop: 12, borderWidth: 1, borderColor: colors.border }}>
+            <Text style={{ fontSize: 14, fontWeight: '700', color: colors.textPrimary, textAlign: 'center' }}>
               ไม่มีชิ้นงานในสถานะนี้
             </Text>
-            <Text style={{ fontSize: 12, color: '#64748B', marginTop: 4, textAlign: 'center' }}>
+            <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 4, textAlign: 'center' }}>
               เลือกตัวกรอง "ทั้งหมด" หรือตรวจสอบสถานะงานในแท็บ "ภาพรวมทีม"
             </Text>
           </View>
@@ -280,11 +290,11 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
             const st = getStatusBadge(item.status);
 
             return (
-              <View key={item._id} style={styles.card}>
+              <View key={item._id} style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
                 {/* Card Header Row */}
                 <View style={styles.cardTopRow}>
-                  <View style={styles.platBadge}>
-                    <Text style={styles.platText}>{item.platform}</Text>
+                  <View style={[styles.platBadge, { backgroundColor: colors.surfaceSubtle }]}>
+                    <Text style={[styles.platText, { color: colors.textSecondary }]}>{item.platform}</Text>
                   </View>
 
                   <View style={[styles.statusBadge, { backgroundColor: st.bg }]}>
@@ -293,21 +303,21 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
                 </View>
 
                 {/* Title & Description */}
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text style={styles.cardDesc} numberOfLines={2}>
+                <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>{item.title}</Text>
+                <Text style={[styles.cardDesc, { color: colors.textSecondary }]} numberOfLines={2}>
                   {item.description}
                 </Text>
 
                 {/* Meta details */}
-                <View style={styles.metaRow}>
-                  <Text style={styles.metaText}>👤 {item.creator}</Text>
-                  <Text style={styles.metaText}>📅 กำหนดส่ง: {item.dueDate}</Text>
+                <View style={[styles.metaRow, { borderTopColor: colors.border }]}>
+                  <Text style={[styles.metaText, { color: colors.textSecondary }]}>👤 {item.creator}</Text>
+                  <Text style={[styles.metaText, { color: colors.textSecondary }]}>📅 กำหนดส่ง: {item.dueDate}</Text>
                 </View>
 
                 {/* Contextual Action Buttons based on Status */}
                 {item.status === 'PLANNING' && (
                   <TouchableOpacity
-                    style={styles.btnStartProd}
+                    style={[styles.btnStartProd, { backgroundColor: isDark ? colors.primary : '#0F172A' }]}
                     onPress={() => handleStartProduction(item)}
                   >
                     <Text style={styles.btnStartProdText}>เริ่มขั้นตอนผลิต (Start Production)</Text>
@@ -326,13 +336,16 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
                 {item.status === 'REVIEW' && (
                   <View style={styles.actionRow}>
                     <TouchableOpacity
-                      style={styles.btnSecondary}
+                      style={[
+                        styles.btnSecondary,
+                        { backgroundColor: colors.surface, borderColor: isDark ? '#7F1D1D' : '#FCA5A5' },
+                      ]}
                       onPress={() => handleRequestRevision(item)}
                     >
-                      <Text style={styles.btnSecondaryText}>ส่งกลับแก้ไข</Text>
+                      <Text style={[styles.btnSecondaryText, { color: isDark ? '#F87171' : '#DC2626' }]}>ส่งกลับแก้ไข</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.btnPrimary}
+                      style={[styles.btnPrimary, { backgroundColor: isDark ? colors.primary : '#0F172A' }]}
                       onPress={() => onNavigate('legal', item)}
                     >
                       <Text style={styles.btnPrimaryText}>ตรวจความถูกต้อง</Text>
@@ -350,8 +363,8 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
                 )}
 
                 {item.status === 'PUBLISHED' && (
-                  <View style={styles.publishedNotice}>
-                    <Text style={styles.publishedNoticeText}>
+                  <View style={[styles.publishedNotice, { backgroundColor: isDark ? '#064E3B44' : '#DCFCE7' }]}>
+                    <Text style={[styles.publishedNoticeText, { color: isDark ? '#4ADE80' : '#16A34A' }]}>
                       เผยแพร่สู่สาธารณะเรียบร้อยแล้ว
                     </Text>
                   </View>
@@ -359,20 +372,23 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
 
                 {item.status === 'REVISION' && (
                   <View style={{ gap: 8 }}>
-                    <View style={styles.revisionNotice}>
-                      <Text style={styles.revisionNoticeText}>
+                    <View style={[styles.revisionNotice, { backgroundColor: isDark ? '#7F1D1D44' : '#FEF2F2' }]}>
+                      <Text style={[styles.revisionNoticeText, { color: isDark ? '#F87171' : '#DC2626' }]}>
                         อยู่ในระหว่างผู้ผลิตนำกลับไปปรับปรุงแก้ไข
                       </Text>
                     </View>
                     <View style={styles.actionRow}>
                       <TouchableOpacity
-                        style={styles.btnSecondary}
+                        style={[
+                          styles.btnSecondary,
+                          { backgroundColor: colors.surface, borderColor: isDark ? '#7F1D1D' : '#FCA5A5' },
+                        ]}
                         onPress={() => handleStartProduction(item)}
                       >
-                        <Text style={styles.btnSecondaryText}>เริ่มผลิตซ้ำ</Text>
+                        <Text style={[styles.btnSecondaryText, { color: isDark ? '#F87171' : '#DC2626' }]}>เริ่มผลิตซ้ำ</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={styles.btnPrimary}
+                        style={[styles.btnPrimary, { backgroundColor: isDark ? colors.primary : '#0F172A' }]}
                         onPress={() => handleSendToReview(item)}
                       >
                         <Text style={styles.btnPrimaryText}>ส่งตรวจอีกครั้ง</Text>

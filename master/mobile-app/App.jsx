@@ -6,8 +6,11 @@ import ManagerNavigator from './src/navigation/ManagerNavigator';
 import MemberNavigator from './src/navigation/MemberNavigator';
 import { setAuthToken } from './src/services/api';
 
-export default function App() {
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
+
+function MainAppContent() {
   const [currentUser, setCurrentUser] = useState(null);
+  const { isDark, colors } = useTheme();
 
   const handleLoginSuccess = (user) => {
     setCurrentUser(user);
@@ -20,7 +23,10 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={colors.background}
+      />
       {!currentUser ? (
         <AuthNavigator onLoginSuccess={handleLoginSuccess} />
       ) : currentUser.role === 'MANAGER' || currentUser.role === 'ADMIN' ? (
@@ -29,6 +35,14 @@ export default function App() {
         <MemberNavigator user={currentUser} onLogout={handleLogout} />
       )}
     </SafeAreaProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <MainAppContent />
+    </ThemeProvider>
   );
 }
 

@@ -12,8 +12,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { authApi, setAuthToken } from '../../services/api';
+import { useTheme } from '../../theme/ThemeContext';
 
 export default function LoginScreen({ onLoginSuccess }) {
+  const { isDark, colors } = useTheme();
   const [email, setEmail] = useState('manager@studio.com');
   const [password, setPassword] = useState('123456');
   const [selectedRole, setSelectedRole] = useState('MANAGER'); // Quick role switch for testing
@@ -53,43 +55,69 @@ export default function LoginScreen({ onLoginSuccess }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
         style={styles.inner}
       >
         <View style={styles.header}>
-          <View style={styles.logoBadge}>
+          <View style={[styles.logoBadge, { backgroundColor: colors.primary }]}>
             <Text style={styles.logoText}>D</Text>
           </View>
-          <Text style={styles.title}>Draftly</Text>
-          <Text style={styles.subtitle}>ระบบบริหารงานผลิต Content สำหรับทีมงาน</Text>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>Draftly</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>ระบบบริหารงานผลิต Content สำหรับทีมงาน</Text>
         </View>
 
         {/* Role Fast Selector */}
         <View style={styles.roleContainer}>
-          <Text style={styles.roleLabel}>ทดสอบเข้าใช้งานด้วยสิทธิ์:</Text>
+          <Text style={[styles.roleLabel, { color: colors.textSecondary }]}>ทดสอบเข้าใช้งานด้วยสิทธิ์:</Text>
           <View style={styles.roleButtons}>
             <TouchableOpacity
-              style={[styles.roleBtn, selectedRole === 'MANAGER' && styles.roleBtnActive]}
+              style={[
+                styles.roleBtn,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                selectedRole === 'MANAGER' && {
+                  borderColor: colors.primary,
+                  backgroundColor: isDark ? colors.surfaceSubtle : '#F1F5F9',
+                },
+              ]}
               onPress={() => {
                 setSelectedRole('MANAGER');
                 setEmail('manager@studio.com');
               }}
             >
-              <Text style={[styles.roleBtnText, selectedRole === 'MANAGER' && styles.roleBtnTextActive]}>
+              <Text
+                style={[
+                  styles.roleBtnText,
+                  { color: colors.textSecondary },
+                  selectedRole === 'MANAGER' && { color: colors.textPrimary, fontWeight: '700' },
+                ]}
+              >
                 Manager (หัวหน้าทีม)
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.roleBtn, selectedRole === 'MEMBER' && styles.roleBtnActive]}
+              style={[
+                styles.roleBtn,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                selectedRole === 'MEMBER' && {
+                  borderColor: colors.primary,
+                  backgroundColor: isDark ? colors.surfaceSubtle : '#F1F5F9',
+                },
+              ]}
               onPress={() => {
                 setSelectedRole('MEMBER');
                 setEmail('member@studio.com');
               }}
             >
-              <Text style={[styles.roleBtnText, selectedRole === 'MEMBER' && styles.roleBtnTextActive]}>
+              <Text
+                style={[
+                  styles.roleBtnText,
+                  { color: colors.textSecondary },
+                  selectedRole === 'MEMBER' && { color: colors.textPrimary, fontWeight: '700' },
+                ]}
+              >
                 Member (ทีมงานสร้างสรรค์)
               </Text>
             </TouchableOpacity>
@@ -97,12 +125,20 @@ export default function LoginScreen({ onLoginSuccess }) {
         </View>
 
         {/* Input Fields */}
-        <View style={styles.form}>
+        <View style={[styles.form, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>อีเมลผู้ใช้งาน</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>อีเมลผู้ใช้งาน</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.inputBg,
+                  borderColor: colors.inputBorder,
+                  color: colors.textPrimary,
+                },
+              ]}
               placeholder="user@studio.com"
+              placeholderTextColor={colors.textMuted}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -111,10 +147,18 @@ export default function LoginScreen({ onLoginSuccess }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>รหัสผ่าน</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>รหัสผ่าน</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.inputBg,
+                  borderColor: colors.inputBorder,
+                  color: colors.textPrimary,
+                },
+              ]}
               placeholder="••••••••"
+              placeholderTextColor={colors.textMuted}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -122,7 +166,7 @@ export default function LoginScreen({ onLoginSuccess }) {
           </View>
 
           <TouchableOpacity 
-            style={styles.submitBtn} 
+            style={[styles.submitBtn, { backgroundColor: colors.primary }]} 
             onPress={handleLogin}
             disabled={loading}
           >

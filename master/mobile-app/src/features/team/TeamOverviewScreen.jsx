@@ -10,8 +10,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { teamApi } from '../../services/api';
+import { useTheme } from '../../theme/ThemeContext';
 
 export default function TeamOverviewScreen({ user, onNavigate }) {
+  const { isDark, colors } = useTheme();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [teamData, setTeamData] = useState(null);
@@ -51,26 +53,26 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'DONE':
-        return { label: 'เสร็จสมบูรณ์', bg: '#DCFCE7', text: '#16A34A' };
+        return { label: 'เสร็จสมบูรณ์', bg: colors.statusApprovedBg, text: colors.statusApprovedText };
       case 'REVIEW':
-        return { label: 'รอตรวจทาน', bg: '#FEF3C7', text: '#D97706' };
+        return { label: 'รอตรวจทาน', bg: colors.statusReviewBg, text: colors.statusReviewText };
       case 'IN_PROGRESS':
-        return { label: 'กำลังดำเนินการ', bg: '#E0F2FE', text: '#0284C7' };
+        return { label: 'กำลังดำเนินการ', bg: isDark ? '#0C4A6E' : '#E0F2FE', text: isDark ? '#38BDF8' : '#0284C7' };
       case 'TODO':
       default:
-        return { label: 'รอดำเนินการ', bg: '#F1F5F9', text: '#64748B' };
+        return { label: 'รอดำเนินการ', bg: colors.surfaceSubtle, text: colors.textSecondary };
     }
   };
 
   const getWorkingStatusBadge = (workingStatus) => {
     switch (workingStatus) {
       case 'WORKING':
-        return { label: '🟢 กำลังทำงาน', bg: '#DCFCE7', text: '#15803D' };
+        return { label: '🟢 กำลังทำงาน', bg: colors.statusApprovedBg, text: colors.statusApprovedText };
       case 'REVIEWING':
-        return { label: '🟡 รอตรวจงาน', bg: '#FEF3C7', text: '#B45309' };
+        return { label: '🟡 รอตรวจงาน', bg: colors.statusReviewBg, text: colors.statusReviewText };
       case 'IDLE':
       default:
-        return { label: '⚪ พร้อมรับงาน', bg: '#F1F5F9', text: '#64748B' };
+        return { label: '⚪ พร้อมรับงาน', bg: colors.surfaceSubtle, text: colors.textSecondary };
     }
   };
 
@@ -83,18 +85,18 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View>
-          <Text style={styles.headerSubtitle}>WORKSPACE & COLLABORATION</Text>
-          <Text style={styles.headerTitle}>
+          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>WORKSPACE & COLLABORATION</Text>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
             {teamData?.team?.name || 'ทีมของฉัน (My Team)'}
           </Text>
         </View>
         {teamData?.team && (
-          <View style={styles.memberCountBadge}>
-            <Text style={styles.memberCountText}>
+          <View style={[styles.memberCountBadge, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+            <Text style={[styles.memberCountText, { color: colors.textPrimary }]}>
               👥 {teamData.team.totalMembers} สมาชิก
             </Text>
           </View>
@@ -108,65 +110,71 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
       >
         {loading ? (
           <View style={styles.centerBox}>
-            <ActivityIndicator size="large" color="#0F172A" />
-            <Text style={styles.centerText}>กำลังดึงข้อมูลทีมสดจาก MongoDB...</Text>
+            <ActivityIndicator size="large" color={colors.textPrimary} />
+            <Text style={[styles.centerText, { color: colors.textSecondary }]}>กำลังดึงข้อมูลทีมสดจาก MongoDB...</Text>
           </View>
         ) : errorMessage ? (
           <View style={styles.centerBox}>
             <Text style={styles.errorTitle}>⚠️ การเชื่อมต่อขัดข้อง</Text>
-            <Text style={styles.errorDesc}>{errorMessage}</Text>
-            <TouchableOpacity style={styles.retryButton} onPress={fetchTeamWorkspace}>
+            <Text style={[styles.errorDesc, { color: colors.textSecondary }]}>{errorMessage}</Text>
+            <TouchableOpacity
+              style={[styles.retryButton, { backgroundColor: isDark ? colors.surfaceSubtle : '#0F172A' }]}
+              onPress={fetchTeamWorkspace}
+            >
               <Text style={styles.retryButtonText}>🔄 ลองเชื่อมต่อใหม่</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <>
             {/* 1. Team Dashboard Metrics Card */}
-            <View style={styles.dashboardCard}>
+            <View style={[styles.dashboardCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>📊 สรุปความคืบหน้าทีม (Team Overview)</Text>
-                <Text style={styles.progressPercent}>{teamData?.stats?.teamProgress || 0}%</Text>
+                <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>📊 สรุปความคืบหน้าทีม (Team Overview)</Text>
+                <Text style={[styles.progressPercent, { color: colors.textPrimary }]}>{teamData?.stats?.teamProgress || 0}%</Text>
               </View>
 
               {/* Progress Bar */}
-              <View style={styles.progressBarBg}>
+              <View style={[styles.progressBarBg, { backgroundColor: colors.surfaceSubtle }]}>
                 <View
                   style={[
                     styles.progressBarFill,
-                    { width: `${teamData?.stats?.teamProgress || 0}%` },
+                    {
+                      width: `${teamData?.stats?.teamProgress || 0}%`,
+                      backgroundColor: colors.primary,
+                    },
                   ]}
                 />
               </View>
 
               {/* Quick Metrics Grid */}
-              <View style={styles.metricsGrid}>
+              <View style={[styles.metricsGrid, { borderTopColor: colors.divider }]}>
                 <View style={styles.metricItem}>
-                  <Text style={styles.metricLabel}>งานของฉัน</Text>
-                  <Text style={styles.metricValueHighlight}>
+                  <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>งานของฉัน</Text>
+                  <Text style={[styles.metricValueHighlight, { color: isDark ? '#60A5FA' : '#2563EB' }]}>
                     {teamData?.stats?.myTasksCount || 0}
                   </Text>
                 </View>
                 <View style={styles.metricItem}>
-                  <Text style={styles.metricLabel}>งานของทีม</Text>
-                  <Text style={styles.metricValue}>
+                  <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>งานของทีม</Text>
+                  <Text style={[styles.metricValue, { color: colors.textPrimary }]}>
                     {teamData?.stats?.teamTasksCount || 0}
                   </Text>
                 </View>
                 <View style={styles.metricItem}>
-                  <Text style={styles.metricLabel}>กำลังผลิต</Text>
-                  <Text style={[styles.metricValue, { color: '#0284C7' }]}>
+                  <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>กำลังผลิต</Text>
+                  <Text style={[styles.metricValue, { color: isDark ? '#38BDF8' : '#0284C7' }]}>
                     {teamData?.stats?.inProgressCount || 0}
                   </Text>
                 </View>
                 <View style={styles.metricItem}>
-                  <Text style={styles.metricLabel}>รอตรวจ</Text>
-                  <Text style={[styles.metricValue, { color: '#D97706' }]}>
+                  <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>รอตรวจ</Text>
+                  <Text style={[styles.metricValue, { color: isDark ? '#FBBF24' : '#D97706' }]}>
                     {teamData?.stats?.reviewCount || 0}
                   </Text>
                 </View>
                 <View style={styles.metricItem}>
-                  <Text style={styles.metricLabel}>เสร็จแล้ว</Text>
-                  <Text style={[styles.metricValue, { color: '#16A34A' }]}>
+                  <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>เสร็จแล้ว</Text>
+                  <Text style={[styles.metricValue, { color: isDark ? '#4ADE80' : '#16A34A' }]}>
                     {teamData?.stats?.doneCount || 0}
                   </Text>
                 </View>
@@ -175,34 +183,45 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
 
             {/* 2. Team Members Section */}
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>👥 สมาชิกในทีม ({teamData?.members?.length || 0})</Text>
-              <Text style={styles.sectionSubtitle}>สถานะการทำงานแบบเรียลไทม์</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>👥 สมาชิกในทีม ({teamData?.members?.length || 0})</Text>
+              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>สถานะการทำงานแบบเรียลไทม์</Text>
             </View>
 
-            <View style={styles.membersList}>
+            <View style={[styles.membersList, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               {teamData?.members && teamData.members.length > 0 ? (
                 teamData.members.map((member) => {
                   const badge = getWorkingStatusBadge(member.workingStatus);
                   const isCurrentUser = member._id === user?.id || member._id === user?.userId;
                   return (
-                    <View key={member._id || member.username} style={styles.memberCard}>
-                      <View style={styles.memberAvatar}>
+                    <View
+                      key={member._id || member.username}
+                      style={[styles.memberCard, { borderBottomColor: colors.divider }]}
+                    >
+                      <View style={[styles.memberAvatar, { backgroundColor: isDark ? colors.surfaceSubtle : '#0F172A' }]}>
                         <Text style={styles.avatarText}>
                           {(member.firstName || member.username || 'M')[0].toUpperCase()}
                         </Text>
                       </View>
                       <View style={styles.memberInfo}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <Text style={styles.memberName}>
+                          <Text style={[styles.memberName, { color: colors.textPrimary }]}>
                             {member.firstName ? `${member.firstName} ${member.lastName || ''}` : member.username}
                           </Text>
                           {isCurrentUser && (
-                            <View style={styles.meBadge}>
-                              <Text style={styles.meBadgeText}>ฉัน</Text>
+                            <View
+                              style={[
+                                styles.meBadge,
+                                {
+                                  backgroundColor: isDark ? '#1E3A8A' : '#EFF6FF',
+                                  borderColor: isDark ? '#3B82F6' : '#BFDBFE',
+                                },
+                              ]}
+                            >
+                              <Text style={[styles.meBadgeText, { color: isDark ? '#93C5FD' : '#2563EB' }]}>ฉัน</Text>
                             </View>
                           )}
                         </View>
-                        <Text style={styles.memberRole}>
+                        <Text style={[styles.memberRole, { color: colors.textSecondary }]}>
                           {member.roleInTeam} • {member.role}
                         </Text>
                       </View>
@@ -215,14 +234,14 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                   );
                 })
               ) : (
-                <Text style={styles.emptyText}>ยังไม่มีสมาชิกในทีมนี้</Text>
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>ยังไม่มีสมาชิกในทีมนี้</Text>
               )}
             </View>
 
             {/* 3. Team Tasks Pipeline Section */}
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>📋 งานทั้งหมดของทีม ({teamData?.tasks?.length || 0})</Text>
-              <Text style={styles.sectionSubtitle}>ติดตามสถานะและความคืบหน้าของทุกคน</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>📋 งานทั้งหมดของทีม ({teamData?.tasks?.length || 0})</Text>
+              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>ติดตามสถานะและความคืบหน้าของทุกคน</Text>
             </View>
 
             {teamData?.tasks && teamData.tasks.length > 0 ? (
@@ -236,11 +255,14 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                   (task.assignedTo._id === user?.id || task.assignedTo._id === user?.userId);
 
                 return (
-                  <View key={task._id} style={styles.taskCard}>
+                  <View
+                    key={task._id}
+                    style={[styles.taskCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
+                  >
                     {/* Top Row: Parent Content & Task Status */}
                     <View style={styles.taskHeaderRow}>
-                      <View style={styles.contentPill}>
-                        <Text style={styles.contentPillText}>
+                      <View style={[styles.contentPill, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+                        <Text style={[styles.contentPillText, { color: colors.textSecondary }]}>
                           🎬 {task.contentId?.title || 'ชิ้นงานคอนเทนต์'}
                         </Text>
                       </View>
@@ -252,16 +274,16 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                     </View>
 
                     {/* Task Title */}
-                    <Text style={styles.taskTitle}>{task.title}</Text>
+                    <Text style={[styles.taskTitle, { color: colors.textPrimary }]}>{task.title}</Text>
 
                     {/* Assignee & Deadline */}
                     <View style={styles.taskMetaRow}>
-                      <Text style={styles.taskAssignee}>
-                        👤 ผู้รับผิดชอบ: <Text style={{ fontWeight: '700', color: '#0F172A' }}>{assigneeName}</Text>
+                      <Text style={[styles.taskAssignee, { color: colors.textSecondary }]}>
+                        👤 ผู้รับผิดชอบ: <Text style={{ fontWeight: '700', color: colors.textPrimary }}>{assigneeName}</Text>
                         {isMyTask && ' (งานของคุณ)'}
                       </Text>
                       {task.dueDate && (
-                        <Text style={styles.taskDueDate}>
+                        <Text style={[styles.taskDueDate, { color: colors.textMuted }]}>
                           📅 {task.dueDate.split('T')[0]}
                         </Text>
                       )}
@@ -269,7 +291,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
 
                     {/* Progress Bar for Individual Task */}
                     <View style={styles.taskProgressRow}>
-                      <View style={styles.taskProgressBarBg}>
+                      <View style={[styles.taskProgressBarBg, { backgroundColor: colors.surfaceSubtle }]}>
                         <View
                           style={[
                             styles.taskProgressBarFill,
@@ -280,41 +302,41 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                           ]}
                         />
                       </View>
-                      <Text style={styles.taskProgressText}>{task.progress || 0}%</Text>
+                      <Text style={[styles.taskProgressText, { color: colors.textSecondary }]}>{task.progress || 0}%</Text>
                     </View>
                   </View>
                 );
               })
             ) : (
               <View style={styles.emptyBox}>
-                <Text style={styles.emptyText}>ไม่มีงานที่ค้างอยู่ในทีมขณะนี้</Text>
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>ไม่มีงานที่ค้างอยู่ในทีมขณะนี้</Text>
               </View>
             )}
 
             {/* 4. Team Activity Feed Section */}
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>⚡ กิจกรรมล่าสุดของทีม (Team Activity)</Text>
-              <Text style={styles.sectionSubtitle}>สิ่งที่ทีมกำลังดำเนินงานอยู่</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>⚡ กิจกรรมล่าสุดของทีม (Team Activity)</Text>
+              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>สิ่งที่ทีมกำลังดำเนินงานอยู่</Text>
             </View>
 
-            <View style={styles.activityFeed}>
+            <View style={[styles.activityFeed, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               {teamData?.recentActivities && teamData.recentActivities.length > 0 ? (
                 teamData.recentActivities.map((act) => (
                   <View key={act._id} style={styles.activityItem}>
-                    <View style={styles.activityDot} />
+                    <View style={[styles.activityDot, { backgroundColor: colors.textPrimary }]} />
                     <View style={styles.activityBody}>
                       <View style={styles.activityTopRow}>
-                        <Text style={styles.activityTitle}>{act.title}</Text>
-                        <Text style={styles.activityTime}>{formatActivityTime(act.createdAt)}</Text>
+                        <Text style={[styles.activityTitle, { color: colors.textPrimary }]}>{act.title}</Text>
+                        <Text style={[styles.activityTime, { color: colors.textMuted }]}>{formatActivityTime(act.createdAt)}</Text>
                       </View>
                       {act.details ? (
-                        <Text style={styles.activityDetails}>{act.details}</Text>
+                        <Text style={[styles.activityDetails, { color: colors.textSecondary }]}>{act.details}</Text>
                       ) : null}
                     </View>
                   </View>
                 ))
               ) : (
-                <Text style={styles.emptyText}>ยังไม่มีบันทึกกิจกรรมในทีม</Text>
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>ยังไม่มีบันทึกกิจกรรมในทีม</Text>
               )}
             </View>
           </>

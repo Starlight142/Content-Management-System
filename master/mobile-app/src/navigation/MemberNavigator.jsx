@@ -5,12 +5,14 @@ import MemberTaskList from '../features/tasks/MemberTaskList';
 import IdeaListScreen from '../features/ideas/IdeaListScreen';
 import ProfileScreen from '../features/profile/ProfileScreen';
 import TabIcon from '../components/TabIcon';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function MemberNavigator({ user, onLogout }) {
   const [currentScreen, setCurrentScreen] = useState('team');
+  const { colors } = useTheme();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
         {currentScreen === 'team' && (
           <TeamOverviewScreen
@@ -36,37 +38,69 @@ export default function MemberNavigator({ user, onLogout }) {
       </View>
 
       {/* Persistent Bottom Tab Bar for Member */}
-      <View style={styles.bottomBar}>
+      <View style={[styles.bottomBar, { backgroundColor: colors.tabBg, borderTopColor: colors.tabBorder }]}>
         <TouchableOpacity
-          style={[styles.tabItem, currentScreen === 'team' && styles.tabActive]}
+          style={[styles.tabItem, currentScreen === 'team' && { backgroundColor: colors.tabActive }]}
           onPress={() => setCurrentScreen('team')}
         >
           <TabIcon name="team" active={currentScreen === 'team'} />
-          <Text style={[styles.tabLabel, currentScreen === 'team' && styles.tabLabelActive]}>ทีมของฉัน</Text>
+          <Text
+            style={[
+              styles.tabLabel,
+              { color: currentScreen === 'team' ? colors.tabIconActive : colors.tabIconInactive },
+              currentScreen === 'team' && styles.tabLabelActive,
+            ]}
+          >
+            ทีมของฉัน
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.tabItem, currentScreen === 'tasks' && styles.tabActive]}
+          style={[styles.tabItem, currentScreen === 'tasks' && { backgroundColor: colors.tabActive }]}
           onPress={() => setCurrentScreen('tasks')}
         >
           <TabIcon name="tasks" active={currentScreen === 'tasks'} />
-          <Text style={[styles.tabLabel, currentScreen === 'tasks' && styles.tabLabelActive]}>งานของฉัน</Text>
+          <Text
+            style={[
+              styles.tabLabel,
+              { color: currentScreen === 'tasks' ? colors.tabIconActive : colors.tabIconInactive },
+              currentScreen === 'tasks' && styles.tabLabelActive,
+            ]}
+          >
+            งานของฉัน
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.tabItem, currentScreen === 'ideas' && styles.tabActive]}
+          style={[styles.tabItem, currentScreen === 'ideas' && { backgroundColor: colors.tabActive }]}
           onPress={() => setCurrentScreen('ideas')}
         >
           <TabIcon name="ideas" active={currentScreen === 'ideas'} />
-          <Text style={[styles.tabLabel, currentScreen === 'ideas' && styles.tabLabelActive]}>ไอเดีย</Text>
+          <Text
+            style={[
+              styles.tabLabel,
+              { color: currentScreen === 'ideas' ? colors.tabIconActive : colors.tabIconInactive },
+              currentScreen === 'ideas' && styles.tabLabelActive,
+            ]}
+          >
+            ไอเดีย
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.tabItem, currentScreen === 'profile' && styles.tabActive]}
+          style={[styles.tabItem, currentScreen === 'profile' && { backgroundColor: colors.tabActive }]}
           onPress={() => setCurrentScreen('profile')}
         >
           <TabIcon name="profile" active={currentScreen === 'profile'} />
-          <Text style={[styles.tabLabel, currentScreen === 'profile' && styles.tabLabelActive]}>โปรไฟล์</Text>
+          <Text
+            style={[
+              styles.tabLabel,
+              { color: currentScreen === 'profile' ? colors.tabIconActive : colors.tabIconInactive },
+              currentScreen === 'profile' && styles.tabLabelActive,
+            ]}
+          >
+            โปรไฟล์
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

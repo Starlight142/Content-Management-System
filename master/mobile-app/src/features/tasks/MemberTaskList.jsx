@@ -12,8 +12,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { taskApi } from '../../services/api';
+import { useTheme } from '../../theme/ThemeContext';
 
 export default function MemberTaskList({ user, onLogout, onNavigate }) {
+  const { isDark, colors } = useTheme();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submissionInputs, setSubmissionInputs] = useState({});
@@ -105,29 +107,29 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
   const getStatusColor = (status) => {
     switch (status) {
       case 'IN_PROGRESS':
-        return { bg: '#FEF3C7', text: '#D97706', label: 'กำลังทำ' };
+        return { bg: colors.statusReviewBg, text: colors.statusReviewText, label: 'กำลังทำ' };
       case 'TODO':
-        return { bg: '#F1F5F9', text: '#64748B', label: 'คิวงานใหม่' };
+        return { bg: colors.statusProdBg, text: colors.statusProdText, label: 'คิวงานใหม่' };
       case 'REVIEW':
-        return { bg: '#FEF3C7', text: '#D97706', label: 'รอตรวจ' };
+        return { bg: colors.statusReviewBg, text: colors.statusReviewText, label: 'รอตรวจ' };
       case 'DONE':
-        return { bg: '#DCFCE7', text: '#16A34A', label: 'เสร็จสิ้น' };
+        return { bg: colors.statusApprovedBg, text: colors.statusApprovedText, label: 'เสร็จสิ้น' };
       default:
-        return { bg: '#F1F5F9', text: '#64748B', label: status };
+        return { bg: colors.surfaceSubtle, text: colors.textSecondary, label: status };
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Top Header Bar */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View>
-          <Text style={styles.userName}>{user?.name || 'จอห์น'}</Text>
-          <Text style={styles.userSub}>ทีมงานฝ่ายผลิตสื่อ (Creator & Member)</Text>
+          <Text style={[styles.userName, { color: colors.textPrimary }]}>{user?.name || 'จอห์น'}</Text>
+          <Text style={[styles.userSub, { color: colors.textSecondary }]}>ทีมงานฝ่ายผลิตสื่อ (Creator & Member)</Text>
         </View>
 
         <TouchableOpacity
-          style={styles.avatarButton}
+          style={[styles.avatarButton, { backgroundColor: isDark ? colors.surfaceSubtle : '#0F172A' }]}
           onPress={() => onNavigate && onNavigate('profile')}
         >
           <Text style={styles.avatarButtonText}>
@@ -142,46 +144,46 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
       >
         {/* Creator KPI Bar */}
         <View style={styles.kpiRow}>
-          <View style={styles.kpiBox}>
+          <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
             <Text style={[styles.kpiNum, { color: '#B45309' }]}>
               {tasks.filter((t) => t.status === 'IN_PROGRESS').length}
             </Text>
-            <Text style={styles.kpiLabel}>กำลังตัดต่อ/ทำ</Text>
+            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>กำลังตัดต่อ/ทำ</Text>
           </View>
-          <View style={styles.kpiBox}>
-            <Text style={[styles.kpiNum, { color: '#475569' }]}>
+          <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+            <Text style={[styles.kpiNum, { color: isDark ? '#94A3B8' : '#475569' }]}>
               {tasks.filter((t) => t.status === 'TODO').length}
             </Text>
-            <Text style={styles.kpiLabel}>คิวงานใหม่</Text>
+            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>คิวงานใหม่</Text>
           </View>
-          <View style={styles.kpiBox}>
-            <Text style={[styles.kpiNum, { color: '#1D4ED8' }]}>
+          <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+            <Text style={[styles.kpiNum, { color: isDark ? '#60A5FA' : '#1D4ED8' }]}>
               {tasks.filter((t) => t.status === 'REVIEW').length}
             </Text>
-            <Text style={styles.kpiLabel}>รอ Manager ตรวจ</Text>
+            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>รอ Manager ตรวจ</Text>
           </View>
         </View>
 
         {/* Section Header */}
-        <Text style={styles.sectionTitle}>งานที่ได้รับมอบหมาย</Text>
-        <Text style={styles.sectionSubtitle}>
+        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>งานที่ได้รับมอบหมาย</Text>
+        <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
           อัปเดตสถานะและแนบลิงก์ส่งงานให้หัวหน้าทีมตรวจสอบ
         </Text>
 
         {/* Task Cards */}
         {loading ? (
           <View style={{ padding: 32, alignItems: 'center' }}>
-            <ActivityIndicator size="small" color="#0F172A" />
-            <Text style={{ marginTop: 8, fontSize: 13, color: '#64748B' }}>
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Text style={{ marginTop: 8, fontSize: 13, color: colors.textSecondary }}>
               กำลังโหลดงานของคุณจาก MongoDB...
             </Text>
           </View>
         ) : tasks.length === 0 ? (
-          <View style={{ padding: 32, alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, marginTop: 12, borderWidth: 1, borderColor: '#E2E8F0' }}>
-            <Text style={{ fontSize: 14, fontWeight: '700', color: '#0F172A', textAlign: 'center' }}>
-              🎉 ไม่มีงานส่วนตัวที่ค้างอยู่
+          <View style={{ padding: 32, alignItems: 'center', backgroundColor: colors.cardBg, borderRadius: 12, marginTop: 12, borderWidth: 1, borderColor: colors.border }}>
+            <Text style={{ fontSize: 14, fontWeight: '700', color: colors.textPrimary, textAlign: 'center' }}>
+              ไม่มีงานส่วนตัวที่ค้างอยู่
             </Text>
-            <Text style={{ fontSize: 12, color: '#64748B', marginTop: 4, textAlign: 'center' }}>
+            <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 4, textAlign: 'center' }}>
               คุณสามารถดูงานทั้งหมดและกิจกรรมของเพื่อนร่วมทีมได้ที่แท็บ "ทีมของฉัน"
             </Text>
           </View>
@@ -190,11 +192,11 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
             const st = getStatusColor(item.status);
 
             return (
-              <View key={item.id} style={styles.taskCard}>
+              <View key={item.id} style={[styles.taskCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
                 {/* Task Header */}
                 <View style={styles.taskCardTop}>
-                  <View style={styles.typeBadge}>
-                    <Text style={styles.typeBadgeText}>{item.type}</Text>
+                  <View style={[styles.typeBadge, { backgroundColor: colors.surfaceSubtle }]}>
+                    <Text style={[styles.typeBadgeText, { color: colors.textSecondary }]}>{item.type}</Text>
                   </View>
 
                   <View style={[styles.statusBadge, { backgroundColor: st.bg }]}>
@@ -203,22 +205,22 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
                 </View>
 
                 {/* Task Title & Parent Content */}
-                <Text style={styles.taskTitle}>{item.title}</Text>
-                <View style={styles.parentContentBox}>
-                  <Text style={styles.parentContentLabel}>ชิ้นงาน:</Text>
-                  <Text style={styles.parentContentTitle}>
+                <Text style={[styles.taskTitle, { color: colors.textPrimary }]}>{item.title}</Text>
+                <View style={[styles.parentContentBox, { backgroundColor: colors.surfaceSubtle }]}>
+                  <Text style={[styles.parentContentLabel, { color: colors.textSecondary }]}>ชิ้นงาน:</Text>
+                  <Text style={[styles.parentContentTitle, { color: colors.textPrimary }]}>
                     {item.contentTitle} ({item.platform})
                   </Text>
                 </View>
 
                 <View style={styles.dueRow}>
-                  <Text style={styles.dueText}>กำหนดส่ง: {item.dueDate}</Text>
+                  <Text style={[styles.dueText, { color: colors.textSecondary }]}>กำหนดส่ง: {item.dueDate}</Text>
                 </View>
 
                 {/* Action Area based on status */}
                 {item.status === 'TODO' && (
                   <TouchableOpacity
-                    style={styles.startBtn}
+                    style={[styles.startBtn, { backgroundColor: isDark ? colors.primary : '#0F172A' }]}
                     onPress={() => handleStartTask(item.id)}
                   >
                     <Text style={styles.startBtnText}>เริ่มทำงาน</Text>
@@ -229,17 +231,24 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
                   <View style={styles.submitSection}>
                     <View style={styles.linkPromptRow}>
                       <Text style={styles.linkIconText}>🔗</Text>
-                      <Text style={styles.inputPrompt}>แนบลิงก์ไฟล์งาน (Drive / Cloud URL):</Text>
+                      <Text style={[styles.inputPrompt, { color: colors.textSecondary }]}>แนบลิงก์ไฟล์งาน (Drive / Cloud URL):</Text>
                     </View>
                     <TextInput
-                      style={styles.urlInput}
+                      style={[
+                        styles.urlInput,
+                        {
+                          backgroundColor: colors.inputBg,
+                          borderColor: colors.inputBorder,
+                          color: colors.textPrimary,
+                        },
+                      ]}
                       placeholder="วางลิงก์ไฟล์ผลงานที่นี่..."
                       value={submissionInputs[item.id] || ''}
                       onChangeText={(val) =>
                         setSubmissionInputs({ ...submissionInputs, [item.id]: val })
                       }
                       autoCapitalize="none"
-                      placeholderTextColor="#94A3B8"
+                      placeholderTextColor={colors.textMuted}
                     />
                     <TouchableOpacity
                       style={styles.submitBtn}

@@ -23,8 +23,9 @@
 | **21 ก.ย. 2026 (23:30 - 23:45 น.)** | [Phase 11: เพิ่มระบบคอมเมนต์ตรวจงานของ Manager, ออกแบบ Custom Single-Tone Tab Icons](#phase-11-เพิ่มระบบคอมเมนต์ตรวจงานของ-manager-ออกแบบ-custom-single-tone-tab-icons-และลดไอคอนฟุ่มเฟือย) | สำเร็จ ✅ |
 | **22 ก.ย. 2026 (00:00 - 00:15 น.)** | [Phase 12: การเชื่อมต่อระบบและการทำงานครบวงจร 100% (Full End-to-End System Integration)](#phase-12-การเชื่อมต่อระบบและการทำงานครบวงจร-100-full-end-to-end-system-integration) | สำเร็จ ✅ |
 | **22 ก.ย. 2026 (14:05 - 14:30 น.)** | [Phase 13: การย้ายสู่เครื่องพัฒนาเครื่องใหม่ & การตั้งค่า Android Environment](#phase-13-การย้ายสู่เครื่องพัฒนาเครื่องใหม่--การตั้งค่า-android-environment-fresh-machine-migration) | สำเร็จ ✅ |
-| **22 ก.ย. 2026 (14:45 - 15:15 น.)** | [Phase 14: การยกระดับสถาปัตยกรรมสู่ Team-Based Workspace & การยกเลิก Mock Data สู่ MongoDB 100%](#phase-14-การยกระดับสถาปัตยกรรมสู่-team-based-workspace--การยกเลิก-mock-data-สู่-mongodb-100) | กำลังดำเนินการ 🚀 |
-| **22 ก.ย. 2026 (15:15 น.)** | [แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)](#แผนที่ไฟล์และดัชนีเอกสารทั้งหมด) | ปัจจุบัน 📍 |
+| **22 ก.ย. 2026 (14:45 - 15:15 น.)** | [Phase 14: การยกระดับสถาปัตยกรรมสู่ Team-Based Workspace & การยกเลิก Mock Data สู่ MongoDB 100%](#phase-14-การยกระดับสถาปัตยกรรมสู่-team-based-workspace--การยกเลิก-mock-data-สู่-mongodb-100) | สำเร็จ ✅ |
+| **23 ก.ย. 2026 (02:00 - 02:25 น.)** | [Phase 15: ระบบสลับโหมด Dark Mode และ Light Mode (Dynamic Theming System)](#phase-15-ระบบสลับโหมด-dark-mode-และ-light-mode-dynamic-theming-system) | สำเร็จ ✅ |
+| **23 ก.ย. 2026 (02:25 น.)** | [แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)](#แผนที่ไฟล์และดัชนีเอกสารทั้งหมด) | ปัจจุบัน 📍 |
 
 ---
 
@@ -404,3 +405,35 @@ D:\VsCode\Project\Content-Management-System\
    - [`05-Sequence-Diagrams.md`](file:///d:/Content-Management-System/docs/academic/05-Sequence-Diagrams.md): เพิ่ม Sequence Diagram 4: Team Workspace Access & Event Dispatching
    - [`06-Entity-Relationship-Diagram.md`](file:///d:/Content-Management-System/docs/academic/06-Entity-Relationship-Diagram.md): เพิ่ม Entity `TEAM_ACTIVITIES` และเชื่อมโยง Foreign Keys
    - [`07-Data-Dictionary.md`](file:///d:/Content-Management-System/docs/academic/07-Data-Dictionary.md): เพิ่มตารางที่ 13 `team_activities` และฟิลด์ใหม่ในตาราง `users`, `contents`, `tasks`
+
+---
+
+### Phase 15: ระบบสลับโหมด Dark Mode และ Light Mode (Dynamic Theming System)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 23 กันยายน 2026 (02:00 - 02:25 น.)
+
+พัฒนาระบบสลับโหมดการแสดงผลแบบไดนามิก (Dark Mode / Light Mode Theme Switching) ทั่วทั้งแอปพลิเคชันมือถือ (React Native Mobile App) เพื่อยกระดับประสบการณ์ผู้ใช้งาน (Accessibility & Ergonomics) รองรับการใช้งานในสภาวะแสงน้อย และสอดคล้องกับมาตรฐาน Material You / iOS Human Interface Guidelines:
+
+1. **สถาปัตยกรรม Context API & Semantic Design Tokens**:
+   - สร้างโมดูล [`ThemeContext.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/theme/ThemeContext.jsx) พร้อม Context Provider และ Custom Hook `useTheme()`
+   - กำหนดชุดคู่สี Semantic Tokens ทั้งฝั่ง `lightColors` และ `darkColors`:
+     - **Light Mode Palette**: `background: #F8FAFC`, `surface: #FFFFFF`, `surfaceSubtle: #F1F5F9`, `textPrimary: #0F172A`, `textSecondary: #64748B`, `border: #E2E8F0`
+     - **Dark Mode Palette (Midnight/Slate Aesthetic)**: `background: #0B0F17`, `surface: #1E293B`, `surfaceSubtle: #334155`, `textPrimary: #F8FAFC`, `textSecondary: #94A3B8`, `border: #334155`
+     - **Status Badges Palette**: คำนวณคอนทราสต์สูงสำหรับสภาวะมืด (Approved `#064E3B`/`#4ADE80`, Review `#78350F`/`#FBBF24`, Revision `#7F1D1D`/`#F87171`)
+2. **การผสานเข้ากับ Root Application (`App.jsx`)**:
+   - ห่อหุ้ม Navigation Container ด้วย `<ThemeProvider>`
+   - ควบคุม React Native `<StatusBar>` แบบไดนามิกตามธีม (`barStyle: light-content | dark-content`, `backgroundColor: colors.background`)
+3. **การออกแบบจุดควบคุมการเปิด/ปิดธีม (Settings Switch)**:
+   - ติดตั้งสวิตช์ Toggle พร้อมการแสดงผลโหมดปัจจุบันในหน้า [`ProfileScreen.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/profile/ProfileScreen.jsx) ภายใต้ส่วน "การแสดงผลและธีม (Appearance & Theme)"
+   - สลับธีมได้ทันทีแบบ Real-time โดยไม่ต้องรีโหลดแอปพลิเคชัน
+4. **การปรับแต่งธีมครอบคลุมทุกหน้าจอ 100%**:
+   - [`ManagerNavigator.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/navigation/ManagerNavigator.jsx) & [`MemberNavigator.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/navigation/MemberNavigator.jsx): Tab bar, ขอบ, และสีปุ่ม Active ปรับตามธีม
+   - [`TabIcon.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/components/TabIcon.jsx): สีเวกเตอร์ไอคอนโมโนโครมเปลี่ยนตามธีม (`colors.tabIconActive`, `colors.tabIconInactive`)
+   - [`ManagerDashboard.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/dashboard/ManagerDashboard.jsx): หัวตาราง, การ์ด KPI, ชิปตัวกรอง, และการ์ดชิ้นงาน
+   - [`MemberTaskList.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/tasks/MemberTaskList.jsx): การ์ดงาน, ช่องกรอกส่งงาน URL, และปุ่มบันทึก
+   - [`IdeaListScreen.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/ideas/IdeaListScreen.jsx): การ์ดไอเดีย, ปุ่ม Upvote, และ Modal ป้อนไอเดียใหม่
+   - [`TeamOverviewScreen.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/team/TeamOverviewScreen.jsx): บอร์ดสรุปทีม, รายชื่อสมาชิก, สถานะสด, ทาสก์ทีม, และ Activity Feed
+   - [`LegalChecklistScreen.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/legal/LegalChecklistScreen.jsx): หัวเรื่องตรวจงาน, เช็กลิสต์ 3 กฎ, ช่องกรอกคอมเมนต์รายข้อ, และคอมเมนต์ภาพรวม
+   - [`LoginScreen.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/auth/LoginScreen.jsx): หน้าจอเข้าสู่ระบบ ปรับโทนสีเข้ม/สว่างตามธีม
+5. **การทดสอบความถูกต้องและคุณภาพโค้ด (Quality Assurance)**:
+   - ผ่านการตรวจสอบความถูกต้องด้วย ESLint (`npm run lint`): **0 errors**
+   - ปรับแต่ง Jest Config (`jest.config.js`) ให้รองรับการแปลง JSX: **100% Pass** (`App.test.js`)

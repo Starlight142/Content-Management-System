@@ -13,8 +13,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { contentApi } from '../../services/api';
+import { useTheme } from '../../theme/ThemeContext';
 
 export default function LegalChecklistScreen({ targetContent, onBack, onAuditComplete }) {
+  const { isDark, colors } = useTheme();
   const [submitting, setSubmitting] = useState(false);
   const [generalFeedback, setGeneralFeedback] = useState(
     targetContent?.reviewHistory?.[targetContent.reviewHistory.length - 1]?.notes || ''
@@ -213,15 +215,15 @@ export default function LegalChecklistScreen({ targetContent, onBack, onAuditCom
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Top App Bar */}
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
-          <Text style={styles.backText}>← กลับ</Text>
+      <View style={[styles.topBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        <TouchableOpacity onPress={onBack} style={[styles.backBtn, { backgroundColor: colors.surfaceSubtle }]}>
+          <Text style={[styles.backText, { color: colors.textPrimary }]}>← กลับ</Text>
         </TouchableOpacity>
         <View style={styles.titleWrap}>
-          <Text style={styles.headerTitle}>ตรวจสอบชิ้นงาน</Text>
-          <Text style={styles.headerSubtitle}>ตรวจและให้ข้อคิดเห็นแก่ทีมผลิต</Text>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>ตรวจสอบชิ้นงาน</Text>
+          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>ตรวจและให้ข้อคิดเห็นแก่ทีมผลิต</Text>
         </View>
         <View style={styles.placeholder} />
       </View>
@@ -232,37 +234,39 @@ export default function LegalChecklistScreen({ targetContent, onBack, onAuditCom
       >
         <ScrollView contentContainerStyle={styles.scroll}>
           {/* Content Under Review Badge */}
-          <View style={styles.contentBanner}>
-            <Text style={styles.bannerSmall}>ชิ้นงานที่ตรวจ:</Text>
-            <Text style={styles.bannerTitle}>
+          <View style={[styles.contentBanner, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+            <Text style={[styles.bannerSmall, { color: colors.textSecondary }]}>ชิ้นงานที่ตรวจ:</Text>
+            <Text style={[styles.bannerTitle, { color: colors.textPrimary }]}>
               {targetContent?.title || 'สรุปข่าว AI ภายใน 1 นาที'} ({targetContent?.platform || 'General'})
             </Text>
-            <Text style={styles.bannerMeta}>
+            <Text style={[styles.bannerMeta, { color: colors.textSecondary }]}>
               ผู้รับผิดชอบ: {targetContent?.creator || 'Creator'}
             </Text>
           </View>
 
           {/* Progress Card */}
-          <View style={styles.progressCard}>
+          <View style={[styles.progressCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <View style={styles.progressHeader}>
-              <Text style={styles.progressTitle}>ผลการตรวจเช็กเบื้องต้น</Text>
+              <Text style={[styles.progressTitle, { color: colors.textPrimary }]}>ผลการตรวจเช็กเบื้องต้น</Text>
               <Text
                 style={[
                   styles.progressBadgeText,
-                  { color: isAllPassed ? '#16A34A' : '#D97706' },
+                  { color: isAllPassed ? (isDark ? '#4ADE80' : '#16A34A') : (isDark ? '#FBBF24' : '#D97706') },
                 ]}
               >
                 {passedCount} จาก {checklist.length} ข้อผ่านเกณฑ์
               </Text>
             </View>
 
-            <View style={styles.progressBarTrack}>
+            <View style={[styles.progressBarTrack, { backgroundColor: colors.surfaceSubtle }]}>
               <View
                 style={[
                   styles.progressBarFill,
                   {
                     width: `${progressPercent}%`,
-                    backgroundColor: isAllPassed ? '#16A34A' : '#D97706',
+                    backgroundColor: isAllPassed
+                      ? (isDark ? '#4ADE80' : '#16A34A')
+                      : (isDark ? '#FBBF24' : '#D97706'),
                   },
                 ]}
               />
@@ -270,11 +274,18 @@ export default function LegalChecklistScreen({ targetContent, onBack, onAuditCom
           </View>
 
           {/* Checklist Items with per-clip comment boxes */}
-          <Text style={styles.sectionHeader}>รายการตรวจสอบและข้อเสนอแนะ</Text>
+          <Text style={[styles.sectionHeader, { color: colors.textSecondary }]}>รายการตรวจสอบและข้อเสนอแนะ</Text>
           {checklist.map((item) => (
             <View
               key={item.id}
-              style={[styles.checkCard, item.checked && styles.checkCardActive]}
+              style={[
+                styles.checkCard,
+                { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
+                item.checked && {
+                  borderColor: isDark ? '#065F46' : '#BBF7D0',
+                  backgroundColor: isDark ? '#064E3B22' : '#FAFCFA',
+                },
+              ]}
             >
               <TouchableOpacity
                 style={styles.checkCardHeader}
@@ -284,29 +295,38 @@ export default function LegalChecklistScreen({ targetContent, onBack, onAuditCom
                 <View
                   style={[
                     styles.checkbox,
-                    item.checked ? styles.checkboxChecked : styles.checkboxUnchecked,
+                    item.checked
+                      ? { borderColor: colors.statusApprovedText, backgroundColor: colors.statusApprovedText }
+                      : { borderColor: colors.inputBorder, backgroundColor: colors.inputBg },
                   ]}
                 >
                   <Text style={styles.checkboxIcon}>{item.checked ? '✓' : ''}</Text>
                 </View>
 
                 <View style={styles.checkHeaderRight}>
-                  <Text style={styles.categoryText}>{item.category}</Text>
-                  <Text style={styles.itemTitle}>{item.title}</Text>
+                  <Text style={[styles.categoryText, { color: colors.textSecondary }]}>{item.category}</Text>
+                  <Text style={[styles.itemTitle, { color: colors.textPrimary }]}>{item.title}</Text>
                 </View>
               </TouchableOpacity>
 
-              <Text style={styles.itemDesc}>{item.desc}</Text>
+              <Text style={[styles.itemDesc, { color: colors.textSecondary }]}>{item.desc}</Text>
 
               {/* Note input for this specific clip */}
-              <View style={styles.noteInputWrap}>
-                <Text style={styles.noteLabel}>ข้อคิดเห็น / คำแนะนำในคลิปนี้:</Text>
+              <View style={[styles.noteInputWrap, { borderTopColor: colors.divider }]}>
+                <Text style={[styles.noteLabel, { color: colors.textSecondary }]}>ข้อคิดเห็น / คำแนะนำในคลิปนี้:</Text>
                 <TextInput
-                  style={styles.itemNoteInput}
+                  style={[
+                    styles.itemNoteInput,
+                    {
+                      backgroundColor: colors.inputBg,
+                      borderColor: colors.inputBorder,
+                      color: colors.textPrimary,
+                    },
+                  ]}
                   placeholder={`ระบุข้อคิดเห็นเฉพาะเกี่ยวกับ${item.category}ในคลิปนี้...`}
                   value={item.note}
                   onChangeText={(text) => updateItemNote(item.id, text)}
-                  placeholderTextColor="#94A3B8"
+                  placeholderTextColor={colors.textMuted}
                   multiline={false}
                 />
               </View>
@@ -314,17 +334,24 @@ export default function LegalChecklistScreen({ targetContent, onBack, onAuditCom
           ))}
 
           {/* General Feedback Textarea */}
-          <View style={styles.generalFeedbackSection}>
-            <Text style={styles.feedbackSectionTitle}>คำแนะนำภาพรวมถึงสมาชิกในทีม</Text>
-            <Text style={styles.feedbackSectionDesc}>
+          <View style={[styles.generalFeedbackSection, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+            <Text style={[styles.feedbackSectionTitle, { color: colors.textPrimary }]}>คำแนะนำภาพรวมถึงสมาชิกในทีม</Text>
+            <Text style={[styles.feedbackSectionDesc, { color: colors.textSecondary }]}>
               ระบุสิ่งที่ต้องแก้ไขหรือข้อเสนอแนะเพิ่มเติม สมาชิกจะเห็นข้อความนี้ในหน้ารายการงาน
             </Text>
             <TextInput
-              style={styles.generalFeedbackInput}
+              style={[
+                styles.generalFeedbackInput,
+                {
+                  backgroundColor: colors.inputBg,
+                  borderColor: colors.inputBorder,
+                  color: colors.textPrimary,
+                },
+              ]}
               placeholder="เช่น นาทีที่ 0:45 เสียงเพลงดังเกินไป, ตัดต่อตอนจบให้กระชับขึ้นอีกนิด..."
               value={generalFeedback}
               onChangeText={setGeneralFeedback}
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={colors.textMuted}
               multiline
               numberOfLines={3}
             />
@@ -333,21 +360,27 @@ export default function LegalChecklistScreen({ targetContent, onBack, onAuditCom
           {/* Actions Area */}
           <View style={styles.actionContainer}>
             <TouchableOpacity
-              style={styles.btnRevision}
+              style={[
+                styles.btnRevision,
+                {
+                  backgroundColor: isDark ? '#450A0A' : '#FFFFFF',
+                  borderColor: isDark ? '#991B1B' : '#FCA5A5',
+                },
+              ]}
               onPress={handleRequestRevision}
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#DC2626" />
+                <ActivityIndicator color={isDark ? '#F87171' : '#DC2626'} />
               ) : (
-                <Text style={styles.btnRevisionText}>ส่งกลับแก้ไขพร้อมคอมเมนต์</Text>
+                <Text style={[styles.btnRevisionText, { color: isDark ? '#FCA5A5' : '#DC2626' }]}>ส่งกลับแก้ไขพร้อมคอมเมนต์</Text>
               )}
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[
                 styles.btnApprove,
-                !isAllPassed && styles.btnApproveDisabled,
+                !isAllPassed && [styles.btnApproveDisabled, { backgroundColor: colors.surfaceSubtle }],
               ]}
               onPress={handleApprove}
               disabled={submitting || !isAllPassed}
@@ -358,7 +391,7 @@ export default function LegalChecklistScreen({ targetContent, onBack, onAuditCom
                 <Text
                   style={[
                     styles.btnApproveText,
-                    !isAllPassed && styles.btnApproveTextDisabled,
+                    !isAllPassed && [styles.btnApproveTextDisabled, { color: colors.textMuted }],
                   ]}
                 >
                   {isAllPassed ? 'อนุมัติชิ้นงาน (Approve)' : 'รอผ่านเกณฑ์ครบ 3 ข้อ'}
