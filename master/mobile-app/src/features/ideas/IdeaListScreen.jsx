@@ -131,14 +131,6 @@ export default function IdeaListScreen({ onBack }) {
         contentContainerStyle={styles.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
-        {/* Stage Overview Card */}
-        <View style={styles.stageCard}>
-          <Text style={styles.stageTitle}>ขั้นตอนที่ 1: เสนอและรวบรวมไอเดีย (Content Ideation)</Text>
-          <Text style={styles.stageDesc}>
-            รวบรวมไอเดียจากทีมงาน ให้คะแนนความน่าสนใจ (Upvote) ก่อนที่ Manager จะอนุมัติเข้าสู่กระบวนการวางแผนและถ่ายทำจริง
-          </Text>
-        </View>
-
         {/* Filter Tabs */}
         <View style={styles.filterRow}>
           {[
@@ -341,26 +333,6 @@ const styles = StyleSheet.create({
   scroll: {
     padding: 16,
     paddingBottom: 40,
-  },
-  stageCard: {
-    backgroundColor: '#FFFBEB',
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#FDE68A',
-    marginBottom: 14,
-  },
-  stageTitle: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#B45309',
-    marginBottom: 4,
-    letterSpacing: 0.5,
-  },
-  stageDesc: {
-    fontSize: 11,
-    color: '#78350F',
-    lineHeight: 16,
   },
   filterRow: {
     flexDirection: 'row',
