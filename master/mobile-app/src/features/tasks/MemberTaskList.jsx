@@ -54,6 +54,7 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
 
   useEffect(() => {
     fetchTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onRefresh = async () => {

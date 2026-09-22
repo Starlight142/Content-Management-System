@@ -23,7 +23,7 @@ export default function IdeaListScreen({ onBack }) {
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [platform, setPlatform] = useState('YouTube');
-  const [category, setCategory] = useState('Tech Review');
+  const [category] = useState('Tech Review');
 
   const fetchIdeas = async () => {
     try {
