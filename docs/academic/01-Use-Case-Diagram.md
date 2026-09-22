@@ -56,12 +56,14 @@ flowchart LR
             UC_ApproveIdea(["UC-03: Approve / Reject Idea"])
         end
 
-        %% Production Subsystem
-        subgraph Sub_Production["2. Production & Tasks"]
+        %% Production & Team Workspace Subsystem
+        subgraph Sub_Production["2. Production & Team Workspace"]
             UC_CreateContent(["UC-04: Create Content Pipeline"])
             UC_AssignTask(["UC-05: Assign Production Tasks"])
-            UC_UpdateTask(["UC-06: Update Task Status"])
+            UC_UpdateTask(["UC-06: Update My Task Status & Progress"])
             UC_SubmitDeliverable(["UC-07: Submit Work Assets/Links"])
+            UC_ViewTeamOverview(["UC-19: View Team Workspace & Progress"])
+            UC_MonitorTeamActivity(["UC-20: Monitor Team Activity Feed"])
         end
 
         %% Review & Legal Subsystem
@@ -94,6 +96,8 @@ flowchart LR
     Member --> UC_VoteIdea
     Member --> UC_UpdateTask
     Member --> UC_SubmitDeliverable
+    Member --> UC_ViewTeamOverview
+    Member --> UC_MonitorTeamActivity
 
     %% Relationships - Manager
     Manager --> UC_Auth
@@ -106,6 +110,8 @@ flowchart LR
     Manager --> UC_ApproveContent
     Manager --> UC_SchedulePublish
     Manager --> UC_ViewAnalytics
+    Manager --> UC_ViewTeamOverview
+    Manager --> UC_MonitorTeamActivity
 
     %% Relationships - Admin
     Admin --> UC_Auth

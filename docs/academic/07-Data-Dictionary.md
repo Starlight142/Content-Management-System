@@ -24,6 +24,8 @@
 | `password_hash`| VARCHAR | 255 | - | NO | - | รหัสผ่านที่เข้ารหัสด้วย bcrypt (Salt 10) |
 | `first_name` | VARCHAR | 100 | - | YES | NULL | ชื่อจริง |
 | `last_name` | VARCHAR | 100 | - | YES | NULL | นามสกุล |
+| `team_id` | UUID / VARCHAR | 36 | FK (`teams.id`) | YES | NULL | ทีมหลักที่สังกัด |
+| `working_status` | VARCHAR | 30 | CHECK in ('WORKING','REVIEWING','IDLE','OFFLINE') | NO | 'IDLE' | สถานะการทำงานปัจจุบันของสมาชิก |
 | `is_active` | BOOLEAN | - | - | NO | TRUE | สถานะเปิด/ปิดการใช้งานบัญชี |
 | `created_at` | TIMESTAMP | - | - | NO | CURRENT_TIMESTAMP | วันเวลาที่ลงทะเบียน |
 | `updated_at` | TIMESTAMP | - | - | NO | CURRENT_TIMESTAMP | วันเวลาที่แก้ไขล่าสุด |
@@ -75,6 +77,8 @@
 | `platform` | VARCHAR | 50 | CHECK in ('YouTube','TikTok','Instagram','Other') | NO | 'TikTok' | แพลตฟอร์มหลัก |
 | `category` | VARCHAR | 50 | - | YES | 'General' | หมวดหมู่ |
 | `status` | VARCHAR | 30 | CHECK in ('PLANNING','PRODUCTION','REVIEW','REVISION','APPROVED','SCHEDULED','PUBLISHED') | NO | 'PLANNING' | สถานะของวงจรการผลิต (State Machine) |
+| `progress` | INT | - | CHECK (progress BETWEEN 0 AND 100) | NO | 0 | ความคืบหน้ารวมของชิ้นงาน (เปอร์เซ็นต์ 0-100%) |
+| `team_id` | UUID / VARCHAR | 36 | FK (`teams.id`) | NO | - | รหัสทีมผู้รับผิดชอบงานผลิตคอนเทนต์นี้ |
 | `created_by` | UUID / VARCHAR | 36 | FK (`users.id`) | NO | - | ผู้เปิดโปรเจกต์งาน |
 | `due_date` | TIMESTAMP | - | - | YES | NULL | วันที่และเวลากำหนดส่งงานขั้นสุดท้าย |
 | `published_at`| TIMESTAMP | - | - | YES | NULL | วันและเวลาที่กดเผยแพร่สู่สาธารณะ |
@@ -88,10 +92,12 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id` | UUID / VARCHAR | 36 | PK | NO | gen_random_uuid() | รหัสงานย่อย |
 | `content_id` | UUID / VARCHAR | 36 | FK (`contents.id` ON DELETE CASCADE) | NO | - | เชื่อมโยงกับ Content หลัก |
+| `team_id` | UUID / VARCHAR | 36 | FK (`teams.id`) | NO | - | รหัสทีมเจ้าของงานย่อย |
 | `title` | VARCHAR | 200 | - | NO | - | ชื่องานย่อย (เช่น ตัดต่อคลิป, อัดเสียง) |
 | `task_type` | VARCHAR | 50 | - | NO | 'Editing' | ประเภทงาน (Scripting, Filming, Editing) |
 | `assigned_to`| UUID / VARCHAR | 36 | FK (`users.id`) | YES | NULL | สมาชิกที่ได้รับมอบหมาย |
 | `status` | VARCHAR | 30 | CHECK in ('TODO','IN_PROGRESS','REVIEW','DONE') | NO | 'TODO' | สถานะการทำงาน |
+| `progress` | INT | - | CHECK (progress BETWEEN 0 AND 100) | NO | 0 | ความคืบหน้าของงานย่อย (0-100%) |
 | `due_date` | TIMESTAMP | - | - | YES | NULL | กำหนดส่งงานย่อย |
 | `submission_url`| TEXT | - | - | YES | NULL | ลิงก์ส่งมอบผลงาน (Google Drive / Frame.io) |
 | `notes` | TEXT | - | - | YES | NULL | บันทึกเพิ่มเติม |
@@ -168,4 +174,19 @@
 | `details` | JSON / JSONB | - | - | YES | NULL | ข้อมูลก่อน/หลังการเปลี่ยนแปลง (Diff Payload) |
 | `ip_address` | VARCHAR | 45 | - | YES | NULL | หมายเลข IP ผู้เรียกคำสั่ง |
 | `created_at` | TIMESTAMP | - | - | NO | CURRENT_TIMESTAMP | วันเวลาที่เกิดเหตุการณ์ |
+
+---
+
+### 13. ตาราง: `team_activities` (บันทึกกิจกรรมและความเคลื่อนไหวภายในทีม - Team Activity Feed)
+| ชื่อฟิลด์ | ชนิดข้อมูล | ความยาว | ข้อจำกัด (Constraints) | Nullable | ค่าเริ่มต้น | คำอธิบาย |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | UUID / VARCHAR | 36 | PK | NO | gen_random_uuid() | รหัสบันทึกกิจกรรมในทีม |
+| `team_id` | UUID / VARCHAR | 36 | FK (`teams.id` ON DELETE CASCADE) | NO | - | รหัสทีมที่กิจกรรมนี้เกิดขึ้น |
+| `user_id` | UUID / VARCHAR | 36 | FK (`users.id`) | NO | - | ผู้ดำเนินการที่ก่อให้เกิดกิจกรรม |
+| `activity_type`| VARCHAR | 50 | - | NO | - | ประเภทเหตุการณ์ (`TASK_SUBMITTED`, `TASK_ASSIGNED`, `TASK_STATUS_CHANGED`, `CONTENT_CREATED`, `CONTENT_APPROVED`, `CONTENT_REVISED`) |
+| `title` | VARCHAR | 255 | - | NO | - | ข้อความสรุปกิจกรรม เช่น "John ส่ง AI Tutorial ให้ Manager ตรวจ" |
+| `description`| TEXT | - | - | YES | NULL | รายละเอียดเพิ่มเติมของกิจกรรม |
+| `metadata` | JSON / JSONB | - | - | YES | NULL | ข้อมูลทางเทคนิคประกอบ เช่น `taskId`, `contentId`, `oldStatus`, `newStatus`, `progress` |
+| `created_at` | TIMESTAMP | - | - | NO | CURRENT_TIMESTAMP | วันเวลาที่เกิดกิจกรรม (ใช้เรียงลำดับ Feed ล่าสุด) |
+
 

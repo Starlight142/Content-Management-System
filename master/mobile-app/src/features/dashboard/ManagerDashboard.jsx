@@ -7,54 +7,14 @@ import {
   StyleSheet,
   Alert,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { contentApi } from '../../services/api';
 
 export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
-  const [pipeline, setPipeline] = useState([
-    {
-      _id: '1',
-      title: 'สรุปข่าว AI ภายใน 1 นาที',
-      description: 'คลิปสั้นเจาะลึกฟีเจอร์ AI Tool ใหม่ล่าสุดประจำสัปดาห์',
-      platform: 'TikTok',
-      status: 'REVIEW',
-      category: 'News & Tech',
-      creator: 'John Creator',
-      dueDate: '2026-09-20',
-    },
-    {
-      _id: '2',
-      title: 'รีวิวแก็ดเจ็ตสมาร์ตโฮม 2026',
-      description: 'ทดสอบอุปกรณ์ Smart Home 5 ชิ้นที่ควรมีติดบ้าน',
-      platform: 'YouTube',
-      status: 'PUBLISHED',
-      category: 'Tech Review',
-      creator: 'Jane Editor',
-      dueDate: '2026-09-25',
-    },
-    {
-      _id: '3',
-      title: 'Vlog เบื้องหลังกองถ่ายทำภาพยนตร์สั้น',
-      description: 'พาดูมุมกล้องและเทคนิคการจัดแสงหลังสตู',
-      platform: 'Instagram',
-      status: 'PRODUCTION',
-      category: 'Behind the Scenes',
-      creator: 'Somchai Director',
-      dueDate: '2026-09-28',
-    },
-    {
-      _id: '4',
-      title: 'Unbox ไมโครโฟนไร้สายสตูดิโอ 8K',
-      description: 'แกะกล่องและทดสอบเสียงพูดในที่เสียงดัง',
-      platform: 'YouTube',
-      status: 'PLANNING',
-      category: 'Unboxing',
-      creator: 'Jane Editor',
-      dueDate: '2026-10-02',
-    },
-  ]);
-
+  const [pipeline, setPipeline] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL');
   const [refreshing, setRefreshing] = useState(false);
   const [isLiveConnected, setIsLiveConnected] = useState(false);
@@ -63,7 +23,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     try {
       const res = await contentApi.getAll();
       const list = Array.isArray(res) ? res : (res?.contents || []);
-      if (Array.isArray(list) && list.length > 0) {
+      if (Array.isArray(list)) {
         const mapped = list.map((c) => ({
           _id: c._id,
           title: c.title,
@@ -78,13 +38,13 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         }));
         setPipeline(mapped);
         setIsLiveConnected(true);
-      } else if (Array.isArray(list)) {
-        setPipeline([]);
-        setIsLiveConnected(true);
       }
     } catch (e) {
-      console.warn('Live API error, using local fallback:', e.message);
+      console.warn('Live API error in ManagerDashboard:', e.message);
+      setPipeline([]);
       setIsLiveConnected(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -299,115 +259,131 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         </ScrollView>
 
         {/* Content Production Cards */}
-        {filteredPipeline.map((item) => {
-          const st = getStatusBadge(item.status);
+        {loading ? (
+          <View style={{ padding: 32, alignItems: 'center' }}>
+            <ActivityIndicator size="small" color="#0F172A" />
+            <Text style={{ marginTop: 8, fontSize: 13, color: '#64748B' }}>
+              กำลังโหลดสถานะกระบวนการผลิตจาก MongoDB...
+            </Text>
+          </View>
+        ) : filteredPipeline.length === 0 ? (
+          <View style={{ padding: 32, alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, marginTop: 12, borderWidth: 1, borderColor: '#E2E8F0' }}>
+            <Text style={{ fontSize: 14, fontWeight: '700', color: '#0F172A', textAlign: 'center' }}>
+              ไม่มีชิ้นงานในสถานะนี้
+            </Text>
+            <Text style={{ fontSize: 12, color: '#64748B', marginTop: 4, textAlign: 'center' }}>
+              เลือกตัวกรอง "ทั้งหมด" หรือตรวจสอบสถานะงานในแท็บ "ภาพรวมทีม"
+            </Text>
+          </View>
+        ) : (
+          filteredPipeline.map((item) => {
+            const st = getStatusBadge(item.status);
 
-          return (
-            <View key={item._id} style={styles.card}>
-              {/* Card Header Row */}
-              <View style={styles.cardTopRow}>
-                <View style={styles.platBadge}>
-                  <Text style={styles.platText}>{item.platform}</Text>
-                </View>
-
-                <View style={[styles.statusBadge, { backgroundColor: st.bg }]}>
-                  <Text style={[styles.statusBadgeText, { color: st.text }]}>{st.label}</Text>
-                </View>
-              </View>
-
-              {/* Title & Description */}
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardDesc} numberOfLines={2}>
-                {item.description}
-              </Text>
-
-              {/* Metadata Row */}
-              <View style={styles.cardMetaRow}>
-                <Text style={styles.metaText}>ผู้ผลิต: {item.creator}</Text>
-                <Text style={styles.metaDot}>•</Text>
-                <Text style={styles.metaText}>กำหนดส่ง: {item.dueDate}</Text>
-              </View>
-
-              {/* Manager Actions based on status */}
-              {item.status === 'PLANNING' && (
-                <TouchableOpacity
-                  style={styles.btnStartProd}
-                  onPress={() => handleStartProduction(item)}
-                >
-                  <Text style={styles.btnStartProdText}>เริ่มขั้นตอนผลิต (Start Production)</Text>
-                </TouchableOpacity>
-              )}
-
-              {item.status === 'PRODUCTION' && (
-                <TouchableOpacity
-                  style={styles.btnReviewProd}
-                  onPress={() => handleSendToReview(item)}
-                >
-                  <Text style={styles.btnReviewProdText}>ส่งเข้าสู่การตรวจสอบ (Move to Review)</Text>
-                </TouchableOpacity>
-              )}
-
-              {item.status === 'REVIEW' && (
-                <View style={styles.actionRow}>
-                  <TouchableOpacity
-                    style={styles.btnSecondary}
-                    onPress={() => handleRequestRevision(item)}
-                  >
-                    <Text style={styles.btnSecondaryText}>ส่งกลับแก้ไข</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.btnPrimary}
-                    onPress={() => onNavigate('legal', item)}
-                  >
-                    <Text style={styles.btnPrimaryText}>ตรวจความถูกต้อง</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              {item.status === 'APPROVED' && (
-                <TouchableOpacity
-                  style={styles.btnPublish}
-                  onPress={() => handlePublishNow(item)}
-                >
-                  <Text style={styles.btnPublishText}>เผยแพร่ชิ้นงาน (Publish)</Text>
-                </TouchableOpacity>
-              )}
-
-              {item.status === 'PUBLISHED' && (
-                <View style={styles.publishedNotice}>
-                  <Text style={styles.publishedNoticeText}>
-                    เผยแพร่สู่สาธารณะเรียบร้อยแล้ว
-                  </Text>
-                </View>
-              )}
-
-              {item.status === 'REVISION' && (
-                <View style={{ gap: 8 }}>
-                  <View style={styles.revisionNotice}>
-                    <Text style={styles.revisionNoticeText}>
-                      อยู่ในระหว่างผู้ผลิตนำกลับไปปรับปรุงแก้ไข
-                    </Text>
+            return (
+              <View key={item._id} style={styles.card}>
+                {/* Card Header Row */}
+                <View style={styles.cardTopRow}>
+                  <View style={styles.platBadge}>
+                    <Text style={styles.platText}>{item.platform}</Text>
                   </View>
+
+                  <View style={[styles.statusBadge, { backgroundColor: st.bg }]}>
+                    <Text style={[styles.statusBadgeText, { color: st.text }]}>{st.label}</Text>
+                  </View>
+                </View>
+
+                {/* Title & Description */}
+                <Text style={styles.cardTitle}>{item.title}</Text>
+                <Text style={styles.cardDesc} numberOfLines={2}>
+                  {item.description}
+                </Text>
+
+                {/* Meta details */}
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaText}>👤 {item.creator}</Text>
+                  <Text style={styles.metaText}>📅 กำหนดส่ง: {item.dueDate}</Text>
+                </View>
+
+                {/* Contextual Action Buttons based on Status */}
+                {item.status === 'PLANNING' && (
+                  <TouchableOpacity
+                    style={styles.btnStartProd}
+                    onPress={() => handleStartProduction(item)}
+                  >
+                    <Text style={styles.btnStartProdText}>เริ่มขั้นตอนผลิต (Start Production)</Text>
+                  </TouchableOpacity>
+                )}
+
+                {item.status === 'PRODUCTION' && (
+                  <TouchableOpacity
+                    style={styles.btnReviewProd}
+                    onPress={() => handleSendToReview(item)}
+                  >
+                    <Text style={styles.btnReviewProdText}>ส่งเข้าสู่การตรวจสอบ (Move to Review)</Text>
+                  </TouchableOpacity>
+                )}
+
+                {item.status === 'REVIEW' && (
                   <View style={styles.actionRow}>
                     <TouchableOpacity
                       style={styles.btnSecondary}
-                      onPress={() => handleStartProduction(item)}
+                      onPress={() => handleRequestRevision(item)}
                     >
-                      <Text style={styles.btnSecondaryText}>เริ่มผลิตซ้ำ</Text>
+                      <Text style={styles.btnSecondaryText}>ส่งกลับแก้ไข</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.btnPrimary}
-                      onPress={() => handleSendToReview(item)}
+                      onPress={() => onNavigate('legal', item)}
                     >
-                      <Text style={styles.btnPrimaryText}>ส่งตรวจอีกครั้ง</Text>
+                      <Text style={styles.btnPrimaryText}>ตรวจความถูกต้อง</Text>
                     </TouchableOpacity>
                   </View>
-                </View>
-              )}
-            </View>
-          );
-        })}
+                )}
+
+                {item.status === 'APPROVED' && (
+                  <TouchableOpacity
+                    style={styles.btnPublish}
+                    onPress={() => handlePublishNow(item)}
+                  >
+                    <Text style={styles.btnPublishText}>เผยแพร่ชิ้นงาน (Publish)</Text>
+                  </TouchableOpacity>
+                )}
+
+                {item.status === 'PUBLISHED' && (
+                  <View style={styles.publishedNotice}>
+                    <Text style={styles.publishedNoticeText}>
+                      เผยแพร่สู่สาธารณะเรียบร้อยแล้ว
+                    </Text>
+                  </View>
+                )}
+
+                {item.status === 'REVISION' && (
+                  <View style={{ gap: 8 }}>
+                    <View style={styles.revisionNotice}>
+                      <Text style={styles.revisionNoticeText}>
+                        อยู่ในระหว่างผู้ผลิตนำกลับไปปรับปรุงแก้ไข
+                      </Text>
+                    </View>
+                    <View style={styles.actionRow}>
+                      <TouchableOpacity
+                        style={styles.btnSecondary}
+                        onPress={() => handleStartProduction(item)}
+                      >
+                        <Text style={styles.btnSecondaryText}>เริ่มผลิตซ้ำ</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.btnPrimary}
+                        onPress={() => handleSendToReview(item)}
+                      >
+                        <Text style={styles.btnPrimaryText}>ส่งตรวจอีกครั้ง</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              </View>
+            );
+          })
+        )}
       </ScrollView>
     </SafeAreaView>
   );

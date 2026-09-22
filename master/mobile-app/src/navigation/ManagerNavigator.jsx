@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import ManagerDashboard from '../features/dashboard/ManagerDashboard';
+import TeamOverviewScreen from '../features/team/TeamOverviewScreen';
 import IdeaListScreen from '../features/ideas/IdeaListScreen';
 import LegalChecklistScreen from '../features/legal/LegalChecklistScreen';
 import ProfileScreen from '../features/profile/ProfileScreen';
@@ -31,6 +32,12 @@ export default function ManagerNavigator({ user, onLogout }) {
             refreshKey={dashboardRefreshKey}
           />
         )}
+        {currentScreen === 'team' && (
+          <TeamOverviewScreen
+            user={user}
+            onNavigate={(screen) => setCurrentScreen(screen)}
+          />
+        )}
         {currentScreen === 'ideas' && (
           <IdeaListScreen onBack={() => setCurrentScreen('dashboard')} />
         )}
@@ -49,7 +56,7 @@ export default function ManagerNavigator({ user, onLogout }) {
         )}
       </View>
 
-      {/* Persistent Bottom Tab Navigation Bar */}
+      {/* Persistent Bottom Tab Navigation Bar for Manager */}
       <View style={styles.bottomBar}>
         <TouchableOpacity
           style={[styles.tabItem, currentScreen === 'dashboard' && styles.tabActive]}
@@ -60,22 +67,19 @@ export default function ManagerNavigator({ user, onLogout }) {
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={[styles.tabItem, currentScreen === 'team' && styles.tabActive]}
+          onPress={() => setCurrentScreen('team')}
+        >
+          <TabIcon name="team" active={currentScreen === 'team'} />
+          <Text style={[styles.tabLabel, currentScreen === 'team' && styles.tabLabelActive]}>ภาพรวมทีม</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={[styles.tabItem, currentScreen === 'ideas' && styles.tabActive]}
           onPress={() => setCurrentScreen('ideas')}
         >
           <TabIcon name="ideas" active={currentScreen === 'ideas'} />
           <Text style={[styles.tabLabel, currentScreen === 'ideas' && styles.tabLabelActive]}>ไอเดีย</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.tabItem, currentScreen === 'legal' && styles.tabActive]}
-          onPress={() => {
-            setTargetContent(null);
-            setCurrentScreen('legal');
-          }}
-        >
-          <TabIcon name="audit" active={currentScreen === 'legal'} />
-          <Text style={[styles.tabLabel, currentScreen === 'legal' && styles.tabLabelActive]}>ตรวจสอบ</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -118,22 +122,16 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 8,
+    minWidth: 64,
   },
   tabActive: {
     backgroundColor: '#F1F5F9',
-  },
-  tabIcon: {
-    fontSize: 18,
-    marginBottom: 2,
-    opacity: 0.5,
-  },
-  tabIconActive: {
-    opacity: 1,
   },
   tabLabel: {
     fontSize: 11,
     color: '#64748B',
     fontWeight: '500',
+    marginTop: 2,
   },
   tabLabelActive: {
     color: '#0F172A',

@@ -79,6 +79,17 @@ const contentSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  teamId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Team',
+    index: true,
+  },
+  progress: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 100,
+  },
   dueDate: {
     type: Date,
   },

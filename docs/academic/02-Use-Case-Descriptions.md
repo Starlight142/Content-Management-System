@@ -184,3 +184,55 @@
 4. ระบบอัปเดตสถานะของ Content เป็น `PUBLISHED` พร้อมบันทึก `publishedAt = NOW()`
 5. ระบบทำการเริ่มต้น Cron Job เพื่อดึงสถิติผลตอบรับ (Views, Likes, Comments, Engagement Rate) ทุก 6 ชั่วโมง
 
+---
+
+### UC-19: ดูภาพรวมและความคืบหน้าของทีม (View Team Workspace & Progress)
+
+| รายการ | รายละเอียด |
+| :--- | :--- |
+| **Use Case ID** | **UC-19** |
+| **Use Case Name** | View Team Workspace & Progress (การดูภาพรวมงานและความคืบหน้าของทีม) |
+| **Primary Actor** | Member, Manager |
+| **Preconditions** | ผู้ใช้ผ่านการยืนยันตัวตน (Authenticated) และสังกัดอยู่ในทีมอย่างน้อย 1 ทีม |
+| **Postconditions** | ผู้ใช้มองเห็นรายชื่องานทั้งหมดของทีม, สถานะ, เปอร์เซ็นต์ความคืบหน้า และสถานะของเพื่อนร่วมทีม |
+| **Trigger** | ผู้ใช้กดเข้าสู่แท็บ "ทีมของฉัน" หรือ "ภาพรวมทีม" บน Mobile App |
+
+#### Main Success Scenario:
+1. ผู้ใช้กดเลือกแท็บ **"ทีมของฉัน (My Team)"**
+2. Mobile App ส่งคำขอ `GET /api/teams/my-team` และ `GET /api/teams/:teamId/dashboard` พร้อมแนบ JWT Bearer Token
+3. Backend ดำเนินการ **Team-Level Authorization Guard**:
+   - ตรวจสอบว่าผู้ใช้สังกัดอยู่ในทีมที่ร้องขอจริง (หรือมีสิทธิ์ Admin)
+   - หากสังกัดจริง อนุญาตให้ดึงข้อมูล Dashboard Aggregate
+4. ระบบส่งคืนข้อมูล:
+   - สรุปตัวเลข KPI: งานของฉัน vs งานของทีม, งานกำลังผลิต, รอตรวจ, และเสร็จสมบูรณ์
+   - แถบ Progress รวมของทีม (Team Overall Progress % คำนวณจากค่างานย่อยทั้งหมด)
+   - รายชื่อสมาชิกในทีมและสถานะการทำงานสด (กำลังทำงาน, รอตรวจงาน, พร้อมรับงาน)
+   - ตารางงานทั้งหมดของทีม พร้อมระบุชิ้นงานแม่, ชื่องานย่อย, ผู้รับผิดชอบ, สถานะ, Progress %, และ Deadline
+5. Mobile App แสดงผลข้อมูลสด 100% จากฐานข้อมูล MongoDB
+
+#### Exception Flows:
+- **Ex 3a: ผู้ใช้พยายามเข้าถึงข้อมูลของทีมที่ตนไม่ได้สังกัด (Cross-team Violation)**:
+  - Backend ตรวจพบว่า `user.teamId !== teamId` และปฏิเสธคำขอด้วยรหัส `403 Forbidden`
+  - Mobile App แสดงข้อความแจ้งเตือน: *"ไม่สามารถเข้าถึงได้: คุณไม่มีสิทธิ์ดูข้อมูลของทีมนี้"*
+
+---
+
+### UC-20: ตรวจสอบบันทึกกิจกรรมสดของทีม (Monitor Team Activity Feed)
+
+| รายการ | รายละเอียด |
+| :--- | :--- |
+| **Use Case ID** | **UC-20** |
+| **Use Case Name** | Monitor Team Activity Feed (การติดตามกระแสกิจกรรมสดของทีม) |
+| **Primary Actor** | Member, Manager |
+| **Preconditions** | ผู้ใช้เข้าใช้งานในหน้าจอ Team Workspace ของทีมตนเอง |
+| **Postconditions** | ผู้ใช้มองเห็นลำดับเหตุการณ์ล่าสุดของทีมแบบเรียลไทม์ |
+| **Trigger** | หน้าจอ Team Overview โหลดข้อมูล หรือผู้ใช้กด Pull-to-Refresh |
+
+#### Main Success Scenario:
+1. ระบบดึงข้อมูลกิจกรรมจาก `GET /api/teams/:teamId/activity` (ตาราง `team_activities`)
+2. ระบบจัดเรียงลำดับกิจกรรมตามเวลาล่าสุด (Chronological Order) เช่น:
+   - *"John ส่ง AI Tutorial ให้ Manager ตรวจ"* (เวลา 14:30 น.)
+   - *"Jane อัปโหลด Script v2"* (เวลา 14:10 น.)
+   - *"Manager มอบหมาย Thumbnail ให้ Mike"* (เวลา 13:45 น.)
+   - *"Mike เปลี่ยน Task เป็น IN_PROGRESS"* (เวลา 13:20 น.)
+3. สมาชิกในทีมรับรู้สถานะการขับเคลื่อนงาน ทำให้ทีมทำงานประสานกันได้โดยไม่ต้องคอยสอบถามรายบุคคล

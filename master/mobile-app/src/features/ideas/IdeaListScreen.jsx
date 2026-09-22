@@ -9,54 +9,14 @@ import {
   Alert,
   Modal,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ideaApi } from '../../services/api';
 
 export default function IdeaListScreen({ onBack }) {
-  const [ideas, setIdeas] = useState([
-    {
-      id: '1',
-      title: 'รีวิวเปรียบเทียบ AI Video Generator 2026',
-      desc: 'ทดสอบตัดต่อคลิปด้วย AI 5 ตัวเทียบความคมชัด ความเร็ว และการพากย์เสียงภาษาไทย',
-      platform: 'YouTube',
-      category: 'Tech Review',
-      proposer: 'John Creator',
-      status: 'APPROVED',
-      upvotes: 18,
-    },
-    {
-      id: '2',
-      title: 'สรุปข่าวเทคโนโลยีประจำวันใน 1 นาที',
-      desc: 'คลิปสั้นเจาะลึกฟีเจอร์ AI ใหม่ล่าสุดประจำวันสำหรับคนไม่มีเวลาอ่านข่าว',
-      platform: 'TikTok',
-      category: 'News & Tech',
-      proposer: 'Jane Editor',
-      status: 'APPROVED',
-      upvotes: 24,
-    },
-    {
-      id: '3',
-      title: 'แจกพิกัดอุปกรณ์จัดโต๊ะคอม Minimal สำหรับ Live',
-      desc: 'Content สไตล์ Minimal แนะนำการจัดแสงและไมโครโฟนไร้สาย',
-      platform: 'Instagram',
-      category: 'Lifestyle',
-      proposer: 'John Creator',
-      status: 'DRAFT',
-      upvotes: 9,
-    },
-    {
-      id: '4',
-      title: 'สัมภาษณ์ Creator ยอดวิว 10 ล้าน',
-      desc: 'เจาะลึกจิตวิทยาการทำ Hook 3 วินาทีแรกเพื่อหยุดนิ้วโป้งคนดู',
-      platform: 'TikTok',
-      category: 'Interview',
-      proposer: 'Somchai Lead',
-      status: 'DRAFT',
-      upvotes: 31,
-    },
-  ]);
-
+  const [ideas, setIdeas] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL');
   const [refreshing, setRefreshing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,21 +29,24 @@ export default function IdeaListScreen({ onBack }) {
     try {
       const res = await ideaApi.getAll();
       const list = Array.isArray(res) ? res : (res?.ideas || []);
-      if (Array.isArray(list) && list.length > 0) {
+      if (Array.isArray(list)) {
         const mapped = list.map((i) => ({
           id: i._id || String(Date.now()),
           title: i.title,
           desc: i.description || 'ไม่มีคำอธิบาย',
           platform: i.platform || 'YouTube',
           category: i.category || 'General',
-          proposer: i.proposedBy?.username || 'สมาชิกทีม',
+          proposer: i.proposedBy ? `${i.proposedBy.firstName || ''} ${i.proposedBy.lastName || ''}`.trim() || i.proposedBy.username : 'สมาชิกทีม',
           status: i.status || 'DRAFT',
-          upvotes: Math.floor(Math.random() * 20) + 5,
+          upvotes: i.upvotes || 0,
         }));
         setIdeas(mapped);
       }
     } catch (e) {
-      console.warn('Using offline idea mock data');
+      console.warn('fetchIdeas error:', e.message);
+      setIdeas([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -201,50 +164,68 @@ export default function IdeaListScreen({ onBack }) {
         </View>
 
         {/* Ideas Cards */}
-        {filteredIdeas.map((item) => (
-          <View key={item.id} style={styles.ideaCard}>
-            <View style={styles.cardHeaderRow}>
-              <View style={styles.badgeRow}>
-                <View style={styles.platformPill}>
-                  <Text style={styles.platformPillText}>{item.platform}</Text>
+        {loading ? (
+          <View style={{ padding: 32, alignItems: 'center' }}>
+            <ActivityIndicator size="small" color="#0F172A" />
+            <Text style={{ marginTop: 8, fontSize: 13, color: '#64748B' }}>
+              กำลังโหลดไอเดียคอนเทนต์จาก MongoDB...
+            </Text>
+          </View>
+        ) : filteredIdeas.length === 0 ? (
+          <View style={{ padding: 32, alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, marginTop: 12, borderWidth: 1, borderColor: '#E2E8F0' }}>
+            <Text style={{ fontSize: 14, fontWeight: '700', color: '#0F172A', textAlign: 'center' }}>
+              ยังไม่มีไอเดียในหมวดหมู่นี้
+            </Text>
+            <Text style={{ fontSize: 12, color: '#64748B', marginTop: 4, textAlign: 'center' }}>
+              กดปุ่ม "+ เสนอไอเดียใหม่" ด้านบนเพื่อเริ่มเสนอไอเดียเข้าสู่คลังของทีม
+            </Text>
+          </View>
+        ) : (
+          filteredIdeas.map((item) => (
+            <View key={item.id} style={styles.ideaCard}>
+              <View style={styles.cardHeaderRow}>
+                <View style={styles.badgeRow}>
+                  <View style={styles.platformPill}>
+                    <Text style={styles.platformPillText}>{item.platform}</Text>
+                  </View>
+                  <View style={styles.categoryPill}>
+                    <Text style={styles.categoryPillText}>{item.category}</Text>
+                  </View>
                 </View>
-                <View style={styles.categoryPill}>
-                  <Text style={styles.categoryPillText}>{item.category}</Text>
-                </View>
-              </View>
 
-              <View
-                style={[
-                  styles.statusBadge,
-                  item.status === 'APPROVED' ? styles.statusApproved : styles.statusDraft,
-                ]}
-              >
-                <Text
+                <View
                   style={[
-                    styles.statusBadgeText,
-                    item.status === 'APPROVED' ? styles.statusTextApproved : styles.statusTextDraft,
+                    styles.statusBadge,
+                    item.status === 'APPROVED' ? styles.statusApproved : styles.statusDraft,
                   ]}
                 >
-                  {item.status}
-                </Text>
+                  <Text
+                    style={[
+                      styles.statusBadgeText,
+                      item.status === 'APPROVED' ? styles.statusTextApproved : styles.statusTextDraft,
+                    ]}
+                  >
+                    {item.status}
+                  </Text>
+                </View>
+              </View>
+
+              <Text style={styles.ideaTitle}>{item.title}</Text>
+              <Text style={styles.ideaDesc}>{item.desc}</Text>
+
+              <View style={styles.cardFooter}>
+                <Text style={styles.proposerText}>โดย: {item.proposer}</Text>
+
+                <TouchableOpacity
+                  style={styles.upvoteBtn}
+                  onPress={() => handleUpvote(item.id)}
+                >
+                  <Text style={styles.upvoteText}>🔥 {item.upvotes} Upvotes</Text>
+                </TouchableOpacity>
               </View>
             </View>
-
-            <Text style={styles.ideaTitle}>{item.title}</Text>
-            <Text style={styles.ideaDesc}>{item.desc}</Text>
-
-            <View style={styles.cardFooter}>
-              <Text style={styles.proposerText}>โดย: {item.proposer}</Text>
-
-              <TouchableOpacity
-                style={styles.upvoteBtn}
-                onPress={() => handleUpvote(item.id)}
-              >
-                <Text style={styles.upvoteText}>🔥 {item.upvotes} Upvotes</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
+          ))
+        )}
       </ScrollView>
 
       {/* Propose Idea Modal */}

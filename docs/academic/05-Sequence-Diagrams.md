@@ -125,3 +125,67 @@ sequenceDiagram
     App-->>Mgr: 20. แสดง Alert "อนุมัติและพร้อมเผยแพร่สำเร็จ 100%"
 ```
 
+---
+
+## 👥 ไดอะแกรมที่ 4: การเข้าถึงพื้นที่ทีมและการบันทึกกิจกรรมส่วนกลาง (Team Workspace Access & Event Dispatching)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Mem as 🎨 Team Member (John)
+    participant App as 📱 Mobile App (TeamOverviewScreen)
+    participant Auth as 🛡️ Auth & TeamAccessGuard
+    participant API as 🖥️ Teams & Tasks Controller
+    participant DB as 🗄️ Database (MongoDB)
+
+    %% 1. Loading Team Workspace
+    rect rgb(238, 242, 255)
+    Note over Mem, DB: ส่วนที่ 1: การโหลดข้อมูลภาพรวมทีมและการตรวจสอบสิทธิ์
+    Mem->>App: 1. แตะแท็บ "👥 ทีมของฉัน"
+    App->>Auth: 2. GET /api/teams/:teamId/dashboard (Bearer JWT)
+    Auth->>Auth: 3. verifyTeamAccess: ตรวจสอบ req.user.teamId == :teamId
+    alt ละเมิดสิทธิ์ (ข้ามทีม)
+        Auth-->>App: 4a. HTTP 403 Forbidden ("You do not have access to this team")
+        App-->>Mem: แสดงข้อความเตือนปฏิเสธการเข้าถึง
+    else สิทธิ์ถูกต้อง (สังกัดทีมเดียวกัน)
+        Auth->>API: 4b. อนุญาตให้ประมวลผลคำขอ
+        API->>DB: 5. Query สรุปสถิติทรงพลัง (KPIs), สมาชิกทีม (workingStatus), และงานทั้งหมด
+        DB-->>API: 6. คืนข้อมูล Team, Members, Tasks, Progress
+        API-->>App: 7. HTTP 200 OK { team, stats, members, tasks }
+        App-->>Mem: 8. เรนเดอร์ Team Progress Bar, สมาชิกที่กำลังทำงาน, และงานของทีม
+    end
+    end
+
+    %% 2. Member Updates Task & Emits Team Activity
+    rect rgb(254, 243, 199)
+    Note over Mem, DB: ส่วนที่ 2: สมาชิกอัปเดตงานของตนเอง และกระจายกิจกรรมสู่ทีม
+    Mem->>App: 9. ปรับสเกล Progress 70%, เลือกสถานะ REVIEW, กด "อัปเดตงาน"
+    App->>Auth: 10. PUT /api/tasks/:taskId/status { status: 'REVIEW', progress: 70 }
+    Auth->>API: 11. ตรวจสอบสิทธิ์ผู้รับผิดชอบงาน
+    API->>DB: 12. ค้นหา Task ตาม :taskId
+    alt สมาชิกพยายามแก้ Task ของคนอื่น
+        API-->>App: 13a. HTTP 403 Forbidden ("You can only update your own assigned tasks")
+        App-->>Mem: แจ้งเตือนข้อผิดพลาด
+    else เป็น Task ของตนเอง
+        API->>DB: 13b. UPDATE Task SET status='REVIEW', progress=70
+        API->>DB: 14. UPDATE User SET workingStatus='REVIEWING' WHERE id=user.id
+        API->>DB: 15. คำนวณความคืบหน้ารวม และ UPDATE Content SET progress=70
+        API->>DB: 16. INSERT TeamActivity (activityType: 'TASK_SUBMITTED', title: 'John ส่ง AI Tutorial ให้ Manager ตรวจ')
+        DB-->>API: 17. บันทึกข้อมูลสำเร็จ
+        API-->>App: 18. HTTP 200 OK { message: "Task updated", task }
+        App-->>Mem: 19. แสดง Toast "อัปเดตงานและแจ้งเตือนเข้าสู่ทีมเรียบร้อย"
+    end
+    end
+
+    %% 3. Team Activity Refresh
+    rect rgb(236, 253, 245)
+    Note over Mem, DB: ส่วนที่ 3: การอัปเดตไทม์ไลน์กิจกรรมล่าสุด (Team Activity Feed)
+    App->>API: 20. GET /api/teams/:teamId/activity
+    API->>DB: 21. find({ teamId }).sort({ createdAt: -1 }).limit(20)
+    DB-->>API: 22. รายการกิจกรรมล่าสุดของทีม
+    API-->>App: 23. HTTP 200 OK [ activities... ]
+    App-->>Mem: 24. อัปเดตฟีด "ตอนนี้ทีมกำลังทำอะไรอยู่" ทันทีแบบ Real-time
+    end
+```
+
+

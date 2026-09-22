@@ -1,11 +1,21 @@
 const Content = require('../../database/models/Content');
+const User = require('../../database/models/User');
+const TeamActivity = require('../../database/models/TeamActivity');
 
 // @route POST /api/contents
 // @access Private
 const createContent = async (req, res) => {
   try {
-    const { ideaId, title, description, category, platform, dueDate } = req.body;
+    const { ideaId, title, description, category, platform, dueDate, teamId } = req.body;
     const createdBy = req.user.userId;
+
+    let resolvedTeamId = teamId;
+    if (!resolvedTeamId) {
+      const creator = await User.findById(createdBy);
+      if (creator && creator.teamId) {
+        resolvedTeamId = creator.teamId;
+      }
+    }
 
     const newContent = await Content.create({
       title,
@@ -14,11 +24,24 @@ const createContent = async (req, res) => {
       platform: platform || 'TikTok',
       status: 'PLANNING',
       createdBy,
+      teamId: resolvedTeamId || null,
       dueDate,
       ideaId: ideaId || null,
     });
 
     const populated = await newContent.populate('createdBy', 'username email firstName lastName');
+
+    if (resolvedTeamId) {
+      const creatorName = populated.createdBy?.firstName || req.user.username || 'Creator';
+      await TeamActivity.create({
+        teamId: resolvedTeamId,
+        actor: createdBy,
+        actionType: 'CONTENT_CREATED',
+        title: `${creatorName} เพิ่มแผนคอนเทนต์ใหม่: "${title}"`,
+        entityId: newContent._id,
+        entityModel: 'Content',
+      });
+    }
 
     res.status(201).json({
       message: 'Content created successfully',
@@ -215,6 +238,25 @@ const submitReview = async (req, res) => {
     }
 
     await content.save();
+
+    if (content.teamId) {
+      const reviewer = await User.findById(reviewerId);
+      const reviewerName = reviewer ? (reviewer.firstName || reviewer.username) : 'Manager';
+      const actionType = decision === 'APPROVED' ? 'CONTENT_APPROVED' : 'CONTENT_REVISED';
+      const title = decision === 'APPROVED'
+        ? `${reviewerName} อนุมัติคอนเทนต์ "${content.title}" (ผ่านการตรวจสอบกฎหมายครบถ้วน)`
+        : `${reviewerName} ส่งคอนเทนต์ "${content.title}" กลับไปแก้ไข`;
+
+      await TeamActivity.create({
+        teamId: content.teamId,
+        actor: reviewerId,
+        actionType,
+        title,
+        details: notes || '',
+        entityId: content._id,
+        entityModel: 'Content',
+      });
+    }
 
     res.status(200).json({
       message: `Content marked as ${content.status}`,

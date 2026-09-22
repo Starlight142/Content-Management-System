@@ -87,13 +87,13 @@ export const taskApi = {
     method: 'POST',
     body: JSON.stringify(taskData),
   }),
-  updateStatus: (id, status) => request(`/tasks/${id}/status`, {
+  updateStatus: (id, status, progress = undefined) => request(`/tasks/${id}/status`, {
     method: 'PATCH',
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ status, ...(progress !== undefined ? { progress } : {}) }),
   }),
-  submitDeliverable: (id, submissionUrl) => request(`/tasks/${id}/status`, {
+  submitDeliverable: (id, submissionUrl, progress = 80) => request(`/tasks/${id}/status`, {
     method: 'PATCH',
-    body: JSON.stringify({ status: 'REVIEW', submissionUrl }),
+    body: JSON.stringify({ status: 'REVIEW', submissionUrl, progress }),
   }),
 };
 
@@ -106,9 +106,15 @@ export const ideaApi = {
   }),
 };
 
-// Teams APIs
+// Teams APIs (Team-Based Workspace)
 export const teamApi = {
   getAll: () => request('/teams'),
+  getMyTeam: () => request('/teams/my-team'),
+  getDashboard: (teamId) => request(`/teams/${teamId}/dashboard`),
+  getTeamTasks: (teamId) => request(`/teams/${teamId}/tasks`),
+  getTeamContents: (teamId) => request(`/teams/${teamId}/contents`),
+  getTeamActivity: (teamId) => request(`/teams/${teamId}/activity`),
+  getTeamMembers: (teamId) => request(`/teams/${teamId}/members`),
 };
 
 export default {
@@ -118,3 +124,4 @@ export default {
   idea: ideaApi,
   team: teamApi,
 };
+

@@ -117,3 +117,69 @@ stateDiagram-v2
 3. **Audit Trail Invariant**:
    - ทุกครั้งที่มีการเปลี่ยนสถานะ ระบบจะต้องสร้างระเบียนใน `ActivityLog` เพื่อระบุว่าใคร (`userId`), ทำอะไร (`action`), เวลาใด (`timestamp`), และสถานะก่อนหน้า/ใหม่ (`previousStatus`, `newStatus`)
 
+---
+
+## 👥 แผนภาพกิจกรรม: การทำงานในพื้นที่ทีม (Team-Based Workspace & Activity Stream Flow)
+
+แผนภาพแสดงกระบวนการทำงานร่วมกันระดับทีม การตรวจสอบสิทธิ์ความเป็นสมาชิก (Team Authorization Guard) และการกระจายข่าวสารความเคลื่อนไหว (Team Activity Stream):
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Member as 🎨 Member / Manager
+    participant App as 📱 Mobile App (Draftly)
+    participant Auth as 🛡️ Team Auth Guard
+    participant Backend as ⚙️ Team & Task Service
+    participant DB as 🗄️ MongoDB
+
+    %% 1. Accessing Team Workspace
+    rect rgb(238, 242, 255)
+    Note over Member, DB: Phase A: การเข้าถึงข้อมูลภาพรวมทีม (Team Workspace Access)
+    Member->>App: เปิดหน้า "ทีมของฉัน (My Team)"
+    App->>Auth: GET /api/teams/:teamId/dashboard (แนบ JWT Token)
+    Auth->>DB: ตรวจสอบ user.teamId == teamId หรือ role == ADMIN?
+    alt ไม่ได้เป็นสมาชิกในทีม (Unauthorized Cross-Team Access)
+        Auth-->>App: 403 Forbidden ("You do not have access to this team")
+        App-->>Member: แสดงข้อความแจ้งเตือนปฏิเสธการเข้าถึง
+    else เป็นสมาชิกในทีม (Authorized)
+        Auth->>Backend: อนุญาตคำขอผ่านไปยัง Service
+        Backend->>DB: ดึงข้อมูลสรุปทีม, สมาชิก (พร้อม Working Status), และงานทั้งหมด
+        DB-->>Backend: คืนค่าสถิติและข้อมูลจริง
+        Backend-->>App: 200 OK (team, members, tasks, progress)
+        App-->>Member: แสดง Team Overview, หลอด Progress รวม, และสถานะเพื่อนร่วมทีม
+    end
+    end
+
+    %% 2. Member Updates Task & Emits Team Activity
+    rect rgb(254, 243, 199)
+    Note over Member, DB: Phase B: การอัปเดตงานของตนเอง และสร้างบันทึกกิจกรรมทีม (Task Update & Activity Logging)
+    Member->>App: ปรับ Progress (เช่น 70%), เปลี่ยนสถานะเป็น REVIEW, แนบลิงก์งาน
+    App->>Auth: PUT /api/tasks/:taskId (user_id, status, progress, submission_url)
+    Auth->>DB: ตรวจสอบ task.assigned_to == user.id (ห้ามแก้ของคนอื่น!)
+    alt พยายามแก้ไขงานของสมาชิกอื่น
+        Auth-->>App: 403 Forbidden ("You can only update your own assigned tasks")
+        App-->>Member: แจ้งเตือนข้อผิดพลาด
+    else เป็นงานที่ได้รับมอบหมายของตนเอง
+        Auth->>Backend: บันทึกข้อมูลงานย่อย
+        Backend->>DB: อัปเดต Task (status = REVIEW, progress = 70%)
+        Backend->>DB: อัปเดต User (workingStatus = 'REVIEWING')
+        Backend->>DB: คำนวณ Content Progress เฉลี่ย และอัปเดต Content
+        Backend->>DB: บันทึก TeamActivity (type = 'TASK_SUBMITTED', title = 'John ส่ง AI Tutorial ให้ Manager ตรวจ')
+        Backend-->>App: 200 OK (Task & Content Updated)
+        App-->>Member: แสดงผลความคืบหน้าใหม่สำเร็จ
+    end
+    end
+
+    %% 3. Team Members See Live Activity Feed
+    rect rgb(236, 253, 245)
+    Note over Member, DB: Phase C: การดึงฟีดกิจกรรมล่าสุดของทีม (Team Activity Feed Polling / Refresh)
+    Member->>App: เลื่อนดูฟีด หรือ Pull-to-Refresh ในแท็บ "ทีมของฉัน"
+    App->>Backend: GET /api/teams/:teamId/activity
+    Backend->>DB: ดึง TeamActivity 20 รายการล่าสุด (เรียงลำดับ desc ตาม createdAt)
+    DB-->>Backend: รายการกิจกรรมล่าสุดพร้อมชื่อผู้กระทำและเวลา
+    Backend-->>App: 200 OK (TeamActivity List)
+    App-->>Member: แสดง Timeline กิจกรรมล่าสุด ให้ทุกคนในทีมรับรู้สถานะตรงกัน
+    end
+```
+
+

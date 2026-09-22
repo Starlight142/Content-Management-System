@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  role: {
+    role: {
     type: String,
     enum: ['ADMIN', 'MANAGER', 'MEMBER'],
     default: 'MEMBER',
@@ -35,6 +35,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['ACTIVE', 'OFFLINE', 'SUSPENDED'],
     default: 'ACTIVE',
+  },
+  teamId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Team',
+  },
+  workingStatus: {
+    type: String,
+    enum: ['WORKING', 'REVIEWING', 'IDLE', 'OFFLINE'],
+    default: 'IDLE',
   },
 }, {
   timestamps: true,

@@ -1,8 +1,8 @@
 # 📜 บันทึกประวัติการพัฒนาระบบ (Project Development & Engineering Log)
-> **โครงการ:** Content Production Management System (ระบบจัดการกระบวนการผลิตสื่อครบวงจร)  
-> **เส้นทางโปรเจกต์:** `D:\VsCode\Project\Content-Management-System`  
+> **โครงการ:** Draftly — Content Production Management System (ระบบจัดการกระบวนการผลิตสื่อครบวงจร)  
+> **เส้นทางโปรเจกต์:** `d:\Content-Management-System`  
 > **ผู้พัฒนา:** คุณ (Developer) & Antigravity (Senior AI Mentor / Pair Programmer)  
-> **อัปเดตล่าสุด:** 19 กันยายน 2026 เวลา 01:12 น.  
+> **อัปเดตล่าสุด:** 22 กันยายน 2026 เวลา 15:15 น.  
 
 ---
 
@@ -17,7 +17,14 @@
 | **18 ก.ย. 2026 (22:15 - 23:50 น.)** | [Phase 5: บันทึกบทเรียนการลงมือเขียนโค้ดด้วยตัวเอง (Learning Progress)](#phase-5-บันทึกบทเรียนการลงมือเขียนโค้ดด้วยตัวเอง) | บทที่ 1-2 ✅ / บทที่ 3 ⏳ |
 | **19 ก.ย. 2026 (00:15 - 01:10 น.)** | [Phase 6: การยกระดับสู่ Senior Capstone & 8 เอกสารวิชาการ UML](#phase-6-การยกระดับสู่-senior-capstone--8-เอกสารวิชาการ-uml) | สำเร็จ ✅ |
 | **19 ก.ย. 2026 (01:15 - 01:20 น.)** | [Phase 7: การจัดแยกโฟลเดอร์สำหรับโครงงานปี 4 (Year 4 Scoping & Isolation)](#phase-7-การจัดแยกโฟลเดอร์สำหรับโครงงานปี-4-year-4-scoping--isolation) | สำเร็จ ✅ |
-| **19 ก.ย. 2026 (01:20 น.)** | [แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)](#แผนที่ไฟล์และดัชนีเอกสารทั้งหมด) | ปัจจุบัน 📍 |
+| **19 ก.ย. 2026 (01:40 - 01:48 น.)** | [Phase 8: การจัดการ Git Branching & ปรับปรุงหน้า GitHub Repository สู่มาตรฐานวิชาการ](#phase-8-การจัดการ-git-branching--ปรับปรุงหน้า-github-repository-สู่มาตรฐานวิชาการ-academic-clean-presentation) | สำเร็จ ✅ |
+| **21 ก.ย. 2026 (22:50 - 23:00 น.)** | [Phase 9: การปรับปรุงอัตลักษณ์และเปลี่ยนชื่อระบบสู่ "Draftly" (Application Rebranding)](#phase-9-การปรับปรุงอัตลักษณ์และเปลี่ยนชื่อระบบสู่-draftly-application-rebranding) | สำเร็จ ✅ |
+| **21 ก.ย. 2026 (23:10 - 23:20 น.)** | [Phase 10: ปรับปรุงประสบการณ์ผู้ใช้ (UI/UX Refinement) & คุมโทนสีตาม Semantic States](#phase-10-ปรับปรุงประสบการณ์ผู้ใช้-uiux-refinement--คุมโทนสีตาม-semantic-states) | สำเร็จ ✅ |
+| **21 ก.ย. 2026 (23:30 - 23:45 น.)** | [Phase 11: เพิ่มระบบคอมเมนต์ตรวจงานของ Manager, ออกแบบ Custom Single-Tone Tab Icons](#phase-11-เพิ่มระบบคอมเมนต์ตรวจงานของ-manager-ออกแบบ-custom-single-tone-tab-icons-และลดไอคอนฟุ่มเฟือย) | สำเร็จ ✅ |
+| **22 ก.ย. 2026 (00:00 - 00:15 น.)** | [Phase 12: การเชื่อมต่อระบบและการทำงานครบวงจร 100% (Full End-to-End System Integration)](#phase-12-การเชื่อมต่อระบบและการทำงานครบวงจร-100-full-end-to-end-system-integration) | สำเร็จ ✅ |
+| **22 ก.ย. 2026 (14:05 - 14:30 น.)** | [Phase 13: การย้ายสู่เครื่องพัฒนาเครื่องใหม่ & การตั้งค่า Android Environment](#phase-13-การย้ายสู่เครื่องพัฒนาเครื่องใหม่--การตั้งค่า-android-environment-fresh-machine-migration) | สำเร็จ ✅ |
+| **22 ก.ย. 2026 (14:45 - 15:15 น.)** | [Phase 14: การยกระดับสถาปัตยกรรมสู่ Team-Based Workspace & การยกเลิก Mock Data สู่ MongoDB 100%](#phase-14-การยกระดับสถาปัตยกรรมสู่-team-based-workspace--การยกเลิก-mock-data-สู่-mongodb-100) | กำลังดำเนินการ 🚀 |
+| **22 ก.ย. 2026 (15:15 น.)** | [แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)](#แผนที่ไฟล์และดัชนีเอกสารทั้งหมด) | ปัจจุบัน 📍 |
 
 ---
 
@@ -331,3 +338,69 @@ D:\VsCode\Project\Content-Management-System\
    - เพิ่ม `setAuthToken(null)` ใน [`App.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/App.jsx) เมื่อออกจากระบบ เพื่อเคลียร์ Token ป้องกันสิทธิ์ผู้ใช้ชนกันเมื่อสลับบัญชี
 6. **การทดสอบยืนยันผล 100% (End-to-End Automated Verification)**:
    - เขียนและรันสคริปต์ทดสอบครบวงจร (Login ➔ Pipeline Fetch ➔ Production Start ➔ Deliverable Submit ➔ Legal Audit ➔ Approve ➔ Publish) ผ่านฉลากครบ 100% ทุกขั้นตอน
+
+---
+
+## Phase 13: การย้ายสู่เครื่องพัฒนาเครื่องใหม่ & การตั้งค่า Android Environment (Fresh Machine Migration)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 22 กันยายน 2026 (14:05 - 14:30 น.)
+
+ย้ายโปรเจกต์มาพัฒนาต่อบนเครื่องคอมพิวเตอร์เครื่องใหม่ พร้อมทั้งวินิจฉัยและเซ็ตอัปสภาพแวดล้อมการทำงานของระบบ Mobile Application (React Native):
+1. **การสำรวจสถานะภาพรวมของโปรเจกต์ (Project Discovery)**:
+   - ตรวจสอบโครงสร้างโปรเจกต์ที่โฟลเดอร์ปลายทางใหม่ (`d:\Content-Management-System`)
+   - ตรวจสอบความพร้อมของฐานข้อมูล MongoDB และโครงสร้างโค้ดทั้งฝั่ง Master (ระบบเต็ม 100%) และฝั่ง Learning (ค้างอยู่ที่ Lesson 3 Mongoose ODM)
+2. **การวินิจฉัยและสร้างไฟล์คอนฟิก Android SDK (`local.properties`)**:
+   - ตรวจพบว่าไฟล์ `local.properties` ถูกละเว้นตาม `.gitignore` ทำให้ Gradle บนเครื่องใหม่ไม่ทราบตำแหน่งของ Android SDK
+   - สร้างไฟล์ [`local.properties`](file:///d:/Content-Management-System/master/mobile-app/android/local.properties) โดยกำหนด `sdk.dir=C:/Users/Gigachad/AppData/Local/Android/Sdk` ทำให้ Gradle และ Android Studio ตรวจพบ SDK อัตโนมัติ
+3. **การแก้ไขข้อผิดพลาดคำสั่งรัน React Native CLI**:
+   - วินิจฉัยข้อผิดพลาดจากคำสั่ง `npm react-native start-android` และ `npx.cmd react-native start-android` (ไม่พบคำสั่งในระบบ)
+   - ชี้แจงและจัดระเบียบคำสั่งมาตรฐาน:
+     - ใช้ `npm start` สำหรับการบูต Metro Bundler
+     - ใช้ `npm run android` (หรือ `npx react-native run-android`) สำหรับการ Build APK และรันเข้าสู่ Emulator
+4. **ผลลัพธ์การรันแอปพลิเคชัน**:
+   - ผู้พัฒนาสามารถรันแอปพลิเคชัน React Native ขึ้นสู่หน้าจอ Android Emulator สำเร็จ 100% ("ได้แล้วๆๆๆๆๆ")
+
+---
+
+### Phase 14: สถาปัตยกรรม Team-Based Workspace & การยกเลิก Mock Data สู่ MongoDB 100%
+> 🕒 **ช่วงเวลาดำเนินงาน:** 22 กันยายน 2026 (14:45 - 15:45 น.)
+
+ขยายขอบเขตสถาปัตยกรรมระบบจาก "ระบบติดตามงานส่วนบุคคล" สู่ **"ระบบบริหารจัดการกระบวนการผลิตสื่อแบบทีม (Team-Based Content Production Management System)"** พร้อมบังคับใช้นโยบาย Real Data Integration สำเร็จสมบูรณ์ 100%:
+
+1. **การปรับเปลี่ยนวิสัยทัศน์สู่ Team Workspace Paradigm**:
+   - สมาชิก (Member) และหัวหน้าทีม (Manager) มีหน้า **"ทีมของฉัน (Team Overview)"**
+   - แสดงภาพรวมของทีมครบถ้วน: ชื่องานทั้งหมดของทีม, ผู้รับผิดชอบ, สถานะงาน, เปอร์เซ็นต์ความคืบหน้า (Progress 0-100%), กำหนดส่งมอบ (Deadline), รายชื่อสมาชิกและสถานะการทำงานสด (`กำลังทำงาน`, `รอตรวจ`, `ว่าง`, `ออฟไลน์`)
+   - แสดง **Team Activity Feed**: ไทม์ไลน์บันทึกเหตุการณ์สดของทีม เช่น การส่งงานตรวจ, การอัปโหลดไฟล์, การสั่งแก้ไข, การเปลี่ยนสถานะงาน พร้อมระบุเวลาและผู้ดำเนินการ
+2. **นโยบายความปลอดภัยและขอบเขตสิทธิ์ (Team-Level Authorization Guard)**:
+   - สร้าง Middleware `verifyTeamAccess` ใน [`master/backend/src/middleware/auth.js`](file:///d:/Content-Management-System/master/backend/src/middleware/auth.js): บล็อกการเข้าถึงข้อมูลข้ามทีม (Member ของ Team A ไม่สามารถเข้าถึงหรือดูข้อมูลของ Team B ได้ หากฝ่าฝืนจะถูกปฏิเสธด้วย HTTP 403 Forbidden)
+   - Member สามารถ **ดู (Read-only)** งานและภาพรวมของเพื่อนร่วมทีมได้ แต่ **แก้ไขได้เฉพาะงานที่ได้รับมอบหมายของตนเอง** เท่านั้น (ป้องกันใน `tasks.controller.js`)
+3. **การกำจัด Mock Data ออกจากระบบ 100% (Zero-Mock Policy)**:
+   - ล้าง Initial State Mock Data ทั้งหมดใน Mobile App:
+     - [`MemberTaskList.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/tasks/MemberTaskList.jsx): เริ่มต้นจาก State ว่าง โหลดงานจริงของสมาชิกจาก MongoDB
+     - [`ManagerDashboard.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/dashboard/ManagerDashboard.jsx): เริ่มต้นจาก State ว่าง โหลด Pipeline ชิ้นงานจริง
+     - [`IdeaListScreen.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/ideas/IdeaListScreen.jsx): เริ่มต้นจาก State ว่าง โหลดไอเดียจริงจาก MongoDB
+     - มี Loading Spinner และ Empty State UI รองรับทุกหน้าจอ
+4. **การพัฒนา Backend & Database**:
+   - สร้างโมเดลใหม่ [`TeamActivity.js`](file:///d:/Content-Management-System/master/backend/src/database/models/TeamActivity.js)
+   - อัปเกรด Schema ใน [`User.js`](file:///d:/Content-Management-System/master/backend/src/database/models/User.js) (เพิ่ม `teamId`, `workingStatus`), [`Content.js`](file:///d:/Content-Management-System/master/backend/src/database/models/Content.js) (เพิ่ม `teamId`, `progress`), และ [`Task.js`](file:///d:/Content-Management-System/master/backend/src/database/models/Task.js) (เพิ่ม `teamId`, `progress`)
+   - พัฒนา REST Endpoints ครบชุดใน [`teams.routes.js`](file:///d:/Content-Management-System/master/backend/src/modules/teams/teams.routes.js):
+     - `GET /api/teams/my-team`
+     - `GET /api/teams/:teamId/dashboard`
+     - `GET /api/teams/:teamId/tasks`
+     - `GET /api/teams/:teamId/contents`
+     - `GET /api/teams/:teamId/activity`
+     - `GET /api/teams/:teamId/members`
+   - เพิ่มระบบบันทึก `TeamActivity` อัตโนมัติเมื่อมีการสร้าง Content, อัปเดต Task, ส่งงานตรวจ, ตรวจอนุมัติ หรือส่งกลับแก้ไข
+   - อัปเกรด [`seed.js`](file:///d:/Content-Management-System/master/backend/src/database/seed.js) จำลองข้อมูล Team A ("Content Team A": Somsri, John, Jane, Mike) และ Team B พร้อม Content, Tasks, และ Team Activities ที่สมจริง
+5. **การพัฒนา Mobile Application**:
+   - เพิ่ม `teamApi` ใน [`api.js`](file:///d:/Content-Management-System/master/mobile-app/src/services/api.js)
+   - เพิ่มไอคอน `'team'` ใน [`TabIcon.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/components/TabIcon.jsx)
+   - สร้างหน้าจอใหม่ [`TeamOverviewScreen.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/features/team/TeamOverviewScreen.jsx) ครบ 4 ส่วน: Header KPI & Team Progress Bar, สมาชิกและ Working Status, งานของทีมพร้อม Progress Bar, และไทม์ไลน์ Team Activity Feed พร้อม Pull-to-Refresh
+   - ปรับแท็บนำทางใน [`MemberNavigator.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/navigation/MemberNavigator.jsx) และ [`ManagerNavigator.jsx`](file:///d:/Content-Management-System/master/mobile-app/src/navigation/ManagerNavigator.jsx) ให้เชื่อมต่อหน้าจอทีมเป็นแท็บหลัก
+6. **การอัปเดตเอกสารวิชาการ 7 ฉบับ (Academic Documentation Alignment)**:
+   - [`01-Use-Case-Diagram.md`](file:///d:/Content-Management-System/docs/academic/01-Use-Case-Diagram.md): เพิ่ม UC-19 (ดูภาพรวมทีม) และ UC-20 (ดูฟีดกิจกรรมทีม)
+   - [`02-Use-Case-Descriptions.md`](file:///d:/Content-Management-System/docs/academic/02-Use-Case-Descriptions.md): บันทึกข้อกำหนด IEEE/Cockburn สำหรับ UC-19 และ UC-20
+   - [`03-Activity-Diagram.md`](file:///d:/Content-Management-System/docs/academic/03-Activity-Diagram.md): เพิ่ม Swimlane การทำงานระดับทีม, การตรวจสิทธิ์ และการกระจาย Activity
+   - [`04-Domain-Class-Diagram.md`](file:///d:/Content-Management-System/docs/academic/04-Domain-Class-Diagram.md): เพิ่ม Class `TeamActivity` และเชื่อมโยงความสัมพันธ์
+   - [`05-Sequence-Diagrams.md`](file:///d:/Content-Management-System/docs/academic/05-Sequence-Diagrams.md): เพิ่ม Sequence Diagram 4: Team Workspace Access & Event Dispatching
+   - [`06-Entity-Relationship-Diagram.md`](file:///d:/Content-Management-System/docs/academic/06-Entity-Relationship-Diagram.md): เพิ่ม Entity `TEAM_ACTIVITIES` และเชื่อมโยง Foreign Keys
+   - [`07-Data-Dictionary.md`](file:///d:/Content-Management-System/docs/academic/07-Data-Dictionary.md): เพิ่มตารางที่ 13 `team_activities` และฟิลด์ใหม่ในตาราง `users`, `contents`, `tasks`

@@ -19,6 +19,17 @@ const taskSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
+  teamId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Team',
+    index: true,
+  },
+  progress: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 100,
+  },
   status: {
     type: String,
     enum: ['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'],

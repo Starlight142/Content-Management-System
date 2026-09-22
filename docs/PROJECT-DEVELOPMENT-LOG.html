@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draftly — บันทึกประวัติการพัฒนาระบบ (Project Engineering Log)</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --sidebar-width: 320px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Prompt', 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background-color: var(--bg);
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--card-bg);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-header p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .search-box {
+      margin-top: 12px;
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 12px 10px;
+      flex: 1;
+    }
+
+    .nav-item {
+      margin-bottom: 4px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      color: #334155;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+      line-height: 1.4;
+    }
+
+    .nav-link:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .nav-link.active {
+      background: #dbeafe;
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    .nav-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 6px;
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+    .nav-link.active .nav-tag {
+      background: #bfdbfe;
+      color: var(--primary-dark);
+    }
+
+    .sidebar-footer {
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      background: #f8fafc;
+      font-size: 0.8rem;
+    }
+
+    .btn-print {
+      width: 100%;
+      padding: 10px;
+      background: #0f172a;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-print:hover {
+      background: #334155;
+    }
+
+    /* Main Content Area */
+    .main-wrapper {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 40px 48px 80px;
+      max-width: 1100px;
+    }
+
+    .doc-banner {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #ffffff;
+      padding: 32px 36px;
+      border-radius: 16px;
+      margin-bottom: 36px;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1);
+    }
+
+    .doc-banner h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .doc-banner p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.07);
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+    }
+
+    .meta-item strong {
+      color: #cbd5e1;
+    }
+
+    /* Timeline Table */
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .section-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .phase-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-done {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .badge-progress {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .badge-next {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .phase-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .phase-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Typography & Code inside phases */
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 18px 0 10px;
+    }
+
+    ul, ol {
+      padding-left: 24px;
+      margin-bottom: 14px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    code {
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.88em;
+      border: 1px solid #e2e8f0;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 14px 0;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border: none;
+    }
+
+    .callout {
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin: 16px 0;
+      font-size: 0.92rem;
+      border-left: 4px solid var(--primary);
+      background: #f0fdf4;
+      border-left-color: var(--success);
+    }
+
+    .callout-info {
+      background: #eff6ff;
+      border-left-color: var(--primary);
+    }
+
+    .callout-warning {
+      background: #fffbeb;
+      border-left-color: var(--warning);
+    }
+
+    /* Overview Table */
+    .timeline-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 0.9rem;
+    }
+
+    .timeline-table th, .timeline-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .timeline-table th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .timeline-table tr:hover td {
+      background: #f1f5f9;
+    }
+
+    /* Print View */
+    @media print {
+      body {
+        background: #ffffff;
+      }
+      .sidebar {
+        display: none;
+      }
+      .main-wrapper {
+        margin-left: 0;
+        padding: 0;
+        max-width: 100%;
+      }
+      .section-card {
+        box-shadow: none;
+        border: 1px solid #cbd5e1;
+        page-break-inside: avoid;
+        margin-bottom: 24px;
+      }
+      .doc-banner {
+        background: #0f172a !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        display: none;
+      }
+      .main-wrapper {
+        margin-left: 0;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>📜 Draftly Dev Log</h2>
+      <p>บันทึกวิศวกรรมระบบ 14 เฟส</p>
+      <input type="text" id="phaseSearch" class="search-box" placeholder="🔍 ค้นหาเฟส / ฟีเจอร์...">
+    </div>
+    <ul class="nav-list" id="navList">
+      <li class="nav-item"><a href="#vision" class="nav-link"><span class="nav-tag">00</span>จุดเริ่มต้น & วิสัยทัศน์</a></li>
+      <li class="nav-item"><a href="#phase-1" class="nav-link"><span class="nav-tag">P01</span>Backend Foundation</a></li>
+      <li class="nav-item"><a href="#phase-2" class="nav-link"><span class="nav-tag">P02</span>Admin Web Development</a></li>
+      <li class="nav-item"><a href="#phase-3" class="nav-link"><span class="nav-tag">P03</span>Mobile App Development</a></li>
+      <li class="nav-item"><a href="#phase-4" class="nav-link"><span class="nav-tag">P04</span>Master vs Learning</a></li>
+      <li class="nav-item"><a href="#phase-5" class="nav-link"><span class="nav-tag">P05</span>Learning Code-Along</a></li>
+      <li class="nav-item"><a href="#phase-6" class="nav-link"><span class="nav-tag">P06</span>Senior Capstone & 8 UML</a></li>
+      <li class="nav-item"><a href="#phase-7" class="nav-link"><span class="nav-tag">P07</span>Year 4 Scoping & Isolation</a></li>
+      <li class="nav-item"><a href="#phase-8" class="nav-link"><span class="nav-tag">P08</span>Git Branching & Presentation</a></li>
+      <li class="nav-item"><a href="#phase-9" class="nav-link"><span class="nav-tag">P09</span>Rebranding to "Draftly"</a></li>
+      <li class="nav-item"><a href="#phase-10" class="nav-link"><span class="nav-tag">P10</span>UI/UX & Semantic States</a></li>
+      <li class="nav-item"><a href="#phase-11" class="nav-link"><span class="nav-tag">P11</span>Detailed Review & Tab Icons</a></li>
+      <li class="nav-item"><a href="#phase-12" class="nav-link"><span class="nav-tag">P12</span>End-to-End Integration</a></li>
+      <li class="nav-item"><a href="#phase-13" class="nav-link active"><span class="nav-tag">P13</span>Fresh Machine & Android SDK</a></li>
+      <li class="nav-item"><a href="#phase-14" class="nav-link active"><span class="nav-tag">P14</span>Team-Based Workspace</a></li>
+      <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <button class="btn-print" onclick="window.print()">
+        🖨️ พิมพ์เอกสาร / บันทึก PDF
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Container -->
+  <main class="main-wrapper">
+
+    <!-- Top Document Banner -->
+    <header class="doc-banner">
+      <h1>🎬 Draftly — Engineering Log</h1>
+      <p>บันทึกประวัติการวิเคราะห์ ออกแบบ และพัฒนาระบบบริหารจัดการกระบวนการผลิตสื่อครบวงจร (Content Production Management System)</p>
+      <div class="meta-grid">
+        <div class="meta-item"><strong>เส้นทางโปรเจกต์:</strong> <code>d:\Content-Management-System</code></div>
+        <div class="meta-item"><strong>ทีมพัฒนา:</strong> Developer & Antigravity (AI Pair Programmer)</div>
+        <div class="meta-item"><strong>สถานะปัจจุบัน:</strong> Phase 14 สำเร็จสมบูรณ์ 100% ✅</div>
+        <div class="meta-item"><strong>อัปเดตล่าสุด:</strong> 22 กันยายน 2026 เวลา 15:45 น.</div>
+      </div>
+    </header>
+
+    <!-- Timeline Summary Table -->
+    <section class="section-card">
+      <h2 class="section-title">📌 สารบัญภาพรวมตามไทม์ไลน์ (Timeline Index)</h2>
+      <table class="timeline-table">
+        <thead>
+          <tr>
+            <th>ช่วงเวลา</th>
+            <th>หัวข้อบันทึกวิศวกรรม</th>
+            <th>สถานะ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>17 ก.ย. 2026 (10:00 - 18:30 น.)</td><td><a href="#phase-1">Phase 1: Backend Foundation (PostgreSQL สู่ MongoDB)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>18 ก.ย. 2026 (09:30 - 16:45 น.)</td><td><a href="#phase-2">Phase 2: Admin Web Development (Next.js .jsx + 100% Interactivity)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>18 ก.ย. 2026 (17:00 - 21:30 น.)</td><td><a href="#phase-3">Phase 3: Mobile App Development (React Native CLI + Role Navigation)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>18 ก.ย. 2026 (21:45 - 22:15 น.)</td><td><a href="#phase-4">Phase 4: การจัดระเบียบโครงสร้าง Master vs Learning</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>18 ก.ย. 2026 (22:15 - 23:50 น.)</td><td><a href="#phase-5">Phase 5: บันทึกบทเรียนการลงมือเขียนโค้ดด้วยตัวเอง (Learning Progress)</a></td><td><span class="phase-badge badge-done">บทที่ 1-2 ✅ / บทที่ 3 ⏳</span></td></tr>
+          <tr><td>19 ก.ย. 2026 (00:15 - 01:10 น.)</td><td><a href="#phase-6">Phase 6: การยกระดับสู่ Senior Capstone & 8 เอกสารวิชาการ UML</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>19 ก.ย. 2026 (01:15 - 01:20 น.)</td><td><a href="#phase-7">Phase 7: การจัดแยกโฟลเดอร์สำหรับโครงงานปี 4 (Year 4 Scoping & Isolation)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>19 ก.ย. 2026 (01:40 - 01:48 น.)</td><td><a href="#phase-8">Phase 8: การจัดการ Git Branching & ปรับปรุงหน้า GitHub สู่มาตรฐานวิชาการ</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>21 ก.ย. 2026 (22:50 - 23:00 น.)</td><td><a href="#phase-9">Phase 9: การปรับปรุงอัตลักษณ์และเปลี่ยนชื่อระบบสู่ "Draftly"</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>21 ก.ย. 2026 (23:10 - 23:20 น.)</td><td><a href="#phase-10">Phase 10: ปรับปรุงประสบการณ์ผู้ใช้ (UI/UX Refinement) & โทนสี Semantic</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>21 ก.ย. 2026 (23:30 - 23:45 น.)</td><td><a href="#phase-11">Phase 11: ระบบคอมเมนต์ตรวจงานของ Manager & Custom Single-Tone Tab Icons</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>22 ก.ย. 2026 (00:00 - 00:15 น.)</td><td><a href="#phase-12">Phase 12: การเชื่อมต่อระบบและการทำงานครบวงจร 100% (End-to-End)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>22 ก.ย. 2026 (14:05 - 14:30 น.)</td><td><a href="#phase-13">Phase 13: การย้ายสู่เครื่องพัฒนาเครื่องใหม่ & การตั้งค่า Android Environment</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>22 ก.ย. 2026 (14:45 - 15:45 น.)</td><td><a href="#phase-14">Phase 14: สถาปัตยกรรม Team-Based Workspace & การยกเลิก Mock Data สู่ MongoDB 100%</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section 0: Vision -->
+    <section class="section-card" id="vision">
+      <h2 class="section-title">1. จุดเริ่มต้นและวิสัยทัศน์ของระบบ (System Vision)</h2>
+      <div class="phase-meta"><span>🕒 บันทึกเมื่อ: 17 กันยายน 2026 (10:00 น.)</span></div>
+      <p>ระบบถูกออกแบบขึ้นเพื่อบริหารกระบวนการผลิตสื่อตั้งแต่ต้นจนจบ (End-to-End Media Pipeline):</p>
+      <div class="callout callout-info">
+        <strong>Media Production Pipeline:</strong><br>
+        <code>Idea ➔ Planning ➔ Task Assignment ➔ Production ➔ Legal Check ➔ Review ➔ Revision ↺ ➔ Approval ➔ Schedule ➔ Publish ➔ Analytics</code>
+      </div>
+      <h3>4 เสาหลักของระบบ (4 Core Pillars):</h3>
+      <ol>
+        <li><strong>Content Production Management:</strong> วงจรงานสร้างสรรค์, การแตก Task ย่อย, การตรวจงาน และคิวงาน</li>
+        <li><strong>Content Intelligence:</strong> เก็บสถิติ Performance จาก YouTube Data API v3 และ TikTok API</li>
+        <li><strong>Recommendation Engine:</strong> วิเคราะห์แนวโน้มเพื่อแนะนำหัวข้อและเวลาโพสต์ที่เหมาะสม</li>
+        <li><strong>Legal & Compliance Gatekeeper:</strong> ระบบ Checklist ตรวจสอบลิขสิทธิ์เพลง, PDPA, เครื่องหมายการค้า และกฎชุมชน 100% ก่อนเผยแพร่</li>
+      </ol>
+    </section>
+
+    <!-- Phase 1 -->
+    <section class="section-card" id="phase-1">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 1: Backend Foundation</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 17 ก.ย. 2026 (10:30 - 18:30 น.)</span></div>
+      <h3>1.1 เริ่มต้นด้วย Relational Database (PostgreSQL)</h3>
+      <ul>
+        <li>ออกแบบฐานข้อมูลแบบ Relational ในไฟล์ <code>database/schema.sql</code></li>
+        <li>กำหนดตารางมาตรฐาน: <code>users</code>, <code>user_role</code>, <code>team</code>, <code>content</code>, <code>task</code>, <code>legal_article</code></li>
+        <li>ติดตั้ง Express.js, เชื่อมต่อผ่านไลบรารี <code>pg</code> (Connection Pool)</li>
+        <li>สร้างระบบ JWT Authentication และ Middleware ตรวจสอบสิทธิ์ (RBAC: Admin, Manager, Member)</li>
+      </ul>
+      <h3>1.2 การปรับเปลี่ยนครั้งสำคัญ: สู่ MongoDB + Mongoose (NoSQL)</h3>
+      <ul>
+        <li>เปลี่ยนฐานข้อมูลเป็น MongoDB เพื่อความคล่องตัวในการเก็บข้อมูลมีเดียและ Time-series metrics</li>
+        <li>สร้าง Mongoose Models: <code>User.js</code>, <code>Content.js</code>, <code>Task.js</code>, <code>Idea.js</code>, <code>Team.js</code>, <code>LegalArticle.js</code></li>
+        <li>สร้าง Seed Script (<code>npm run seed</code>) เพื่อจำลองข้อมูลทั้งระบบอัตโนมัติด้วยคำสั่งเดียว</li>
+      </ul>
+    </section>
+
+    <!-- Phase 2 -->
+    <section class="section-card" id="phase-2">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 2: Admin Web Development (Next.js)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 18 ก.ย. 2026 (09:30 - 16:45 น.)</span></div>
+      <h3>2.1 ปรับภาษาเป็น JavaScript (.jsx) ล้วน</h3>
+      <ul>
+        <li>แปลงไฟล์จาก TypeScript เป็น JavaScript (.jsx) 100% เพื่อความคล่องตัวในการพัฒนา</li>
+        <li>เคลียร์แคช <code>.next</code> และแก้ปัญหา Typings เก่าตกค้าง</li>
+      </ul>
+      <h3>2.2 ปรับแก้ Dark Mode Conflict สู่ Light Clean Theme</h3>
+      <ul>
+        <li>กำหนดโทนสีพื้นหลัง <code>bg-slate-100</code> ผสานการ์ดตารางสีขาว คมชัด สบายตา</li>
+      </ul>
+      <h3>2.3 ทำให้ปุ่มทุกปุ่มในระบบใช้งานได้จริง 100% (Full Interactivity)</h3>
+      <ul>
+        <li><strong>Dashboard:</strong> กรองช่วงเวลา (วันนี้, 7 วัน, 30 วัน), Progress Bar สถานะงาน, Quick Actions</li>
+        <li><strong>Contents:</strong> ค้นหา Real-time, กรอง Status, Modal สร้าง Content ใหม่, ดูรายละเอียด, ปุ่มลบงาน</li>
+        <li><strong>Users & Teams:</strong> ค้นหาพนักงาน, Modal เพิ่มสมาชิก, ปุ่มสลับ Role อัจฉริยะ (<code>MEMBER ⟳</code>)</li>
+        <li><strong>Legal Database:</strong> Category Filter Pills, Modal เพิ่ม/แก้ไขกฎหมาย</li>
+        <li><strong>System Logs:</strong> Audit Trail, ปุ่ม Export CSV ดาวน์โหลดลงเครื่องได้จริง</li>
+      </ul>
+    </section>
+
+    <!-- Phase 3 -->
+    <section class="section-card" id="phase-3">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 3: Mobile App Development (React Native CLI)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 18 ก.ย. 2026 (17:00 - 21:30 น.)</span></div>
+      <ul>
+        <li>วางโครงสร้างแอปด้วย React Native Community CLI (.jsx) สำหรับเปิดใน Android Studio</li>
+        <li>สร้างระบบ Role-Based Screen Switcher: หน้า Manager (Review, Approve, Revision) และ Member (My Tasks, Submission URL)</li>
+        <li>แก้ปัญหา Gradle Path Mismatch และห่อหุ้ม <code>SafeAreaProvider</code></li>
+      </ul>
+    </section>
+
+    <!-- Phase 4 & 5 -->
+    <section class="section-card" id="phase-4">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 4 & 5: การจัดระเบียบ Master vs Learning & การฝึกเขียนโค้ด</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 18 ก.ย. 2026 (21:45 - 23:50 น.)</span></div>
+      <p>จัดแบ่งโฟลเดอร์เพื่อเปิดโอกาสให้ผู้พัฒนาได้ลงมือพิมพ์โค้ดด้วยตนเอง:</p>
+      <ul>
+        <li><code>master/</code>: โค้ดระบบตัวเต็ม 100% (Backend, Admin Web, Mobile App, Database)</li>
+        <li><code>learning/</code>: พื้นที่ฝึกหัดเขียนโค้ดทีละบรรทัด (Lesson 1-2 สำเร็จ ✅, Lesson 3 ต่อ MongoDB & Model User สำเร็จ ⏳)</li>
+      </ul>
+    </section>
+
+    <!-- Phase 6 -->
+    <section class="section-card" id="phase-6">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 6: Senior Capstone & 8 เอกสารวิชาการ UML</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 19 ก.ย. 2026 (00:15 - 01:10 น.)</span></div>
+      <p>จัดทำ 8 เอกสารวิชาการมาตรฐานสากลใน <code>docs/academic/</code> สำหรับส่งอาจารย์และขึ้น Figma 1:1:</p>
+      <ol>
+        <li><code>01-Use-Case-Diagram.md</code> (3 Actors + Platform APIs)</li>
+        <li><code>02-Use-Case-Descriptions.md</code> (Fully Dressed IEEE/Cockburn)</li>
+        <li><code>03-Activity-Diagram.md</code> (Swimlanes 4 เลน + FSM)</li>
+        <li><code>04-Domain-Class-Diagram.md</code> (11 โดเมนเอนทิตี)</li>
+        <li><code>05-Sequence-Diagrams.md</code> (3 Critical Paths)</li>
+        <li><code>06-Entity-Relationship-Diagram.md</code> (Crow's Foot ERD)</li>
+        <li><code>07-Data-Dictionary.md</code> (12 ตารางหลัก)</li>
+        <li><code>08-Figma-Design-Tokens-And-Wireframes.md</code> (8pt Grid & Color Tokens)</li>
+      </ol>
+      <p>พร้อมทั้งสร้าง <strong>Finite State Machine Guard</strong> ใน Backend บล็อกการข้ามขั้นตอนผลิตโดยพลการ</p>
+    </section>
+
+    <!-- Phase 7 & 8 -->
+    <section class="section-card" id="phase-7">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 7 & 8: Scoping โครงงานปี 4 & การจัดระเบียบ Git</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 19 ก.ย. 2026 (01:15 - 01:48 น.)</span></div>
+      <ul>
+        <li>แยกพิมพ์เขียวสำหรับปี 4 ไว้ใน <code>docs/year-4-capstone/</code> และ Branch <code>feature/year4-capstone</code></li>
+        <li>ปรับปรุง Root <code>README.md</code> ให้สุภาพ เป็นวิชาการ จัดหมวดหมู่เอกสารอิงตามหัวข้อตรวจของอาจารย์ 7 รายการหลัก</li>
+      </ul>
+    </section>
+
+    <!-- Phase 9, 10, 11 -->
+    <section class="section-card" id="phase-9">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 9 - 11: Rebranding "Draftly", UI/UX Refinement & Semantic Colors</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 21 ก.ย. 2026 (22:50 - 23:45 น.)</span></div>
+      <ul>
+        <li><strong>Rebranding:</strong> เปลี่ยนชื่อเป็น "Draftly" ทั้งบน Android (<code>strings.xml</code>, <code>app.json</code>), Web (Metadata, Sidebar) และ Documentation</li>
+        <li><strong>UI/UX:</strong> ย้ายปุ่มออกจากระบบไปยังหน้า Profile, ลดความแน่นของ Manager Dashboard เหลือ 3 สถานะ KPI สำคัญ</li>
+        <li><strong>Semantic Progression Colors:</strong> เขียว (Approved/Published), แดง (Revision), ส้ม (Review/In Progress), เทา (Todo)</li>
+        <li><strong>Legal Check:</strong> ลดตัวกฎเหลือ 3 ข้อหลักที่สมจริง (เสียง/เพลง, ภาพ/ฟุตเทจ, เนื้อหา/กฎชุมชน)</li>
+        <li><strong>Review Commenting:</strong> เพิ่มช่องระบุคำแนะนำและ Timestamp เจาะจงแต่ละข้อใน <code>LegalChecklistScreen.jsx</code></li>
+        <li><strong>Single-Tone TabIcon:</strong> สร้าง Custom Pure Vector Icon คุมสีโมโนโครม Slate เดียวกันทั้งระบบ</li>
+      </ul>
+    </section>
+
+    <!-- Phase 12 -->
+    <section class="section-card" id="phase-12">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 12: การเชื่อมต่อระบบและการทำงานครบวงจร 100% (End-to-End)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 22 ก.ย. 2026 (00:00 - 00:15 น.)</span></div>
+      <ul>
+        <li>แก้ไข Mongoose Enum & Database Seeding ให้ตรงกัน 100%</li>
+        <li>เชื่อมต่อและ Parse ข้อมูล Response แบบ Array สดจาก MongoDB สู่ Mobile UI</li>
+        <li>เติมเต็ม Action ควบคุมวงจรชีวิตชิ้นงานครบทุกสถานะ (Start Production ➔ Move to Review ➔ Request Revision / Inspect ➔ Publish Now)</li>
+        <li>เพิ่ม Pull-to-Refresh และ Session/Token Cleanup เมื่อ Logout</li>
+      </ul>
+    </section>
+
+    <!-- Phase 13 -->
+    <section class="section-card" id="phase-13">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 13: การย้ายสู่เครื่องพัฒนาเครื่องใหม่ & การตั้งค่า Android Environment</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 22 ก.ย. 2026 (14:05 - 14:30 น.)</span></div>
+      <div class="callout callout-info">
+        <strong>สถานการณ์:</strong> ย้ายโปรเจกต์มาพัฒนาบนคอมพิวเตอร์เครื่องใหม่ พบปัญหาไม่สามารถรัน Mobile App ขึ้นสู่ Emulator ได้
+      </div>
+      <h3>ขั้นตอนการแก้ไขและผลสัมฤทธิ์:</h3>
+      <ol>
+        <li><strong>สำรวจโปรเจกต์:</strong> ตรวจสอบโครงสร้างโฟลเดอร์ใหม่ที่ <code>d:\Content-Management-System</code></li>
+        <li><strong>สร้างไฟล์ <code>local.properties</code>:</strong> วินิจฉัยพบว่า Gradle ขาด Android SDK Path จึงได้สร้างไฟล์และระบุ <code>sdk.dir=C:/Users/Gigachad/AppData/Local/Android/Sdk</code></li>
+        <li><strong>จัดระเบียบคำสั่ง React Native CLI:</strong> แนะนำคำสั่งมาตรฐานที่ถูกต้อง <code>npm start</code> (Metro Bundler) และ <code>npm run android</code> (Build & Run ลง Emulator) แก้ไขข้อผิดพลาดของคำสั่ง <code>npm react-native start-android</code></li>
+        <li><strong>ผลลัพธ์:</strong> แอปพลิเคชัน React Native Build ผ่านและรันขึ้นหน้าจอ Android Emulator สำเร็จ 100%</li>
+      </ol>
+    </section>
+
+    <!-- Phase 14 -->
+    <section class="section-card" id="phase-14" style="border-left: 4px solid var(--success);">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 14: สถาปัตยกรรม Team-Based Workspace & การยกเลิก Mock Data สู่ MongoDB 100%</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 22 ก.ย. 2026 (14:45 - 15:45 น.)</span></div>
+      <p>ยกระดับระบบจากระบบจัดการงานส่วนบุคคล (Personal Tasks) สู่ <strong>"ระบบบริหารจัดการกระบวนการผลิตสื่อแบบทีม (Team-Based Content Production Workspace)"</strong> พร้อมทั้งตัด Mock Data ออกจาก State ในแอปพลิเคชัน 100% เชื่อมต่อฐานข้อมูล MongoDB จริงสมบูรณ์แบบ:</p>
+      
+      <h3>1. วิสัยทัศน์ Team Workspace Paradigm</h3>
+      <ul>
+        <li>สมาชิก (Member) และผู้จัดการ (Manager) เข้าถึงหน้า <strong>"ทีมของฉัน (Team Overview)"</strong></li>
+        <li>แสดงงานทั้งหมดของทีม, ผู้รับผิดชอบ, สถานะงาน, หลอด Progress Bar รายชิ้นงานและภาพรวมทีม (0-100%), กำหนดส่งมอบ (Deadline)</li>
+        <li>แสดงสถานะการทำงานสดของเพื่อนร่วมทีม (<code>กำลังทำงาน</code>, <code>รอตรวจ</code>, <code>ว่าง</code>, <code>ออฟไลน์</code>)</li>
+        <li>มี <strong>Team Activity Feed</strong> บันทึกกิจกรรมสด เช่น John ส่งงานตรวจ, Jane แก้ไขสคริปต์, Manager สั่งแก้ พร้อมเวลาแบบ Real-time</li>
+      </ul>
+
+      <h3>2. นโยบายความปลอดภัยและขอบเขตสิทธิ์ (Team-Level Authorization Guard)</h3>
+      <ul>
+        <li>สร้าง Middleware <code>verifyTeamAccess</code> ป้องกันการดูข้อมูลข้ามทีม (403 Forbidden หากไม่ใช่สมาชิกทีม)</li>
+        <li>Member ดูภาพรวมและงานของทีมได้ แต่ <strong>แก้ไขได้เฉพาะงานที่ได้รับมอบหมายของตนเอง</strong> เท่านั้น</li>
+        <li>Manager สามารถตรวจงาน สั่งแก้ (Request Revision) อนุมัติ (Approve) และดูภาพรวมของทีมได้ครบถ้วน</li>
+      </ul>
+
+      <h3>3. นโยบาย Zero-Mock Policy (เชื่อมต่อ MongoDB 100%)</h3>
+      <ul>
+        <li>ถอด Mock Data ออกจาก State เริ่มต้นทั้งหมดใน <code>ManagerDashboard.jsx</code>, <code>MemberTaskList.jsx</code>, และ <code>IdeaListScreen.jsx</code></li>
+        <li>แสดงผลข้อมูลสดที่ดึงมาจาก MongoDB ผ่าน Express REST API พร้อม Loading Spinner และ Empty State ที่ประณีต</li>
+      </ul>
+
+      <h3>4. การพัฒนา Backend & Database</h3>
+      <ul>
+        <li>สร้าง Mongoose Model: <code>TeamActivity.js</code> สำหรับบันทึกฟีดกิจกรรมของทีม</li>
+        <li>อัปเกรด Schema: เพิ่ม <code>teamId</code>, <code>workingStatus</code> ใน <code>User.js</code>, เพิ่ม <code>teamId</code>, <code>progress</code> ใน <code>Content.js</code> และ <code>Task.js</code></li>
+        <li>พัฒนา REST Endpoints ครบชุดใน <code>teams.routes.js</code> (<code>/api/teams/my-team</code>, <code>/api/teams/:teamId/dashboard</code>, <code>/activity</code>, <code>/tasks</code>, <code>/members</code>)</li>
+        <li>อัปเกรด <code>seed.js</code> จำลองข้อมูล Team A ("Content Team A") และ Team B พร้อมงานและประวัติกิจกรรมครบถ้วน</li>
+      </ul>
+
+      <h3>5. การพัฒนา Mobile Application</h3>
+      <ul>
+        <li>เพิ่ม <code>teamApi</code> ใน <code>src/services/api.js</code></li>
+        <li>สร้างคอมโพเนนต์ไอคอน <code>'team'</code> ใน <code>TabIcon.jsx</code></li>
+        <li>พัฒนาหน้าจอใหม่ <code>TeamOverviewScreen.jsx</code> พร้อม KPI Cards, Progress Bar, รายชื่อสมาชิก, และฟีดกิจกรรมพร้อม Pull-to-Refresh</li>
+        <li>จัดระเบียบแท็บนำทางใน <code>MemberNavigator.jsx</code> และ <code>ManagerNavigator.jsx</code></li>
+      </ul>
+
+      <h3>6. การอัปเดตเอกสารวิชาการ 7 ฉบับ (Academic Alignment)</h3>
+      <ul>
+        <li><code>01-Use-Case-Diagram.md</code>: เพิ่ม UC-19 และ UC-20</li>
+        <li><code>02-Use-Case-Descriptions.md</code>: จัดทำเอกสาร Fully Dressed UC-19 และ UC-20</li>
+        <li><code>03-Activity-Diagram.md</code>: เพิ่ม Swimlane กระบวนการทำงานระดับทีม และ Team Activity Flow</li>
+        <li><code>04-Domain-Class-Diagram.md</code>: เพิ่ม Class <code>TeamActivity</code> และความสัมพันธ์</li>
+        <li><code>05-Sequence-Diagrams.md</code>: เพิ่ม Sequence Diagram 4: Team Workspace Access & Event Dispatching</li>
+        <li><code>06-Entity-Relationship-Diagram.md</code>: เพิ่ม Entity <code>TEAM_ACTIVITIES</code> และ Foreign Keys</li>
+        <li><code>07-Data-Dictionary.md</code>: เพิ่มตารางที่ 13 <code>team_activities</code> และฟิลด์ใหม่ในตาราง <code>users</code>, <code>contents</code>, <code>tasks</code></li>
+      </ul>
+    </section>
+
+    <!-- Section Catalog -->
+    <section class="section-card" id="catalog">
+      <h2 class="section-title">แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)</h2>
+      <div class="phase-meta"><span>🕒 ปัจจุบัน 22 กันยายน 2026</span></div>
+      <p>เอกสารทั้งหมดในระบบจัดเก็บเป็นสัดส่วนพร้อมเรียกใช้งาน:</p>
+      <ul>
+        <li><strong><code>docs/academic/</code>:</strong> 8 เอกสารวิชาการและพิมพ์เขียว Figma พร้อมส่งอาจารย์</li>
+        <li><strong><code>docs/learning/</code>:</strong> บทเรียนการเขียนโค้ด Backend ด้วยมือตนเอง (Lesson 1-3)</li>
+        <li><strong><code>docs/year-4-capstone/</code>:</strong> 6 พิมพ์เขียวสถาปัตยกรรมสำหรับต่อยอดปี 4 (แยกไว้ใน Branch <code>feature/year4-capstone</code>)</li>
+        <li><strong><code>docs/PROJECT-DEVELOPMENT-LOG.md</code>:</strong> ไฟล์ประวัติการพัฒนาดั้งเดิมในรูปแบบ Markdown</li>
+        <li><strong><code>docs/PROJECT-DEVELOPMENT-LOG.html</code>:</strong> เอกสารฉบับนี้สำหรับเปิดอ่านผ่านเว็บเบราว์เซอร์หรือสั่งพิมพ์เป็น PDF</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <script>
+    // Search filter for sidebar
+    const searchInput = document.getElementById('phaseSearch');
+    const navLinks = document.querySelectorAll('.nav-list .nav-item');
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      navLinks.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(query)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+
+    // Active link highlighting on scroll
+    const sections = document.querySelectorAll('section.section-card');
+    const links = document.querySelectorAll('.nav-link');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        const top = sec.offsetTop - 120;
+        if (window.pageYOffset >= top) {
+          current = sec.getAttribute('id');
+        }
+      });
+
+      links.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

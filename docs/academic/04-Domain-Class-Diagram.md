@@ -29,6 +29,8 @@ classDiagram
         -firstName: String
         -lastName: String
         -roleId: String
+        -teamId: String
+        -workingStatus: WorkingStatusEnum
         -isActive: Boolean
         -createdAt: DateTime
         -updatedAt: DateTime
@@ -45,6 +47,7 @@ classDiagram
         -createdAt: DateTime
         +addMember(user: User, roleInTeam: String): Void
         +removeMember(userId: String): Void
+        +calculateTeamProgress(): Integer
     }
 
     class TeamMember {
@@ -75,11 +78,13 @@ classDiagram
     class Content {
         <<Entity>>
         -id: String
+        -teamId: String
         -title: String
         -description: String
         -category: String
         -platform: PlatformEnum
         -status: ContentStatusEnum
+        -progress: Integer
         -createdById: String
         -ideaId: String
         -dueDate: DateTime
@@ -119,18 +124,20 @@ classDiagram
     class Task {
         <<Entity>>
         -id: String
+        -teamId: String
         -contentId: String
         -title: String
         -taskType: TaskTypeEnum
         -assignedToId: String
         -status: TaskStatusEnum
+        -progress: Integer
         -dueDate: DateTime
         -submissionUrl: String
         -notes: String
         -createdAt: DateTime
         -updatedAt: DateTime
         +startTask(): Void
-        +submitDeliverable(url: String): Void
+        +submitDeliverable(url: String, progress: Integer): Void
         +approveTask(): Void
     }
 
@@ -173,6 +180,20 @@ classDiagram
         +formatLog(): String
     }
 
+    class TeamActivity {
+        <<Entity>>
+        -id: String
+        -teamId: String
+        -actorId: String
+        -actionType: String
+        -title: String
+        -details: String
+        -entityId: String
+        -entityModel: String
+        -createdAt: DateTime
+        +logEvent(): Void
+    }
+
     %% Enums
     class ContentStatusEnum {
         <<Enumeration>>
@@ -205,6 +226,9 @@ classDiagram
     Role "1" -- "0..*" User : defines access of >
     User "1" -- "0..*" TeamMember : participates as >
     Team "1" -- "0..*" TeamMember : consists of >
+    Team "1" -- "0..*" Content : owns pipeline >
+    Team "1" -- "0..*" Task : groups execution >
+    Team "1" -- "0..*" TeamActivity : records live events >
     
     User "1" -- "0..*" Idea : proposes >
     Idea "0..1" -- "0..1" Content : converted into >
@@ -219,10 +243,11 @@ classDiagram
     Content "1" *-- "0..*" Review : receives feedback >
     User "1" -- "0..*" Review : reviews <
     
-    Content "1" *-- "5" LegalCheck : audited by >
+    Content "1" *-- "3..5" LegalCheck : audited by >
     User "1" -- "0..*" LegalCheck : audits <
     
     User "1" -- "0..*" ActivityLog : triggers >
+    User "1" -- "0..*" TeamActivity : initiates >
 ```
 
 ---

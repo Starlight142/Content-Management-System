@@ -11,6 +11,10 @@ erDiagram
     ROLES ||--o{ USERS : "assigned to"
     USERS ||--o{ TEAM_MEMBERS : "belongs to"
     TEAMS ||--o{ TEAM_MEMBERS : "has members"
+    TEAMS ||--o{ CONTENTS : "owns"
+    TEAMS ||--o{ TASKS : "executes"
+    TEAMS ||--o{ TEAM_ACTIVITIES : "records"
+    USERS ||--o{ TEAM_ACTIVITIES : "initiates"
     
     USERS ||--o{ IDEAS : "proposes"
     IDEAS |o--o| CONTENTS : "originates"
@@ -45,11 +49,13 @@ erDiagram
     USERS {
         uuid id PK
         int role_id FK
+        uuid team_id FK
         string username UK
         string email UK
         string password_hash
         string first_name
         string last_name
+        string working_status
         boolean is_active
         datetime created_at
         datetime updated_at
@@ -69,6 +75,18 @@ erDiagram
         datetime joined_at
     }
 
+    TEAM_ACTIVITIES {
+        uuid id PK
+        uuid team_id FK
+        uuid actor_id FK
+        string action_type
+        string title
+        string details
+        uuid entity_id
+        string entity_model
+        datetime created_at
+    }
+
     IDEAS {
         uuid id PK
         string title
@@ -83,12 +101,14 @@ erDiagram
 
     CONTENTS {
         uuid id PK
+        uuid team_id FK
         uuid idea_id FK
         string title
         text description
         string platform
         string category
         string status
+        int progress
         uuid created_by FK
         datetime due_date
         datetime published_at
@@ -118,11 +138,13 @@ erDiagram
 
     TASKS {
         uuid id PK
+        uuid team_id FK
         uuid content_id FK
         string title
         string task_type
         uuid assigned_to FK
         string status
+        int progress
         datetime due_date
         text submission_url
         text notes

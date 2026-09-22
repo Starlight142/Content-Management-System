@@ -43,6 +43,17 @@ export default function TabIcon({ name, active }) {
         </View>
       );
 
+    case 'team':
+      return (
+        <View style={styles.iconContainer}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={[styles.avatarHead, { borderColor: color, width: 7, height: 7, borderRadius: 3.5, marginRight: -2 }]} />
+            <View style={[styles.avatarHead, { borderColor: color, width: 8, height: 8, borderRadius: 4 }]} />
+          </View>
+          <View style={[styles.avatarBody, { borderColor: color, width: 16, height: 5 }]} />
+        </View>
+      );
+
     case 'profile':
     default:
       return (

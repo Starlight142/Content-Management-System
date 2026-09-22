@@ -8,44 +8,14 @@ import {
   TextInput,
   Alert,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { taskApi } from '../../services/api';
 
 export default function MemberTaskList({ user, onLogout, onNavigate }) {
-  const [tasks, setTasks] = useState([
-    {
-      id: '1',
-      title: 'ตัดต่อคลิปวิดีโอ (Highlight & Sound FX)',
-      contentTitle: 'สรุปข่าว AI ภายใน 1 นาที',
-      platform: 'TikTok',
-      status: 'IN_PROGRESS',
-      dueDate: 'วันนี้ 17:00',
-      type: 'Video Editing',
-      submissionUrl: '',
-    },
-    {
-      id: '2',
-      title: 'บันทึกเสียงพากย์บทนำ (Voiceover Intro)',
-      contentTitle: 'รีวิวแก็ดเจ็ตสมาร์ตโฮม 2026',
-      platform: 'YouTube',
-      status: 'TODO',
-      dueDate: 'พรุ่งนี้ 12:00',
-      type: 'Audio Recording',
-      submissionUrl: '',
-    },
-    {
-      id: '3',
-      title: 'ออกแบบปก Thumbnail สไตล์มินิมอล',
-      contentTitle: 'Vlog เบื้องหลังกองถ่ายทำ',
-      platform: 'Instagram',
-      status: 'REVIEW',
-      dueDate: '25 ก.ย. 18:00',
-      type: 'Graphic Design',
-      submissionUrl: 'https://drive.google.com/file/d/thumbnail_v1.png',
-    },
-  ]);
-
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [submissionInputs, setSubmissionInputs] = useState({});
   const [refreshing, setRefreshing] = useState(false);
 
@@ -53,7 +23,8 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
     try {
       const res = await taskApi.getAll();
       const list = Array.isArray(res) ? res : (res?.tasks || []);
-      if (Array.isArray(list) && list.length > 0) {
+      if (Array.isArray(list)) {
+        const currentUserId = user?.id || user?.userId;
         const mapped = list.map((t) => ({
           id: t._id || String(Date.now()),
           title: t.title,
@@ -63,11 +34,21 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
           dueDate: t.dueDate ? t.dueDate.split('T')[0] : 'เร็วๆ นี้',
           type: t.taskType || 'Production',
           submissionUrl: t.submissionUrl || '',
+          assignedToId: t.assignedTo?._id || t.assignedTo,
         }));
-        setTasks(mapped);
+        
+        // Filter to show tasks assigned to this member
+        const myTasks = currentUserId
+          ? mapped.filter((t) => t.assignedToId && t.assignedToId.toString() === currentUserId.toString())
+          : mapped;
+
+        setTasks(myTasks);
       }
     } catch (err) {
-      console.warn('Using fallback tasks:', err.message);
+      console.warn('fetchTasks error:', err.message);
+      setTasks([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -187,85 +168,103 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
         </Text>
 
         {/* Task Cards */}
-        {tasks.map((item) => {
-          const st = getStatusColor(item.status);
+        {loading ? (
+          <View style={{ padding: 32, alignItems: 'center' }}>
+            <ActivityIndicator size="small" color="#0F172A" />
+            <Text style={{ marginTop: 8, fontSize: 13, color: '#64748B' }}>
+              กำลังโหลดงานของคุณจาก MongoDB...
+            </Text>
+          </View>
+        ) : tasks.length === 0 ? (
+          <View style={{ padding: 32, alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, marginTop: 12, borderWidth: 1, borderColor: '#E2E8F0' }}>
+            <Text style={{ fontSize: 14, fontWeight: '700', color: '#0F172A', textAlign: 'center' }}>
+              🎉 ไม่มีงานส่วนตัวที่ค้างอยู่
+            </Text>
+            <Text style={{ fontSize: 12, color: '#64748B', marginTop: 4, textAlign: 'center' }}>
+              คุณสามารถดูงานทั้งหมดและกิจกรรมของเพื่อนร่วมทีมได้ที่แท็บ "ทีมของฉัน"
+            </Text>
+          </View>
+        ) : (
+          tasks.map((item) => {
+            const st = getStatusColor(item.status);
 
-          return (
-            <View key={item.id} style={styles.taskCard}>
-              {/* Task Header */}
-              <View style={styles.taskCardTop}>
-                <View style={styles.typeBadge}>
-                  <Text style={styles.typeBadgeText}>{item.type}</Text>
-                </View>
-
-                <View style={[styles.statusBadge, { backgroundColor: st.bg }]}>
-                  <Text style={[styles.statusBadgeText, { color: st.text }]}>{st.label}</Text>
-                </View>
-              </View>
-
-              {/* Task Title & Parent Content */}
-              <Text style={styles.taskTitle}>{item.title}</Text>
-              <View style={styles.parentContentBox}>
-                <Text style={styles.parentContentLabel}>ชิ้นงาน:</Text>
-                <Text style={styles.parentContentTitle}>
-                  {item.contentTitle} ({item.platform})
-                </Text>
-              </View>
-
-              <View style={styles.dueRow}>
-                <Text style={styles.dueText}>กำหนดส่ง: {item.dueDate}</Text>
-              </View>
-
-              {/* Action Area based on status */}
-              {item.status === 'TODO' && (
-                <TouchableOpacity
-                  style={styles.startBtn}
-                  onPress={() => handleStartTask(item.id)}
-                >
-                  <Text style={styles.startBtnText}>เริ่มทำงาน</Text>
-                </TouchableOpacity>
-              )}
-
-              {item.status === 'IN_PROGRESS' && (
-                <View style={styles.submitSection}>
-                  <View style={styles.linkPromptRow}>
-                    <Text style={styles.linkIconText}>🔗</Text>
-                    <Text style={styles.inputPrompt}>แนบลิงก์ไฟล์งาน (Drive / Cloud URL):</Text>
+            return (
+              <View key={item.id} style={styles.taskCard}>
+                {/* Task Header */}
+                <View style={styles.taskCardTop}>
+                  <View style={styles.typeBadge}>
+                    <Text style={styles.typeBadgeText}>{item.type}</Text>
                   </View>
-                  <TextInput
-                    style={styles.urlInput}
-                    placeholder="วางลิงก์ไฟล์ผลงานที่นี่..."
-                    value={submissionInputs[item.id] || ''}
-                    onChangeText={(val) =>
-                      setSubmissionInputs({ ...submissionInputs, [item.id]: val })
-                    }
-                    autoCapitalize="none"
-                    placeholderTextColor="#94A3B8"
-                  />
-                  <TouchableOpacity
-                    style={styles.submitBtn}
-                    onPress={() => handleSubmitTask(item.id)}
-                  >
-                    <Text style={styles.submitBtnText}>ส่งมอบงานให้ตรวจสอบ</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
 
-              {item.status === 'REVIEW' && (
-                <View style={styles.submittedBox}>
-                  <Text style={styles.submittedText}>
-                    ส่งงานเรียบร้อย • อยู่ในคิวรอการตรวจสอบ
-                  </Text>
-                  {item.submissionUrl ? (
-                    <Text style={styles.submittedUrl} numberOfLines={1}>
-                      🔗 {item.submissionUrl}
-                    </Text>
-                  ) : null}
+                  <View style={[styles.statusBadge, { backgroundColor: st.bg }]}>
+                    <Text style={[styles.statusBadgeText, { color: st.text }]}>{st.label}</Text>
+                  </View>
                 </View>
-              )}
-            </View>
-          );
-        })}
+
+                {/* Task Title & Parent Content */}
+                <Text style={styles.taskTitle}>{item.title}</Text>
+                <View style={styles.parentContentBox}>
+                  <Text style={styles.parentContentLabel}>ชิ้นงาน:</Text>
+                  <Text style={styles.parentContentTitle}>
+                    {item.contentTitle} ({item.platform})
+                  </Text>
+                </View>
+
+                <View style={styles.dueRow}>
+                  <Text style={styles.dueText}>กำหนดส่ง: {item.dueDate}</Text>
+                </View>
+
+                {/* Action Area based on status */}
+                {item.status === 'TODO' && (
+                  <TouchableOpacity
+                    style={styles.startBtn}
+                    onPress={() => handleStartTask(item.id)}
+                  >
+                    <Text style={styles.startBtnText}>เริ่มทำงาน</Text>
+                  </TouchableOpacity>
+                )}
+
+                {item.status === 'IN_PROGRESS' && (
+                  <View style={styles.submitSection}>
+                    <View style={styles.linkPromptRow}>
+                      <Text style={styles.linkIconText}>🔗</Text>
+                      <Text style={styles.inputPrompt}>แนบลิงก์ไฟล์งาน (Drive / Cloud URL):</Text>
+                    </View>
+                    <TextInput
+                      style={styles.urlInput}
+                      placeholder="วางลิงก์ไฟล์ผลงานที่นี่..."
+                      value={submissionInputs[item.id] || ''}
+                      onChangeText={(val) =>
+                        setSubmissionInputs({ ...submissionInputs, [item.id]: val })
+                      }
+                      autoCapitalize="none"
+                      placeholderTextColor="#94A3B8"
+                    />
+                    <TouchableOpacity
+                      style={styles.submitBtn}
+                      onPress={() => handleSubmitTask(item.id)}
+                    >
+                      <Text style={styles.submitBtnText}>ส่งมอบงานให้ตรวจสอบ</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                {item.status === 'REVIEW' && (
+                  <View style={styles.submittedBox}>
+                    <Text style={styles.submittedText}>
+                      ส่งงานเรียบร้อย • อยู่ในคิวรอการตรวจสอบ
+                    </Text>
+                    {item.submissionUrl ? (
+                      <Text style={styles.submittedUrl} numberOfLines={1}>
+                        🔗 {item.submissionUrl}
+                      </Text>
+                    ) : null}
+                  </View>
+                )}
+              </View>
+            );
+          })
+        )}
       </ScrollView>
     </SafeAreaView>
   );
