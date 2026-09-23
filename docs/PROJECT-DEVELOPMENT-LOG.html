@@ -431,8 +431,10 @@
       <li class="nav-item"><a href="#phase-10" class="nav-link"><span class="nav-tag">P10</span>UI/UX & Semantic States</a></li>
       <li class="nav-item"><a href="#phase-11" class="nav-link"><span class="nav-tag">P11</span>Detailed Review & Tab Icons</a></li>
       <li class="nav-item"><a href="#phase-12" class="nav-link"><span class="nav-tag">P12</span>End-to-End Integration</a></li>
-      <li class="nav-item"><a href="#phase-13" class="nav-link active"><span class="nav-tag">P13</span>Fresh Machine & Android SDK</a></li>
-      <li class="nav-item"><a href="#phase-14" class="nav-link active"><span class="nav-tag">P14</span>Team-Based Workspace</a></li>
+      <li class="nav-item"><a href="#phase-13" class="nav-link"><span class="nav-tag">P13</span>Fresh Machine & Android SDK</a></li>
+      <li class="nav-item"><a href="#phase-14" class="nav-link"><span class="nav-tag">P14</span>Team-Based Workspace</a></li>
+      <li class="nav-item"><a href="#phase-15" class="nav-link"><span class="nav-tag">P15</span>Dark/Light Mode Theming</a></li>
+      <li class="nav-item"><a href="#phase-16" class="nav-link"><span class="nav-tag">P16</span>UI Ergonomics & Spacing</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -452,8 +454,8 @@
       <div class="meta-grid">
         <div class="meta-item"><strong>เส้นทางโปรเจกต์:</strong> <code>d:\Content-Management-System</code></div>
         <div class="meta-item"><strong>ทีมพัฒนา:</strong> Developer & Antigravity (AI Pair Programmer)</div>
-        <div class="meta-item"><strong>สถานะปัจจุบัน:</strong> Phase 14 สำเร็จสมบูรณ์ 100% ✅</div>
-        <div class="meta-item"><strong>อัปเดตล่าสุด:</strong> 22 กันยายน 2026 เวลา 15:45 น.</div>
+        <div class="meta-item"><strong>สถานะปัจจุบัน:</strong> Phase 16 สำเร็จสมบูรณ์ 100% ✅</div>
+        <div class="meta-item"><strong>อัปเดตล่าสุด:</strong> 23 กันยายน 2026 เวลา 02:40 น.</div>
       </div>
     </header>
 
@@ -483,6 +485,8 @@
           <tr><td>22 ก.ย. 2026 (00:00 - 00:15 น.)</td><td><a href="#phase-12">Phase 12: การเชื่อมต่อระบบและการทำงานครบวงจร 100% (End-to-End)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>22 ก.ย. 2026 (14:05 - 14:30 น.)</td><td><a href="#phase-13">Phase 13: การย้ายสู่เครื่องพัฒนาเครื่องใหม่ & การตั้งค่า Android Environment</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>22 ก.ย. 2026 (14:45 - 15:45 น.)</td><td><a href="#phase-14">Phase 14: สถาปัตยกรรม Team-Based Workspace & การยกเลิก Mock Data สู่ MongoDB 100%</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>23 ก.ย. 2026 (02:00 - 02:25 น.)</td><td><a href="#phase-15">Phase 15: ระบบสลับโหมด Dark Mode และ Light Mode (Dynamic Theming System)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>23 ก.ย. 2026 (02:30 - 02:40 น.)</td><td><a href="#phase-16">Phase 16: การจัดระยะความสวยงามและปรับปรุงสัดส่วนการจัดวาง UI (UI Ergonomics)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
         </tbody>
       </table>
     </section>
@@ -722,6 +726,51 @@
         <li><code>06-Entity-Relationship-Diagram.md</code>: เพิ่ม Entity <code>TEAM_ACTIVITIES</code> และ Foreign Keys</li>
         <li><code>07-Data-Dictionary.md</code>: เพิ่มตารางที่ 13 <code>team_activities</code> และฟิลด์ใหม่ในตาราง <code>users</code>, <code>contents</code>, <code>tasks</code></li>
       </ul>
+    </section>
+
+    <!-- Phase 15 -->
+    <section class="section-card" id="phase-15" style="border-left: 4px solid var(--primary);">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 15: ระบบสลับโหมด Dark Mode และ Light Mode (Dynamic Theming System)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 23 ก.ย. 2026 (02:00 - 02:25 น.)</span></div>
+      <p>พัฒนาระบบสลับโหมดการแสดงผลแบบไดนามิก (Dark Mode / Light Mode Theme Switching) ทั่วทั้งแอปพลิเคชันมือถือ (React Native Mobile App) เพื่อยกระดับประสบการณ์ผู้ใช้งาน รองรับการใช้งานในสภาวะแสงน้อย และสอดคล้องกับมาตรฐาน Material You / iOS Human Interface Guidelines:</p>
+
+      <h3>1. สถาปัตยกรรม Context API & Semantic Design Tokens</h3>
+      <ul>
+        <li>สร้างโมดูล <code>ThemeContext.jsx</code> พร้อม Context Provider และ Custom Hook <code>useTheme()</code></li>
+        <li><strong>Light Mode Palette:</strong> พื้นหลังสีขาวนวล <code>#F8FAFC</code>, ผิวการ์ด <code>#FFFFFF</code>, ตัวหนังสือหลัก <code>#0F172A</code>, ขอบ <code>#E2E8F0</code></li>
+        <li><strong>Dark Mode Palette (Midnight/Slate):</strong> พื้นหลังดำลึก <code>#0B0F17</code>, ผิวการ์ด <code>#1E293B</code>, ตัวหนังสือหลัก <code>#F8FAFC</code>, ขอบ <code>#334155</code></li>
+        <li>คำนวณคู่สีป้ายสถานะ (Status Badges) แบบคอนทราสต์สูงสำหรับสภาวะมืด ป้องกันแสงแยงตา</li>
+      </ul>
+
+      <h3>2. การผสานและควบคุมทั้งระบบ (Global Integration)</h3>
+      <ul>
+        <li>ห่อหุ้ม Navigation Container ด้วย <code>&lt;ThemeProvider&gt;</code> ใน <code>App.jsx</code> และปรับสี <code>&lt;StatusBar&gt;</code> แบบไดนามิก</li>
+        <li>ติดตั้งสวิตช์ Toggle สลับโหมดแบบสดในหน้า <code>ProfileScreen.jsx</code> ใต้หัวข้อ "การแสดงผลและธีม"</li>
+        <li>ปรับแต่งสไตล์รองรับทั้งสองธีมครบทุกหน้าจอ 100% (Manager Dashboard, Member Tasks, Ideas, Team Overview, Legal Check, Tab Bar, Tab Icons)</li>
+        <li>ผ่านการทดสอบ ESLint 0 errors และชุดทดสอบ Jest อัตโนมัติ 100% Pass</li>
+      </ul>
+    </section>
+
+    <!-- Phase 16 -->
+    <section class="section-card" id="phase-16" style="border-left: 4px solid var(--accent);">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 16: การจัดระยะความสวยงามและปรับปรุงสัดส่วนการจัดวาง UI (UI Ergonomics)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 23 ก.ย. 2026 (02:30 - 02:40 น.)</span></div>
+      <p>ปรับปรุงการเว้นระยะขอบ (Spacing, Margins & Padding) และการจัดวางโครงสร้าง Flexbox ขององค์ประกอบการ์ดบน Mobile Application เพื่อแก้ไขปัญหาข้อความและปุ่มกดเบียดชิดกันเกินไป:</p>
+
+      <h3>ขั้นตอนการปรับปรุงและผลสัมฤทธิ์:</h3>
+      <ol>
+        <li><strong>แก้ไข Style Name Mismatch:</strong> แก้ไข <code>metaRow</code> ใน <code>ManagerDashboard.jsx</code> จากเดิมที่อ้างอิงชื่อสไตล์ไม่ตรง ทำให้กลับมาแสดงผลแบบ Side-by-Side Flex Layout อย่างสมบูรณ์</li>
+        <li><strong>จัดสมดุลข้อมูล:</strong> วางผู้รับผิดชอบงานไว้ทางซ้าย และกำหนดส่งมอบไว้ทางขวา พร้อมเส้นคั่นบางสวยงาม</li>
+        <li><strong>เพิ่ม Breathing Room:</strong> เพิ่มระยะห่าง <code>marginBottom: 16</code> ก่อนถึงปุ่ม Action เพื่อไม่ให้ปุ่มเบียดกับข้อความวันที่</li>
+        <li><strong>มาตรฐาน Touch Target Size:</strong> ขยายความสูงของปุ่มกดเป็น <code>minHeight: 44</code> (44x44 dp) ตามมาตรฐานสากลของ Apple HIG & Android Material Design สัมผัสง่ายและไม่กดพลาด</li>
+        <li><strong>ความสม่ำเสมอในทุกหน้าจอ:</strong> ปรับปรุง <code>MemberTaskList.jsx</code> ให้เว้นระยะ <code>marginBottom: 14</code> และขยายความสูงปุ่มเริ่มงาน/ส่งงานให้เท่ากันทั้งระบบ</li>
+      </ol>
     </section>
 
     <!-- Section Catalog -->
