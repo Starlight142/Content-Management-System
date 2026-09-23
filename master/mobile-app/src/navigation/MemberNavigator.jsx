@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TeamOverviewScreen from '../features/team/TeamOverviewScreen';
 import MemberTaskList from '../features/tasks/MemberTaskList';
 import IdeaListScreen from '../features/ideas/IdeaListScreen';
@@ -10,6 +11,10 @@ import { useTheme } from '../theme/ThemeContext';
 export default function MemberNavigator({ user, onLogout }) {
   const [currentScreen, setCurrentScreen] = useState('team');
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+
+  // Dynamic bottom padding to elevate tab bar comfortably above Android gesture navigation bar / iOS home indicator
+  const bottomPadding = Math.max(insets.bottom, Platform.OS === 'android' ? 18 : 10) + 6;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -38,7 +43,16 @@ export default function MemberNavigator({ user, onLogout }) {
       </View>
 
       {/* Persistent Bottom Tab Bar for Member */}
-      <View style={[styles.bottomBar, { backgroundColor: colors.tabBg, borderTopColor: colors.tabBorder }]}>
+      <View
+        style={[
+          styles.bottomBar,
+          {
+            backgroundColor: colors.tabBg,
+            borderTopColor: colors.tabBorder,
+            paddingBottom: bottomPadding,
+          },
+        ]}
+      >
         <TouchableOpacity
           style={[styles.tabItem, currentScreen === 'team' && { backgroundColor: colors.tabActive }]}
           onPress={() => setCurrentScreen('team')}
@@ -120,7 +134,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#E2E8F0',
-    paddingVertical: 8,
+    paddingTop: 8,
     paddingHorizontal: 12,
     justifyContent: 'space-around',
     alignItems: 'center',

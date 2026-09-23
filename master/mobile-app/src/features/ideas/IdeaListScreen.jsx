@@ -111,7 +111,7 @@ export default function IdeaListScreen({ onBack }) {
   });
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* App Top Bar */}
       <View style={[styles.topBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={onBack} style={[styles.backBtn, { backgroundColor: colors.surfaceSubtle }]}>
@@ -281,7 +281,7 @@ export default function IdeaListScreen({ onBack }) {
                       { color: isDark ? '#FB923C' : '#C2410C' },
                     ]}
                   >
-                    🔥 {item.upvotes} Upvotes
+                    {item.upvotes} Upvotes
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -305,7 +305,7 @@ export default function IdeaListScreen({ onBack }) {
             ]}
           >
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>✨ นำเสนอไอเดียใหม่</Text>
+              <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>นำเสนอไอเดียใหม่</Text>
               <TouchableOpacity onPress={() => setIsModalOpen(false)}>
                 <Text style={[styles.modalCloseText, { color: colors.textMuted }]}>✕</Text>
               </TouchableOpacity>
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   addBtn: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#2563EB',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
@@ -625,8 +625,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   platOptionActive: {
-    backgroundColor: '#4F46E5',
-    borderColor: '#4F46E5',
+    backgroundColor: '#2563EB',
+    borderColor: '#2563EB',
   },
   platOptionText: {
     fontSize: 11,
@@ -637,15 +637,16 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   submitIdeaBtn: {
-    backgroundColor: '#4F46E5',
-    paddingVertical: 12,
+    backgroundColor: '#2563EB',
+    minHeight: 44,
+    justifyContent: 'center',
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 6,
   },
   submitIdeaBtnText: {
     color: '#FFFFFF',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '700',
   },
 });

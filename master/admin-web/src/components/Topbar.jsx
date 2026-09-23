@@ -1,19 +1,29 @@
 "use client";
 
-import { useState } from 'react';
-import { Bell, Search, LogOut, Check, X, ShieldAlert, Sparkles, Video } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Bell, Search, LogOut, X } from 'lucide-react';
 import Link from 'next/link';
+import { presenceClient } from '../services/presenceClient';
 
 const Topbar = () => {
   const [notifications, setNotifications] = useState([
     { id: 1, title: 'มี Content รอ Review', desc: 'คลิป "สรุปข่าว AI" ส่งมาให้ตรวจสอบ', time: '10 นาทีที่แล้ว', unread: true },
-    { id: 2, title: 'เกณฑ์ PDPA มีการอัปเดต', desc: 'Admin ได้เพิ่มข้อกำหนดใหม่ใน Legal DB', time: '1 ชม. ที่แล้ว', unread: true },
+    { id: 2, title: 'ส่งกลับแก้ไขงาน', desc: 'Manager ส่งฟีดแบ็กแก้ไขคลิป Tech News พร้อมคำแนะนำ', time: '1 ชม. ที่แล้ว', unread: true },
     { id: 3, title: 'Task ใหม่ถูกมอบหมาย', desc: 'ตัดต่อคลิปรีวิวแก็ดเจ็ตครบกำหนดพรุ่งนี้', time: '3 ชม. ที่แล้ว', unread: false },
   ]);
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isSignoutModalOpen, setIsSignoutModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [onlineCount, setOnlineCount] = useState(0);
+
+  useEffect(() => {
+    presenceClient.connect('admin_topbar');
+    const unsub = presenceClient.subscribe((_, onlineSet) => {
+      setOnlineCount(onlineSet.size);
+    });
+    return () => unsub();
+  }, []);
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
@@ -30,7 +40,7 @@ const Topbar = () => {
           type="text" 
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="ค้นหาด่วน (เช่น contents, users, legal)..." 
+          placeholder="ค้นหาด่วน (เช่น contents, users, tasks)..." 
           className="bg-transparent border-none outline-hidden text-xs text-slate-800 placeholder:text-slate-400 w-full"
         />
         {searchQuery && (
@@ -41,6 +51,15 @@ const Topbar = () => {
       </div>
 
       <div className="flex items-center gap-3">
+        {/* Real-time Presence Badge */}
+        <Link
+          href="/users"
+          title="ดูสถานะสมาชิกที่ออนไลน์อยู่ขณะนี้"
+          className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200/70 rounded-full text-xs font-semibold text-emerald-800 transition shadow-2xs"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>{onlineCount > 0 ? `${onlineCount} คนออนไลน์` : 'Live Presence'}</span>
+        </Link>
         {/* Notification Bell with Dropdown */}
         <div className="relative">
           <button 

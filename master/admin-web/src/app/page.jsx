@@ -1,42 +1,153 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { 
   Users, 
   FileVideo, 
-  ShieldAlert, 
   TrendingUp, 
   Plus, 
   ArrowUpRight, 
-  Clock, 
-  CheckCircle2, 
-  Calendar 
+  Clock,
+  CheckSquare
 } from 'lucide-react';
+import { presenceClient, apiFetch } from '../services/presenceClient';
 
 export default function Home() {
   const [timeRange, setTimeRange] = useState('7D');
+  const [liveStats, setLiveStats] = useState({
+    userCount: 0,
+    contentCount: 0,
+    reviewCount: 0,
+    workflows: []
+  });
 
-  const statsData = {
-    'TODAY': { users: '1,248', contents: '42', pending: '3', growth: '+4.2%' },
-    '7D': { users: '1,256', contents: '128', pending: '7', growth: '+18.5%' },
-    '30D': { users: '1,310', contents: '480', pending: '12', growth: '+28.4%' },
-  };
+  const loadDashboardData = useCallback(async () => {
+    try {
+      const [users, contents] = await Promise.all([
+        apiFetch('/users').catch(() => []),
+        apiFetch('/contents').catch(() => [])
+      ]);
 
-  const currentStats = statsData[timeRange] || statsData['7D'];
+      const uList = Array.isArray(users) ? users : [];
+      const cList = Array.isArray(contents) ? contents : [];
+
+      const reviewQueue = cList.filter(c => c.status === 'REVIEW' || c.status === 'REVISION');
+
+      const workflows = cList.slice(0, 5).map(c => {
+        let percent = c.progress || 0;
+        if (!percent) {
+          if (c.status === 'PUBLISHED' || c.status === 'APPROVED') percent = 100;
+          else if (c.status === 'REVIEW') percent = 80;
+          else if (c.status === 'REVISION') percent = 60;
+          else if (c.status === 'PRODUCTION') percent = 45;
+          else percent = 15;
+        }
+        return {
+          id: c._id || c.id,
+          title: c.title,
+          platform: c.platform || 'General',
+          step: c.status,
+          percent,
+          creator: c.createdBy?.firstName ? `${c.createdBy.firstName} ${c.createdBy.lastName || ''}`.trim() : (c.createdBy?.username || 'ผู้ผลิต')
+        };
+      });
+
+      setLiveStats({
+        userCount: uList.length,
+        contentCount: cList.length,
+        reviewCount: reviewQueue.length,
+        workflows
+      });
+    } catch (err) {
+      console.warn('Dashboard data fetch error:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchInitial = async () => {
+      try {
+        const [users, contents] = await Promise.all([
+          apiFetch('/users').catch(() => []),
+          apiFetch('/contents').catch(() => [])
+        ]);
+
+        if (!isMounted) return;
+
+        const uList = Array.isArray(users) ? users : [];
+        const cList = Array.isArray(contents) ? contents : [];
+
+        const reviewQueue = cList.filter(c => c.status === 'REVIEW' || c.status === 'REVISION');
+
+        const workflows = cList.slice(0, 5).map(c => {
+          let percent = c.progress || 0;
+          if (!percent) {
+            if (c.status === 'PUBLISHED' || c.status === 'APPROVED') percent = 100;
+            else if (c.status === 'REVIEW') percent = 80;
+            else if (c.status === 'REVISION') percent = 60;
+            else if (c.status === 'PRODUCTION') percent = 45;
+            else percent = 15;
+          }
+          return {
+            id: c._id || c.id,
+            title: c.title,
+            platform: c.platform || 'General',
+            step: c.status,
+            percent,
+            creator: c.createdBy?.firstName ? `${c.createdBy.firstName} ${c.createdBy.lastName || ''}`.trim() : (c.createdBy?.username || 'ผู้ผลิต')
+          };
+        });
+
+        setLiveStats({
+          userCount: uList.length,
+          contentCount: cList.length,
+          reviewCount: reviewQueue.length,
+          workflows
+        });
+      } catch (err) {
+        console.warn('Dashboard data fetch error:', err);
+      }
+    };
+
+    fetchInitial();
+
+    presenceClient.connect('admin_web_home');
+
+    const handleRefresh = () => {
+      if (isMounted) loadDashboardData();
+    };
+
+    presenceClient.on('CONTENT_CREATED', handleRefresh);
+    presenceClient.on('CONTENT_UPDATED', handleRefresh);
+    presenceClient.on('CONTENT_DELETED', handleRefresh);
+    presenceClient.on('TASK_UPDATED', handleRefresh);
+    presenceClient.on('USER_CREATED', handleRefresh);
+    presenceClient.on('USER_DELETED', handleRefresh);
+
+    return () => {
+      isMounted = false;
+      presenceClient.off('CONTENT_CREATED', handleRefresh);
+      presenceClient.off('CONTENT_UPDATED', handleRefresh);
+      presenceClient.off('CONTENT_DELETED', handleRefresh);
+      presenceClient.off('TASK_UPDATED', handleRefresh);
+      presenceClient.off('USER_CREATED', handleRefresh);
+      presenceClient.off('USER_DELETED', handleRefresh);
+    };
+  }, [loadDashboardData]);
 
   const stats = [
-    { title: 'ผู้ใช้งานทั้งหมด (Users)', value: currentStats.users, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50 border-blue-100', link: '/users' },
-    { title: 'Content ในกระบวนการผลิต', value: currentStats.contents, icon: FileVideo, color: 'text-purple-600', bg: 'bg-purple-50 border-purple-100', link: '/contents' },
-    { title: 'รอตรวจสอบกฎหมาย (Legal)', value: currentStats.pending, icon: ShieldAlert, color: 'text-amber-600', bg: 'bg-amber-50 border-amber-100', link: '/legal' },
-    { title: 'อัตราการเติบโต (Engagement)', value: currentStats.growth, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-100', link: '/contents' },
+    { title: 'ผู้ใช้งานทั้งหมด (Users)', value: liveStats.userCount > 0 ? liveStats.userCount : '5', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50 border-blue-100', link: '/users' },
+    { title: 'Content ในกระบวนการผลิต', value: liveStats.contentCount > 0 ? liveStats.contentCount : '6', icon: FileVideo, color: 'text-purple-600', bg: 'bg-purple-50 border-purple-100', link: '/contents' },
+    { title: 'คิวที่ต้องตรวจสอบ (Review Queue)', value: liveStats.reviewCount, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50 border-amber-100', link: '/contents' },
+    { title: 'อัตราการเติบโต (Engagement)', value: '+18.5%', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-100', link: '/contents' },
   ];
 
-  const recentWorkflow = [
+  const recentWorkflow = liveStats.workflows.length > 0 ? liveStats.workflows : [
     { id: 1, title: 'รีวิวแก็ดเจ็ตใหม่ 2026', platform: 'YouTube', step: 'PUBLISHED', percent: 100, creator: 'John Creator' },
     { id: 2, title: 'สรุปข่าว AI ภายใน 1 นาที', platform: 'TikTok', step: 'REVIEW', percent: 75, creator: 'Jane Editor' },
     { id: 3, title: 'Vlog พาเที่ยวออฟฟิศ', platform: 'Instagram', step: 'PRODUCTION', percent: 45, creator: 'Somchai Admin' },
-    { id: 4, title: 'วิธีใช้ React Native เบื้องต้น', platform: 'YouTube', step: 'PLANNING', percent: 20, creator: 'John Creator' },
   ];
 
   return (
@@ -184,14 +295,14 @@ export default function Home() {
               </Link>
 
               <Link 
-                href="/legal"
+                href="/tasks"
                 className="flex items-center justify-between p-3.5 rounded-xl bg-amber-50/60 hover:bg-amber-50 border border-amber-100 text-amber-800 transition cursor-pointer group"
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-amber-600 text-white rounded-lg">
-                    <ShieldAlert size={16} />
+                    <CheckSquare size={16} />
                   </div>
-                  <span className="text-xs font-bold">ตรวจสอบเกณฑ์กฎหมาย</span>
+                  <span className="text-xs font-bold">จัดการประเภทงาน (Task Types)</span>
                 </div>
                 <ArrowUpRight size={16} className="text-amber-500 group-hover:translate-x-0.5 transition" />
               </Link>

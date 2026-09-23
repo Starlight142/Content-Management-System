@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,9 +10,21 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
+import { presenceService } from '../../services/presenceService';
 
 export default function ProfileScreen({ user, onLogout }) {
   const { isDark, toggleTheme, colors } = useTheme();
+  const [isOnline, setIsOnline] = useState(presenceService.isConnected);
+
+  useEffect(() => {
+    setIsOnline(presenceService.isConnected);
+    const unsubscribe = presenceService.subscribe((event) => {
+      if (event.type === 'CONNECTION_CHANGE') {
+        setIsOnline(event.isConnected);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleConfirmLogout = () => {
     Alert.alert(
@@ -32,7 +44,7 @@ export default function ProfileScreen({ user, onLogout }) {
   const isManager = user?.role === 'MANAGER';
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Top Bar Header */}
       <View style={[styles.topBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <Text style={[styles.topBarTitle, { color: colors.textPrimary }]}>ข้อมูลส่วนตัวและตั้งค่า</Text>
@@ -90,10 +102,12 @@ export default function ProfileScreen({ user, onLogout }) {
           </View>
           <View style={[styles.divider, { backgroundColor: colors.divider }]} />
           <View style={styles.menuItem}>
-            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>สถานะบัญชี</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>สถานะการเชื่อมต่อ</Text>
             <View style={styles.statusRow}>
-              <View style={styles.activeDot} />
-              <Text style={styles.statusText}>กำลังใช้งาน (Active)</Text>
+              <View style={[styles.activeDot, { backgroundColor: isOnline ? colors.statusApprovedText : colors.textMuted }]} />
+              <Text style={[styles.statusText, { color: isOnline ? colors.statusApprovedText : colors.textSecondary }]}>
+                {isOnline ? 'ออนไลน์ (Online • Live)' : 'ออฟไลน์ (Offline)'}
+              </Text>
             </View>
           </View>
         </View>

@@ -26,6 +26,8 @@
 | `last_name` | VARCHAR | 100 | - | YES | NULL | นามสกุล |
 | `team_id` | UUID / VARCHAR | 36 | FK (`teams.id`) | YES | NULL | ทีมหลักที่สังกัด |
 | `working_status` | VARCHAR | 30 | CHECK in ('WORKING','REVIEWING','IDLE','OFFLINE') | NO | 'IDLE' | สถานะการทำงานปัจจุบันของสมาชิก |
+| `is_online` | BOOLEAN | - | - | NO | FALSE | สถานะการเชื่อมต่อออนไลน์แบบ Real-time |
+| `last_active_at`| TIMESTAMP | - | - | NO | CURRENT_TIMESTAMP | วันและเวลาที่มีกิจกรรมในระบบล่าสุด |
 | `is_active` | BOOLEAN | - | - | NO | TRUE | สถานะเปิด/ปิดการใช้งานบัญชี |
 | `created_at` | TIMESTAMP | - | - | NO | CURRENT_TIMESTAMP | วันเวลาที่ลงทะเบียน |
 | `updated_at` | TIMESTAMP | - | - | NO | CURRENT_TIMESTAMP | วันเวลาที่แก้ไขล่าสุด |
@@ -94,13 +96,15 @@
 | `content_id` | UUID / VARCHAR | 36 | FK (`contents.id` ON DELETE CASCADE) | NO | - | เชื่อมโยงกับ Content หลัก |
 | `team_id` | UUID / VARCHAR | 36 | FK (`teams.id`) | NO | - | รหัสทีมเจ้าของงานย่อย |
 | `title` | VARCHAR | 200 | - | NO | - | ชื่องานย่อย (เช่น ตัดต่อคลิป, อัดเสียง) |
-| `task_type` | VARCHAR | 50 | - | NO | 'Editing' | ประเภทงาน (Scripting, Filming, Editing) |
+| `task_type` | VARCHAR | 50 | - | NO | 'Editing' | ประเภทงาน (Scripting, Filming, Editing, Sound) |
 | `assigned_to`| UUID / VARCHAR | 36 | FK (`users.id`) | YES | NULL | สมาชิกที่ได้รับมอบหมาย |
-| `status` | VARCHAR | 30 | CHECK in ('TODO','IN_PROGRESS','REVIEW','DONE') | NO | 'TODO' | สถานะการทำงาน |
+| `status` | VARCHAR | 30 | CHECK in ('TODO','IN_PROGRESS','REVIEW','REVISION','DONE') | NO | 'TODO' | สถานะการทำงาน |
 | `progress` | INT | - | CHECK (progress BETWEEN 0 AND 100) | NO | 0 | ความคืบหน้าของงานย่อย (0-100%) |
 | `due_date` | TIMESTAMP | - | - | YES | NULL | กำหนดส่งงานย่อย |
 | `submission_url`| TEXT | - | - | YES | NULL | ลิงก์ส่งมอบผลงาน (Google Drive / Frame.io) |
 | `notes` | TEXT | - | - | YES | NULL | บันทึกเพิ่มเติม |
+| `revision_notes`| TEXT | - | - | YES | NULL | ข้อความสั่งแก้ไขจาก Manager ระบุจุดที่ต้องปรับปรุง |
+| `reply_notes` | TEXT | - | - | YES | NULL | ข้อความตอบกลับจาก Member ชี้แจงสิ่งที่ได้ดำเนินการแก้ไข |
 | `created_at` | TIMESTAMP | - | - | NO | CURRENT_TIMESTAMP | วันเวลาที่สร้าง |
 | `updated_at` | TIMESTAMP | - | - | NO | CURRENT_TIMESTAMP | วันเวลาที่อัปเดต |
 
@@ -131,17 +135,13 @@
 
 ---
 
-### 10. ตาราง: `legal_checks` (การตรวจสอบข้อกำหนดกฎหมาย 5 เสาหลัก)
+### 10. ตาราง: `legal_checks` *(ยกเลิกการใช้งาน / Deprecated ใน Phase 18)*
+> **หมายเหตุการเปลี่ยนแปลง (Phase 18):** เพื่อลดความซ้ำซ้อนและเพิ่มความคล่องตัวในสายการผลิต ระบบได้ยกเลิกหน้าจอและขั้นตอน Legal Checklist บังคับ 5 ข้อ โดยปรับเปลี่ยนเป็นกระบวนการตรวจรับและอนุมัติชิ้นงานโดยตรงจาก Manager (Direct 1-Tap Approval)
 | ชื่อฟิลด์ | ชนิดข้อมูล | ความยาว | ข้อจำกัด (Constraints) | Nullable | ค่าเริ่มต้น | คำอธิบาย |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `id` | UUID / VARCHAR | 36 | PK | NO | gen_random_uuid() | รหัสการตรวจสอบ |
-| `content_id` | UUID / VARCHAR | 36 | FK (`contents.id` ON DELETE CASCADE) | NO | - | ชิ้นงานที่ทำการตรวจสอบ |
-| `rule_title` | VARCHAR | 255 | - | NO | - | ชื่อกฎหมายที่ตรวจ |
-| `rule_category`| VARCHAR | 50 | - | NO | - | หมวดหมู่ (Audio, Footage, PDPA, Trademark, Rules) |
-| `passed` | BOOLEAN | - | - | NO | FALSE | ผลการตรวจ (TRUE = ผ่าน, FALSE = ยังไม่ผ่าน) |
-| `note` | TEXT | - | - | YES | NULL | บันทึกหลักฐานใบอนุญาต |
-| `checked_by` | UUID / VARCHAR | 36 | FK (`users.id`) | YES | NULL | ผู้ตรวจสอบความถูกต้อง |
-| `checked_at` | TIMESTAMP | - | - | YES | NULL | วันเวลาที่ตรวจผ่าน |
+| `id` | UUID / VARCHAR | 36 | PK | NO | gen_random_uuid() | รหัสการตรวจสอบ (เดิม) |
+| `content_id` | UUID / VARCHAR | 36 | FK (`contents.id`) | NO | - | ชิ้นงานที่ทำการตรวจสอบ |
+| `passed` | BOOLEAN | - | - | NO | FALSE | ผลการตรวจ |
 
 ---
 

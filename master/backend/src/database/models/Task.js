@@ -32,7 +32,7 @@ const taskSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'],
+    enum: ['TODO', 'IN_PROGRESS', 'REVIEW', 'REVISION', 'DONE'],
     default: 'TODO',
   },
   dueDate: {
@@ -43,6 +43,14 @@ const taskSchema = new mongoose.Schema({
     default: '',
   },
   notes: {
+    type: String,
+    default: '',
+  },
+  revisionNotes: {
+    type: String,
+    default: '',
+  },
+  replyNotes: {
     type: String,
     default: '',
   },

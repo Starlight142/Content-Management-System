@@ -64,65 +64,75 @@ sequenceDiagram
 
     %% Manager reviews & requests revision
     rect rgb(254, 226, 226)
-    Note over Mgr, DB: ส่วนที่ 2: ผู้จัดการตรวจงานและสั่งแก้ไข (Revision Loop)
+    Note over Mgr, DB: ส่วนที่ 2: ผู้จัดการตรวจงานและสั่งแก้ไขผ่าน Modal (Revision Loop)
     Mgr->>App: 11. เปิดคิวตรวจงาน (ManagerDashboard)
-    Mgr->>App: 12. กดปุ่ม "🔄 ส่งกลับแก้ไข (Request Revision)"
-    App-->>Mgr: 13. แสดง Prompt ให้กรอก Revision Notes
-    Mgr->>App: 14. พิมพ์ฟีดแบ็ก "แก้สีและลดเสียงดนตรีลง 15%"
+    Mgr->>App: 12. กดปุ่ม "ส่งกลับแก้ไข (Request Revision)"
+    App-->>Mgr: 13. แสดง Interactive Modal พร้อมช่อง TextInput ให้พิมพ์คำแนะนำ
+    Mgr->>App: 14. พิมพ์ฟีดแบ็ก "แก้เสียงดนตรีช่วงนาทีที่ 0:15 ให้เบาลง 20%" และกดยืนยัน
     App->>API: 15. POST /api/contents/:id/review { decision: 'REVISION', notes }
     API->>Guard: 16. canTransition(from: 'REVIEW', to: 'REVISION')
     Guard-->>API: 17. Allowed Transition
     API->>DB: 18. APPEND reviewHistory (decision, notes, timestamp)
     API->>DB: 19. UPDATE Content SET status='REVISION'
-    API->>DB: 20. UPDATE Task SET status='IN_PROGRESS'
-    DB-->>API: 21. Records Updated
-    API-->>App: 22. HTTP 200 OK { status: 'REVISION' }
-    App-->>Mgr: 23. แสดงผล "แจ้งเตือนส่งกลับแก้ไขแล้ว"
-    App-->>Mem: 24. Push Notification แจ้งเตือน Editor ให้แก้ไขงาน
+    API->>DB: 20. UPDATE Task SET status='REVISION', revisionNotes=notes
+    API->>DB: 21. INSERT TeamActivity (activityType: 'CONTENT_REVISION', title: 'ส่งกลับแก้ไขงาน')
+    DB-->>API: 22. Records Updated
+    API-->>App: 23. HTTP 200 OK { status: 'REVISION' }
+    App-->>Mgr: 24. ปิด Modal และแสดงข้อความ "ส่งกลับแก้ไขเรียบร้อย"
+    end
+
+    %% Member responds with reply notes
+    rect rgb(255, 237, 213)
+    Note over Mem, DB: ส่วนที่ 3: สมาชิกชี้แจงการแก้ไขด้วย Reply Notes และส่งงานรอบใหม่
+    Mem->>App: 25. เห็นการ์ดงานใน Section "งานที่ต้องดำเนินการ (Action Required)"
+    Mem->>App: 26. พิมพ์ข้อความตอบกลับในช่อง "ข้อความตอบกลับสำหรับการแก้ไขงาน (Reply Notes)"
+    Mem->>App: 27. กดปุ่ม "ส่งงานที่แก้ไขแล้ว"
+    App->>API: 28. PATCH /api/tasks/:id/submit { replyNotes, submissionUrl }
+    API->>DB: 29. UPDATE Task SET status='REVIEW', replyNotes
+    API->>DB: 30. INSERT TeamActivity (activityType: 'TASK_SUBMITTED', title: 'ส่งงานรอบแก้ไขพร้อมข้อความชี้แจง')
+    DB-->>API: 31. Records Updated
+    API-->>App: 32. HTTP 200 OK
+    App-->>Mem: 33. แสดง Toast "ส่งงานที่แก้ไขแล้วเรียบร้อย"
     end
 ```
 
 ---
 
-## ⚖️ ไดอะแกรมที่ 3: การตรวจเช็กกฎหมายและอนุมัติเผยแพร่ (Legal Gatekeeper Audit & Publishing)
+## 🚀 ไดอะแกรมที่ 3: การตรวจรับและอนุมัติชิ้นงานโดยตรง (Direct Content Approval & Publishing)
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor Mgr as 👔 Manager
-    participant App as 📱 Mobile App (LegalChecklistScreen)
+    participant App as 📱 Mobile App (ManagerDashboard)
     participant API as 🖥️ ContentController
-    participant Guard as 🛡️ LegalGatekeeperEngine
+    participant Guard as 🛡️ StateMachineValidator
     participant DB as 🗄️ Database
 
-    Mgr->>App: 1. เปิดหน้า Legal & PDPA Audit รายชิ้นงาน
-    App->>API: 2. GET /api/contents/:id/legal-check
-    API->>DB: 3. SELECT legalChecklist FROM Content WHERE id = :id
-    DB-->>API: 4. Return current checklist state
-    API-->>App: 5. Display 5 checklist items
+    Mgr->>App: 1. เปิดดูคิวงานสถานะ REVIEW ใน Manager Dashboard
+    Mgr->>App: 2. ตรวจสอบไฟล์งานและ Reply Notes จากสมาชิก
+    Mgr->>App: 3. กดปุ่ม "อนุมัติชิ้นงาน (Direct Approval)" บนการ์ดงาน
+    App->>API: 4. POST /api/contents/:id/review { decision: 'APPROVED' }
+    activate API
+    API->>Guard: 5. canTransition(from: 'REVIEW', to: 'APPROVED')
+    Guard-->>API: 6. Transition Allowed (Direct 1-Tap Approval)
+    API->>DB: 7. UPDATE Content SET status='APPROVED', progress=100
+    API->>DB: 8. UPDATE Tasks SET status='DONE', progress=100 WHERE contentId=:id
+    API->>DB: 9. INSERT TeamActivity (activityType: 'CONTENT_APPROVED', title: 'อนุมัติชิ้นงานเรียบร้อยแล้ว')
+    API->>DB: 10. INSERT ActivityLog (action: 'CONTENT_APPROVED')
+    DB-->>API: 11. Transaction Committed
+    API-->>App: 12. HTTP 200 OK { message: "Content approved successfully", status: 'APPROVED' }
+    deactivate API
+    App-->>Mgr: 13. แสดง Toast "อนุมัติชิ้นงานสำเร็จ พร้อมสำหรับการเผยแพร่"
     
-    loop ตรวจสอบและติ๊กทั้ง 5 ข้อ
-        Mgr->>App: 6. ติ๊ก (Music, Stock, PDPA, Trademark, Community)
-        App->>App: 7. คำนวณความคืบหน้า (100% Passed)
+    opt เผยแพร่หรือตั้งเวลา (Publishing & Scheduling)
+        Mgr->>App: 14. กดปุ่ม "เผยแพร่ทันที" หรือกำหนดเวลา
+        App->>API: 15. POST /api/contents/:id/publish
+        API->>DB: 16. UPDATE Content SET status='PUBLISHED', publishedAt=NOW()
+        DB-->>API: 17. Updated successfully
+        API-->>App: 18. HTTP 200 OK
+        App-->>Mgr: 19. แสดงผล "เผยแพร่คอนเทนต์สู่สาธารณะเรียบร้อย"
     end
-    
-    Mgr->>App: 8. กดปุ่ม "🚀 อนุมัติการเผยแพร่ (Approve & Publish)"
-    App->>API: 9. PUT /api/contents/:id/legal-check { items: [...] }
-    API->>DB: 10. UPDATE Content SET legalChecklist = :items
-    
-    App->>API: 11. POST /api/contents/:id/review { decision: 'APPROVED' }
-    API->>Guard: 12. verifyLegalGatekeeper(contentId)
-    activate Guard
-    Guard->>DB: 13. ตรวจสอบว่า passed = true ครบทั้ง 5 ข้อหรือไม่
-    DB-->>Guard: 14. All 5 items passed (5/5)
-    Guard-->>API: 15. [PASS] ปลดล็อกสิทธิ์การ Approve
-    deactivate Guard
-    
-    API->>DB: 16. UPDATE Content SET status='APPROVED' (หรือ PUBLISHED)
-    API->>DB: 17. INSERT ActivityLog (action: 'APPROVED_AND_PUBLISHED')
-    DB-->>API: 18. Transaction Committed
-    API-->>App: 19. HTTP 200 OK (Content Approved)
-    App-->>Mgr: 20. แสดง Alert "อนุมัติและพร้อมเผยแพร่สำเร็จ 100%"
 ```
 
 ---

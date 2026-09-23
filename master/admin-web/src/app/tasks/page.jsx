@@ -9,7 +9,7 @@ export default function TaskTypesPage() {
     { id: 2, name: 'Filming', description: 'ถ่ายทำวิดีโอหรือบันทึกเสียง', defaultDuration: '1 Day' },
     { id: 3, name: 'Editing', description: 'ตัดต่อและใส่เอฟเฟกต์ (Post-Production)', defaultDuration: '3 Days' },
     { id: 4, name: 'Graphic Design', description: 'ทำภาพปก (Thumbnail) และกราฟิกประกอบ', defaultDuration: '1 Day' },
-    { id: 5, name: 'Legal Check', description: 'ตรวจสอบความถูกต้องและลิขสิทธิ์ก่อนเผยแพร่', defaultDuration: '1 Day' },
+    { id: 5, name: 'Sound Design', description: 'ออกแบบเสียงและดนตรีประกอบ (Sound Effects & Mixing)', defaultDuration: '1 Day' },
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');

@@ -9,8 +9,10 @@
 2. [UC-04: สร้างชิ้นงานคอนเทนต์และแตกงานย่อย (Create Content & Assign Tasks)](#uc-04-สร้างชิ้นงานคอนเทนต์และแตกงานย่อย-create-content--assign-tasks)
 3. [UC-07: ปฏิบัติงานและส่งมอบผลงาน (Task Execution & Deliverable Submission)](#uc-07-ปฏิบัติงานและส่งมอบผลงาน-task-execution--deliverable-submission)
 4. [UC-08: ตรวจทานงานและสั่งแก้ไข (Review & Revision Loop)](#uc-08-ตรวจทานงานและสั่งแก้ไข-review--revision-loop)
-5. [UC-10: ตรวจสอบความสอดคล้องทางกฎหมาย (Audit Legal & PDPA Checklist)](#uc-10-ตรวจสอบความสอดคล้องทางกฎหมาย-audit-legal--pdpa-checklist)
-6. [UC-12: เผยแพร่และตั้งเวลาคอนเทนต์ (Schedule & Publish Content)](#uc-12-เผยแพร่และตั้งเวลาคอนเทนต์-schedule--publish-content)
+5. [UC-10: ส่งงานรอบแก้ไขพร้อมข้อความตอบกลับ (Submit Revision with Reply Notes)](#uc-10-ส่งงานรอบแก้ไขพร้อมข้อความตอบกลับ-submit-revision-with-reply-notes)
+6. [UC-11: ตรวจรับและอนุมัติชิ้นงานโดยตรง (Approve Final Content)](#uc-11-ตรวจรับและอนุมัติชิ้นงานโดยตรง-approve-final-content)
+7. [UC-12: เผยแพร่และตั้งเวลาคอนเทนต์ (Schedule & Publish Content)](#uc-12-เผยแพร่และตั้งเวลาคอนเทนต์-schedule--publish-content)
+8. [UC-19: ดูภาพรวมและความคืบหน้าของทีม (View Team Workspace & Progress)](#uc-19-ดูภาพรวมและความคืบหน้าของทีม-view-team-workspace--progress)
 
 ---
 
@@ -127,41 +129,59 @@
 9. ระบบส่งแจ้งเตือนกลับไปยัง Editor เพื่อแก้ไขงาน
 
 #### Alternative Path (Approve Path):
-- หากผลงานสมบูรณ์แบบ Manager กดปุ่ม "Approve" $\rightarrow$ เข้าสู่ **UC-10 (Audit Legal & PDPA Checklist)** ก่อนจะสามารถอนุมัติได้สำเร็จ
+- หากผลงานสมบูรณ์แบบ Manager กดปุ่ม "อนุมัติชิ้นงาน" โดยตรง $\rightarrow$ เข้าสู่ **UC-11 (Approve Final Content)** เพื่ออนุมัติและปรับสถานะเป็น `APPROVED` ทันที
 
 ---
 
-### UC-10: ตรวจสอบความสอดคล้องทางกฎหมาย (Audit Legal & PDPA Checklist)
+### UC-10: ส่งงานรอบแก้ไขพร้อมข้อความตอบกลับ (Submit Revision with Reply Notes)
 
 | รายการ | รายละเอียด |
 | :--- | :--- |
 | **Use Case ID** | **UC-10** |
-| **Use Case Name** | Audit Legal & PDPA Checklist (การตรวจสอบข้อกฎหมายและสิทธิ์) |
-| **Primary Actor** | Manager (ทำหน้าที่ Compliance Officer) |
-| **Secondary Actor** | Legal Rules Knowledge Base |
-| **Preconditions** | Content อยู่ในสถานะ `REVIEW` และผ่านการตรวจคุณภาพด้านเนื้อหาเบื้องต้นแล้ว |
-| **Postconditions** | รายการตรวจสอบกฎหมายทั้ง 5 ข้อถูกบันทึกลงฐานข้อมูล หากผ่านครบ 5/5 ข้อ ระบบจะปลดล็อกให้สามารถกด Approve/Publish ได้ |
-| **Trigger** | Manager เข้าสู่ขั้นตอนตรวจสอบสิทธิ์ก่อนเผยแพร่สื่อสาธารณะ |
-
-#### รายการตรวจสอบ 5 เสาหลัก (5 Mandatory Compliance Pillars):
-1. **Music License**: สิทธิ์เพลงประกอบ (ใบอนุญาตเชิงพาณิชย์ หรือเสียงจาก Platform Library)
-2. **Stock Footage**: สิทธิ์ภาพนิ่งและวิดีโอ (Commercial Use License)
-3. **PDPA & Privacy**: ความยินยอมของบุคคลภายนอกในคลิป (Consent Form / เบลอหน้า / เบลอป้ายทะเบียน)
-4. **Trademark & Branding**: ไม่มีสินค้าหรือโลโก้ละเมิด และติดแท็ก Sponsor ถูกต้องตามกฎหมายคุ้มครองผู้บริโภค
-5. **Community Guidelines**: ไม่ขัดต่อนโยบายความปลอดภัย (ไม่มี Hate Speech, การหลอกลวง หรือความรุนแรง)
+| **Use Case Name** | Submit Revision with Reply Notes (การส่งงานรอบแก้ไขพร้อมคำชี้แจง) |
+| **Primary Actor** | Member (Creator / Editor / Graphic) |
+| **Secondary Actor** | - |
+| **Preconditions** | Task อยู่ในสถานะ `REVISION` โดย Manager ได้ระบุคำแนะนำ (Revision Notes) ไว้ |
+| **Postconditions** | Task เปลี่ยนสถานะเป็น `REVIEW` พร้อมบันทึก `replyNotes` และลิงก์เวอร์ชันใหม่ (ถ้ามี) สู่ระบบ |
+| **Trigger** | สมาชิกปรับปรุงแก้ไขงานตามคำสั่งของ Manager เสร็จสิ้น |
 
 #### Main Success Scenario:
-1. **Manager** กดปุ่ม "⚖️ ตรวจสอบกฎหมาย (Legal Audit)" บนการ์ดชิ้นงาน
-2. ระบบเปิดหน้าจอ `LegalChecklistScreen` พร้อมแสดงสถานะ Checklist ล่าสุดจากฐานข้อมูล
-3. **Manager** ตรวจสอบหลักฐานและคลิกติ๊กถูกในแต่ละข้อที่ผ่านเกณฑ์
-4. ระบบคำนวณเปอร์เซ็นต์ความพร้อม (Compliance Score เช่น 3/5 = 60%, 5/5 = 100%) แบบ Real-time
-5. เมื่อครบ 5/5 ข้อ (100%) ปุ่ม "🚀 อนุมัติการเผยแพร่ (Approve & Ready to Publish)" จะเปลี่ยนเป็นสีเขียวและเปิดให้กดได้
-6. **Manager** กดยืนยัน
-7. ระบบส่ง `PUT /api/contents/:id/legal-check` เพื่อบันทึกผลการตรวจ และเปลี่ยนสถานะ Content เป็น `APPROVED`
+1. **Member** เปิดแอปพลิเคชันมือถือในหน้า "งานของฉัน (Member Tasks Workbench)"
+2. ในหมวดบนสุด **"งานที่ต้องดำเนินการ (Action Required)"** ระบบแสดงการ์ดงานสถานะ `REVISION` พร้อมกล่องฟีดแบ็กคำแนะนำจาก Manager
+3. **Member** พิมพ์รายละเอียดสิ่งที่ได้ปรับปรุงลงในช่อง **"ข้อความตอบกลับสำหรับการแก้ไขงาน (Reply Notes)"** เช่น *"ปรับลดเสียงเพลงประกอบลง 20% และแก้สีตามที่แนะนำแล้วครับ"*
+4. **Member** วางลิงก์ไฟล์งานใหม่ในช่อง "แนบลิงก์ไฟล์ผลงานใหม่ (ถ้ามี)"
+5. **Member** กดปุ่ม **"ส่งงานที่แก้ไขแล้ว"**
+6. ระบบตรวจสอบว่ามีข้อความตอบกลับหรือลิงก์ผลงานอย่างใดอย่างหนึ่ง (หรือทั้งสองอย่าง)
+7. ระบบส่ง `PATCH /api/tasks/:id/submit` พร้อมแนบ `replyNotes`, `submissionUrl`, และ `progress`
+8. ระบบอัปเดตสถานะ Task เป็น `REVIEW` และบันทึกลงใน Team Activity Feed เพื่อให้ Manager ตรวจสอบซ้ำ
 
 #### Exception Flows:
-- **Ex 5a: ติ๊กไม่ครบ 5 ข้อแล้วพยายามกดยืนยัน**:
-  - ระบบบล็อกคำสั่ง (Legal Gatekeeper) และแสดง Dialog เตือน: *"ไม่สามารถอนุมัติได้ ต้องผ่านเกณฑ์กฎหมายครบทั้ง 5 ข้อเพื่อป้องกันการฟ้องร้องลิขสิทธิ์"*
+- **Ex 10a: ไม่ได้กรอกข้อความตอบกลับและไม่มีลิงก์**:
+  - ระบบแสดง Alert แจ้งเตือนว่า *"กรุณาระบุข้อความตอบกลับหรือแนบลิงก์ไฟล์งานก่อนส่ง"*
+
+---
+
+### UC-11: ตรวจรับและอนุมัติชิ้นงานโดยตรง (Approve Final Content)
+
+| รายการ | รายละเอียด |
+| :--- | :--- |
+| **Use Case ID** | **UC-11** |
+| **Use Case Name** | Approve Final Content (การตรวจรับและอนุมัติชิ้นงานโดยตรง) |
+| **Primary Actor** | Manager |
+| **Secondary Actor** | - |
+| **Preconditions** | Content อยู่ในสถานะ `REVIEW` และงานย่อยทั้งหมดเสร็จสมบูรณ์ |
+| **Postconditions** | Content เปลี่ยนสถานะเป็น `APPROVED` งานย่อยเปลี่ยนเป็น `DONE` (100%) และปลดล็อกคิวการเผยแพร่ |
+| **Trigger** | Manager ตรวจสอบคุณภาพงานรอบสุดท้ายและเห็นว่าพร้อมเผยแพร่ |
+
+#### Main Success Scenario:
+1. **Manager** เปิดหน้า "งานผลิต (Manager Pipeline Dashboard)"
+2. ในส่วน **"คิวที่ต้องตรวจสอบ (Pending Review)"** Manager เลือกดูชิ้นงานสถานะ `REVIEW`
+3. **Manager** ตรวจสอบไฟล์งานและข้อความตอบกลับของสมาชิก
+4. **Manager** กดปุ่ม **"อนุมัติชิ้นงาน (Approve Content)"**
+5. ระบบแสดงข้อความยืนยันการอนุมัติ
+6. ระบบส่งคำขอ `POST /api/contents/:id/review` พร้อมส่ง `decision: 'APPROVED'`
+7. ระบบอัปเดตสถานะ Content เป็น `APPROVED` และซิงค์สถานะ Task ที่เกี่ยวข้องทั้งหมดเป็น `DONE` (ความคืบหน้า 100%)
+8. ระบบบันทึกประวัติการอนุมัติและสร้างรายการใน Team Activity Feed พร้อมแจ้งเตือนสมาชิกในทีม
 
 ---
 
@@ -173,14 +193,14 @@
 | **Use Case Name** | Schedule & Publish Content (การตั้งเวลาและเผยแพร่คอนเทนต์) |
 | **Primary Actor** | Manager |
 | **Secondary Actor** | YouTube / TikTok Platform API |
-| **Preconditions** | Content อยู่ในสถานะ `APPROVED` และผ่าน Legal Checklist 100% |
+| **Preconditions** | Content อยู่ในสถานะ `APPROVED` |
 | **Postconditions** | Content เปลี่ยนสถานะเป็น `PUBLISHED` และระบบเริ่มสร้างตารางดึงสถิติ (Metrics Collector Job) |
 | **Trigger** | ถึงกำหนดวันเวลาเผยแพร่ตามแผนการตลาด |
 
 #### Main Success Scenario:
 1. **Manager** เลือก Content ที่ผ่านการอนุมัติ (`APPROVED`)
 2. **Manager** กำหนดวันและเวลาเผยแพร่ หรือกด "เผยแพร่ทันที (Publish Now)"
-3. ระบบตรวจสอบสถานะล่าสุด ยืนยันว่า `legalChecklist.passedAll === true`
+3. ระบบตรวจสอบสถานะล่าสุด ยืนยันว่า Content อยู่ในสถานะ `APPROVED`
 4. ระบบอัปเดตสถานะของ Content เป็น `PUBLISHED` พร้อมบันทึก `publishedAt = NOW()`
 5. ระบบทำการเริ่มต้น Cron Job เพื่อดึงสถิติผลตอบรับ (Views, Likes, Comments, Engagement Rate) ทุก 6 ชั่วโมง
 

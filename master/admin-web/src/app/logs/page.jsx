@@ -2,22 +2,19 @@
 
 import { useState } from 'react';
 import { 
-  ShieldCheck, 
   Search, 
   X, 
   Download, 
   Trash2, 
   RefreshCw, 
-  Filter,
-  CheckCircle2,
-  AlertTriangle
+  CheckCircle2
 } from 'lucide-react';
 
 export default function LogsPage() {
   const [logs, setLogs] = useState([
     { id: 1, action: 'CREATE_USER', user: 'Somchai Admin', details: 'Created user Jane Editor', date: '2026-09-16 14:30:00' },
     { id: 2, action: 'UPDATE_CONTENT', user: 'Somsri Manager', details: 'Changed status of #2 to PRODUCTION', date: '2026-09-16 13:15:22' },
-    { id: 3, action: 'DELETE_LEGAL', user: 'Somchai Admin', details: 'Deleted outdated rule #8', date: '2026-09-15 09:10:05' },
+    { id: 3, action: 'REQUEST_REVISION', user: 'Somsri Manager', details: 'Requested revision for Task #3 with notes', date: '2026-09-15 09:10:05' },
     { id: 4, action: 'LOGIN_FAILED', user: 'IP: 192.168.1.45', details: 'Invalid password attempt for admin', date: '2026-09-15 08:00:12' },
     { id: 5, action: 'CREATE_CONTENT', user: 'John Creator', details: 'Submitted draft: รีวิวแก็ดเจ็ตใหม่', date: '2026-09-14 18:22:10' },
   ]);

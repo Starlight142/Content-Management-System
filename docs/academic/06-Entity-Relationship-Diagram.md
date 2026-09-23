@@ -32,9 +32,6 @@ erDiagram
     CONTENTS ||--o{ REVIEWS : "evaluated in"
     USERS ||--o{ REVIEWS : "reviews"
     
-    CONTENTS ||--|{ LEGAL_CHECKS : "audited by"
-    USERS ||--o{ LEGAL_CHECKS : "verifies"
-    
     CONTENTS ||--o{ CONTENT_METRICS : "measures"
     
     USERS ||--o{ ACTIVITY_LOGS : "performs"
@@ -56,6 +53,8 @@ erDiagram
         string first_name
         string last_name
         string working_status
+        boolean is_online
+        datetime last_active_at
         boolean is_active
         datetime created_at
         datetime updated_at
@@ -102,7 +101,6 @@ erDiagram
     CONTENTS {
         uuid id PK
         uuid team_id FK
-        uuid idea_id FK
         string title
         text description
         string platform
@@ -110,6 +108,7 @@ erDiagram
         string status
         int progress
         uuid created_by FK
+        uuid idea_id FK
         datetime due_date
         datetime published_at
         datetime created_at
@@ -131,7 +130,7 @@ erDiagram
         uuid content_id FK
         text file_url
         string file_type
-        int file_size_bytes
+        bigint file_size_bytes
         uuid uploaded_by FK
         datetime uploaded_at
     }
@@ -148,6 +147,8 @@ erDiagram
         datetime due_date
         text submission_url
         text notes
+        text revision_notes
+        text reply_notes
         datetime created_at
         datetime updated_at
     }
@@ -159,17 +160,6 @@ erDiagram
         string decision
         text revision_notes
         datetime reviewed_at
-    }
-
-    LEGAL_CHECKS {
-        uuid id PK
-        uuid content_id FK
-        string rule_title
-        string rule_category
-        boolean passed
-        text note
-        uuid checked_by FK
-        datetime checked_at
     }
 
     CONTENT_METRICS {
@@ -213,6 +203,5 @@ erDiagram
 2. **Metrics & Media Payloads เป็น Document / Time-Series (เหมาะกับ MongoDB)**:
    - สถิติจาก YouTube Data API v3 และ TikTok API มีโครงสร้าง JSON แบบกึ่งมีโครงสร้าง (Semi-structured) และมีการ Snap ข้อมูลเข้ามาทุกๆ 6 ชั่วโมง
    - การเก็บ `metrics` แบบ Embedded Subdocuments ใน NoSQL ช่วยให้ดึงข้อมูลกราฟแนวโน้ม (Time-series trends) ได้รวดเร็วโดยไม่ต้อง Join ตารางนับล้านแถว
-3. **Legal Checklist Compliance**:
-   - การเก็บ Checklist 5 ข้อแบบ Embedded Array ใน MongoDB ช่วยให้การตรวจสอบ Gatekeeper ทำได้เร็วแบบ $O(1)$ ในการโหลด Content Object เพียงครั้งเดียว
-
+3. **Team Activity Stream & Auditing**:
+   - การเก็บ Team Activities และประวัติการ Review/Revision Notes ใน MongoDB ช่วยให้สามารถ append ข้อมูลกิจกรรมของทีมได้อย่างรวดเร็วแบบ $O(1)$ โดยไม่รบกวน Core Transactional Tables

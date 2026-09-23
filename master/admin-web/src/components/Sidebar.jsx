@@ -6,7 +6,6 @@ import {
   LayoutDashboard, 
   Users, 
   FileVideo, 
-  Scale, 
   Settings,
   ShieldCheck,
   CheckSquare
@@ -20,7 +19,6 @@ const Sidebar = () => {
     { name: 'Users & Teams', icon: Users, href: '/users' },
     { name: 'Contents', icon: FileVideo, href: '/contents' },
     { name: 'Task Types', icon: CheckSquare, href: '/tasks' },
-    { name: 'Legal Database', icon: Scale, href: '/legal' },
     { name: 'System Logs', icon: ShieldCheck, href: '/logs' },
     { name: 'Settings', icon: Settings, href: '/settings' },
   ];

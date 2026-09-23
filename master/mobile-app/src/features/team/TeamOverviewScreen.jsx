@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { teamApi } from '../../services/api';
+import { presenceService } from '../../services/presenceService';
 import { useTheme } from '../../theme/ThemeContext';
 
 export default function TeamOverviewScreen({ user, onNavigate }) {
@@ -43,6 +44,60 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
 
   useEffect(() => {
     fetchTeamWorkspace();
+
+    const unsubscribe = presenceService.subscribe((event) => {
+      if (event.type === 'USER_STATUS_CHANGED') {
+        const targetId = String(event.userId);
+        setTeamData((prev) => {
+          if (!prev || !prev.members) return prev;
+          const updatedMembers = prev.members.map((m) => {
+            if (String(m._id) === targetId) {
+              return {
+                ...m,
+                isOnline: !!event.isOnline,
+                workingStatus: event.workingStatus || m.workingStatus,
+                lastActiveAt: event.lastActiveAt || m.lastActiveAt,
+              };
+            }
+            return m;
+          });
+          const onlineCount = updatedMembers.filter((m) => m.isOnline).length;
+          return {
+            ...prev,
+            members: updatedMembers,
+            stats: {
+              ...prev.stats,
+              onlineMembersCount: onlineCount,
+            },
+          };
+        });
+      } else if (event.type === 'ONLINE_USERS_SYNC') {
+        const onlineSet = new Set((event.onlineUserIds || []).map(String));
+        setTeamData((prev) => {
+          if (!prev || !prev.members) return prev;
+          const updatedMembers = prev.members.map((m) => {
+            const isOnline = onlineSet.has(String(m._id));
+            return { ...m, isOnline };
+          });
+          return {
+            ...prev,
+            members: updatedMembers,
+            stats: {
+              ...prev.stats,
+              onlineMembersCount: updatedMembers.filter((m) => m.isOnline).length,
+            },
+          };
+        });
+      } else if (
+        ['TASK_CREATED', 'TASK_UPDATED', 'TASK_DELETED', 'CONTENT_CREATED', 'CONTENT_UPDATED', 'CONTENT_DELETED', 'ACTIVITY_CREATED'].includes(event.type)
+      ) {
+        fetchTeamWorkspace();
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const onRefresh = () => {
@@ -56,23 +111,36 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
         return { label: 'เสร็จสมบูรณ์', bg: colors.statusApprovedBg, text: colors.statusApprovedText };
       case 'REVIEW':
         return { label: 'รอตรวจทาน', bg: colors.statusReviewBg, text: colors.statusReviewText };
+      case 'REVISION':
+        return { label: 'ส่งกลับแก้ไข', bg: colors.statusRevisionBg, text: colors.statusRevisionText };
       case 'IN_PROGRESS':
-        return { label: 'กำลังดำเนินการ', bg: isDark ? '#0C4A6E' : '#E0F2FE', text: isDark ? '#38BDF8' : '#0284C7' };
+        return { label: 'กำลังดำเนินการ', bg: colors.statusInProgressBg, text: colors.statusInProgressText };
       case 'TODO':
       default:
-        return { label: 'รอดำเนินการ', bg: colors.surfaceSubtle, text: colors.textSecondary };
+        return { label: 'รอดำเนินการ', bg: colors.statusTodoBg, text: colors.statusTodoText };
     }
   };
 
-  const getWorkingStatusBadge = (workingStatus) => {
+  const getWorkingStatusBadge = (workingStatus, isOnline) => {
+    if (isOnline) {
+      switch (workingStatus) {
+        case 'WORKING':
+          return { label: 'กำลังทำงาน (Online)', dotColor: colors.statusApprovedText, bg: colors.statusApprovedBg, text: colors.statusApprovedText };
+        case 'REVIEWING':
+          return { label: 'รอตรวจงาน (Online)', dotColor: colors.statusReviewText, bg: colors.statusReviewBg, text: colors.statusReviewText };
+        case 'IDLE':
+        default:
+          return { label: 'ออนไลน์ (Online)', dotColor: colors.statusApprovedText, bg: colors.statusApprovedBg, text: colors.statusApprovedText };
+      }
+    }
     switch (workingStatus) {
       case 'WORKING':
-        return { label: '🟢 กำลังทำงาน', bg: colors.statusApprovedBg, text: colors.statusApprovedText };
+        return { label: 'กำลังทำงาน (Offline)', dotColor: colors.textMuted, bg: colors.surfaceSubtle, text: colors.textSecondary };
       case 'REVIEWING':
-        return { label: '🟡 รอตรวจงาน', bg: colors.statusReviewBg, text: colors.statusReviewText };
+        return { label: 'รอตรวจงาน (Offline)', dotColor: colors.statusReviewText, bg: colors.surfaceSubtle, text: colors.textSecondary };
       case 'IDLE':
       default:
-        return { label: '⚪ พร้อมรับงาน', bg: colors.surfaceSubtle, text: colors.textSecondary };
+        return { label: 'ออฟไลน์ (Offline)', dotColor: colors.textMuted, bg: colors.surfaceSubtle, text: colors.textSecondary };
     }
   };
 
@@ -97,7 +165,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
         {teamData?.team && (
           <View style={[styles.memberCountBadge, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
             <Text style={[styles.memberCountText, { color: colors.textPrimary }]}>
-              👥 {teamData.team.totalMembers} สมาชิก
+              {teamData.team.totalMembers} สมาชิก
             </Text>
           </View>
         )}
@@ -110,18 +178,18 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
       >
         {loading ? (
           <View style={styles.centerBox}>
-            <ActivityIndicator size="large" color={colors.textPrimary} />
+            <ActivityIndicator size="large" color={colors.primary} />
             <Text style={[styles.centerText, { color: colors.textSecondary }]}>กำลังดึงข้อมูลทีมสดจาก MongoDB...</Text>
           </View>
         ) : errorMessage ? (
           <View style={styles.centerBox}>
-            <Text style={styles.errorTitle}>⚠️ การเชื่อมต่อขัดข้อง</Text>
+            <Text style={styles.errorTitle}>การเชื่อมต่อขัดข้อง</Text>
             <Text style={[styles.errorDesc, { color: colors.textSecondary }]}>{errorMessage}</Text>
             <TouchableOpacity
-              style={[styles.retryButton, { backgroundColor: isDark ? colors.surfaceSubtle : '#0F172A' }]}
+              style={[styles.retryButton, { backgroundColor: colors.primary }]}
               onPress={fetchTeamWorkspace}
             >
-              <Text style={styles.retryButtonText}>🔄 ลองเชื่อมต่อใหม่</Text>
+              <Text style={styles.retryButtonText}>ลองเชื่อมต่อใหม่</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -129,7 +197,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
             {/* 1. Team Dashboard Metrics Card */}
             <View style={[styles.dashboardCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <View style={styles.cardHeader}>
-                <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>📊 สรุปความคืบหน้าทีม (Team Overview)</Text>
+                <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>สรุปความคืบหน้าทีม (Team Overview)</Text>
                 <Text style={[styles.progressPercent, { color: colors.textPrimary }]}>{teamData?.stats?.teamProgress || 0}%</Text>
               </View>
 
@@ -150,7 +218,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
               <View style={[styles.metricsGrid, { borderTopColor: colors.divider }]}>
                 <View style={styles.metricItem}>
                   <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>งานของฉัน</Text>
-                  <Text style={[styles.metricValueHighlight, { color: isDark ? '#60A5FA' : '#2563EB' }]}>
+                  <Text style={[styles.metricValueHighlight, { color: colors.primary }]}>
                     {teamData?.stats?.myTasksCount || 0}
                   </Text>
                 </View>
@@ -162,19 +230,19 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                 </View>
                 <View style={styles.metricItem}>
                   <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>กำลังผลิต</Text>
-                  <Text style={[styles.metricValue, { color: isDark ? '#38BDF8' : '#0284C7' }]}>
+                  <Text style={[styles.metricValue, { color: colors.statusInProgressText }]}>
                     {teamData?.stats?.inProgressCount || 0}
                   </Text>
                 </View>
                 <View style={styles.metricItem}>
                   <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>รอตรวจ</Text>
-                  <Text style={[styles.metricValue, { color: isDark ? '#FBBF24' : '#D97706' }]}>
+                  <Text style={[styles.metricValue, { color: colors.statusReviewText }]}>
                     {teamData?.stats?.reviewCount || 0}
                   </Text>
                 </View>
                 <View style={styles.metricItem}>
                   <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>เสร็จแล้ว</Text>
-                  <Text style={[styles.metricValue, { color: isDark ? '#4ADE80' : '#16A34A' }]}>
+                  <Text style={[styles.metricValue, { color: colors.statusApprovedText }]}>
                     {teamData?.stats?.doneCount || 0}
                   </Text>
                 </View>
@@ -183,24 +251,45 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
 
             {/* 2. Team Members Section */}
             <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>👥 สมาชิกในทีม ({teamData?.members?.length || 0})</Text>
-              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>สถานะการทำงานแบบเรียลไทม์</Text>
+              <View style={styles.sectionHeaderRow}>
+                <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                  สมาชิกในทีม ({teamData?.members?.length || 0})
+                </Text>
+                <View style={[styles.onlineCountBadge, { backgroundColor: colors.statusApprovedBg }]}>
+                  <View style={[styles.pulseDot, { backgroundColor: colors.statusApprovedText }]} />
+                  <Text style={[styles.onlineCountText, { color: colors.statusApprovedText }]}>
+                    {teamData?.stats?.onlineMembersCount || teamData?.members?.filter((m) => m.isOnline)?.length || 0} ออนไลน์
+                  </Text>
+                </View>
+              </View>
+              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>สถานะการทำงานและสถานะออนไลน์แบบเรียลไทม์</Text>
             </View>
 
             <View style={[styles.membersList, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               {teamData?.members && teamData.members.length > 0 ? (
                 teamData.members.map((member) => {
-                  const badge = getWorkingStatusBadge(member.workingStatus);
+                  const badge = getWorkingStatusBadge(member.workingStatus, member.isOnline);
                   const isCurrentUser = member._id === user?.id || member._id === user?.userId;
                   return (
                     <View
                       key={member._id || member.username}
                       style={[styles.memberCard, { borderBottomColor: colors.divider }]}
                     >
-                      <View style={[styles.memberAvatar, { backgroundColor: isDark ? colors.surfaceSubtle : '#0F172A' }]}>
-                        <Text style={styles.avatarText}>
-                          {(member.firstName || member.username || 'M')[0].toUpperCase()}
-                        </Text>
+                      <View style={styles.avatarWrapper}>
+                        <View style={[styles.memberAvatar, { backgroundColor: isDark ? colors.surfaceSubtle : '#0F172A' }]}>
+                          <Text style={styles.avatarText}>
+                            {(member.firstName || member.username || 'M')[0].toUpperCase()}
+                          </Text>
+                        </View>
+                        <View
+                          style={[
+                            styles.presenceDot,
+                            {
+                              backgroundColor: member.isOnline ? colors.statusApprovedText : colors.textMuted,
+                              borderColor: colors.cardBg,
+                            },
+                          ]}
+                        />
                       </View>
                       <View style={styles.memberInfo}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -212,12 +301,12 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                               style={[
                                 styles.meBadge,
                                 {
-                                  backgroundColor: isDark ? '#1E3A8A' : '#EFF6FF',
-                                  borderColor: isDark ? '#3B82F6' : '#BFDBFE',
+                                  backgroundColor: colors.statusInProgressBg,
+                                  borderColor: colors.statusInProgressBorder,
                                 },
                               ]}
                             >
-                              <Text style={[styles.meBadgeText, { color: isDark ? '#93C5FD' : '#2563EB' }]}>ฉัน</Text>
+                              <Text style={[styles.meBadgeText, { color: colors.statusInProgressText }]}>ฉัน</Text>
                             </View>
                           )}
                         </View>
@@ -226,6 +315,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                         </Text>
                       </View>
                       <View style={[styles.workingBadge, { backgroundColor: badge.bg }]}>
+                        <View style={[styles.statusDot, { backgroundColor: badge.dotColor }]} />
                         <Text style={[styles.workingBadgeText, { color: badge.text }]}>
                           {badge.label}
                         </Text>
@@ -240,7 +330,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
 
             {/* 3. Team Tasks Pipeline Section */}
             <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>📋 งานทั้งหมดของทีม ({teamData?.tasks?.length || 0})</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>งานทั้งหมดของทีม ({teamData?.tasks?.length || 0})</Text>
               <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>ติดตามสถานะและความคืบหน้าของทุกคน</Text>
             </View>
 
@@ -263,7 +353,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                     <View style={styles.taskHeaderRow}>
                       <View style={[styles.contentPill, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
                         <Text style={[styles.contentPillText, { color: colors.textSecondary }]}>
-                          🎬 {task.contentId?.title || 'ชิ้นงานคอนเทนต์'}
+                          {task.contentId?.title || 'ชิ้นงานคอนเทนต์'}
                         </Text>
                       </View>
                       <View style={[styles.statusBadge, { backgroundColor: badge.bg }]}>
@@ -279,12 +369,12 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                     {/* Assignee & Deadline */}
                     <View style={styles.taskMetaRow}>
                       <Text style={[styles.taskAssignee, { color: colors.textSecondary }]}>
-                        👤 ผู้รับผิดชอบ: <Text style={{ fontWeight: '700', color: colors.textPrimary }}>{assigneeName}</Text>
+                        ผู้รับผิดชอบ: <Text style={{ fontWeight: '700', color: colors.textPrimary }}>{assigneeName}</Text>
                         {isMyTask && ' (งานของคุณ)'}
                       </Text>
                       {task.dueDate && (
                         <Text style={[styles.taskDueDate, { color: colors.textMuted }]}>
-                          📅 {task.dueDate.split('T')[0]}
+                          กำหนดส่ง: {task.dueDate.split('T')[0]}
                         </Text>
                       )}
                     </View>
@@ -315,7 +405,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
 
             {/* 4. Team Activity Feed Section */}
             <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>⚡ กิจกรรมล่าสุดของทีม (Team Activity)</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>กิจกรรมล่าสุดของทีม (Team Activity)</Text>
               <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>สิ่งที่ทีมกำลังดำเนินงานอยู่</Text>
             </View>
 
@@ -323,7 +413,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
               {teamData?.recentActivities && teamData.recentActivities.length > 0 ? (
                 teamData.recentActivities.map((act) => (
                   <View key={act._id} style={styles.activityItem}>
-                    <View style={[styles.activityDot, { backgroundColor: colors.textPrimary }]} />
+                    <View style={[styles.activityDot, { backgroundColor: colors.primary }]} />
                     <View style={styles.activityBody}>
                       <View style={styles.activityTopRow}>
                         <Text style={[styles.activityTitle, { color: colors.textPrimary }]}>{act.title}</Text>
@@ -413,15 +503,17 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   retryButton: {
-    backgroundColor: '#0F172A',
-    paddingHorizontal: 16,
-    paddingVertical: 9,
-    borderRadius: 8,
+    backgroundColor: '#2563EB',
+    paddingHorizontal: 20,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
   },
   retryButtonText: {
     color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
   },
   dashboardCard: {
     backgroundColor: '#FFFFFF',
@@ -493,6 +585,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 6,
   },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  onlineCountBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+  },
+  pulseDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 4,
+  },
+  onlineCountText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
   sectionTitle: {
     fontSize: 15,
     fontWeight: '700',
@@ -518,6 +632,19 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#F8FAFC',
   },
+  avatarWrapper: {
+    position: 'relative',
+    marginRight: 12,
+  },
+  presenceDot: {
+    position: 'absolute',
+    bottom: -1,
+    right: -1,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2,
+  },
   memberAvatar: {
     width: 38,
     height: 38,
@@ -525,7 +652,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#0F172A',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
   },
   avatarText: {
     color: '#FFFFFF',
@@ -560,9 +686,17 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   workingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
   },
   workingBadgeText: {
     fontSize: 11,

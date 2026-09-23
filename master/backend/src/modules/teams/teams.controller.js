@@ -3,13 +3,14 @@ const User = require('../../database/models/User');
 const Task = require('../../database/models/Task');
 const Content = require('../../database/models/Content');
 const TeamActivity = require('../../database/models/TeamActivity');
+const { getOnlineUserIds } = require('../../services/presence.service');
 
 // @route GET /api/teams
 // @access Private
 const getAllTeams = async (req, res) => {
   try {
     const teams = await Team.find()
-      .populate('members.user', 'username email firstName lastName role workingStatus')
+      .populate('members.user', 'username email firstName lastName role workingStatus isOnline lastActiveAt')
       .sort({ createdAt: -1 });
 
     res.status(200).json(teams);
@@ -26,14 +27,14 @@ const getMyTeam = async (req, res) => {
     const userId = req.user.userId || req.user.id;
     // Find team where user is a member
     let team = await Team.findOne({ 'members.user': userId })
-      .populate('members.user', 'username email firstName lastName role workingStatus');
+      .populate('members.user', 'username email firstName lastName role workingStatus isOnline lastActiveAt');
 
     if (!team) {
       // Fallback: check if user has teamId
       const user = await User.findById(userId);
       if (user && user.teamId) {
         team = await Team.findById(user.teamId)
-          .populate('members.user', 'username email firstName lastName role workingStatus');
+          .populate('members.user', 'username email firstName lastName role workingStatus isOnline lastActiveAt');
       }
     }
 
@@ -41,7 +42,7 @@ const getMyTeam = async (req, res) => {
       // If still not found and user is admin or manager, return first available team
       if (req.user.role === 'ADMIN' || req.user.role === 'MANAGER') {
         team = await Team.findOne()
-          .populate('members.user', 'username email firstName lastName role workingStatus');
+          .populate('members.user', 'username email firstName lastName role workingStatus isOnline lastActiveAt');
       }
     }
 
@@ -64,11 +65,14 @@ const getTeamDashboard = async (req, res) => {
     const userId = req.user.userId || req.user.id;
 
     const team = await Team.findById(teamId)
-      .populate('members.user', 'username email firstName lastName role workingStatus');
+      .populate('members.user', 'username email firstName lastName role workingStatus isOnline lastActiveAt');
 
     if (!team) {
       return res.status(404).json({ message: 'Team not found' });
     }
+
+    // Active online IDs in memory
+    const onlineIds = new Set(getOnlineUserIds());
 
     // Tasks stats
     const teamTasks = await Task.find({ teamId })
@@ -102,14 +106,9 @@ const getTeamDashboard = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(10);
 
-    res.status(200).json({
-      team: {
-        _id: team._id,
-        name: team.name,
-        description: team.description,
-        totalMembers: team.members ? team.members.length : 0,
-      },
-      members: (team.members || []).map((m) => ({
+    const mappedMembers = (team.members || []).map((m) => {
+      const isOnline = m.user?._id ? (m.user.isOnline || onlineIds.has(String(m.user._id))) : false;
+      return {
         _id: m.user?._id,
         username: m.user?.username,
         firstName: m.user?.firstName,
@@ -117,7 +116,21 @@ const getTeamDashboard = async (req, res) => {
         role: m.user?.role,
         roleInTeam: m.roleInTeam,
         workingStatus: m.user?.workingStatus || 'IDLE',
-      })),
+        isOnline,
+        lastActiveAt: m.user?.lastActiveAt,
+      };
+    });
+
+    const onlineMembersCount = mappedMembers.filter((m) => m.isOnline).length;
+
+    res.status(200).json({
+      team: {
+        _id: team._id,
+        name: team.name,
+        description: team.description,
+        totalMembers: team.members ? team.members.length : 0,
+      },
+      members: mappedMembers,
       stats: {
         myTasksCount: myTasks.length,
         teamTasksCount: teamTasks.length,
@@ -125,6 +138,7 @@ const getTeamDashboard = async (req, res) => {
         reviewCount: reviewTasks.length,
         doneCount: doneTasks.length,
         teamProgress,
+        onlineMembersCount,
       },
       activeMembers: activeMembers.map((u) => ({
         _id: u._id,
@@ -196,7 +210,7 @@ const getTeamMembers = async (req, res) => {
   try {
     const { teamId } = req.params;
     const team = await Team.findById(teamId)
-      .populate('members.user', 'username email firstName lastName role workingStatus');
+      .populate('members.user', 'username email firstName lastName role workingStatus isOnline lastActiveAt');
 
     if (!team) {
       return res.status(404).json({ message: 'Team not found' });

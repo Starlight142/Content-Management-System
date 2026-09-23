@@ -1,27 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ManagerDashboard from '../features/dashboard/ManagerDashboard';
 import TeamOverviewScreen from '../features/team/TeamOverviewScreen';
 import IdeaListScreen from '../features/ideas/IdeaListScreen';
-import LegalChecklistScreen from '../features/legal/LegalChecklistScreen';
 import ProfileScreen from '../features/profile/ProfileScreen';
 import TabIcon from '../components/TabIcon';
 import { useTheme } from '../theme/ThemeContext';
 
 export default function ManagerNavigator({ user, onLogout }) {
   const [currentScreen, setCurrentScreen] = useState('dashboard');
-  const [targetContent, setTargetContent] = useState(null);
-  const [dashboardRefreshKey, setDashboardRefreshKey] = useState(0);
+  const [dashboardRefreshKey] = useState(0);
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
-  const handleNavigate = (screen, content = null) => {
-    if (content) setTargetContent(content);
+  // Dynamic bottom padding to elevate tab bar comfortably above Android gesture navigation bar / iOS home indicator
+  const bottomPadding = Math.max(insets.bottom, Platform.OS === 'android' ? 18 : 10) + 6;
+
+  const handleNavigate = (screen) => {
     setCurrentScreen(screen);
-  };
-
-  const handleAuditComplete = () => {
-    setDashboardRefreshKey((prev) => prev + 1);
-    setCurrentScreen('dashboard');
   };
 
   return (
@@ -43,13 +40,6 @@ export default function ManagerNavigator({ user, onLogout }) {
         {currentScreen === 'ideas' && (
           <IdeaListScreen onBack={() => setCurrentScreen('dashboard')} />
         )}
-        {currentScreen === 'legal' && (
-          <LegalChecklistScreen
-            targetContent={targetContent}
-            onBack={() => setCurrentScreen('dashboard')}
-            onAuditComplete={handleAuditComplete}
-          />
-        )}
         {currentScreen === 'profile' && (
           <ProfileScreen
             user={user}
@@ -59,7 +49,16 @@ export default function ManagerNavigator({ user, onLogout }) {
       </View>
 
       {/* Persistent Bottom Tab Navigation Bar for Manager */}
-      <View style={[styles.bottomBar, { backgroundColor: colors.tabBg, borderTopColor: colors.tabBorder }]}>
+      <View
+        style={[
+          styles.bottomBar,
+          {
+            backgroundColor: colors.tabBg,
+            borderTopColor: colors.tabBorder,
+            paddingBottom: bottomPadding,
+          },
+        ]}
+      >
         <TouchableOpacity
           style={[styles.tabItem, currentScreen === 'dashboard' && { backgroundColor: colors.tabActive }]}
           onPress={() => setCurrentScreen('dashboard')}
@@ -141,7 +140,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#E2E8F0',
-    paddingVertical: 8,
+    paddingTop: 8,
     paddingHorizontal: 12,
     justifyContent: 'space-around',
     alignItems: 'center',

@@ -181,12 +181,12 @@ const seedDatabase = async () => {
     });
 
     const content2 = await Content.create({
-      title: 'Product Review',
+      title: 'Product Review 8K Camera',
       description: 'รีวิวอุปกรณ์สตูดิโอ 8K ไมโครโฟนและไฟสตูดิโอแบบพกพา',
       platform: 'YouTube',
       status: 'REVIEW',
       category: 'Tech Review',
-      progress: 80,
+      progress: 85,
       teamId: teamA._id,
       createdBy: janeMember._id,
       dueDate: new Date('2026-09-24'),
@@ -196,7 +196,7 @@ const seedDatabase = async () => {
       legalChecklist: [
         { ruleTitle: 'ตรวจสอบลิขสิทธิ์เพลงและเสียงประกอบ', passed: true, note: 'ใบอนุญาต Epidemic Sound' },
         { ruleTitle: 'ตรวจสอบสิทธิ์ของภาพและฟุตเทจ', passed: true, note: 'ภาพถ่ายจากสตูดิโอจริง' },
-        { ruleTitle: 'ตรวจสอบความเหมาะสมของเนื้อหา', passed: false, note: 'รอ Manager ตรวจสอบความถูกต้องของการระบุสปอนเซอร์' },
+        { ruleTitle: 'ตรวจสอบความเหมาะสมของเนื้อหา', passed: true, note: 'ระบุผู้สนับสนุนครบถ้วน' },
       ],
     });
 
@@ -206,16 +206,82 @@ const seedDatabase = async () => {
       platform: 'Instagram',
       status: 'PRODUCTION',
       category: 'Design',
-      progress: 25,
+      progress: 30,
       teamId: teamA._id,
       createdBy: mikeMember._id,
       dueDate: new Date('2026-09-28'),
     });
 
-    console.log('✅ Created 3 Contents for Content Team A');
+    const content4 = await Content.create({
+      title: 'Tech News Daily Recap',
+      description: 'คลิปสรุปข่าว AI ประจำวันใน 60 วินาที เน้นความกระชับและเสียงพากย์คมชัด',
+      platform: 'TikTok',
+      status: 'REVISION',
+      category: 'News & Tech',
+      progress: 60,
+      teamId: teamA._id,
+      createdBy: johnMember._id,
+      dueDate: new Date('2026-09-24'),
+      reviewHistory: [
+        {
+          reviewerId: managerUser._id,
+          decision: 'REVISION',
+          notes: 'นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ',
+          reviewedAt: new Date(Date.now() - 40 * 60 * 1000),
+        },
+      ],
+    });
 
-    // 5. Seed Tasks for Team A
+    const content5 = await Content.create({
+      title: 'Desk Setup Minimalist Guide',
+      description: 'วิดีโอแนะนำอุปกรณ์จัดโต๊ะทำงานสไตล์ Minimalist แสงธรรมชาติ',
+      platform: 'YouTube',
+      status: 'APPROVED',
+      category: 'Lifestyle',
+      progress: 100,
+      teamId: teamA._id,
+      createdBy: mikeMember._id,
+      dueDate: new Date('2026-09-22'),
+      reviewHistory: [
+        {
+          reviewerId: managerUser._id,
+          decision: 'APPROVED',
+          notes: 'งานตัดต่อและเกรดสีผ่านเกณฑ์เรียบร้อย พร้อมสำหรับขั้นตอนการเผยแพร่',
+          reviewedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+        },
+      ],
+    });
+
+    const content6 = await Content.create({
+      title: 'AI Voice Cloning Behind-The-Scenes',
+      description: 'เบื้องหลังการพากย์เสียงจำลองสำหรับวิดีโอสตูดิโอ',
+      platform: 'YouTube',
+      status: 'PLANNING',
+      category: 'Technology',
+      progress: 10,
+      teamId: teamA._id,
+      createdBy: janeMember._id,
+      dueDate: new Date('2026-09-30'),
+    });
+
+    console.log('✅ Created 6 Contents for Content Team A (Production, Review, Revision, Approved, Planning)');
+
+    // 5. Seed Tasks for Team A (10 Tasks across John, Jane, Mike)
     const task1 = await Task.create({
+      title: 'ตัดต่อแก้ไขคลิปและปรับแต่งเสียง (Tech News Recap)',
+      contentId: content4._id,
+      teamId: teamA._id,
+      taskType: 'Editing',
+      assignedTo: johnMember._id,
+      status: 'REVISION',
+      progress: 60,
+      dueDate: new Date('2026-09-24'),
+      submissionUrl: 'https://drive.google.com/file/d/tech_news_recap_v1_draft',
+      notes: 'นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ',
+      revisionNotes: 'นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ',
+    });
+
+    const task2 = await Task.create({
       title: 'ตัดต่อวิดีโอ (Highlight & Sound FX)',
       contentId: content1._id,
       teamId: teamA._id,
@@ -228,55 +294,153 @@ const seedDatabase = async () => {
       notes: 'กำลังใส่ Sound FX และ Subtitle ส่วนท้ายคลิป',
     });
 
-    const task2 = await Task.create({
-      title: 'เขียนบทและตรวจทานสคริปต์ (Script v2)',
+    const task3 = await Task.create({
+      title: 'Export วิดีโอ Master 4K Color Graded',
+      contentId: content2._id,
+      teamId: teamA._id,
+      taskType: 'Editing',
+      assignedTo: johnMember._id,
+      status: 'REVIEW',
+      progress: 85,
+      dueDate: new Date('2026-09-25'),
+      submissionUrl: 'https://frame.io/player/product_review_master_4k',
+      notes: 'ปรับ Color Grading และ Render 4K เสร็จแล้ว ส่งให้ Manager ตรวจสอบ',
+    });
+
+    const task4 = await Task.create({
+      title: 'คัดเลือกฟุตเทจ B-Roll สำหรับคลิปเสียงพากย์ AI',
+      contentId: content6._id,
+      teamId: teamA._id,
+      taskType: 'Editing',
+      assignedTo: johnMember._id,
+      status: 'TODO',
+      progress: 0,
+      dueDate: new Date('2026-09-29'),
+      submissionUrl: '',
+      notes: 'รอดำเนินการหลังจากสคริปต์เสร็จสมบูรณ์',
+    });
+
+    const task5 = await Task.create({
+      title: 'Export Teaser สรุปอุปกรณ์จัดโต๊ะ 30 วินาที',
+      contentId: content5._id,
+      teamId: teamA._id,
+      taskType: 'Editing',
+      assignedTo: johnMember._id,
+      status: 'DONE',
+      progress: 100,
+      dueDate: new Date('2026-09-22'),
+      submissionUrl: 'https://drive.google.com/file/d/desk_setup_teaser_final',
+      notes: 'ผ่านการอนุมัติเรียบร้อย',
+    });
+
+    const task6 = await Task.create({
+      title: 'เขียนบทและตรวจทานสคริปต์ (Script Product Review v2)',
       contentId: content2._id,
       teamId: teamA._id,
       taskType: 'Scripting',
       assignedTo: janeMember._id,
       status: 'REVIEW',
-      progress: 80,
+      progress: 85,
       dueDate: new Date('2026-09-24'),
       submissionUrl: 'https://docs.google.com/document/d/script_product_review_v2',
       notes: 'ปรับแก้บทสนทนาและจุดเน้นสปอนเซอร์เรียบร้อยแล้ว ส่งให้ Manager ตรวจสอบ',
     });
 
-    const task3 = await Task.create({
+    const task7 = await Task.create({
+      title: 'ร่างสคริปต์สัมภาษณ์ AI Tutorial EP.02',
+      contentId: content1._id,
+      teamId: teamA._id,
+      taskType: 'Scripting',
+      assignedTo: janeMember._id,
+      status: 'IN_PROGRESS',
+      progress: 40,
+      dueDate: new Date('2026-09-27'),
+      submissionUrl: '',
+      notes: 'กำลังสรุปประเด็นคำถามหลัก 5 ข้อ',
+    });
+
+    const task8 = await Task.create({
       title: 'ออกแบบภาพปกและแบนเนอร์ (Thumbnail Campaign)',
       contentId: content3._id,
       teamId: teamA._id,
       taskType: 'Graphic Design',
       assignedTo: mikeMember._id,
       status: 'IN_PROGRESS',
-      progress: 25,
+      progress: 30,
       dueDate: new Date('2026-09-28'),
       submissionUrl: '',
       notes: 'กำลังขึ้นโครงร่าง Layout มินิมอล 3 รูปแบบ',
     });
 
-    console.log('✅ Created 3 Tasks with detailed progress for Team A');
+    const task9 = await Task.create({
+      title: 'จัดทำ Infographic กราฟิกสถิติ Tech News Recap',
+      contentId: content4._id,
+      teamId: teamA._id,
+      taskType: 'Graphic Design',
+      assignedTo: mikeMember._id,
+      status: 'TODO',
+      progress: 0,
+      dueDate: new Date('2026-09-25'),
+      submissionUrl: '',
+      notes: 'เตรียมแผนภูมิเปรียบเทียบ AI Models',
+    });
+
+    const task10 = await Task.create({
+      title: 'ออกแบบ Cover Art Desk Setup Minimalist',
+      contentId: content5._id,
+      teamId: teamA._id,
+      taskType: 'Graphic Design',
+      assignedTo: mikeMember._id,
+      status: 'DONE',
+      progress: 100,
+      dueDate: new Date('2026-09-22'),
+      submissionUrl: 'https://drive.google.com/file/d/cover_desk_setup_final',
+      notes: 'อัปโหลดภาพขนาด 1920x1080 ผ่านเกณฑ์',
+    });
+
+    console.log('✅ Created 10 Tasks across John (5), Jane (2), Mike (3)');
 
     // 6. Seed Team Activities for Team A
     await TeamActivity.create([
       {
         teamId: teamA._id,
+        actor: managerUser._id,
+        actionType: 'CONTENT_REVISED',
+        title: 'Manager ส่ง Tech News Daily Recap กลับไปแก้ไข',
+        details: 'นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป',
+        entityId: content4._id,
+        entityModel: 'Content',
+        createdAt: new Date(Date.now() - 15 * 60 * 1000), // 15 นาทีที่แล้ว
+      },
+      {
+        teamId: teamA._id,
         actor: johnMember._id,
         actionType: 'TASK_SUBMITTED',
-        title: 'John ส่ง AI Tutorial ให้ Manager ตรวจ',
-        details: 'คลิปดราฟต์ความยาว 60 วินาทีพร้อมคำบรรยาย',
-        entityId: task1._id,
+        title: 'John ส่ง Master 4K ของ Product Review ให้ตรวจ',
+        details: 'ลิงก์: https://frame.io/player/product_review_master_4k',
+        entityId: task3._id,
         entityModel: 'Task',
-        createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30 นาทีที่แล้ว
+        createdAt: new Date(Date.now() - 35 * 60 * 1000), // 35 นาทีที่แล้ว
       },
       {
         teamId: teamA._id,
         actor: janeMember._id,
         actionType: 'TASK_SUBMITTED',
-        title: 'Jane อัปโหลด Script v2',
+        title: 'Jane อัปโหลด Script v2 ของ Product Review',
         details: 'แนบลิงก์ Google Docs สคริปต์ฉบับปรับแก้',
-        entityId: task2._id,
+        entityId: task6._id,
         entityModel: 'Task',
-        createdAt: new Date(Date.now() - 50 * 60 * 1000), // 50 นาทีที่แล้ว
+        createdAt: new Date(Date.now() - 55 * 60 * 1000), // 55 นาทีที่แล้ว
+      },
+      {
+        teamId: teamA._id,
+        actor: managerUser._id,
+        actionType: 'CONTENT_APPROVED',
+        title: 'Manager อนุมัติคอนเทนต์ "Desk Setup Minimalist Guide" เรียบร้อยแล้ว',
+        details: 'งานตัดต่อและเกรดสีผ่านเกณฑ์สมบูรณ์',
+        entityId: content5._id,
+        entityModel: 'Content',
+        createdAt: new Date(Date.now() - 80 * 60 * 1000), // 80 นาทีที่แล้ว
       },
       {
         teamId: teamA._id,
@@ -284,23 +448,23 @@ const seedDatabase = async () => {
         actionType: 'TASK_ASSIGNED',
         title: 'Manager มอบหมาย Thumbnail ให้ Mike',
         details: 'กำหนดส่งวันที่ 28 ก.ย. สไตล์ Minimal Clean',
-        entityId: task3._id,
+        entityId: task8._id,
         entityModel: 'Task',
-        createdAt: new Date(Date.now() - 75 * 60 * 1000), // 75 นาทีที่แล้ว
+        createdAt: new Date(Date.now() - 120 * 60 * 1000), // 2 ชั่วโมงที่แล้ว
       },
       {
         teamId: teamA._id,
         actor: mikeMember._id,
         actionType: 'TASK_STATUS_CHANGED',
-        title: 'Mike เปลี่ยน Task เป็น IN_PROGRESS',
-        details: 'ความคืบหน้า 25%',
-        entityId: task3._id,
+        title: 'Mike เริ่มทำงาน Thumbnail Campaign',
+        details: 'ความคืบหน้า 30%',
+        entityId: task8._id,
         entityModel: 'Task',
-        createdAt: new Date(Date.now() - 100 * 60 * 1000), // 100 นาทีที่แล้ว
+        createdAt: new Date(Date.now() - 140 * 60 * 1000),
       },
     ]);
 
-    console.log('✅ Created 4 Team Activities for Team A');
+    console.log('✅ Created 6 Team Activities for Team A');
 
     // 7. Seed Legal Articles
     await LegalArticle.create([

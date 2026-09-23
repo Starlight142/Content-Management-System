@@ -45,6 +45,14 @@ const userSchema = new mongoose.Schema({
     enum: ['WORKING', 'REVIEWING', 'IDLE', 'OFFLINE'],
     default: 'IDLE',
   },
+  isOnline: {
+    type: Boolean,
+    default: false,
+  },
+  lastActiveAt: {
+    type: Date,
+    default: Date.now,
+  },
 }, {
   timestamps: true,
 });

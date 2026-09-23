@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   Search, 
   Filter, 
@@ -15,8 +15,11 @@ import {
   User, 
   CheckCircle2, 
   Clock, 
-  AlertCircle 
+  AlertCircle,
+  RefreshCw,
+  Radio
 } from 'lucide-react';
+import { presenceClient, apiFetch } from '../../services/presenceClient';
 
 // Brand SVG Icons (ปลอดภัย ไม่พึ่งพา external library)
 const YoutubeIcon = () => (
@@ -40,45 +43,9 @@ const TiktokIcon = () => (
 );
 
 export default function ContentsPage() {
-  // Initial Mock Content
-  const [contents, setContents] = useState([
-    { 
-      id: 1, 
-      title: 'รีวิวแก็ดเจ็ตใหม่ 2026', 
-      platform: 'YouTube', 
-      status: 'PUBLISHED', 
-      creator: 'John Creator', 
-      date: '2026-09-15',
-      description: 'รีวิวอุปกรณ์สมาร์ตโฮมและแก็ดเจ็ตเปิดตัวใหม่ในไตรมาส 3 เน้นจุดเด่นความคุ้มค่า'
-    },
-    { 
-      id: 2, 
-      title: 'สรุปข่าว AI ภายใน 1 นาที', 
-      platform: 'TikTok', 
-      status: 'REVIEW', 
-      creator: 'Jane Editor', 
-      date: '2026-09-16',
-      description: 'วิดีโอสั้นแนวคิดใหม่ สรุปฟีเจอร์ AI ล่าสุดสำหรับคนทำงานออฟฟิศ'
-    },
-    { 
-      id: 3, 
-      title: 'Vlog พาเที่ยวออฟฟิศ', 
-      platform: 'Instagram', 
-      status: 'PRODUCTION', 
-      creator: 'Somchai Admin', 
-      date: '2026-09-18',
-      description: 'คอนเทนต์สร้างภาพลักษณ์องค์กร พาดูเบื้องหลังการทำงานและบรรยากาศในทีม'
-    },
-    { 
-      id: 4, 
-      title: 'วิธีใช้ React Native', 
-      platform: 'YouTube', 
-      status: 'PLANNING', 
-      creator: 'John Creator', 
-      date: '2026-09-20',
-      description: 'ซีรีส์สอนพื้นฐานการทำ Mobile App ด้วย React Native สำหรับผู้เริ่มต้น'
-    },
-  ]);
+  const [contents, setContents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isWsConnected, setIsWsConnected] = useState(false);
 
   // States for search and filter
   const [searchTerm, setSearchTerm] = useState('');
@@ -93,9 +60,83 @@ export default function ContentsPage() {
   // Form state for new content
   const [newTitle, setNewTitle] = useState('');
   const [newPlatform, setNewPlatform] = useState('TikTok');
-  const [newCreator, setNewCreator] = useState('Somchai Admin');
-  const [newDate, setNewDate] = useState('2026-09-25');
+  const [newDate, setNewDate] = useState('2026-09-30');
   const [newDescription, setNewDescription] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  // Format backend content document to table view model
+  const formatContentItem = (c) => ({
+    id: c._id || c.id,
+    _id: c._id || c.id,
+    title: c.title,
+    platform: c.platform || 'General',
+    status: c.status || 'PLANNING',
+    creator: c.createdBy?.firstName ? `${c.createdBy.firstName} ${c.createdBy.lastName || ''}`.trim() : (c.createdBy?.username || 'ผู้ดูแลระบบ'),
+    date: c.dueDate ? c.dueDate.split('T')[0] : (c.createdAt ? c.createdAt.split('T')[0] : '2026-09-30'),
+    description: c.description || 'ยังไม่มีคำอธิบายเพิ่มเติม',
+    category: c.category || 'General',
+    progress: c.progress || 0,
+    reviewHistory: c.reviewHistory || [],
+    versions: c.versions || [],
+  });
+
+  const refreshContents = useCallback(async () => {
+    try {
+      const data = await apiFetch('/contents');
+      if (Array.isArray(data)) {
+        setContents(data.map(formatContentItem));
+      }
+    } catch (err) {
+      console.warn('Failed to load contents from backend:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchInitial = async () => {
+      try {
+        const data = await apiFetch('/contents');
+        if (isMounted && Array.isArray(data)) {
+          setContents(data.map(formatContentItem));
+        }
+      } catch (err) {
+        console.warn('Initial contents load error:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchInitial();
+
+    // Connect WebSocket
+    presenceClient.connect('admin_web_contents');
+
+    const handleConn = (payload) => {
+      if (isMounted) setIsWsConnected(!!payload?.isConnected);
+    };
+
+    const handleContentEvent = () => {
+      if (isMounted) refreshContents();
+    };
+
+    presenceClient.on('CONNECTION_CHANGE', handleConn);
+    presenceClient.on('CONTENT_CREATED', handleContentEvent);
+    presenceClient.on('CONTENT_UPDATED', handleContentEvent);
+    presenceClient.on('CONTENT_DELETED', handleContentEvent);
+    presenceClient.on('TASK_UPDATED', handleContentEvent);
+
+    return () => {
+      isMounted = false;
+      presenceClient.off('CONNECTION_CHANGE', handleConn);
+      presenceClient.off('CONTENT_CREATED', handleContentEvent);
+      presenceClient.off('CONTENT_UPDATED', handleContentEvent);
+      presenceClient.off('CONTENT_DELETED', handleContentEvent);
+      presenceClient.off('TASK_UPDATED', handleContentEvent);
+    };
+  }, [refreshContents]);
 
   // Status visual mapping with clean, high-contrast colors
   const getStatusBadge = (status) => {
@@ -112,6 +153,20 @@ export default function ContentsPage() {
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
             <Clock size={13} className="text-amber-600" />
             REVIEW
+          </span>
+        );
+      case 'APPROVED':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <CheckCircle2 size={13} className="text-emerald-600" />
+            APPROVED
+          </span>
+        );
+      case 'REVISION':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-200">
+            <AlertCircle size={13} className="text-orange-600" />
+            REVISION
           </span>
         );
       case 'PRODUCTION':
@@ -163,42 +218,71 @@ export default function ContentsPage() {
   });
 
   // Action: Add new content
-  const handleAddContent = (e) => {
+  const handleAddContent = async (e) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
 
-    const newItem = {
-      id: Date.now(),
-      title: newTitle,
-      platform: newPlatform,
-      status: 'PLANNING',
-      creator: newCreator,
-      date: newDate,
-      description: newDescription || 'ยังไม่มีคำอธิบายเพิ่มเติม'
-    };
+    setSubmitting(true);
+    try {
+      const created = await apiFetch('/contents', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: newTitle.trim(),
+          platform: newPlatform,
+          description: newDescription.trim(),
+          dueDate: newDate,
+        }),
+      });
 
-    setContents([newItem, ...contents]);
-    setNewTitle('');
-    setNewDescription('');
-    setIsAddModalOpen(false);
+      if (created?.content) {
+        const item = formatContentItem(created.content);
+        setContents((prev) => [item, ...prev.filter((c) => c.id !== item.id)]);
+      } else {
+        await refreshContents();
+      }
+
+      setNewTitle('');
+      setNewDescription('');
+      setIsAddModalOpen(false);
+    } catch (err) {
+      alert('ไม่สามารถสร้างคอนเทนต์ได้: ' + err.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Action: Delete content
-  const handleDeleteContent = (id) => {
+  const handleDeleteContent = async (id) => {
     if (confirm('คุณต้องการลบคอนเทนต์นี้ใช่หรือไม่?')) {
-      setContents(contents.filter(item => item.id !== id));
-      setActiveMenuId(null);
-      if (selectedContent?.id === id) setSelectedContent(null);
+      try {
+        await apiFetch(`/contents/${id}`, { method: 'DELETE' });
+        setContents((prev) => prev.filter((item) => item.id !== id));
+        setActiveMenuId(null);
+        if (selectedContent?.id === id) setSelectedContent(null);
+      } catch (err) {
+        alert('ไม่สามารถลบคอนเทนต์ได้: ' + err.message);
+      }
     }
   };
 
   // Action: Change status
-  const handleUpdateStatus = (id, nextStatus) => {
-    setContents(contents.map(item => item.id === id ? { ...item, status: nextStatus } : item));
+  const handleUpdateStatus = async (id, nextStatus) => {
+    // Optimistic update
+    setContents((prev) => prev.map((item) => (item.id === id ? { ...item, status: nextStatus } : item)));
     if (selectedContent?.id === id) {
-      setSelectedContent(prev => ({ ...prev, status: nextStatus }));
+      setSelectedContent((prev) => ({ ...prev, status: nextStatus }));
     }
     setActiveMenuId(null);
+
+    try {
+      await apiFetch(`/contents/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: nextStatus }),
+      });
+    } catch (err) {
+      console.warn('Status update API error, falling back to refresh:', err.message);
+      await refreshContents();
+    }
   };
 
   return (
@@ -210,7 +294,18 @@ export default function ContentsPage() {
           <p className="text-slate-500 text-sm mt-1">จัดการและติดตามสถานะกระบวนการผลิต Content ทั้งหมดในระบบ</p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Add Content Button */}
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <Radio size={14} className={isWsConnected ? "text-emerald-500 animate-pulse" : "text-slate-400"} />
+            <span>{isWsConnected ? 'Real-time WebSocket Live' : 'Connecting WebSocket...'}</span>
+          </div>
+          <button
+            onClick={refreshContents}
+            disabled={loading}
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-sm font-medium shadow-2xs cursor-pointer transition-all"
+          >
+            <RefreshCw size={15} className={loading ? "animate-spin text-blue-600" : "text-slate-500"} />
+            <span className="hidden sm:inline">รีเฟรช</span>
+          </button>
           <button 
             onClick={() => setIsAddModalOpen(true)}
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 active:bg-blue-800 shadow-sm transition-all cursor-pointer"
@@ -257,7 +352,7 @@ export default function ContentsPage() {
           {/* Filter Dropdown Popover */}
           {isFilterMenuOpen && (
             <div className="absolute right-0 top-12 mt-1 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1.5 z-20">
-              {['ALL', 'PLANNING', 'PRODUCTION', 'REVIEW', 'PUBLISHED'].map((st) => (
+              {['ALL', 'PLANNING', 'PRODUCTION', 'REVIEW', 'REVISION', 'APPROVED', 'PUBLISHED'].map((st) => (
                 <button
                   key={st}
                   onClick={() => {
@@ -358,7 +453,7 @@ export default function ContentsPage() {
                             <p className="px-3 py-1 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                               เปลี่ยนสถานะเป็น
                             </p>
-                            {['PLANNING', 'PRODUCTION', 'REVIEW', 'PUBLISHED'].map((st) => (
+                            {['PLANNING', 'PRODUCTION', 'REVIEW', 'REVISION', 'APPROVED', 'PUBLISHED'].map((st) => (
                               <button
                                 key={st}
                                 onClick={() => handleUpdateStatus(item.id, st)}
@@ -536,17 +631,6 @@ export default function ContentsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">ผู้รับผิดชอบ</label>
-                <input 
-                  type="text" 
-                  value={newCreator}
-                  onChange={(e) => setNewCreator(e.target.value)}
-                  placeholder="ชื่อผู้สร้าง..."
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500"
-                />
-              </div>
-
-              <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">รายละเอียด</label>
                 <textarea 
                   rows={3}
@@ -561,15 +645,18 @@ export default function ContentsPage() {
                 <button 
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
+                  disabled={submitting}
                   className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-200 cursor-pointer"
                 >
                   ยกเลิก
                 </button>
                 <button 
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 cursor-pointer shadow-xs"
+                  disabled={submitting}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 cursor-pointer shadow-xs disabled:opacity-50"
                 >
-                  บันทึก
+                  {submitting && <RefreshCw size={14} className="animate-spin" />}
+                  <span>{submitting ? 'กำลังบันทึก...' : 'บันทึก'}</span>
                 </button>
               </div>
             </form>

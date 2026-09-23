@@ -37,6 +37,9 @@ app.use('/api/ideas', ideasRoutes);
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/legal', legalRoutes);
 
+const http = require('http');
+const { initPresenceServer } = require('./services/presence.service');
+
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -47,10 +50,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Initialize Real-time Presence WebSocket Server
+initPresenceServer(server);
+
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT} (HTTP & WebSocket)`);
 });
 
-module.exports = app;
+module.exports = { app, server };
 

@@ -1,7 +1,14 @@
 import { Platform } from 'react-native';
 
-// Android Emulator connects to host machine via 10.0.2.2, iOS simulator uses localhost
-const BASE_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5000/api' : 'http://localhost:5000/api';
+// Support USB adb reverse (127.0.0.1) on real physical devices & emulators, with 10.0.2.2 fallback
+const CANDIDATE_BASE_URLS = Platform.OS === 'android'
+  ? ['http://127.0.0.1:5000/api', 'http://localhost:5000/api', 'http://10.13.3.200:5000/api', 'http://10.0.2.2:5000/api']
+  : ['http://localhost:5000/api', 'http://127.0.0.1:5000/api'];
+
+let activeBaseUrl = CANDIDATE_BASE_URLS[0];
+
+export const getBaseUrl = () => activeBaseUrl;
+export const setBaseUrl = (url) => { activeBaseUrl = url; };
 
 let authToken = null;
 
@@ -18,28 +25,44 @@ const request = async (endpoint, options = {}) => {
     ...options.headers,
   };
 
-  try {
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-      ...options,
-      headers,
-    });
+  const urlsToTry = [activeBaseUrl, ...CANDIDATE_BASE_URLS.filter((u) => u !== activeBaseUrl)];
+  let lastError = null;
 
-    const text = await response.text();
-    let data;
+  for (const baseUrl of urlsToTry) {
     try {
-      data = JSON.parse(text);
-    } catch (e) {
-      throw new Error(`Endpoint "${endpoint}" not found or returned non-JSON response (${response.status})`);
-    }
+      const response = await fetch(`${baseUrl}${endpoint}`, {
+        ...options,
+        headers,
+      });
 
-    if (!response.ok) {
-      throw new Error(data.message || 'API request failed');
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`Endpoint "${endpoint}" returned non-JSON response (${response.status})`);
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || 'API request failed');
+      }
+
+      activeBaseUrl = baseUrl;
+      return data;
+    } catch (err) {
+      lastError = err;
+      const isNetworkErr = err.message && (
+        err.message.includes('Network request failed') ||
+        err.message.includes('Failed to fetch') ||
+        err.message.includes('Network Error')
+      );
+      if (!isNetworkErr) {
+        throw err;
+      }
     }
-    return data;
-  } catch (error) {
-    console.warn(`API Error [${endpoint}]:`, error.message);
-    throw error;
   }
+
+  throw lastError || new Error('Network connection failed');
 };
 
 // Auth APIs
@@ -91,9 +114,15 @@ export const taskApi = {
     method: 'PATCH',
     body: JSON.stringify({ status, ...(progress !== undefined ? { progress } : {}) }),
   }),
-  submitDeliverable: (id, submissionUrl, progress = 80) => request(`/tasks/${id}/status`, {
+  submitDeliverable: (id, submissionUrl, progress = 85, replyNotes = '') => request(`/tasks/${id}/status`, {
     method: 'PATCH',
-    body: JSON.stringify({ status: 'REVIEW', submissionUrl, progress }),
+    body: JSON.stringify({
+      status: 'REVIEW',
+      submissionUrl: submissionUrl || '',
+      progress,
+      replyNotes: replyNotes || '',
+      ...(replyNotes ? { notes: `แก้ไขแล้ว: ${replyNotes}` } : {}),
+    }),
   }),
 };
 

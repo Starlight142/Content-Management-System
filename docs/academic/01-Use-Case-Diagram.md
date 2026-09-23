@@ -12,15 +12,15 @@
 1. **Admin (ผู้ดูแลระบบ)**
    - รับผิดชอบงานด้าน Governance, Security, และ System Configuration
    - จัดการสิทธิ์ผู้ใช้งาน (Users & Roles), จัดสรรโครงสร้างทีม (Teams & Member Assignment)
-   - กำหนดประเภทงานผลิต (Task Types) และข้อบังคับทางกฎหมาย (Legal Articles)
+   - กำหนดประเภทงานผลิต (Task Types) และการตั้งค่าระบบ (System Settings)
    - ตรวจสอบประวัติการใช้งานระบบผ่าน Audit Logs
 
 2. **Manager (หัวหน้าทีมผู้ผลิต / บรรณาธิการ)**
    - ควบคุมกระบวนการผลิตสื่อตั้งแต่ต้นน้ำยันปลายน้ำผ่าน Mobile App
    - พิจารณาและอนุมัติไอเดียคอนเทนต์ (Content Ideas)
    - สร้างชิ้นงานคอนเทนต์ (Content) และมอบหมายงานย่อย (Task Assignment)
-   - ตรวจสอบคุณภาพงาน (Content Review) สั่งแก้ไข (Revision) หรืออนุมัติ (Approve)
-   - ทำหน้าที่เป็น **Legal Gatekeeper** ตรวจสอบรายการสิทธิ์ตามกฎหมาย (Music License, Stock, PDPA, Trademark, Community Guidelines)
+   - ตรวจสอบคุณภาพงาน (Content Review) สั่งแก้ไข (Revision) พร้อมระบุคำแนะนำ
+   - อนุมัติชิ้นงานโดยตรง (Direct 1-Tap Content Approval)
    - กำหนดเวลาและคิวการเผยแพร่ (Scheduling & Publishing)
 
 3. **Member (ทีมงานฝ่ายสร้างสรรค์: Creator, Editor, Graphic, Scriptwriter)**
@@ -28,7 +28,7 @@
    - เสนอไอเดียคอนเทนต์ใหม่เข้าสู่คลังของสตูดิโอ (Idea Pitching)
    - อัปเดตสถานะงาน (`TODO` $\rightarrow$ `IN_PROGRESS` $\rightarrow$ `REVIEW`)
    - แนบหลักฐานส่งมอบผลงาน (File Asset / Google Drive / Frame.io Links)
-   - รับข้อเสนอแนะและส่งงานรอบแก้ไข (Revision Delivery)
+   - รับข้อเสนอแนะและส่งงานรอบแก้ไขพร้อมระบุคำอธิบายชี้แจง (Revision Delivery & Reply Notes)
 
 4. **External Platform APIs (ระบบเชื่อมต่อภายนอก - YouTube / TikTok Data APIs)**
    - Secondary Actor ที่ระบบทำการเชื่อมต่อเพื่อดึงสถิติยอดวิว, ยอดไลก์, คอมเมนต์, การแชร์ (Metrics Ingestion) และส่งข้อมูลตารางเผยแพร่
@@ -66,12 +66,12 @@ flowchart LR
             UC_MonitorTeamActivity(["UC-20: Monitor Team Activity Feed"])
         end
 
-        %% Review & Legal Subsystem
-        subgraph Sub_Quality["3. Quality & Legal Compliance"]
+        %% Quality & Review Subsystem
+        subgraph Sub_Quality["3. Quality Review & Approval"]
             UC_ReviewContent(["UC-08: Review Content Draft"])
-            UC_RequestRevision(["UC-09: Request Work Revision"])
-            UC_LegalAudit(["UC-10: Audit Legal & PDPA Checklist\n<<Gatekeeper>>"])
-            UC_ApproveContent(["UC-11: Approve Final Content"])
+            UC_RequestRevision(["UC-09: Request Work Revision (with Notes)"])
+            UC_SubmitRevisionReply(["UC-10: Submit Revision with Reply Notes"])
+            UC_ApproveContent(["UC-11: Approve Final Content (Direct Approval)"])
         end
 
         %% Publishing & Analytics Subsystem
@@ -84,7 +84,7 @@ flowchart LR
         %% System Admin Subsystem
         subgraph Sub_Admin["5. System Administration"]
             UC_ManageUsers(["UC-15: Manage Users & Teams"])
-            UC_ManageLegalRules(["UC-16: Configure Legal Database"])
+            UC_ConfigureSettings(["UC-16: Configure System Settings & Task Types"])
             UC_ViewLogs(["UC-17: Monitor System Audit Logs"])
             UC_Auth(["UC-18: Authenticate (Login/2FA)"])
         end
@@ -96,6 +96,7 @@ flowchart LR
     Member --> UC_VoteIdea
     Member --> UC_UpdateTask
     Member --> UC_SubmitDeliverable
+    Member --> UC_SubmitRevisionReply
     Member --> UC_ViewTeamOverview
     Member --> UC_MonitorTeamActivity
 
@@ -106,7 +107,6 @@ flowchart LR
     Manager --> UC_AssignTask
     Manager --> UC_ReviewContent
     Manager --> UC_RequestRevision
-    Manager --> UC_LegalAudit
     Manager --> UC_ApproveContent
     Manager --> UC_SchedulePublish
     Manager --> UC_ViewAnalytics
@@ -116,7 +116,7 @@ flowchart LR
     %% Relationships - Admin
     Admin --> UC_Auth
     Admin --> UC_ManageUsers
-    Admin --> UC_ManageLegalRules
+    Admin --> UC_ConfigureSettings
     Admin --> UC_ViewLogs
     Admin --> UC_ViewAnalytics
 
@@ -127,17 +127,17 @@ flowchart LR
 
     %% Includes & Extends
     UC_CreateContent -.->|<<includes>>| UC_AssignTask
-    UC_ApproveContent -.->|<<includes>>| UC_LegalAudit
     UC_ReviewContent -.->|<<extends>>| UC_RequestRevision
+    UC_RequestRevision -.->|<<includes>>| UC_SubmitRevisionReply
 ```
 
 ---
 
 ## 📑 สรุปความสัมพันธ์แบบ Include และ Extend
-1. **`<<include>>` UC-11 (Approve Final Content) $\rightarrow$ UC-10 (Audit Legal & PDPA Checklist)**:
-   - การอนุมัติ Content ขั้นสุดท้ายต้องผ่านการตรวจสอบ Legal Checklist ครบทั้ง 5 ข้อเสมอ (Mandatory Gatekeeper)
-2. **`<<include>>` UC-04 (Create Content Pipeline) $\rightarrow$ UC-05 (Assign Production Tasks)**:
+1. **`<<include>>` UC-04 (Create Content Pipeline) $\rightarrow$ UC-05 (Assign Production Tasks)**:
    - การสร้าง Content เพื่อส่งเข้าสู่สายการผลิต จะต้องมีการแตก Task ย่อยและกำหนดผู้รับผิดชอบอย่างน้อย 1 คน
-3. **`<<extends>>` UC-08 (Review Content Draft) $\leftarrow$ UC-09 (Request Work Revision)**:
-   - เมื่อ Manager ตรวจสอบงานแล้วพบจุดบกพร่อง สามารถขยายกระบวนการเพื่อส่งข้อความสั่งแก้ไขงานพร้อมระบุ Timestamp จุดที่ต้องแก้ได้
+2. **`<<extends>>` UC-08 (Review Content Draft) $\leftarrow$ UC-09 (Request Work Revision)**:
+   - เมื่อ Manager ตรวจสอบงานแล้วพบจุดบกพร่อง สามารถเปิด Interactive Modal เพื่อระบุฟีดแบ็กคำแนะนำ (Revision Notes) ส่งกลับไปให้สมาชิกแก้ไข
+3. **`<<include>>` UC-09 (Request Work Revision) $\rightarrow$ UC-10 (Submit Revision with Reply Notes)**:
+   - เมื่อ Content ถูกส่งกลับแก้ไข สมาชิกผู้รับผิดชอบงานจะเข้าสู่หน้าต่างงานแก้ไข เพื่อตอบกลับคำชี้แจง (Reply Notes) พร้อมแนบเวอร์ชันใหม่ก่อนส่งตรวจซ้ำ
 

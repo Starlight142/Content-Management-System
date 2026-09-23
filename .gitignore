@@ -48,5 +48,9 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+
 # Local tooling
 powershell.cmd
+compass-connections.json

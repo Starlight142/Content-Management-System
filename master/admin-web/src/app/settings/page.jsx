@@ -7,9 +7,7 @@ import {
   CheckCircle2, 
   Shield, 
   Key, 
-  Bell, 
-  Globe, 
-  Palette 
+  Globe 
 } from 'lucide-react';
 
 export default function SettingsPage() {
@@ -20,7 +18,7 @@ export default function SettingsPage() {
 
   // Toggle states
   const [emailAlerts, setEmailAlerts] = useState(true);
-  const [legalApprovalRequired, setLegalApprovalRequired] = useState(true);
+  const [managerApprovalRequired, setManagerApprovalRequired] = useState(true);
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
 
   // API keys mock
@@ -44,7 +42,7 @@ export default function SettingsPage() {
       setStudioName('Production Studio 69');
       setAdminEmail('admin@studio.com');
       setEmailAlerts(true);
-      setLegalApprovalRequired(true);
+      setManagerApprovalRequired(true);
       setTwoFactorAuth(false);
       showToast('รีเซ็ตการตั้งค่าสำเร็จ');
     }
@@ -147,13 +145,13 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-800">บังคับตรวจสอบ Legal Checklist ก่อนเผยแพร่</p>
-                <p className="text-xs text-slate-500">Content จะเปลี่ยนสถานะเป็น PUBLISHED ไม่ได้จนกว่าจะผ่านการตรวจสิทธิ์กฎหมาย</p>
+                <p className="text-sm font-semibold text-slate-800">บังคับให้ Manager อนุมัติชิ้นงานก่อนเผยแพร่ (Manager Approval Required)</p>
+                <p className="text-xs text-slate-500">Content จะเปลี่ยนสถานะเป็น PUBLISHED ไม่ได้จนกว่า Manager จะกดอนุมัติคุณภาพชิ้นงาน</p>
               </div>
               <input 
                 type="checkbox" 
-                checked={legalApprovalRequired}
-                onChange={(e) => setLegalApprovalRequired(e.target.checked)}
+                checked={managerApprovalRequired}
+                onChange={(e) => setManagerApprovalRequired(e.target.checked)}
                 className="w-5 h-5 accent-blue-600 cursor-pointer"
               />
             </div>

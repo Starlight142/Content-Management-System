@@ -40,42 +40,35 @@ sequenceDiagram
     Note over Manager, Member: Phase 3: Quality Review & Revision Loop
     Manager->>System: 11. เปิดตรวจผลงาน (Review Draft)
     alt งานมีจุดบกพร่อง (Needs Revision)
-        Manager->>System: 12a. ระบุ Revision Notes & สั่งส่งกลับแก้ไข
-        System->>System: 13a. เปลี่ยนสถานะเป็น REVISION
-        System-->>Member: 14a. แจ้งเตือนจุดที่ต้องแก้ไข
+        Manager->>System: 12a. เปิด Modal กรอก Revision Notes & กดส่งกลับแก้ไข
+        System->>System: 13a. เปลี่ยนสถานะ Content & Task เป็น REVISION
+        System-->>Member: 14a. แจ้งเตือนจุดที่ต้องแก้ไขใน Section "งานที่ต้องดำเนินการ"
         Member->>Member: 15a. แก้ไขงานตามฟีดแบ็ก
-        Member->>System: 16a. ส่งลิงก์ผลงานเวอร์ชันใหม่ (Loop กลับไปข้อ 9)
-    else งานผ่านเกณฑ์เนื้อหา (Content Passed)
-        Manager->>System: 12b. บันทึกผลตรวจเนื้อหาเบื้องต้น
+        Member->>System: 16a. กรอก Reply Notes และส่งงานรอบแก้ไข (Loop กลับไปข้อ 10)
+    else งานผ่านเกณฑ์สมบูรณ์ (Content Passed)
+        Manager->>System: 12b. กดปุ่ม "อนุมัติชิ้นงาน" โดยตรง (Direct 1-Tap Approval)
+        System->>System: 13b. เปลี่ยนสถานะ Content เป็น APPROVED และ Tasks เป็น DONE (100%)
     end
     end
 
-    %% Phase 4: Legal Gatekeeper & Approval
+    %% Phase 4: Release Readiness
     rect rgb(236, 253, 245)
-    Note over Manager, System: Phase 4: Legal & Compliance Gatekeeper (Mandatory 5-Pillar Audit)
-    Manager->>System: 17. เปิดหน้า Legal Checklist ตรวจสอบ 5 เสาหลัก
-    loop ตรวจสอบกฎหมายทีละข้อ
-        Manager->>System: 18. ติ๊กยืนยัน Music, Stock, PDPA, Trademark, Community Rules
-    end
-    alt ผ่านไม่ครบ 5 ข้อ (< 100%)
-        System-->>Manager: 19a. [Gatekeeper Blocked] บล็อกการ Approve / Publish!
-    else ผ่านครบทั้ง 5 ข้อ (100% Passed)
-        Manager->>System: 19b. ยืนยันอนุมัติชิ้นงาน (POST /api/contents/:id/review -> APPROVED)
-        System->>System: 20. เปลี่ยนสถานะเป็น APPROVED ปลดล็อกคิวเผยแพร่
-    end
+    Note over Manager, System: Phase 4: Release Readiness & Publishing Queue
+    System->>System: 17. บันทึก Team Activity: ชิ้นงานได้รับการอนุมัติเรียบร้อย
+    System-->>Manager: 18. ปลดล็อกคิวเผยแพร่และตั้งเวลา (Ready to Publish)
     end
 
     %% Phase 5: Publishing & Analytics
     rect rgb(243, 232, 255)
     Note over Manager, Platform: Phase 5: Publishing & Performance Analytics
-    Manager->>System: 21. กดเผยแพร่หรือตั้งเวลา (POST /api/contents/:id/publish)
-    System->>Platform: 22. ยิงคำสั่งอัปโหลดหรือเปิดสถานะ Public
-    Platform-->>System: 23. ส่งคืน Video ID & Publishing Timestamp
-    System->>System: 24. เปลี่ยนสถานะเป็น PUBLISHED
+    Manager->>System: 19. กดเผยแพร่หรือตั้งเวลา (POST /api/contents/:id/publish)
+    System->>Platform: 20. ยิงคำสั่งอัปโหลดหรือเปิดสถานะ Public
+    Platform-->>System: 21. ส่งคืน Video ID & Publishing Timestamp
+    System->>System: 22. เปลี่ยนสถานะเป็น PUBLISHED
     loop ทุกๆ 6 ชั่วโมง (Automated Cron Ingestion)
-        System->>Platform: 25. เรียกขอข้อมูลสถิติ (GET /videos/analytics)
-        Platform-->>System: 26. ส่ง Views, Likes, Comments, Engagement
-        System->>System: 27. บันทึก Metric Snapshot ลงฐานข้อมูล
+        System->>Platform: 23. เรียกขอข้อมูลสถิติ (GET /videos/analytics)
+        Platform-->>System: 24. ส่ง Views, Likes, Comments, Engagement
+        System->>System: 25. บันทึก Metric Snapshot ลงฐานข้อมูล
     end
     end
 ```
@@ -95,9 +88,9 @@ stateDiagram-v2
     PRODUCTION --> REVIEW : Member ส่งผลงานตัดต่อ (Submission URL)
     
     REVIEW --> REVISION : Manager สั่งแก้ (ระบุ Revision Notes)
-    REVISION --> REVIEW : Member ส่งผลงานเวอร์ชันใหม่
+    REVISION --> REVIEW : Member ส่งผลงานรอบแก้ไข (พร้อม Reply Notes)
     
-    REVIEW --> APPROVED : ผ่านเกณฑ์ตรวจ + Legal Checklist ผ่าน 100% (5/5 ข้อ)
+    REVIEW --> APPROVED : ผ่านการตรวจรับ และ Manager กดอนุมัติชิ้นงานโดยตรง
     
     APPROVED --> SCHEDULED : กำหนดวันเวลาเผยแพร่ในอนาคต
     SCHEDULED --> PUBLISHED : ถึงกำหนดเวลาเผยแพร่
@@ -112,8 +105,8 @@ stateDiagram-v2
 1. **ห้ามข้ามขั้นตอน (No State Skipping)**: 
    - `PLANNING` $\rightarrow$ `APPROVED` ❌ (ผิดกฎ ไม่อนุญาต)
    - `PRODUCTION` $\rightarrow$ `PUBLISHED` ❌ (ผิดกฎ ไม่อนุญาต)
-2. **Legal Gatekeeper Invariant**:
-   - `REVIEW` $\rightarrow$ `APPROVED` จะสำเร็จได้ก็ต่อเมื่อ `Content.legalChecklist` มีสถานะ `passed = true` ครบทั้ง 5 หัวข้อเท่านั้น
+2. **Quality Review Invariant**:
+   - `REVIEW` $\rightarrow$ `APPROVED` จะสำเร็จได้ก็ต่อเมื่อ Manager เป็นผู้ตรวจสอบคุณภาพและกดยืนยันอนุมัติชิ้นงาน (Direct Approval)
 3. **Audit Trail Invariant**:
    - ทุกครั้งที่มีการเปลี่ยนสถานะ ระบบจะต้องสร้างระเบียนใน `ActivityLog` เพื่อระบุว่าใคร (`userId`), ทำอะไร (`action`), เวลาใด (`timestamp`), และสถานะก่อนหน้า/ใหม่ (`previousStatus`, `newStatus`)
 

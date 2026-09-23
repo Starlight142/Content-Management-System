@@ -31,6 +31,8 @@ classDiagram
         -roleId: String
         -teamId: String
         -workingStatus: WorkingStatusEnum
+        -isOnline: Boolean
+        -lastActiveAt: DateTime
         -isActive: Boolean
         -createdAt: DateTime
         -updatedAt: DateTime
@@ -92,7 +94,6 @@ classDiagram
         -createdAt: DateTime
         -updatedAt: DateTime
         +transitionTo(nextStatus: ContentStatusEnum): Boolean
-        +isLegalPassed(): Boolean
         +addVersion(fileUrl: String, notes: String): ContentVersion
         +submitReview(reviewerId: String, decision: String, notes: String): Review
     }
@@ -134,14 +135,16 @@ classDiagram
         -dueDate: DateTime
         -submissionUrl: String
         -notes: String
+        -revisionNotes: String
+        -replyNotes: String
         -createdAt: DateTime
         -updatedAt: DateTime
         +startTask(): Void
-        +submitDeliverable(url: String, progress: Integer): Void
+        +submitDeliverable(url: String, progress: Integer, replyNotes: String): Void
         +approveTask(): Void
     }
 
-    %% 4. Quality & Compliance
+    %% 4. Quality & Review
     class Review {
         <<Entity>>
         -id: String
@@ -151,19 +154,6 @@ classDiagram
         -revisionNotes: String
         -reviewedAt: DateTime
         +isApproved(): Boolean
-    }
-
-    class LegalCheck {
-        <<Entity>>
-        -id: String
-        -contentId: String
-        -ruleTitle: String
-        -ruleCategory: LegalCategoryEnum
-        -passed: Boolean
-        -note: String
-        -checkedById: String
-        -checkedAt: DateTime
-        +togglePass(status: Boolean, note: String): Void
     }
 
     %% 5. Audit & Governance
@@ -211,6 +201,7 @@ classDiagram
         TODO
         IN_PROGRESS
         REVIEW
+        REVISION
         DONE
     }
 
@@ -243,9 +234,6 @@ classDiagram
     Content "1" *-- "0..*" Review : receives feedback >
     User "1" -- "0..*" Review : reviews <
     
-    Content "1" *-- "3..5" LegalCheck : audited by >
-    User "1" -- "0..*" LegalCheck : audits <
-    
     User "1" -- "0..*" ActivityLog : triggers >
     User "1" -- "0..*" TeamActivity : initiates >
 ```
@@ -258,8 +246,8 @@ classDiagram
    - ความสัมพันธ์แบบ Composition หมายความว่าประวัติ Version ของ Content จะผูกพันกับตัว Content หาก Content ถูกลบ ประวัติเวอร์ชันจะสิ้นสภาพไปด้วย
    - ใช้สำหรับเก็บประวัติไฟล์งานแต่ละรอบที่ส่งตรวจ (เช่น v1, v2 หลังสั่งแก้)
 
-2. **`Content` *-- `5 LegalCheck` (Composition 1 to exactly 5)**:
-   - แต่ละชิ้นงานคอนเทนต์จะถูกผูกกับ 5 เสาหลักกฎหมายภาคบังคับเสมอ (Music, Stock, PDPA, Trademark, Community Guidelines)
+2. **`Task` Revision & Reply Flow (Tracking Invariant)**:
+   - แต่ละ Task รองรับวงจรส่งกลับแก้ไขผ่านฟิลด์ `revisionNotes` (คำแนะนำจาก Manager) และ `replyNotes` (ข้อความตอบกลับชี้แจงการแก้ไขจาก Member)
 
 3. **`Content` *-- `1..* Task` (Composition 1 to 1..\*)**:
    - Content ชิ้นหนึ่งต้องมีงานย่อยอย่างน้อย 1 งาน (เช่น การตัดต่อ Editing) จึงจะสามารถขยับสถานะจาก `PLANNING` ไปสู่ `PRODUCTION` ได้

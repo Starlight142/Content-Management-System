@@ -2,6 +2,7 @@ const Task = require('../../database/models/Task');
 const Content = require('../../database/models/Content');
 const User = require('../../database/models/User');
 const TeamActivity = require('../../database/models/TeamActivity');
+const { broadcast } = require('../../services/presence.service');
 
 // @route GET /api/tasks
 // @access Private
@@ -65,7 +66,10 @@ const createTask = async (req, res) => {
         entityId: newTask._id,
         entityModel: 'Task',
       });
+      broadcast('ACTIVITY_CREATED', { teamId: resolvedTeamId });
     }
+
+    broadcast('TASK_CREATED', { task: populated });
 
     res.status(201).json({ message: 'Task created successfully', task: populated });
   } catch (error) {
@@ -79,7 +83,7 @@ const createTask = async (req, res) => {
 const updateTaskStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, submissionUrl, progress, notes } = req.body;
+    const { status, submissionUrl, progress, notes, replyNotes, revisionNotes } = req.body;
     const userId = req.user.userId || req.user.id;
 
     // Check existing task
@@ -102,6 +106,8 @@ const updateTaskStatus = async (req, res) => {
     if (status !== undefined) updateFields.status = status;
     if (submissionUrl !== undefined) updateFields.submissionUrl = submissionUrl;
     if (notes !== undefined) updateFields.notes = notes;
+    if (replyNotes !== undefined) updateFields.replyNotes = replyNotes;
+    if (revisionNotes !== undefined) updateFields.revisionNotes = revisionNotes;
     if (progress !== undefined) updateFields.progress = Math.min(100, Math.max(0, Number(progress)));
     else if (status === 'DONE') updateFields.progress = 100;
     else if (status === 'IN_PROGRESS' && existingTask.progress === 0) updateFields.progress = 25;
@@ -164,10 +170,18 @@ const updateTaskStatus = async (req, res) => {
         actor: userId,
         actionType,
         title: activityTitle,
-        details: submissionUrl ? `ลิงก์ส่งงาน: ${submissionUrl}` : '',
+        details: replyNotes
+          ? `ตอบกลับ: ${replyNotes}${submissionUrl ? ` | ลิงก์: ${submissionUrl}` : ''}`
+          : (submissionUrl ? `ลิงก์ส่งงาน: ${submissionUrl}` : ''),
         entityId: task._id,
         entityModel: 'Task',
       });
+      broadcast('ACTIVITY_CREATED', { teamId: teamIdToLog });
+    }
+
+    broadcast('TASK_UPDATED', { task });
+    if (status === 'REVIEW' && task.contentId) {
+      broadcast('CONTENT_UPDATED', { contentId: task.contentId._id, status: 'REVIEW' });
     }
 
     res.status(200).json({ message: 'Task updated successfully', task });
@@ -187,6 +201,8 @@ const deleteTask = async (req, res) => {
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
+
+    broadcast('TASK_DELETED', { taskId: id });
 
     res.status(200).json({ message: 'Task deleted successfully' });
   } catch (error) {

@@ -12,14 +12,31 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { taskApi } from '../../services/api';
+import { presenceService } from '../../services/presenceService';
 import { useTheme } from '../../theme/ThemeContext';
 
-export default function MemberTaskList({ user, onLogout, onNavigate }) {
-  const { isDark, colors } = useTheme();
+export default function MemberTaskList({ user, onNavigate }) {
+  const { colors } = useTheme();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submissionInputs, setSubmissionInputs] = useState({});
+  const [replyInputs, setReplyInputs] = useState({});
   const [refreshing, setRefreshing] = useState(false);
+
+  const checkDeadline = (dueDateStr) => {
+    if (!dueDateStr) return { isOverdue: false, isUrgent: false, label: 'ไม่ระบุ' };
+    const due = new Date(dueDateStr);
+    const now = new Date();
+    if (isNaN(due.getTime())) return { isOverdue: false, isUrgent: false, label: dueDateStr };
+
+    const diffHours = (due.getTime() - now.getTime()) / (1000 * 60 * 60);
+    if (diffHours < 0) {
+      return { isOverdue: true, isUrgent: false, label: `${dueDateStr} (เกินกำหนด)` };
+    } else if (diffHours <= 24) {
+      return { isOverdue: false, isUrgent: true, label: `${dueDateStr} (ส่งภายใน 24 ชม.)` };
+    }
+    return { isOverdue: false, isUrgent: false, label: dueDateStr };
+  };
 
   const fetchTasks = async () => {
     try {
@@ -27,18 +44,25 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
       const list = Array.isArray(res) ? res : (res?.tasks || []);
       if (Array.isArray(list)) {
         const currentUserId = user?.id || user?.userId;
-        const mapped = list.map((t) => ({
-          id: t._id || String(Date.now()),
-          title: t.title,
-          contentTitle: t.contentId?.title || 'ชิ้นงานคอนเทนต์หลัก',
-          platform: t.contentId?.platform || 'YouTube',
-          status: t.status || 'TODO',
-          dueDate: t.dueDate ? t.dueDate.split('T')[0] : 'เร็วๆ นี้',
-          type: t.taskType || 'Production',
-          submissionUrl: t.submissionUrl || '',
-          assignedToId: t.assignedTo?._id || t.assignedTo,
-        }));
-        
+        const mapped = list.map((t) => {
+          const rawDate = t.dueDate ? t.dueDate.split('T')[0] : null;
+          const dl = checkDeadline(rawDate);
+          return {
+            id: t._id || String(Date.now()),
+            title: t.title,
+            contentTitle: t.contentId?.title || 'ชิ้นงานคอนเทนต์หลัก',
+            platform: t.contentId?.platform || 'YouTube',
+            status: t.status || 'TODO',
+            dueDate: dl.label,
+            isOverdue: dl.isOverdue,
+            isUrgent: dl.isUrgent,
+            notes: t.notes || t.revisionNotes || '',
+            type: t.taskType || 'Production',
+            submissionUrl: t.submissionUrl || '',
+            assignedToId: t.assignedTo?._id || t.assignedTo,
+          };
+        });
+
         // Filter to show tasks assigned to this member
         const myTasks = currentUserId
           ? mapped.filter((t) => t.assignedToId && t.assignedToId.toString() === currentUserId.toString())
@@ -56,6 +80,16 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
 
   useEffect(() => {
     fetchTasks();
+
+    const unsubscribe = presenceService.subscribe((event) => {
+      if (['TASK_CREATED', 'TASK_UPDATED', 'TASK_DELETED', 'CONTENT_UPDATED'].includes(event.type)) {
+        fetchTasks();
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -76,51 +110,312 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
     }
   };
 
-  const handleSubmitTask = async (taskId) => {
-    const url = submissionInputs[taskId];
-    if (!url || !url.trim()) {
-      Alert.alert(
-        'กรุณาแนบลิงก์ผลงาน',
-        'โปรดระบุลิงก์ Google Drive, Frame.io หรือ Cloud Storage เพื่อให้ Manager ตรวจสอบ'
-      );
-      return;
+  const handleSubmitTask = async (taskId, isRevision = false) => {
+    const url = (submissionInputs[taskId] || '').trim();
+    const reply = (replyInputs[taskId] || '').trim();
+    const targetTask = tasks.find((t) => t.id === taskId);
+
+    if (isRevision) {
+      if (!reply && !url && !targetTask?.submissionUrl) {
+        Alert.alert(
+          'กรุณาระบุข้อมูลการแก้ไข',
+          'โปรดพิมพ์ข้อความตอบกลับสิ่งที่ได้แก้ไข หรือแนบลิงก์ไฟล์ผลงานใหม่'
+        );
+        return;
+      }
+    } else {
+      if (!url && !targetTask?.submissionUrl) {
+        Alert.alert(
+          'กรุณาแนบลิงก์ผลงาน',
+          'โปรดระบุลิงก์ Google Drive, Frame.io หรือ Cloud Storage เพื่อให้หัวหน้าทีมตรวจสอบ'
+        );
+        return;
+      }
     }
+
+    const finalUrl = url || targetTask?.submissionUrl || '';
+    const finalNotes = reply ? `แก้ไขแล้ว: ${reply}` : targetTask?.notes || '';
 
     setTasks(
       tasks.map((t) =>
-        t.id === taskId ? { ...t, status: 'REVIEW', submissionUrl: url } : t
+        t.id === taskId
+          ? {
+              ...t,
+              status: 'REVIEW',
+              submissionUrl: finalUrl,
+              notes: finalNotes,
+              replyNotes: reply,
+            }
+          : t
       )
     );
 
     try {
-      await taskApi.submitDeliverable(taskId, url);
+      await taskApi.submitDeliverable(taskId, finalUrl, isRevision ? 90 : 85, reply);
     } catch (e) {
-      console.warn('Updated task locally');
+      console.warn('Updated task locally:', e.message);
     }
 
     Alert.alert(
       'ส่งงานสำเร็จ',
-      'ผลงานถูกส่งเข้าสู่คิว Review ของ Manager บน Dashboard เรียบร้อยแล้ว'
+      isRevision
+        ? 'ส่งงานที่แก้ไขแล้วพร้อมข้อความตอบกลับไปยังหัวหน้าทีมเรียบร้อยแล้ว'
+        : 'ผลงานถูกส่งเข้าสู่คิวการตรวจสอบของหัวหน้าทีมเรียบร้อยแล้ว'
     );
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status, isOverdue) => {
+    if (isOverdue && status !== 'DONE' && status !== 'REVIEW') {
+      return {
+        bg: colors.statusUrgentBg,
+        text: colors.statusUrgentText,
+        border: colors.statusUrgentBorder,
+        label: 'เกินกำหนด',
+      };
+    }
     switch (status) {
       case 'IN_PROGRESS':
-        return { bg: colors.statusReviewBg, text: colors.statusReviewText, label: 'กำลังทำ' };
+        return {
+          bg: colors.statusInProgressBg,
+          text: colors.statusInProgressText,
+          border: colors.statusInProgressBorder,
+          label: 'กำลังดำเนินการ',
+        };
       case 'TODO':
-        return { bg: colors.statusProdBg, text: colors.statusProdText, label: 'คิวงานใหม่' };
+        return {
+          bg: colors.statusTodoBg,
+          text: colors.statusTodoText,
+          border: colors.statusTodoBorder,
+          label: 'รอดำเนินการ',
+        };
       case 'REVIEW':
-        return { bg: colors.statusReviewBg, text: colors.statusReviewText, label: 'รอตรวจ' };
+        return {
+          bg: colors.statusReviewBg,
+          text: colors.statusReviewText,
+          border: colors.statusReviewBorder,
+          label: 'รอตรวจสอบ',
+        };
+      case 'REVISION':
+        return {
+          bg: colors.statusRevisionBg,
+          text: colors.statusRevisionText,
+          border: colors.statusRevisionBorder,
+          label: 'ต้องแก้ไข',
+        };
       case 'DONE':
-        return { bg: colors.statusApprovedBg, text: colors.statusApprovedText, label: 'เสร็จสิ้น' };
+        return {
+          bg: colors.statusApprovedBg,
+          text: colors.statusApprovedText,
+          border: colors.statusApprovedBorder,
+          label: 'เสร็จสมบูรณ์',
+        };
       default:
-        return { bg: colors.surfaceSubtle, text: colors.textSecondary, label: status };
+        return {
+          bg: colors.surfaceSubtle,
+          text: colors.textSecondary,
+          border: colors.border,
+          label: status,
+        };
     }
   };
 
+  // Visual Hierarchy: Priority tasks needing immediate action
+  const urgentTasks = tasks.filter((t) => t.status === 'REVISION' || t.isOverdue || t.isUrgent);
+  const generalTasks = tasks.filter((t) => !(t.status === 'REVISION' || t.isOverdue || t.isUrgent));
+
+  const renderTaskCard = (item, isActionRequiredSection = false) => {
+    const st = getStatusColor(item.status, item.isOverdue);
+
+    return (
+      <View
+        key={item.id}
+        style={[
+          styles.taskCard,
+          {
+            backgroundColor: colors.cardBg,
+            borderColor: isActionRequiredSection && item.status === 'REVISION'
+              ? colors.statusRevisionBorder
+              : isActionRequiredSection && item.isOverdue
+              ? colors.statusUrgentBorder
+              : colors.cardBorder,
+          },
+        ]}
+      >
+        {/* Task Header: Type & Status Pill */}
+        <View style={styles.taskCardTop}>
+          <View style={[styles.typeBadge, { backgroundColor: colors.surfaceSubtle }]}>
+            <Text style={[styles.typeBadgeText, { color: colors.textSecondary }]}>{item.type}</Text>
+          </View>
+
+          <View style={[styles.statusBadge, { backgroundColor: st.bg, borderColor: st.border }]}>
+            <Text style={[styles.statusBadgeText, { color: st.text }]}>{st.label}</Text>
+          </View>
+        </View>
+
+        {/* Task Title & Parent Content */}
+        <Text style={[styles.taskTitle, { color: colors.textPrimary }]}>{item.title}</Text>
+        <View style={[styles.parentContentBox, { backgroundColor: colors.surfaceSubtle }]}>
+          <Text style={[styles.parentContentLabel, { color: colors.textSecondary }]}>ชิ้นงาน:</Text>
+          <Text style={[styles.parentContentTitle, { color: colors.textPrimary }]}>
+            {item.contentTitle} ({item.platform})
+          </Text>
+        </View>
+
+        {/* Revision Feedback Callout (Priority 2) */}
+        {item.status === 'REVISION' && (
+          <View
+            style={[
+              styles.feedbackBox,
+              {
+                backgroundColor: colors.statusRevisionBg,
+                borderColor: colors.statusRevisionBorder,
+              },
+            ]}
+          >
+            <Text style={[styles.feedbackTitle, { color: colors.statusRevisionText }]}>
+              ข้อคิดเห็นที่ต้องแก้ไขจากหัวหน้าทีม:
+            </Text>
+            <Text style={[styles.feedbackText, { color: colors.textPrimary }]}>
+              {item.notes || 'กรุณาตรวจสอบรายละเอียดและแก้ไขไฟล์งานตามฟีดแบ็กที่ได้รับ'}
+            </Text>
+          </View>
+        )}
+
+        {/* Deadline Notice */}
+        <View style={styles.dueRow}>
+          <Text
+            style={[
+              styles.dueText,
+              {
+                color: item.isOverdue
+                  ? colors.statusUrgentText
+                  : item.isUrgent
+                  ? colors.statusRevisionText
+                  : colors.textSecondary,
+              },
+            ]}
+          >
+            กำหนดส่ง: {item.dueDate}
+          </Text>
+        </View>
+
+        {/* Action Area based on status */}
+        {item.status === 'TODO' && (
+          <TouchableOpacity
+            style={[styles.startBtn, { backgroundColor: colors.primary }]}
+            onPress={() => handleStartTask(item.id)}
+          >
+            <Text style={styles.startBtnText}>เริ่มทำงาน</Text>
+          </TouchableOpacity>
+        )}
+
+        {item.status === 'REVISION' && (
+          <View style={[styles.submitSection, { borderTopColor: colors.border }]}>
+            <View style={styles.replyBoxWrapper}>
+              <Text style={[styles.inputPrompt, { color: colors.statusRevisionText, fontWeight: '700' }]}>
+                ข้อความตอบกลับสำหรับการแก้ไขงาน:
+              </Text>
+              <TextInput
+                style={[
+                  styles.replyInput,
+                  {
+                    backgroundColor: colors.inputBg,
+                    borderColor: colors.statusRevisionBorder,
+                    color: colors.textPrimary,
+                  },
+                ]}
+                placeholder="ระบุสิ่งที่ได้ปรับปรุงแก้ไขตามคำแนะนำ เช่น ปรับระดับเสียงแล้ว..."
+                placeholderTextColor={colors.textMuted}
+                value={replyInputs[item.id] || ''}
+                onChangeText={(val) =>
+                  setReplyInputs({ ...replyInputs, [item.id]: val })
+                }
+                multiline
+                numberOfLines={3}
+              />
+            </View>
+
+            <Text style={[styles.inputPrompt, { color: colors.textSecondary, marginTop: 8 }]}>
+              แนบลิงก์ไฟล์ผลงานใหม่ (ถ้ามี):
+            </Text>
+            <TextInput
+              style={[
+                styles.urlInput,
+                {
+                  backgroundColor: colors.inputBg,
+                  borderColor: colors.inputBorder,
+                  color: colors.textPrimary,
+                },
+              ]}
+              placeholder="วางลิงก์ไฟล์ผลงานที่แก้ไขแล้ว..."
+              value={submissionInputs[item.id] !== undefined ? submissionInputs[item.id] : (item.submissionUrl || '')}
+              onChangeText={(val) =>
+                setSubmissionInputs({ ...submissionInputs, [item.id]: val })
+              }
+              autoCapitalize="none"
+              placeholderTextColor={colors.textMuted}
+            />
+
+            <TouchableOpacity
+              style={[styles.submitBtn, { backgroundColor: colors.primary }]}
+              onPress={() => handleSubmitTask(item.id, true)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.submitBtnText}>ส่งงานที่แก้ไขแล้ว</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {item.status === 'IN_PROGRESS' && (
+          <View style={[styles.submitSection, { borderTopColor: colors.border }]}>
+            <Text style={[styles.inputPrompt, { color: colors.textSecondary }]}>
+              แนบลิงก์ไฟล์ผลงาน (Drive / Cloud Storage):
+            </Text>
+            <TextInput
+              style={[
+                styles.urlInput,
+                {
+                  backgroundColor: colors.inputBg,
+                  borderColor: colors.inputBorder,
+                  color: colors.textPrimary,
+                },
+              ]}
+              placeholder="วางลิงก์ไฟล์ผลงานที่นี่..."
+              value={submissionInputs[item.id] || ''}
+              onChangeText={(val) =>
+                setSubmissionInputs({ ...submissionInputs, [item.id]: val })
+              }
+              autoCapitalize="none"
+              placeholderTextColor={colors.textMuted}
+            />
+            <TouchableOpacity
+              style={[styles.submitBtn, { backgroundColor: colors.primary }]}
+              onPress={() => handleSubmitTask(item.id, false)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.submitBtnText}>ส่งมอบงานให้ตรวจสอบ</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {item.status === 'REVIEW' && (
+          <View style={[styles.submittedBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+            <Text style={[styles.submittedText, { color: colors.statusReviewText }]}>
+              ส่งงานเรียบร้อย • อยู่ในคิวรอการตรวจสอบ
+            </Text>
+            {item.submissionUrl ? (
+              <Text style={[styles.submittedUrl, { color: colors.textSecondary }]} numberOfLines={1}>
+                ลิงก์ส่งงาน: {item.submissionUrl}
+              </Text>
+            ) : null}
+          </View>
+        )}
+      </View>
+    );
+  };
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Top Header Bar */}
       <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View>
@@ -129,7 +424,7 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
         </View>
 
         <TouchableOpacity
-          style={[styles.avatarButton, { backgroundColor: isDark ? colors.surfaceSubtle : '#0F172A' }]}
+          style={[styles.avatarButton, { backgroundColor: colors.primary }]}
           onPress={() => onNavigate && onNavigate('profile')}
         >
           <Text style={styles.avatarButtonText}>
@@ -142,138 +437,87 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
         contentContainerStyle={styles.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
-        {/* Creator KPI Bar */}
+        {/* Creator KPI Metrics Bar */}
         <View style={styles.kpiRow}>
           <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-            <Text style={[styles.kpiNum, { color: '#B45309' }]}>
+            <Text style={[styles.kpiNum, { color: colors.primary }]}>
               {tasks.filter((t) => t.status === 'IN_PROGRESS').length}
             </Text>
-            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>กำลังตัดต่อ/ทำ</Text>
+            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>กำลังดำเนินงาน</Text>
           </View>
           <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-            <Text style={[styles.kpiNum, { color: isDark ? '#94A3B8' : '#475569' }]}>
-              {tasks.filter((t) => t.status === 'TODO').length}
-            </Text>
-            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>คิวงานใหม่</Text>
-          </View>
-          <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-            <Text style={[styles.kpiNum, { color: isDark ? '#60A5FA' : '#1D4ED8' }]}>
+            <Text style={[styles.kpiNum, { color: colors.statusReviewText }]}>
               {tasks.filter((t) => t.status === 'REVIEW').length}
             </Text>
-            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>รอ Manager ตรวจ</Text>
+            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>รอตรวจทาน</Text>
+          </View>
+          <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+            <Text style={[styles.kpiNum, { color: colors.statusRevisionText }]}>
+              {tasks.filter((t) => t.status === 'REVISION').length}
+            </Text>
+            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>ต้องแก้ไข</Text>
+          </View>
+          <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+            <Text style={[styles.kpiNum, { color: colors.statusApprovedText }]}>
+              {tasks.filter((t) => t.status === 'DONE').length}
+            </Text>
+            <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>เสร็จสิ้น</Text>
           </View>
         </View>
 
-        {/* Section Header */}
-        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>งานที่ได้รับมอบหมาย</Text>
-        <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-          อัปเดตสถานะและแนบลิงก์ส่งงานให้หัวหน้าทีมตรวจสอบ
-        </Text>
-
-        {/* Task Cards */}
         {loading ? (
-          <View style={{ padding: 32, alignItems: 'center' }}>
+          <View style={styles.centerLoading}>
             <ActivityIndicator size="small" color={colors.primary} />
-            <Text style={{ marginTop: 8, fontSize: 13, color: colors.textSecondary }}>
-              กำลังโหลดงานของคุณจาก MongoDB...
+            <Text style={[styles.centerLoadingText, { color: colors.textSecondary }]}>
+              กำลังโหลดงานของคุณจากระบบ...
             </Text>
           </View>
         ) : tasks.length === 0 ? (
-          <View style={{ padding: 32, alignItems: 'center', backgroundColor: colors.cardBg, borderRadius: 12, marginTop: 12, borderWidth: 1, borderColor: colors.border }}>
-            <Text style={{ fontSize: 14, fontWeight: '700', color: colors.textPrimary, textAlign: 'center' }}>
-              ไม่มีงานส่วนตัวที่ค้างอยู่
-            </Text>
-            <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 4, textAlign: 'center' }}>
+          <View style={[styles.emptyBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>ไม่มีงานที่ค้างอยู่</Text>
+            <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
               คุณสามารถดูงานทั้งหมดและกิจกรรมของเพื่อนร่วมทีมได้ที่แท็บ "ทีมของฉัน"
             </Text>
           </View>
         ) : (
-          tasks.map((item) => {
-            const st = getStatusColor(item.status);
-
-            return (
-              <View key={item.id} style={[styles.taskCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-                {/* Task Header */}
-                <View style={styles.taskCardTop}>
-                  <View style={[styles.typeBadge, { backgroundColor: colors.surfaceSubtle }]}>
-                    <Text style={[styles.typeBadgeText, { color: colors.textSecondary }]}>{item.type}</Text>
-                  </View>
-
-                  <View style={[styles.statusBadge, { backgroundColor: st.bg }]}>
-                    <Text style={[styles.statusBadgeText, { color: st.text }]}>{st.label}</Text>
-                  </View>
-                </View>
-
-                {/* Task Title & Parent Content */}
-                <Text style={[styles.taskTitle, { color: colors.textPrimary }]}>{item.title}</Text>
-                <View style={[styles.parentContentBox, { backgroundColor: colors.surfaceSubtle }]}>
-                  <Text style={[styles.parentContentLabel, { color: colors.textSecondary }]}>ชิ้นงาน:</Text>
-                  <Text style={[styles.parentContentTitle, { color: colors.textPrimary }]}>
-                    {item.contentTitle} ({item.platform})
+          <>
+            {/* Visual Hierarchy: Priority 1 - Action Required Section */}
+            {urgentTasks.length > 0 && (
+              <View style={styles.sectionContainer}>
+                <View style={styles.sectionHeaderRow}>
+                  <Text style={[styles.sectionTitlePriority, { color: colors.statusRevisionText }]}>
+                    งานที่ต้องดำเนินการ (Action Required)
                   </Text>
-                </View>
-
-                <View style={styles.dueRow}>
-                  <Text style={[styles.dueText, { color: colors.textSecondary }]}>กำหนดส่ง: {item.dueDate}</Text>
-                </View>
-
-                {/* Action Area based on status */}
-                {item.status === 'TODO' && (
-                  <TouchableOpacity
-                    style={[styles.startBtn, { backgroundColor: isDark ? colors.primary : '#0F172A' }]}
-                    onPress={() => handleStartTask(item.id)}
-                  >
-                    <Text style={styles.startBtnText}>เริ่มทำงาน</Text>
-                  </TouchableOpacity>
-                )}
-
-                {item.status === 'IN_PROGRESS' && (
-                  <View style={styles.submitSection}>
-                    <View style={styles.linkPromptRow}>
-                      <Text style={styles.linkIconText}>🔗</Text>
-                      <Text style={[styles.inputPrompt, { color: colors.textSecondary }]}>แนบลิงก์ไฟล์งาน (Drive / Cloud URL):</Text>
-                    </View>
-                    <TextInput
-                      style={[
-                        styles.urlInput,
-                        {
-                          backgroundColor: colors.inputBg,
-                          borderColor: colors.inputBorder,
-                          color: colors.textPrimary,
-                        },
-                      ]}
-                      placeholder="วางลิงก์ไฟล์ผลงานที่นี่..."
-                      value={submissionInputs[item.id] || ''}
-                      onChangeText={(val) =>
-                        setSubmissionInputs({ ...submissionInputs, [item.id]: val })
-                      }
-                      autoCapitalize="none"
-                      placeholderTextColor={colors.textMuted}
-                    />
-                    <TouchableOpacity
-                      style={styles.submitBtn}
-                      onPress={() => handleSubmitTask(item.id)}
-                    >
-                      <Text style={styles.submitBtnText}>ส่งมอบงานให้ตรวจสอบ</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-
-                {item.status === 'REVIEW' && (
-                  <View style={styles.submittedBox}>
-                    <Text style={styles.submittedText}>
-                      ส่งงานเรียบร้อย • อยู่ในคิวรอการตรวจสอบ
+                  <View style={[styles.urgentBadge, { backgroundColor: colors.statusRevisionBg }]}>
+                    <Text style={[styles.urgentBadgeText, { color: colors.statusRevisionText }]}>
+                      {urgentTasks.length} งาน
                     </Text>
-                    {item.submissionUrl ? (
-                      <Text style={styles.submittedUrl} numberOfLines={1}>
-                        🔗 {item.submissionUrl}
-                      </Text>
-                    ) : null}
                   </View>
-                )}
+                </View>
+                <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                  งานที่ต้องแก้ไข หรือใกล้ครบกำหนดส่งมอบ
+                </Text>
+                {urgentTasks.map((t) => renderTaskCard(t, true))}
               </View>
-            );
-          })
+            )}
+
+            {/* General Tasks Section */}
+            <View style={styles.sectionContainer}>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                {urgentTasks.length > 0 ? 'งานอื่นๆ ที่ได้รับมอบหมาย' : 'งานที่ได้รับมอบหมาย'} ({generalTasks.length})
+              </Text>
+              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                อัปเดตสถานะและส่งมอบไฟล์งานเพื่อการตรวจสอบ
+              </Text>
+              {generalTasks.length === 0 ? (
+                <Text style={[styles.allClearText, { color: colors.textSecondary }]}>
+                  ไม่มีงานอื่นเพิ่มเติม ทุกงานอยู่ในส่วนที่ต้องดำเนินการเรียบร้อยแล้ว
+                </Text>
+              ) : (
+                generalTasks.map((t) => renderTaskCard(t, false))
+              )}
+            </View>
+          </>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -283,7 +527,6 @@ export default function MemberTaskList({ user, onLogout, onNavigate }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
   },
   header: {
     flexDirection: 'row',
@@ -291,25 +534,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 14,
-    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
   },
   userName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0F172A',
   },
   userSub: {
     fontSize: 12,
-    color: '#64748B',
     marginTop: 2,
   },
   avatarButton: {
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#0F172A',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -325,16 +563,14 @@ const styles = StyleSheet.create({
   kpiRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   kpiBox: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 10,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
   kpiNum: {
     fontSize: 18,
@@ -342,28 +578,45 @@ const styles = StyleSheet.create({
   },
   kpiLabel: {
     fontSize: 10,
-    color: '#64748B',
     fontWeight: '600',
     marginTop: 2,
+  },
+  sectionContainer: {
+    marginBottom: 20,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sectionTitlePriority: {
+    fontSize: 15,
+    fontWeight: '800',
+    marginBottom: 2,
+  },
+  urgentBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  urgentBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   sectionTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0F172A',
     marginBottom: 2,
   },
   sectionSubtitle: {
     fontSize: 11,
-    color: '#64748B',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   taskCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 14,
-    padding: 14,
+    padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     shadowColor: '#000',
     shadowOpacity: 0.03,
     shadowRadius: 4,
@@ -376,7 +629,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   typeBadge: {
-    backgroundColor: '#F1F5F9',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -384,51 +636,60 @@ const styles = StyleSheet.create({
   typeBadgeText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#475569',
   },
   statusBadge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
+    borderWidth: 1,
   },
   statusBadgeText: {
     fontSize: 10,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   taskTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F172A',
     marginBottom: 6,
   },
   parentContentBox: {
-    backgroundColor: '#F8FAFC',
     borderRadius: 8,
     padding: 8,
     marginBottom: 8,
   },
   parentContentLabel: {
     fontSize: 10,
-    color: '#64748B',
     fontWeight: '600',
   },
   parentContentTitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#1E293B',
     marginTop: 1,
   },
+  feedbackBox: {
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+  },
+  feedbackTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  feedbackText: {
+    fontSize: 12,
+    lineHeight: 16,
+  },
   dueRow: {
-    marginTop: 4,
+    marginTop: 2,
     marginBottom: 14,
   },
   dueText: {
     fontSize: 11,
-    color: '#E11D48',
     fontWeight: '600',
   },
   startBtn: {
-    backgroundColor: '#0F172A',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',
@@ -442,61 +703,87 @@ const styles = StyleSheet.create({
   },
   submitSection: {
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
     paddingTop: 12,
     marginTop: 4,
-  },
-  linkPromptRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 6,
-  },
-  linkIconText: {
-    fontSize: 13,
   },
   inputPrompt: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#334155',
+    marginBottom: 6,
+  },
+  replyBoxWrapper: {
+    marginBottom: 8,
+  },
+  replyInput: {
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 13,
+    minHeight: 64,
+    textAlignVertical: 'top',
   },
   urlInput: {
-    backgroundColor: '#F8FAFC',
     borderWidth: 1,
-    borderColor: '#CBD5E1',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 9,
     fontSize: 13,
-    color: '#0F172A',
     marginBottom: 8,
   },
   submitBtn: {
-    backgroundColor: '#0F172A',
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 12,
+    borderRadius: 10,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
   },
   submitBtnText: {
     color: '#FFFFFF',
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   submittedBox: {
-    backgroundColor: '#F8FAFC',
     borderRadius: 8,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
   submittedText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#16A34A',
   },
   submittedUrl: {
     fontSize: 11,
-    color: '#64748B',
     marginTop: 3,
+  },
+  centerLoading: {
+    padding: 32,
+    alignItems: 'center',
+  },
+  centerLoadingText: {
+    marginTop: 8,
+    fontSize: 13,
+  },
+  emptyBox: {
+    padding: 32,
+    alignItems: 'center',
+    borderRadius: 12,
+    marginTop: 12,
+    borderWidth: 1,
+  },
+  emptyTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  emptyDesc: {
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  allClearText: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    paddingVertical: 8,
   },
 });
