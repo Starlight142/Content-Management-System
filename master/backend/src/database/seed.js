@@ -101,6 +101,7 @@ const seedDatabase = async () => {
     // 2. Seed Teams
     const teamA = await Team.create({
       name: 'Content Team A',
+      code: 'TEAM-A',
       description: 'ทีมผลิต Content หลักประจำปี 2026 สำหรับ TikTok & YouTube',
       members: [
         { user: managerUser._id, roleInTeam: 'LEAD' },
@@ -112,6 +113,7 @@ const seedDatabase = async () => {
 
     const teamB = await Team.create({
       name: 'Content Team B (Beta Studio)',
+      code: 'TEAM-B',
       description: 'ทีมสำรองสำหรับทดสอบการกั้นสิทธิ์ความปลอดภัยข้ามทีม',
       members: [
         { user: adminUser._id, roleInTeam: 'LEAD' },

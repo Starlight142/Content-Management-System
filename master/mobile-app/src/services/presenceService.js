@@ -2,8 +2,8 @@
 import { Platform } from 'react-native';
 
 const CANDIDATE_WS_URLS = Platform.OS === 'android'
-  ? ['ws://127.0.0.1:5000', 'ws://localhost:5000', 'ws://10.13.3.200:5000', 'ws://10.0.2.2:5000']
-  : ['ws://localhost:5000', 'ws://127.0.0.1:5000'];
+  ? ['ws://127.0.0.1:5000', 'ws://localhost:5000', 'ws://192.168.0.104:5000', 'wss://limits-claims-herself-folks.trycloudflare.com', 'http://10.0.2.2:5000']
+  : ['ws://localhost:5000', 'ws://127.0.0.1:5000', 'wss://limits-claims-herself-folks.trycloudflare.com'];
 
 let activeWsIndex = 0;
 
@@ -16,6 +16,30 @@ class MobilePresenceService {
     this.heartbeatTimer = null;
     this.reconnectTimer = null;
     this.isConnected = false;
+  }
+
+  setCustomWsUrl(inputUrl) {
+    if (!inputUrl) return;
+    let wsUrl = inputUrl.trim().replace(/\/api\/?$/, '').replace(/\/+$/, '');
+    if (wsUrl.startsWith('https://')) {
+      wsUrl = wsUrl.replace('https://', 'wss://');
+    } else if (wsUrl.startsWith('http://')) {
+      wsUrl = wsUrl.replace('http://', 'ws://');
+    } else if (!wsUrl.startsWith('ws://') && !wsUrl.startsWith('wss://')) {
+      wsUrl = `ws://${wsUrl}`;
+    }
+
+    if (!CANDIDATE_WS_URLS.includes(wsUrl)) {
+      CANDIDATE_WS_URLS.unshift(wsUrl);
+    }
+    activeWsIndex = CANDIDATE_WS_URLS.indexOf(wsUrl);
+
+    if (this.ws) {
+      this.disconnect();
+      if (this.currentUser) {
+        this.connect(this.currentUser);
+      }
+    }
   }
 
   connect(user) {

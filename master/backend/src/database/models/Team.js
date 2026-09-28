@@ -23,6 +23,12 @@ const teamSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  code: {
+    type: String,
+    trim: true,
+    uppercase: true,
+    sparse: true,
+  },
   description: {
     type: String,
     default: '',

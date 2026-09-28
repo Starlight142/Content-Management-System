@@ -1,14 +1,65 @@
 import { Platform } from 'react-native';
 
-// Support USB adb reverse (127.0.0.1) on real physical devices & emulators, with 10.0.2.2 fallback
+// Support Wi-Fi LAN (192.168.0.104) first for wireless phone access, with USB adb reverse (127.0.0.1) & Cloudflare tunnel
 const CANDIDATE_BASE_URLS = Platform.OS === 'android'
-  ? ['http://127.0.0.1:5000/api', 'http://localhost:5000/api', 'http://10.13.3.200:5000/api', 'http://10.0.2.2:5000/api']
-  : ['http://localhost:5000/api', 'http://127.0.0.1:5000/api'];
+  ? ['http://192.168.0.104:5000/api', 'http://127.0.0.1:5000/api', 'http://localhost:5000/api', 'https://limits-claims-herself-folks.trycloudflare.com/api', 'http://10.0.2.2:5000/api']
+  : ['http://192.168.0.104:5000/api', 'http://localhost:5000/api', 'http://127.0.0.1:5000/api', 'https://limits-claims-herself-folks.trycloudflare.com/api'];
 
 let activeBaseUrl = CANDIDATE_BASE_URLS[0];
 
 export const getBaseUrl = () => activeBaseUrl;
 export const setBaseUrl = (url) => { activeBaseUrl = url; };
+
+export const getCandidateBaseUrls = () => [...CANDIDATE_BASE_URLS];
+
+export const setCustomBaseUrl = (url) => {
+  if (!url) return activeBaseUrl;
+  let cleanUrl = url.trim().replace(/\/+$/, '');
+  if (!cleanUrl.endsWith('/api')) {
+    cleanUrl = `${cleanUrl}/api`;
+  }
+  activeBaseUrl = cleanUrl;
+  const existingIdx = CANDIDATE_BASE_URLS.indexOf(cleanUrl);
+  if (existingIdx > -1) {
+    CANDIDATE_BASE_URLS.splice(existingIdx, 1);
+  }
+  CANDIDATE_BASE_URLS.unshift(cleanUrl);
+  return cleanUrl;
+};
+
+export const pingServer = async (urlToTest, timeoutMs = 2500) => {
+  let target = (urlToTest || activeBaseUrl).trim().replace(/\/+$/, '');
+  const healthEndpoint = target.endsWith('/api') ? `${target}/health` : `${target}/api/health`;
+  const start = Date.now();
+
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timeoutId = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+
+  try {
+    const response = await fetch(healthEndpoint, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      signal: controller ? controller.signal : undefined,
+    });
+    if (timeoutId) clearTimeout(timeoutId);
+    const latency = Date.now() - start;
+    if (response.ok) {
+      const data = await response.json().catch(() => ({}));
+      return { ok: true, latency, status: response.status, data, endpoint: healthEndpoint };
+    }
+    return { ok: false, latency, status: response.status, error: `HTTP ${response.status}`, endpoint: healthEndpoint };
+  } catch (err) {
+    if (timeoutId) clearTimeout(timeoutId);
+    const latency = Date.now() - start;
+    const isTimeout = err.name === 'AbortError' || (err.message && err.message.toLowerCase().includes('abort'));
+    return {
+      ok: false,
+      latency,
+      error: isTimeout ? `หมดเวลาตอบสนอง (${timeoutMs}ms)` : (err.message || 'Cannot reach server'),
+      endpoint: healthEndpoint,
+    };
+  }
+};
 
 let authToken = null;
 
@@ -18,7 +69,7 @@ export const setAuthToken = (token) => {
 
 export const getAuthToken = () => authToken;
 
-const request = async (endpoint, options = {}) => {
+const request = async (endpoint, options = {}, timeoutMs = 3500) => {
   const headers = {
     'Content-Type': 'application/json',
     ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
@@ -29,11 +80,15 @@ const request = async (endpoint, options = {}) => {
   let lastError = null;
 
   for (const baseUrl of urlsToTry) {
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
     try {
       const response = await fetch(`${baseUrl}${endpoint}`, {
         ...options,
         headers,
+        signal: controller ? controller.signal : undefined,
       });
+      if (timer) clearTimeout(timer);
 
       const text = await response.text();
       let data;
@@ -50,13 +105,16 @@ const request = async (endpoint, options = {}) => {
       activeBaseUrl = baseUrl;
       return data;
     } catch (err) {
+      if (timer) clearTimeout(timer);
       lastError = err;
-      const isNetworkErr = err.message && (
-        err.message.includes('Network request failed') ||
-        err.message.includes('Failed to fetch') ||
-        err.message.includes('Network Error')
-      );
-      if (!isNetworkErr) {
+      const isNetworkOrTimeout = err.name === 'AbortError' ||
+        (err.message && (
+          err.message.includes('Network request failed') ||
+          err.message.includes('Failed to fetch') ||
+          err.message.includes('Network Error') ||
+          err.message.includes('abort')
+        ));
+      if (!isNetworkOrTimeout) {
         throw err;
       }
     }

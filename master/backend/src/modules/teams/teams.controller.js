@@ -127,6 +127,7 @@ const getTeamDashboard = async (req, res) => {
       team: {
         _id: team._id,
         name: team.name,
+        code: team.code || 'TEAM-A',
         description: team.description,
         totalMembers: team.members ? team.members.length : 0,
       },
@@ -227,10 +228,14 @@ const getTeamMembers = async (req, res) => {
 // @access Private (Admin/Manager)
 const createTeam = async (req, res) => {
   try {
-    const { name, description, members } = req.body;
+    const { name, description, members, code } = req.body;
+
+    const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const cleanCode = (code && code.trim()) ? code.trim().toUpperCase() : `TEAM-${randomSuffix}`;
 
     const newTeam = await Team.create({
       name,
+      code: cleanCode,
       description,
       members: members || [],
     });

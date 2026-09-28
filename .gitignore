@@ -54,3 +54,5 @@ Thumbs.db
 # Local tooling
 powershell.cmd
 compass-connections.json
+tools/
+*.exe

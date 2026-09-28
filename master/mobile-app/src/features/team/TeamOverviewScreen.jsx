@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { teamApi } from '../../services/api';
@@ -163,10 +164,17 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
           </Text>
         </View>
         {teamData?.team && (
-          <View style={[styles.memberCountBadge, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
-            <Text style={[styles.memberCountText, { color: colors.textPrimary }]}>
-              {teamData.team.totalMembers} สมาชิก
-            </Text>
+          <View style={{ alignItems: 'flex-end', gap: 4 }}>
+            <View style={[styles.memberCountBadge, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+              <Text style={[styles.memberCountText, { color: colors.textPrimary }]}>
+                {teamData.team.totalMembers} สมาชิก
+              </Text>
+            </View>
+            <View style={[styles.teamCodeBadge, { backgroundColor: isDark ? '#1E293B' : '#EFF6FF', borderColor: isDark ? '#3B82F6' : '#BFDBFE' }]}>
+              <Text style={[styles.teamCodeBadgeText, { color: isDark ? '#93C5FD' : '#1D4ED8' }]}>
+                รหัสทีม: {teamData.team.code || 'TEAM-A'}
+              </Text>
+            </View>
           </View>
         )}
       </View>
@@ -475,6 +483,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#334155',
+  },
+  teamCodeBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  teamCodeBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
   scrollContent: {
     padding: 16,

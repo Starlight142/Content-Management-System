@@ -67,6 +67,7 @@ export default function UsersPage() {
   // Modals for Teams
   const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
+  const [newTeamCode, setNewTeamCode] = useState('');
   const [newTeamDesc, setNewTeamDesc] = useState('');
   const [selectedLeaderId, setSelectedLeaderId] = useState('');
 
@@ -306,6 +307,7 @@ export default function UsersPage() {
         method: 'POST',
         body: JSON.stringify({
           name: newTeamName.trim(),
+          code: newTeamCode.trim().toUpperCase() || undefined,
           description: newTeamDesc.trim(),
           members,
         }),
@@ -326,6 +328,7 @@ export default function UsersPage() {
           _id: `t_${Date.now()}`,
           id: Date.now(),
           name: newTeamName.trim(),
+          code: newTeamCode.trim().toUpperCase() || 'TEAM-NEW',
           description: newTeamDesc.trim(),
           members: selectedLeaderId
             ? [{ user: users.find((u) => String(u._id || u.id) === String(selectedLeaderId)), roleInTeam: 'LEAD' }]
@@ -336,6 +339,7 @@ export default function UsersPage() {
       }
 
       setNewTeamName('');
+      setNewTeamCode('');
       setNewTeamDesc('');
       setSelectedLeaderId('');
       setIsCreateTeamModalOpen(false);
@@ -696,7 +700,12 @@ export default function UsersPage() {
                             <Briefcase size={20} />
                           </div>
                           <div>
-                            <h3 className="text-base font-bold text-slate-900">{team.name}</h3>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="text-base font-bold text-slate-900">{team.name}</h3>
+                              <span className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 font-mono font-bold text-[11px]">
+                                {team.code || 'TEAM-A'}
+                              </span>
+                            </div>
                             <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
                               <Users size={13} />
                               <span>สมาชิก {members.length} คน</span>
@@ -862,6 +871,17 @@ export default function UsersPage() {
                   placeholder="เช่น ทีมวิดีโอ & คอนเทนต์หลัก"
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500"
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">รหัสเข้าร่วมทีม (Team Code)</label>
+                <input
+                  type="text"
+                  value={newTeamCode}
+                  onChange={(e) => setNewTeamCode(e.target.value.toUpperCase())}
+                  placeholder="เช่น TEAM-C (เว้นว่างเพื่อสร้างให้อัตโนมัติ)"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 font-mono uppercase"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">ใช้สำหรับให้สมาชิกกรอกตอนลงทะเบียนบน Mobile App</p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">คำอธิบายทีม</label>

@@ -1,8 +1,8 @@
 # 📋 เอกสารสรุปบริบทและสถานะโปรเจกต์ (Project Handover Document)
 
-> 🕒 **ปรับปรุงล่าสุด:** 28 กันยายน 2026 (Phase 24)  
+> 🕒 **ปรับปรุงล่าสุด:** 28 กันยายน 2026 (Phase 25)  
 > 📁 **Repository Path:** `d:\VsCode\Project\Content-Management-System`  
-> 🌿 **Git Branch:** `main` (Latest Commit: `ca2f3b9`)
+> 🌿 **Git Branch:** `main`
 
 ---
 
@@ -40,8 +40,8 @@
 7. **ดู Dashboard สรุปข้อมูลการใช้งานระบบ:** KPI Cards ภาพรวม, กราฟวงกลมแสดงสัดส่วนแพลตฟอร์ม, ท่อส่งงาน (Pipeline Funnel), และสถานะประสิทธิภาพทีม
 
 ### 2.2 ผู้ใช้งาน (User: Manager & Member) บน Mobile Application (ครบ 100%):
-1. **ลงทะเบียนผู้ใช้งาน:** สมัครบัญชีใหม่พร้อมระบุบทบาท (MANAGER / MEMBER)
-2. **เข้าสู่ระบบ:** Login และแยกหน้าจอตามบทบาท (Role-Based Navigation)
+1. **ลงทะเบียนผู้ใช้งาน:** สมัครบัญชีใหม่พร้อมระบุบทบาท (MANAGER / MEMBER) และรหัสเข้าร่วมทีม (Team Code เช่น `TEAM-A`, `TEAM-B`) เพื่อเชื่อมโยงเข้าสังกัดทีมอัตโนมัติ
+2. **เข้าสู่ระบบ & ตั้งค่า Server:** Login แยกหน้าจอตามบทบาท พร้อมระบบ Server Config Modal (สลับ Wi-Fi LAN 192.168.0.104, USB ADB Reverse, Cloudflare Tunnel, Custom URL แตะเปลี่ยนได้ใน 1 คลิก พร้อมเช็ค Latency สด) และซ่อนปุ่ม Demo Accounts ไว้อย่างเป็นระเบียบ
 3. **จัดการบัญชีส่วนตัว:** แก้ไขชื่อ-นามสกุล และอัปเดตโปรไฟล์
 4. **จัดการทีมและสมาชิก:** ดูรายชื่อเพื่อนร่วมทีม, สถานะออนไลน์สด (Live Presence Dot), และสถานะการทำงาน (Working Status: IDLE / WORKING / BUSY)
 5. **จัดการ Idea:** เสนอไอเดียใหม่, กดโหวต Upvote ไอเดีย, แปลงไอเดียสู่แผนงานผลิต
