@@ -7,14 +7,29 @@ import {
   ScrollView,
   Alert,
   Switch,
+  Modal,
+  TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { presenceService } from '../../services/presenceService';
+import { userApi } from '../../services/api';
 
 export default function ProfileScreen({ user, onLogout }) {
   const { isDark, toggleTheme, colors } = useTheme();
   const [isOnline, setIsOnline] = useState(presenceService.isConnected);
+
+  // Local user profile state
+  const [localUser, setLocalUser] = useState(user || {});
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editFirstName, setEditFirstName] = useState('');
+  const [editLastName, setEditLastName] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (user) setLocalUser(user);
+  }, [user]);
 
   useEffect(() => {
     setIsOnline(presenceService.isConnected);
@@ -25,6 +40,48 @@ export default function ProfileScreen({ user, onLogout }) {
     });
     return () => unsubscribe();
   }, []);
+
+  const handleOpenEdit = () => {
+    const defaultFirst = localUser.firstName || (localUser.name ? localUser.name.split(' ')[0] : '');
+    const defaultLast = localUser.lastName || (localUser.name ? localUser.name.split(' ').slice(1).join(' ') : '');
+    setEditFirstName(defaultFirst);
+    setEditLastName(defaultLast);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!editFirstName.trim()) {
+      Alert.alert('ข้อผิดพลาด', 'กรุณากรอกชื่อ');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const updatedData = {
+        firstName: editFirstName.trim(),
+        lastName: editLastName.trim(),
+        name: `${editFirstName.trim()} ${editLastName.trim()}`.trim(),
+      };
+
+      const res = await userApi.updateProfile(updatedData);
+      const updatedUser = res?.user || { ...localUser, ...updatedData };
+      setLocalUser(updatedUser);
+      setIsEditModalOpen(false);
+      Alert.alert('สำเร็จ', 'อัปเดตข้อมูลบัญชีส่วนตัวเรียบร้อยแล้ว');
+    } catch (err) {
+      // Fallback local update if offline
+      const updatedData = {
+        firstName: editFirstName.trim(),
+        lastName: editLastName.trim(),
+        name: `${editFirstName.trim()} ${editLastName.trim()}`.trim(),
+      };
+      setLocalUser((prev) => ({ ...prev, ...updatedData }));
+      setIsEditModalOpen(false);
+      Alert.alert('บันทึกแล้ว', 'อัปเดตข้อมูลส่วนตัวในเครื่องเรียบร้อยแล้ว');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleConfirmLogout = () => {
     Alert.alert(
@@ -41,7 +98,10 @@ export default function ProfileScreen({ user, onLogout }) {
     );
   };
 
-  const isManager = user?.role === 'MANAGER';
+  const isManager = localUser?.role === 'MANAGER';
+  const displayName = localUser?.firstName
+    ? `${localUser.firstName} ${localUser.lastName || ''}`.trim()
+    : (localUser?.name || 'ผู้ใช้งาน Draftly');
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
@@ -55,17 +115,26 @@ export default function ProfileScreen({ user, onLogout }) {
         <View style={[styles.userCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           <View style={[styles.avatar, { backgroundColor: isDark ? colors.surfaceSubtle : '#0F172A' }]}>
             <Text style={styles.avatarText}>
-              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+              {displayName.charAt(0).toUpperCase()}
             </Text>
           </View>
           <View style={styles.userInfo}>
-            <Text style={[styles.userName, { color: colors.textPrimary }]}>{user?.name || 'ผู้ใช้งาน Draftly'}</Text>
-            <Text style={[styles.userEmail, { color: colors.textSecondary }]}>{user?.email || 'user@studio.com'}</Text>
+            <Text style={[styles.userName, { color: colors.textPrimary }]}>{displayName}</Text>
+            <Text style={[styles.userEmail, { color: colors.textSecondary }]}>{localUser?.email || 'user@studio.com'}</Text>
             <View style={[styles.roleBadge, { backgroundColor: colors.surfaceSubtle }]}>
               <Text style={[styles.roleText, { color: colors.textPrimary }]}>
                 {isManager ? 'ผู้จัดการฝ่ายผลิต (Manager)' : 'ทีมงานสร้างสรรค์ (Member)'}
               </Text>
             </View>
+
+            {/* Edit Profile Button */}
+            <TouchableOpacity
+              style={[styles.editProfileBtn, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
+              onPress={handleOpenEdit}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.editProfileText, { color: colors.primary }]}>แก้ไขโปรไฟล์ส่วนตัว ✎</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -92,8 +161,13 @@ export default function ProfileScreen({ user, onLogout }) {
         <Text style={[styles.sectionHeader, { color: colors.textSecondary }]}>ข้อมูลบัญชี</Text>
         <View style={[styles.menuGroup, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
           <View style={styles.menuItem}>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>ชื่อ-นามสกุล</Text>
+            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>{displayName}</Text>
+          </View>
+          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
+          <View style={styles.menuItem}>
             <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>รหัสผู้ใช้งาน</Text>
-            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>#{user?.id || '2026-01'}</Text>
+            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>#{localUser?.id || localUser?._id || '2026-01'}</Text>
           </View>
           <View style={[styles.divider, { backgroundColor: colors.divider }]} />
           <View style={styles.menuItem}>
@@ -151,6 +225,60 @@ export default function ProfileScreen({ user, onLogout }) {
           </Text>
         </View>
       </ScrollView>
+
+      {/* Edit Profile Modal */}
+      <Modal visible={isEditModalOpen} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>แก้ไขข้อมูลส่วนตัว</Text>
+            <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>อัปเดตชื่อและนามสกุลสำหรับแสดงผลในระบบ</Text>
+
+            <View style={styles.inputGroup}>
+              <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>ชื่อ (First Name)</Text>
+              <TextInput
+                style={[styles.input, { backgroundColor: colors.surfaceSubtle, color: colors.textPrimary, borderColor: colors.border }]}
+                value={editFirstName}
+                onChangeText={setEditFirstName}
+                placeholder="ชื่อของคุณ"
+                placeholderTextColor={colors.textMuted}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>นามสกุล (Last Name)</Text>
+              <TextInput
+                style={[styles.input, { backgroundColor: colors.surfaceSubtle, color: colors.textPrimary, borderColor: colors.border }]}
+                value={editLastName}
+                onChangeText={setEditLastName}
+                placeholder="นามสกุลของคุณ"
+                placeholderTextColor={colors.textMuted}
+              />
+            </View>
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalBtnCancel, { backgroundColor: colors.surfaceSubtle }]}
+                onPress={() => setIsEditModalOpen(false)}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.modalBtnCancelText, { color: colors.textSecondary }]}>ยกเลิก</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalBtnSubmit, { backgroundColor: colors.primary }]}
+                onPress={handleSaveProfile}
+                disabled={saving}
+                activeOpacity={0.8}
+              >
+                {saving ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.modalBtnSubmitText}>บันทึกข้อมูล</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -212,28 +340,41 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#64748B',
     marginTop: 2,
-    marginBottom: 8,
   },
   roleBadge: {
     alignSelf: 'flex-start',
     backgroundColor: '#F1F5F9',
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 6,
+    marginTop: 6,
   },
   roleText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     color: '#334155',
+  },
+  editProfileBtn: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginTop: 8,
+  },
+  editProfileText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
   sectionHeader: {
     fontSize: 13,
     fontWeight: '600',
     color: '#64748B',
-    marginBottom: 8,
-    marginLeft: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+    marginBottom: 8,
+    marginLeft: 4,
   },
   menuGroup: {
     backgroundColor: '#FFFFFF',
@@ -309,5 +450,79 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
     marginTop: 10,
     textAlign: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalCard: {
+    width: '100%',
+    maxWidth: 380,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  modalSubtitle: {
+    fontSize: 13,
+    color: '#64748B',
+    marginTop: 4,
+    marginBottom: 16,
+  },
+  inputGroup: {
+    marginBottom: 14,
+  },
+  inputLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#334155',
+    marginBottom: 6,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 10,
+    marginTop: 10,
+  },
+  modalBtnCancel: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: '#F1F5F9',
+  },
+  modalBtnCancelText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  modalBtnSubmit: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: '#2563EB',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalBtnSubmitText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });

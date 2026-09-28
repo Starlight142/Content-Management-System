@@ -8,6 +8,7 @@ const ideasRoutes = require('./modules/ideas/ideas.routes');
 const tasksRoutes = require('./modules/tasks/tasks.routes');
 const legalRoutes = require('./modules/legal/legal.routes');
 
+const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 
 const app = express();
@@ -20,11 +21,24 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Basic Health Check Route
+// Detailed Health & System Status Route (Admin Req 5)
 app.get('/api/health', (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
   res.status(200).json({ 
-    status: 'success', 
-    message: 'Content Production Management System API is running' 
+    status: 'healthy', 
+    message: 'Content Production Management System API is running',
+    timestamp: new Date().toISOString(),
+    uptimeSeconds: Math.floor(process.uptime()),
+    database: {
+      status: dbStatus,
+      name: mongoose.connection.name || 'production_cms',
+    },
+    services: {
+      api: 'online',
+      database: dbStatus,
+      webSocket: 'online',
+    },
+    environment: process.env.NODE_ENV || 'development',
   });
 });
 

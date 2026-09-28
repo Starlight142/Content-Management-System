@@ -13,5 +13,8 @@ router.post('/', verifyRole(['ADMIN', 'MANAGER']), tasksController.createTask);
 // Members update their task status
 router.patch('/:id/status', tasksController.updateTaskStatus);
 
+// Manager/Admin delete tasks
+router.delete('/:id', verifyRole(['ADMIN', 'MANAGER']), tasksController.deleteTask);
+
 module.exports = router;
 

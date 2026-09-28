@@ -164,6 +164,41 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// @route PATCH /api/users/profile
+// @access Private (Logged-in user)
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId || req.user.id;
+    const { firstName, lastName, name } = req.body;
+
+    const updateFields = {};
+    if (firstName !== undefined) updateFields.firstName = firstName;
+    if (lastName !== undefined) updateFields.lastName = lastName;
+    if (name && !firstName) {
+      const parts = name.trim().split(' ');
+      updateFields.firstName = parts[0];
+      updateFields.lastName = parts.slice(1).join(' ') || '';
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updateFields,
+      { new: true }
+    ).select('-passwordHash');
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    notifyUserUpdated(updatedUser);
+
+    res.status(200).json({ message: 'Profile updated successfully', user: updatedUser });
+  } catch (error) {
+    console.error('updateProfile error:', error);
+    res.status(500).json({ message: 'Server error updating profile', error: error.message });
+  }
+};
+
 module.exports = {
   getAllUsers,
   getOnlineUsers,
@@ -171,4 +206,6 @@ module.exports = {
   createUser,
   updateUserRole,
   deleteUser,
+  updateProfile,
 };
+

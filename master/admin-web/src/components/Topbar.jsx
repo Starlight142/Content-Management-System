@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Bell, Search, LogOut, X } from 'lucide-react';
 import Link from 'next/link';
 import { presenceClient } from '../services/presenceClient';
 
 const Topbar = () => {
+  const router = useRouter();
   const [notifications, setNotifications] = useState([
     { id: 1, title: 'มี Content รอ Review', desc: 'คลิป "สรุปข่าว AI" ส่งมาให้ตรวจสอบ', time: '10 นาทีที่แล้ว', unread: true },
     { id: 2, title: 'ส่งกลับแก้ไขงาน', desc: 'Manager ส่งฟีดแบ็กแก้ไขคลิป Tech News พร้อมคำแนะนำ', time: '1 ชม. ที่แล้ว', unread: true },
@@ -160,7 +162,10 @@ const Topbar = () => {
               <button
                 onClick={() => {
                   setIsSignoutModalOpen(false);
-                  alert('ออกจากระบบสำเร็จแล้ว (จำลองการ Clear JWT Token)');
+                  if (typeof window !== 'undefined') {
+                    localStorage.removeItem('admin_session');
+                    router.push('/login');
+                  }
                 }}
                 className="px-4 py-2 bg-rose-600 text-white rounded-lg text-xs font-semibold hover:bg-rose-700 cursor-pointer shadow-xs"
               >

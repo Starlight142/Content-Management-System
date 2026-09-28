@@ -15,6 +15,9 @@ router.get('/', verifyRole(['ADMIN', 'MANAGER']), usersController.getAllUsers);
 // Create user
 router.post('/', verifyRole(['ADMIN', 'MANAGER']), usersController.createUser);
 
+// Update logged-in user profile
+router.patch('/profile', usersController.updateProfile);
+
 // Any authenticated user can get a specific user profile
 router.get('/:id', usersController.getUserById);
 

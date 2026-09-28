@@ -146,11 +146,21 @@ export const teamApi = {
   getTeamMembers: (teamId) => request(`/teams/${teamId}/members`),
 };
 
+// Users APIs
+export const userApi = {
+  getAll: () => request('/users'),
+  updateProfile: (profileData) => request('/users/profile', {
+    method: 'PATCH',
+    body: JSON.stringify(profileData),
+  }),
+};
+
 export default {
   auth: authApi,
   content: contentApi,
   task: taskApi,
   idea: ideaApi,
   team: teamApi,
+  user: userApi,
 };
 

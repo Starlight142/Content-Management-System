@@ -9,6 +9,7 @@ import {
   Alert,
   RefreshControl,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { taskApi } from '../../services/api';
@@ -404,9 +405,15 @@ export default function MemberTaskList({ user, onNavigate }) {
               ส่งงานเรียบร้อย • อยู่ในคิวรอการตรวจสอบ
             </Text>
             {item.submissionUrl ? (
-              <Text style={[styles.submittedUrl, { color: colors.textSecondary }]} numberOfLines={1}>
-                ลิงก์ส่งงาน: {item.submissionUrl}
-              </Text>
+              <TouchableOpacity
+                onPress={() => Linking.openURL(item.submissionUrl).catch(() => Alert.alert('ลิงก์ผลงาน', item.submissionUrl))}
+                style={{ marginTop: 6 }}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.submittedUrl, { color: colors.primary, textDecorationLine: 'underline' }]} numberOfLines={1}>
+                  🌐 เปิดดูผลงาน: {item.submissionUrl}
+                </Text>
+              </TouchableOpacity>
             ) : null}
           </View>
         )}

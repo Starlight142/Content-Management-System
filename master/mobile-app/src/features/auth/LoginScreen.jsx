@@ -16,9 +16,12 @@ import { useTheme } from '../../theme/ThemeContext';
 
 export default function LoginScreen({ onLoginSuccess }) {
   const { isDark, colors } = useTheme();
+  const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('manager@studio.com');
   const [password, setPassword] = useState('123456');
-  const [selectedRole, setSelectedRole] = useState('MANAGER'); // Quick role switch for testing
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [selectedRole, setSelectedRole] = useState('MANAGER'); // Role for login test / register
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -54,6 +57,38 @@ export default function LoginScreen({ onLoginSuccess }) {
     }
   };
 
+  const handleRegister = async () => {
+    if (!firstName.trim() || !email.trim() || !password.trim()) {
+      Alert.alert('ข้อผิดพลาด', 'กรุณากรอกชื่อ, อีเมล และรหัสผ่านให้ครบถ้วน');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('ข้อผิดพลาด', 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const username = email.split('@')[0] || `user_${Date.now()}`;
+      await authApi.register({
+        username,
+        email: email.trim(),
+        password,
+        firstName: firstName.trim(),
+        lastName: lastName.trim() || 'Member',
+        role: selectedRole,
+      });
+
+      Alert.alert('สำเร็จ', 'ลงทะเบียนผู้ใช้งานใหม่เรียบร้อยแล้ว กรุณาเข้าสู่ระบบ');
+      setIsRegister(false);
+    } catch (err) {
+      Alert.alert('ข้อผิดพลาด', err.message || 'ไม่สามารถลงทะเบียนได้ กรุณาลองใหม่อีกครั้ง');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView 
@@ -65,12 +100,16 @@ export default function LoginScreen({ onLoginSuccess }) {
             <Text style={styles.logoText}>D</Text>
           </View>
           <Text style={[styles.title, { color: colors.textPrimary }]}>Draftly</Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>ระบบบริหารงานผลิต Content สำหรับทีมงาน</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            {isRegister ? 'สร้างบัญชีผู้ใช้งานใหม่' : 'ระบบบริหารงานผลิต Content สำหรับทีมงาน'}
+          </Text>
         </View>
 
         {/* Role Fast Selector */}
         <View style={styles.roleContainer}>
-          <Text style={[styles.roleLabel, { color: colors.textSecondary }]}>ทดสอบเข้าใช้งานด้วยสิทธิ์:</Text>
+          <Text style={[styles.roleLabel, { color: colors.textSecondary }]}>
+            {isRegister ? 'เลือกบทบาทที่ต้องการสมัคร:' : 'ทดสอบเข้าใช้งานด้วยสิทธิ์:'}
+          </Text>
           <View style={styles.roleButtons}>
             <TouchableOpacity
               style={[
@@ -83,7 +122,7 @@ export default function LoginScreen({ onLoginSuccess }) {
               ]}
               onPress={() => {
                 setSelectedRole('MANAGER');
-                setEmail('manager@studio.com');
+                if (!isRegister) setEmail('manager@studio.com');
               }}
             >
               <Text
@@ -108,7 +147,7 @@ export default function LoginScreen({ onLoginSuccess }) {
               ]}
               onPress={() => {
                 setSelectedRole('MEMBER');
-                setEmail('member@studio.com');
+                if (!isRegister) setEmail('member@studio.com');
               }}
             >
               <Text
@@ -126,8 +165,47 @@ export default function LoginScreen({ onLoginSuccess }) {
 
         {/* Input Fields */}
         <View style={[styles.form, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          {isRegister && (
+            <View style={styles.rowInputs}>
+              <View style={[styles.inputGroup, { flex: 1, marginRight: 6 }]}>
+                <Text style={[styles.label, { color: colors.textPrimary }]}>ชื่อจริง *</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: colors.inputBg,
+                      borderColor: colors.inputBorder,
+                      color: colors.textPrimary,
+                    },
+                  ]}
+                  placeholder="เช่น สมชาย"
+                  placeholderTextColor={colors.textMuted}
+                  value={firstName}
+                  onChangeText={setFirstName}
+                />
+              </View>
+              <View style={[styles.inputGroup, { flex: 1, marginLeft: 6 }]}>
+                <Text style={[styles.label, { color: colors.textPrimary }]}>นามสกุล</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: colors.inputBg,
+                      borderColor: colors.inputBorder,
+                      color: colors.textPrimary,
+                    },
+                  ]}
+                  placeholder="ใจดี"
+                  placeholderTextColor={colors.textMuted}
+                  value={lastName}
+                  onChangeText={setLastName}
+                />
+              </View>
+            </View>
+          )}
+
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.textPrimary }]}>อีเมลผู้ใช้งาน</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>อีเมลผู้ใช้งาน *</Text>
             <TextInput
               style={[
                 styles.input,
@@ -147,7 +225,7 @@ export default function LoginScreen({ onLoginSuccess }) {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.textPrimary }]}>รหัสผ่าน</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>รหัสผ่าน *</Text>
             <TextInput
               style={[
                 styles.input,
@@ -167,14 +245,37 @@ export default function LoginScreen({ onLoginSuccess }) {
 
           <TouchableOpacity 
             style={[styles.submitBtn, { backgroundColor: colors.primary }]} 
-            onPress={handleLogin}
+            onPress={isRegister ? handleRegister : handleLogin}
             disabled={loading}
           >
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.submitBtnText}>เข้าสู่ระบบ (Sign In)</Text>
+              <Text style={styles.submitBtnText}>
+                {isRegister ? 'ยืนยันลงทะเบียน (Sign Up)' : 'เข้าสู่ระบบ (Sign In)'}
+              </Text>
             )}
+          </TouchableOpacity>
+
+          {/* Toggle between Login and Register */}
+          <TouchableOpacity
+            style={styles.toggleModeBtn}
+            onPress={() => {
+              setIsRegister(!isRegister);
+              if (isRegister) {
+                setEmail('manager@studio.com');
+                setPassword('123456');
+              } else {
+                setEmail('');
+                setPassword('');
+              }
+            }}
+          >
+            <Text style={[styles.toggleModeText, { color: colors.textSecondary }]}>
+              {isRegister
+                ? 'มีบัญชีอยู่แล้ว? เข้าสู่ระบบที่นี่'
+                : 'ยังไม่มีบัญชีผู้ใช้? กดลงทะเบียนที่นี่'}
+            </Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -303,5 +404,17 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: 'bold',
+  },
+  rowInputs: {
+    flexDirection: 'row',
+  },
+  toggleModeBtn: {
+    marginTop: 16,
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  toggleModeText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
 });

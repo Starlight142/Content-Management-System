@@ -17,7 +17,8 @@ import {
   Clock, 
   AlertCircle,
   RefreshCw,
-  Radio
+  Radio,
+  CheckSquare,
 } from 'lucide-react';
 import { presenceClient, apiFetch } from '../../services/presenceClient';
 
@@ -44,6 +45,8 @@ const TiktokIcon = () => (
 
 export default function ContentsPage() {
   const [contents, setContents] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isWsConnected, setIsWsConnected] = useState(false);
 
@@ -64,6 +67,15 @@ export default function ContentsPage() {
   const [newDescription, setNewDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Subtask assignment inside content modal
+  const [isAssignTaskOpen, setIsAssignTaskOpen] = useState(false);
+  const [taskTitle, setTaskTitle] = useState('');
+  const [taskType, setTaskType] = useState('Editing');
+  const [taskAssignee, setTaskAssignee] = useState('');
+  const [taskDueDate, setTaskDueDate] = useState('2026-10-05');
+  const [taskNotes, setTaskNotes] = useState('');
+  const [subtaskSubmitting, setSubtaskSubmitting] = useState(false);
+
   // Format backend content document to table view model
   const formatContentItem = (c) => ({
     id: c._id || c.id,
@@ -82,12 +94,18 @@ export default function ContentsPage() {
 
   const refreshContents = useCallback(async () => {
     try {
-      const data = await apiFetch('/contents');
-      if (Array.isArray(data)) {
-        setContents(data.map(formatContentItem));
+      const [cData, tData] = await Promise.all([
+        apiFetch('/contents').catch(() => null),
+        apiFetch('/tasks').catch(() => null),
+      ]);
+      if (Array.isArray(cData)) {
+        setContents(cData.map(formatContentItem));
+      }
+      if (Array.isArray(tData)) {
+        setTasks(tData);
       }
     } catch (err) {
-      console.warn('Failed to load contents from backend:', err);
+      console.warn('Failed to load data from backend:', err);
     } finally {
       setLoading(false);
     }
@@ -98,9 +116,18 @@ export default function ContentsPage() {
 
     const fetchInitial = async () => {
       try {
-        const data = await apiFetch('/contents');
-        if (isMounted && Array.isArray(data)) {
-          setContents(data.map(formatContentItem));
+        const [cData, tData, uData] = await Promise.all([
+          apiFetch('/contents').catch(() => null),
+          apiFetch('/tasks').catch(() => null),
+          apiFetch('/users').catch(() => null),
+        ]);
+        if (isMounted) {
+          if (Array.isArray(cData)) setContents(cData.map(formatContentItem));
+          if (Array.isArray(tData)) setTasks(tData);
+          if (Array.isArray(uData)) {
+            setUsers(uData);
+            if (uData.length > 0) setTaskAssignee(uData[0]._id || uData[0].id);
+          }
         }
       } catch (err) {
         console.warn('Initial contents load error:', err);
@@ -126,7 +153,9 @@ export default function ContentsPage() {
     presenceClient.on('CONTENT_CREATED', handleContentEvent);
     presenceClient.on('CONTENT_UPDATED', handleContentEvent);
     presenceClient.on('CONTENT_DELETED', handleContentEvent);
+    presenceClient.on('TASK_CREATED', handleContentEvent);
     presenceClient.on('TASK_UPDATED', handleContentEvent);
+    presenceClient.on('TASK_DELETED', handleContentEvent);
 
     return () => {
       isMounted = false;
@@ -134,7 +163,9 @@ export default function ContentsPage() {
       presenceClient.off('CONTENT_CREATED', handleContentEvent);
       presenceClient.off('CONTENT_UPDATED', handleContentEvent);
       presenceClient.off('CONTENT_DELETED', handleContentEvent);
+      presenceClient.off('TASK_CREATED', handleContentEvent);
       presenceClient.off('TASK_UPDATED', handleContentEvent);
+      presenceClient.off('TASK_DELETED', handleContentEvent);
     };
   }, [refreshContents]);
 
@@ -284,6 +315,75 @@ export default function ContentsPage() {
       await refreshContents();
     }
   };
+
+  // Action: Create Subtask for Content (Admin Req 3 & 4)
+  const handleCreateSubtask = async (e) => {
+    e.preventDefault();
+    if (!taskTitle.trim() || !selectedContent) return;
+
+    try {
+      setSubtaskSubmitting(true);
+      const res = await apiFetch('/tasks', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: taskTitle.trim(),
+          contentId: selectedContent.id,
+          taskType,
+          assignedTo: taskAssignee || null,
+          dueDate: taskDueDate,
+          notes: taskNotes,
+        }),
+      });
+
+      if (res?.task) {
+        setTasks((prev) => [res.task, ...prev]);
+      } else {
+        const assigneeObj = users.find((u) => String(u._id || u.id) === String(taskAssignee));
+        const fallback = {
+          _id: `task_${Date.now()}`,
+          id: Date.now(),
+          title: taskTitle.trim(),
+          contentId: { _id: selectedContent.id, title: selectedContent.title },
+          taskType,
+          assignedTo: assigneeObj || null,
+          status: 'TODO',
+          dueDate: taskDueDate,
+          notes: taskNotes,
+        };
+        setTasks((prev) => [fallback, ...prev]);
+      }
+
+      setTaskTitle('');
+      setTaskNotes('');
+      setIsAssignTaskOpen(false);
+    } catch (err) {
+      alert(`ไม่สามารถมอบหมายงานได้: ${err.message}`);
+    } finally {
+      setSubtaskSubmitting(false);
+    }
+  };
+
+  // Action: Toggle Subtask Status
+  const handleToggleSubtaskStatus = async (taskId, currentStatus) => {
+    const cycle = {
+      TODO: 'IN_PROGRESS',
+      IN_PROGRESS: 'REVIEW',
+      REVIEW: 'DONE',
+      DONE: 'TODO',
+    };
+    const next = cycle[currentStatus] || 'TODO';
+
+    try {
+      await apiFetch(`/tasks/${taskId}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: next }),
+      });
+      setTasks((prev) => prev.map((t) => ((t._id || t.id) === taskId ? { ...t, status: next } : t)));
+    } catch {
+      setTasks((prev) => prev.map((t) => ((t._id || t.id) === taskId ? { ...t, status: next } : t)));
+    }
+  };
+
 
   return (
     <div className="space-y-6">
@@ -501,7 +601,7 @@ export default function ContentsPage() {
       {/* Modal: View Content Detail */}
       {selectedContent && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex justify-between items-start">
               <div>
                 <span className="text-xs font-semibold text-blue-600 tracking-wide uppercase">
@@ -563,6 +663,182 @@ export default function ContentsPage() {
                     {st}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            {/* Subtasks Management (Admin Req 3 & 4) */}
+            <div className="border-t border-slate-100 pt-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CheckSquare size={16} className="text-blue-600" />
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    งานย่อยใน Content นี้ ({
+                      tasks.filter((t) => {
+                        const cId = t.contentId?._id || t.contentId?.id || t.contentId;
+                        return String(cId) === String(selectedContent.id);
+                      }).length
+                    })
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAssignTaskOpen(!isAssignTaskOpen)}
+                  className="flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition cursor-pointer"
+                >
+                  <Plus size={13} />
+                  <span>{isAssignTaskOpen ? 'ยกเลิก' : '+ มอบหมายงานย่อย'}</span>
+                </button>
+              </div>
+
+              {/* Subtask Creation Form */}
+              {isAssignTaskOpen && (
+                <form onSubmit={handleCreateSubtask} className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2.5 animate-in fade-in duration-100">
+                  <p className="text-xs font-bold text-slate-800">มอบหมายงานย่อยใหม่</p>
+                  <div>
+                    <input
+                      type="text"
+                      required
+                      value={taskTitle}
+                      onChange={(e) => setTaskTitle(e.target.value)}
+                      placeholder="ชื่องานย่อย เช่น ตัดต่อคลิปความยาว 60 วินาที..."
+                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">ประเภทงาน</label>
+                      <select
+                        value={taskType}
+                        onChange={(e) => setTaskType(e.target.value)}
+                        className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
+                      >
+                        <option value="Scripting">Scripting (เขียนบท)</option>
+                        <option value="Filming">Filming (ถ่ายทำ)</option>
+                        <option value="Editing">Editing (ตัดต่อ)</option>
+                        <option value="Graphic Design">Graphic Design (ทำภาพ/ปก)</option>
+                        <option value="Sound Design">Sound Design (ทำเสียง)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">ผู้รับผิดชอบ</label>
+                      <select
+                        value={taskAssignee}
+                        onChange={(e) => setTaskAssignee(e.target.value)}
+                        className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
+                      >
+                        <option value="">-- ยังไม่ระบุ --</option>
+                        {users.map((u) => {
+                          const uid = u._id || u.id;
+                          const uName = u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : (u.name || u.username);
+                          return (
+                            <option key={uid} value={uid}>
+                              {uName} ({u.role})
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">กำหนดส่ง</label>
+                      <input
+                        type="date"
+                        value={taskDueDate}
+                        onChange={(e) => setTaskDueDate(e.target.value)}
+                        className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">บันทึกเพิ่มเติม</label>
+                      <input
+                        type="text"
+                        value={taskNotes}
+                        onChange={(e) => setTaskNotes(e.target.value)}
+                        placeholder="ระบุข้อกำหนดเพิ่มเติม..."
+                        className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsAssignTaskOpen(false)}
+                      className="px-2.5 py-1 text-xs text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 cursor-pointer"
+                    >
+                      ยกเลิก
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={subtaskSubmitting}
+                      className="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-xs cursor-pointer disabled:opacity-50"
+                    >
+                      {subtaskSubmitting ? 'กำลังมอบหมาย...' : 'บันทึกงานย่อย'}
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Subtask Items List */}
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                {(() => {
+                  const contentTasks = tasks.filter((t) => {
+                    const cId = t.contentId?._id || t.contentId?.id || t.contentId;
+                    return String(cId) === String(selectedContent.id);
+                  });
+
+                  if (contentTasks.length === 0) {
+                    return (
+                      <p className="text-xs text-slate-400 italic py-2 text-center bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                        ยังไม่มีงานย่อยในคอนเทนต์นี้ (คลิก &quot;+ มอบหมายงานย่อย&quot; เพื่อเริ่มแจกจ่ายงาน)
+                      </p>
+                    );
+                  }
+
+                  return contentTasks.map((t) => {
+                    const tid = t._id || t.id;
+                    const assignee = t.assignedTo || {};
+                    const assigneeName = assignee.firstName
+                      ? `${assignee.firstName} ${assignee.lastName || ''}`.trim()
+                      : (assignee.username || 'ยังไม่ระบุ');
+
+                    return (
+                      <div
+                        key={tid}
+                        className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 shrink-0">
+                            {t.taskType || 'Task'}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="font-semibold text-slate-800 truncate">{t.title}</p>
+                            <p className="text-[10px] text-slate-400">
+                              ผู้รับผิดชอบ: {assigneeName} • กำหนดส่ง: {t.dueDate ? t.dueDate.split('T')[0] : 'เร็วๆ นี้'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleToggleSubtaskStatus(tid, t.status)}
+                          title="คลิกเพื่อสลับสถานะ (TODO -> IN_PROGRESS -> REVIEW -> DONE)"
+                          className={`shrink-0 ml-2 px-2.5 py-1 rounded-full text-[11px] font-semibold cursor-pointer border transition hover:scale-105 active:scale-95 ${
+                            t.status === 'DONE'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : t.status === 'REVIEW'
+                              ? 'bg-amber-50 text-amber-700 border-amber-200'
+                              : t.status === 'IN_PROGRESS'
+                              ? 'bg-blue-50 text-blue-700 border-blue-200'
+                              : 'bg-slate-100 text-slate-700 border-slate-200'
+                          }`}
+                        >
+                          {t.status} ⟳
+                        </button>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </div>
 
