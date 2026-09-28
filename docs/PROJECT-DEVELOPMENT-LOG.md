@@ -1196,6 +1196,62 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 | **Team Management** | สร้างทีมใหม่ใน `/users` $\rightarrow$ บันทึกลง MongoDB | ทีมใหม่ปรากฏในการ์ดและสมาชิกถูกผูกโยง | ข้อมูลบันทึกและแสดงผลทันที | **PASS ✅** |
 | **Subtask Assignment** | มอบหมายงานย่อยใน modal รายละเอียด Content | งานย่อยถูกสร้างและเชื่อมโยงกับ ContentId | งานย่อยแสดงในลิสต์และสลับสถานะได้ | **PASS ✅** |
 
+---
+
+### Phase 24: การปรับปรุงระบบ Admin Web สู่การใช้งานข้อมูลจริง 100% (Real Database Integration, Dynamic Audit Logs, All-Tasks Management & Live Monitoring)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 28 กันยายน 2026
+
+**เป้าหมายการดำเนินงาน**: ยกระดับระบบเว็บผู้ดูแลระบบ (`master/admin-web`) ให้ทำงานด้วยข้อมูลจริงจากฐานข้อมูล MongoDB 100% ทุกหน้าจอ ขจัดข้อมูลจำลอง (Mock Data) และสถานะชั่วคราว (Ephemeral React State) ที่หายไปเมื่อรีเฟรชหน้าจอ พร้อมเชื่อมโยง Audit Logs และ WebSocket Real-time ให้สอดคล้องกับขอบเขตความต้องการเชิงฟังก์ชันและไม่เชิงฟังก์ชัน:
+
+1. **การพัฒนาระบบ Backend System Audit Logs (`master/backend`)**:
+   - ขยาย Schema ใน [`TeamActivity.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/database/models/TeamActivity.js):
+     - ปรับ `teamId` และ `actor` ให้เป็น Optional เพื่อให้สามารถบันทึกกิจกรรมระดับระบบ (System-wide Events) ได้ เช่น การลงทะเบียน, การล็อกอิน, การเพิ่มผู้ใช้ระดับแอดมิน
+     - ขยาย `actionType` Enum รองรับ: `'TASK_DELETED'`, `'CONTENT_UPDATED'`, `'CONTENT_DELETED'`, `'USER_LOGIN'`, `'USER_CREATED'`, `'USER_UPDATED'`, `'USER_DELETED'`, `'SETTINGS_UPDATED'`
+   - สร้างโมดูล Logs ใหม่:
+     - [`logs.controller.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/logs/logs.controller.js): ฟังก์ชัน `getAllLogs` (ค้นหา, กรองหมวดหมู่, ดึงข้อมูลจาก MongoDB พร้อม populate ข้อมูลผู้ใช้และทีม), `clearLogs` (ล้างประวัติใน MongoDB และกระจาย Broadcast), `createLog`
+     - [`logs.routes.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/logs/logs.routes.js): เส้นทาง `GET /api/logs`, `DELETE /api/logs`, `POST /api/logs` มีการตรวจสิทธิ์ JWT
+     - ลงทะเบียนใน [`app.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/app.js): `app.use('/api/logs', logsRoutes);`
+   - เพิ่มการนับข้อมูลจริงในฐานข้อมูลใน Endpoint `GET /api/health`: ส่งคืน `usersCount`, `contentsCount`, `tasksCount`, และ `logsCount` แบบเรียลไทม์
+   - ผูกระบบ Audit Logging อัตโนมัติในทุก Controller:
+     - [`auth.controller.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/auth/auth.controller.js): บันทึก `USER_LOGIN` เมื่อผู้ใช้เข้าสู่ระบบ และ `USER_CREATED` เมื่อมีการลงทะเบียน
+     - [`users.controller.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/users/users.controller.js): บันทึก `USER_CREATED`, `USER_UPDATED`, และ `USER_DELETED`
+     - [`contents.controller.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/contents/contents.controller.js): เพิ่ม `updateContent` (`PATCH /api/contents/:id`), บันทึก `CONTENT_UPDATED` และ `CONTENT_DELETED`
+     - [`tasks.controller.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/tasks/tasks.controller.js): บันทึก `TASK_DELETED`
+
+2. **การอัปเกรดหน้า System Logs ให้ใช้งานจริง 100% ([`logs/page.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/app/logs/page.jsx))**:
+   - เชื่อมต่อ `apiFetch('/logs')` ดึงประวัติกิจกรรมจริงจากฐานข้อมูล MongoDB
+   - ติดตามกิจกรรมแบบเรียลไทม์ผ่าน WebSocket (`ACTIVITY_CREATED`, `LOGS_CLEARED`)
+   - การ์ดสรุปสถิติ 4 ด้าน: บันทึกทั้งหมด, คอนเทนต์, งาน, ผู้ใช้งานและล็อกอิน
+   - ตัวกรองประเภทกิจกรรม: ทั้งหมด, Content, Tasks, Users & Auth, System
+   - ระบบ Export CSV รองรับภาษาไทยสมบูรณ์ด้วย UTF-8 BOM (`\uFEFF`)
+   - ปุ่ม "ล้าง Logs" สั่งลบข้อมูลออกจาก MongoDB จริง พร้อมกล่องยืนยันความปลอดภัย
+
+3. **การอัปเกรดหน้า Tasks Management สู่ศูนย์กลางงานจริง ([`tasks/page.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/app/tasks/page.jsx))**:
+   - ออกแบบระบบ 2 แท็บ (Tabs Navigation):
+     - **แท็บ 1: งานทั้งหมดในระบบ (All Production Tasks)**: ดึงข้อมูลจริงจาก `/api/tasks`, แสดงชื่องาน, คอนเทนต์แม่, ผู้รับผิดชอบ, กำหนดส่ง, เมนูดรอปดาวน์เปลี่ยนสถานะแบบ Optimistic Update ซิงค์ DB, ปุ่มลบงาน, และ Modal "+ มอบหมายงานใหม่" บันทึกลงฐานข้อมูล MongoDB
+     - **แท็บ 2: ประเภทงานมาตรฐาน (Task Types Master)**: กำหนดหมวดหมู่งานผลิตมาตรฐาน พร้อมจัดเก็บลงใน `localStorage` (`admin_master_task_types`) ทำให้การแก้ไข/เพิ่มประเภทงานไม่สูญหายเมื่อรีเฟรช
+
+4. **การอัปเกรดหน้า Settings & Monitor ([`settings/page.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/app/settings/page.jsx))**:
+   - จัดเก็บข้อมูลการตั้งค่าสตูดิโอและนโยบายลงใน `localStorage` (`admin_cms_settings_v2`) อย่างถาวร
+   - ทุกครั้งที่กดบันทึก จะสร้าง Audit Log รายการ `SETTINGS_UPDATED` ไปยัง `/api/logs`
+   - แสดงสถิติข้อมูลจริงในฐานข้อมูล (Live MongoDB Collections): จำนวนผู้ใช้งาน, จำนวนคอนเทนต์, จำนวนงานในระบบ, และจำนวนประวัติ Logs จาก `/api/health`
+   - ระบบ Ping ตรวจสอบ Latency และสถานะของ API, MongoDB, และ WebSocket
+
+5. **การเพิ่มการแก้ไขข้อมูลพื้นฐานของ Content ([`contents/page.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/app/contents/page.jsx))**:
+   - เพิ่มปุ่ม "แก้ไขข้อมูล Content" ในเมนูดรอปดาวน์ของแต่ละแถว
+   - สร้าง Modal แก้ไขข้อมูลพื้นฐาน (ชื่อ Content, แพลตฟอร์ม, กำหนดส่ง, หมวดหมู่, คำอธิบาย) บันทึกผ่าน `PATCH /api/contents/:id`
+   - รองรับการรับค่า Query Parameter `?search=...` จาก Topbar โดยอัตโนมัติ
+
+6. **การอัปเกรด Topbar การแจ้งเตือนและการค้นหาด่วน ([`Topbar.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/components/Topbar.jsx))**:
+   - กล่องแจ้งเตือนดึงรายการกิจกรรมล่าสุดจาก `/api/logs?limit=6` และแทรกกิจกรรมใหม่แบบเรียลไทม์เมื่อมีอีเวนต์ `ACTIVITY_CREATED`
+   - ช่องค้นหาด่วนรองรับการกด Enter เพื่อนําทางไปยัง `/contents?search=...`
+
+7. **การตรวจสอบคุณภาพ (Quality Verification)**:
+   - ตรวจสอบไวยากรณ์ Backend ทุกไฟล์: `node -c` $\rightarrow$ **0 syntax errors**
+   - รัน ESLint บน Next.js 14: `npm run lint` $\rightarrow$ **0 errors, 0 warnings**
+   - คอมไพล์โปรดักชัน: `npm run build` $\rightarrow$ **Compiled successfully, 100% Static & Dynamic routes validated**
+
+
 
 
 

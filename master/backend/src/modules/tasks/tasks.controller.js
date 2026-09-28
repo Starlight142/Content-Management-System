@@ -202,6 +202,22 @@ const deleteTask = async (req, res) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
+    try {
+      const actorId = req.user?.userId || req.user?.id;
+      const actorName = req.user?.firstName || req.user?.username || 'ผู้ดูแลระบบ';
+      await TeamActivity.create({
+        teamId: task.teamId || null,
+        actor: actorId || null,
+        actionType: 'TASK_DELETED',
+        title: `${actorName} ลบงาน "${task.title}"`,
+        entityId: task._id,
+        entityModel: 'Task',
+      });
+      broadcast('ACTIVITY_CREATED', { teamId: task.teamId });
+    } catch (logErr) {
+      console.warn('Logging deleteTask failed:', logErr.message);
+    }
+
     broadcast('TASK_DELETED', { taskId: id });
 
     res.status(200).json({ message: 'Task deleted successfully' });

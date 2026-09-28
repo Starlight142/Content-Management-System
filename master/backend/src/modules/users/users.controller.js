@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const User = require('../../database/models/User');
+const TeamActivity = require('../../database/models/TeamActivity');
 const { notifyUserUpdated, broadcast, getOnlineUserIds } = require('../../services/presence.service');
 
 // @route GET /api/users
@@ -109,6 +110,23 @@ const createUser = async (req, res) => {
     const safeUser = newUser.toObject();
     delete safeUser.passwordHash;
 
+    try {
+      const actorId = req.user?.userId || req.user?.id;
+      const actorName = req.user?.firstName || req.user?.username || 'ผู้ดูแลระบบ';
+      await TeamActivity.create({
+        teamId: null,
+        actor: actorId || null,
+        actionType: 'USER_CREATED',
+        title: `${actorName} เพิ่มผู้ใช้งานใหม่: ${safeUser.username}`,
+        details: `อีเมล: ${safeUser.email}, บทบาท: ${safeUser.role}`,
+        entityId: safeUser._id,
+        entityModel: 'User',
+      });
+      broadcast('ACTIVITY_CREATED', {});
+    } catch (logErr) {
+      console.warn('Logging createUser failed:', logErr.message);
+    }
+
     broadcast('USER_CREATED', { user: safeUser });
 
     res.status(201).json({ message: 'User created successfully', user: safeUser });
@@ -135,6 +153,23 @@ const updateUserRole = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    try {
+      const actorId = req.user?.userId || req.user?.id;
+      const actorName = req.user?.firstName || req.user?.username || 'ผู้ดูแลระบบ';
+      await TeamActivity.create({
+        teamId: null,
+        actor: actorId || null,
+        actionType: 'USER_UPDATED',
+        title: `${actorName} ปรับบทบาทของ ${user.username} เป็น ${user.role}`,
+        details: `อีเมล: ${user.email}`,
+        entityId: user._id,
+        entityModel: 'User',
+      });
+      broadcast('ACTIVITY_CREATED', {});
+    } catch (logErr) {
+      console.warn('Logging updateUserRole failed:', logErr.message);
+    }
+
     notifyUserUpdated(user);
 
     res.status(200).json({ message: 'Role updated successfully', user });
@@ -153,6 +188,23 @@ const deleteUser = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    try {
+      const actorId = req.user?.userId || req.user?.id;
+      const actorName = req.user?.firstName || req.user?.username || 'ผู้ดูแลระบบ';
+      await TeamActivity.create({
+        teamId: null,
+        actor: actorId || null,
+        actionType: 'USER_DELETED',
+        title: `${actorName} ลบผู้ใช้งาน ${user.username} ออกจากระบบ`,
+        details: `อีเมล: ${user.email}`,
+        entityId: user._id,
+        entityModel: 'User',
+      });
+      broadcast('ACTIVITY_CREATED', {});
+    } catch (logErr) {
+      console.warn('Logging deleteUser failed:', logErr.message);
     }
 
     broadcast('USER_DELETED', { userId: String(id) });

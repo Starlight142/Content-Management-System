@@ -8,6 +8,7 @@ router.use(verifyToken);
 router.post('/', contentsController.createContent);
 router.get('/', contentsController.getAllContents);
 router.get('/:id', contentsController.getContentById);
+router.patch('/:id', contentsController.updateContent);
 
 // Status and Review Workflows (Admin / Manager)
 router.patch('/:id/status', verifyRole(['ADMIN', 'MANAGER']), contentsController.updateContentStatus);

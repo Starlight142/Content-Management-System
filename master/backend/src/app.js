@@ -7,6 +7,7 @@ const teamsRoutes = require('./modules/teams/teams.routes');
 const ideasRoutes = require('./modules/ideas/ideas.routes');
 const tasksRoutes = require('./modules/tasks/tasks.routes');
 const legalRoutes = require('./modules/legal/legal.routes');
+const logsRoutes = require('./modules/logs/logs.routes');
 
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
@@ -22,8 +23,29 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Detailed Health & System Status Route (Admin Req 5)
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
   const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  let metrics = { usersCount: 0, contentsCount: 0, tasksCount: 0, logsCount: 0 };
+
+  if (dbStatus === 'connected') {
+    try {
+      const [users, contents, tasks, logs] = await Promise.all([
+        mongoose.model('User').countDocuments().catch(() => 0),
+        mongoose.model('Content').countDocuments().catch(() => 0),
+        mongoose.model('Task').countDocuments().catch(() => 0),
+        mongoose.model('TeamActivity').countDocuments().catch(() => 0),
+      ]);
+      metrics = {
+        usersCount: users,
+        contentsCount: contents,
+        tasksCount: tasks,
+        logsCount: logs,
+      };
+    } catch {
+      // Standby
+    }
+  }
+
   res.status(200).json({ 
     status: 'healthy', 
     message: 'Content Production Management System API is running',
@@ -38,6 +60,7 @@ app.get('/api/health', (req, res) => {
       database: dbStatus,
       webSocket: 'online',
     },
+    metrics,
     environment: process.env.NODE_ENV || 'development',
   });
 });
@@ -50,6 +73,7 @@ app.use('/api/teams', teamsRoutes);
 app.use('/api/ideas', ideasRoutes);
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/legal', legalRoutes);
+app.use('/api/logs', logsRoutes);
 
 const http = require('http');
 const { initPresenceServer } = require('./services/presence.service');

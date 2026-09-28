@@ -19,6 +19,7 @@ import {
   RefreshCw,
   Radio,
   CheckSquare,
+  Edit2,
 } from 'lucide-react';
 import { presenceClient, apiFetch } from '../../services/presenceClient';
 
@@ -51,7 +52,13 @@ export default function ContentsPage() {
   const [isWsConnected, setIsWsConnected] = useState(false);
 
   // States for search and filter
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('search') || '';
+    }
+    return '';
+  });
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
 
@@ -75,6 +82,15 @@ export default function ContentsPage() {
   const [taskDueDate, setTaskDueDate] = useState('2026-10-05');
   const [taskNotes, setTaskNotes] = useState('');
   const [subtaskSubmitting, setSubtaskSubmitting] = useState(false);
+
+  // Edit Content Modal State
+  const [editingContent, setEditingContent] = useState(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editPlatform, setEditPlatform] = useState('TikTok');
+  const [editDate, setEditDate] = useState('');
+  const [editCategory, setEditCategory] = useState('General');
+  const [editDescription, setEditDescription] = useState('');
+  const [editSubmitting, setEditSubmitting] = useState(false);
 
   // Format backend content document to table view model
   const formatContentItem = (c) => ({
@@ -168,6 +184,49 @@ export default function ContentsPage() {
       presenceClient.off('TASK_DELETED', handleContentEvent);
     };
   }, [refreshContents]);
+
+  const handleOpenEditModal = (content) => {
+    setActiveMenuId(null);
+    setEditingContent(content);
+    setEditTitle(content.title || '');
+    setEditPlatform(content.platform || 'TikTok');
+    setEditDate(content.date || '');
+    setEditCategory(content.category || 'General');
+    setEditDescription(content.description || '');
+  };
+
+  const handleUpdateContent = async (e) => {
+    e.preventDefault();
+    if (!editTitle.trim() || !editingContent) return;
+
+    try {
+      setEditSubmitting(true);
+      const res = await apiFetch(`/contents/${editingContent.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          title: editTitle.trim(),
+          platform: editPlatform,
+          dueDate: editDate,
+          category: editCategory,
+          description: editDescription,
+        }),
+      });
+
+      if (res?.content) {
+        const formatted = formatContentItem(res.content);
+        setContents((prev) => prev.map((c) => (c.id === editingContent.id ? formatted : c)));
+        if (selectedContent?.id === editingContent.id) {
+          setSelectedContent(formatted);
+        }
+      }
+      setEditingContent(null);
+      refreshContents();
+    } catch (err) {
+      alert(`ไม่สามารถแก้ไขคอนเทนต์ได้: ${err.message}`);
+    } finally {
+      setEditSubmitting(false);
+    }
+  };
 
   // Status visual mapping with clean, high-contrast colors
   const getStatusBadge = (status) => {
@@ -567,10 +626,17 @@ export default function ContentsPage() {
                             ))}
                             <div className="border-t border-slate-100 my-1"></div>
                             <button
+                              onClick={() => handleOpenEditModal(item)}
+                              className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer"
+                            >
+                              <Edit2 size={13} className="text-blue-600" />
+                              <span>แก้ไขข้อมูล Content</span>
+                            </button>
+                            <button
                               onClick={() => handleDeleteContent(item.id)}
                               className="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
                             >
-                              <Trash2 size={14} />
+                              <Trash2 size={13} />
                               <span>ลบ Content นี้</span>
                             </button>
                           </div>
@@ -933,6 +999,104 @@ export default function ContentsPage() {
                 >
                   {submitting && <RefreshCw size={14} className="animate-spin" />}
                   <span>{submitting ? 'กำลังบันทึก...' : 'บันทึก'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Edit Content */}
+      {editingContent && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex justify-between items-center">
+              <div>
+                <span className="text-xs font-semibold text-blue-600 uppercase">แก้ไขข้อมูลพื้นฐาน</span>
+                <h2 className="text-lg font-bold text-slate-900">แก้ไข Content #{editingContent.id}</h2>
+              </div>
+              <button 
+                onClick={() => setEditingContent(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateContent} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">ชื่อ Content *</label>
+                <input 
+                  type="text" 
+                  required
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">แพลตฟอร์ม</label>
+                  <select 
+                    value={editPlatform}
+                    onChange={(e) => setEditPlatform(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 bg-white"
+                  >
+                    <option value="TikTok">TikTok</option>
+                    <option value="YouTube">YouTube</option>
+                    <option value="Instagram">Instagram</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">กำหนดส่ง</label>
+                  <input 
+                    type="date" 
+                    value={editDate}
+                    onChange={(e) => setEditDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">หมวดหมู่</label>
+                <input 
+                  type="text" 
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value)}
+                  placeholder="เช่น Tech, Lifestyle, Gaming..."
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">รายละเอียด</label>
+                <textarea 
+                  rows={3}
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 resize-none"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                <button 
+                  type="button"
+                  onClick={() => setEditingContent(null)}
+                  disabled={editSubmitting}
+                  className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-200 cursor-pointer"
+                >
+                  ยกเลิก
+                </button>
+                <button 
+                  type="submit"
+                  disabled={editSubmitting}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 cursor-pointer shadow-xs disabled:opacity-50"
+                >
+                  {editSubmitting && <RefreshCw size={14} className="animate-spin" />}
+                  <span>{editSubmitting ? 'กำลังบันทึก...' : 'บันทึกการแก้ไข'}</span>
                 </button>
               </div>
             </form>

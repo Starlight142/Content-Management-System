@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../../database/models/User');
+const TeamActivity = require('../../database/models/TeamActivity');
+const { broadcast } = require('../../services/presence.service');
 
 // @route POST /api/auth/register
 const register = async (req, res) => {
@@ -29,6 +31,21 @@ const register = async (req, res) => {
       lastName,
       role: role || 'MEMBER',
     });
+
+    try {
+      await TeamActivity.create({
+        teamId: null,
+        actor: newUser._id,
+        actionType: 'USER_CREATED',
+        title: `ผู้ใช้งานใหม่ลงทะเบียน: ${newUser.username} (${newUser.firstName || ''} ${newUser.lastName || ''})`.trim(),
+        details: `อีเมล: ${newUser.email}, บทบาท: ${newUser.role}`,
+        entityId: newUser._id,
+        entityModel: 'User',
+      });
+      broadcast('ACTIVITY_CREATED', {});
+    } catch (logErr) {
+      console.warn('Logging user registration failed:', logErr.message);
+    }
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -78,6 +95,21 @@ const login = async (req, res) => {
       process.env.JWT_SECRET || 'supersecretkey',
       { expiresIn: '1d' }
     );
+
+    try {
+      await TeamActivity.create({
+        teamId: user.teamId || null,
+        actor: user._id,
+        actionType: 'USER_LOGIN',
+        title: `${user.firstName || user.username} เข้าสู่ระบบสำเร็จ`,
+        details: `อีเมล: ${user.email} (บทบาท: ${user.role})`,
+        entityId: user._id,
+        entityModel: 'User',
+      });
+      broadcast('ACTIVITY_CREATED', {});
+    } catch (logErr) {
+      console.warn('Logging login failed:', logErr.message);
+    }
 
     res.status(200).json({
       message: 'Logged in successfully',

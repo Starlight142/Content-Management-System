@@ -357,6 +357,53 @@ const addContentVersion = async (req, res) => {
   }
 };
 
+// @route PATCH /api/contents/:id
+// @access Private
+const updateContent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, category, platform, dueDate, status } = req.body;
+    const updateData = {};
+    if (title !== undefined) updateData.title = title;
+    if (description !== undefined) updateData.description = description;
+    if (category !== undefined) updateData.category = category;
+    if (platform !== undefined) updateData.platform = platform;
+    if (dueDate !== undefined) updateData.dueDate = dueDate;
+    if (status !== undefined) updateData.status = status;
+
+    const content = await Content.findByIdAndUpdate(id, updateData, { new: true })
+      .populate('createdBy', 'username email firstName lastName');
+
+    if (!content) {
+      return res.status(404).json({ message: 'Content not found' });
+    }
+
+    try {
+      const actorId = req.user?.userId || req.user?.id;
+      const actorName = req.user?.firstName || req.user?.username || 'ผู้ใช้';
+      await TeamActivity.create({
+        teamId: content.teamId || null,
+        actor: actorId || null,
+        actionType: 'CONTENT_UPDATED',
+        title: `${actorName} แก้ไขรายละเอียดคอนเทนต์: "${content.title}"`,
+        details: `หมวดหมู่: ${content.category || '-'}, แพลตฟอร์ม: ${content.platform || '-'}`,
+        entityId: content._id,
+        entityModel: 'Content',
+      });
+      broadcast('ACTIVITY_CREATED', { teamId: content.teamId });
+    } catch (logErr) {
+      console.warn('Logging updateContent failed:', logErr.message);
+    }
+
+    broadcast('CONTENT_UPDATED', { content });
+
+    res.status(200).json({ message: 'Content updated successfully', content });
+  } catch (error) {
+    console.error('updateContent error:', error);
+    res.status(500).json({ message: 'Server error updating content', error: error.message });
+  }
+};
+
 // @route DELETE /api/contents/:id
 // @access Private (Admin/Manager)
 const deleteContent = async (req, res) => {
@@ -366,6 +413,22 @@ const deleteContent = async (req, res) => {
 
     if (!content) {
       return res.status(404).json({ message: 'Content not found' });
+    }
+
+    try {
+      const actorId = req.user?.userId || req.user?.id;
+      const actorName = req.user?.firstName || req.user?.username || 'ผู้ดูแลระบบ';
+      await TeamActivity.create({
+        teamId: content.teamId || null,
+        actor: actorId || null,
+        actionType: 'CONTENT_DELETED',
+        title: `${actorName} ลบคอนเทนต์: "${content.title}"`,
+        entityId: content._id,
+        entityModel: 'Content',
+      });
+      broadcast('ACTIVITY_CREATED', { teamId: content.teamId });
+    } catch (logErr) {
+      console.warn('Logging deleteContent failed:', logErr.message);
     }
 
     broadcast('CONTENT_DELETED', { contentId: id });
@@ -408,6 +471,7 @@ module.exports = {
   createContent,
   getAllContents,
   getContentById,
+  updateContent,
   updateContentStatus,
   updateLegalChecklist,
   submitReview,
