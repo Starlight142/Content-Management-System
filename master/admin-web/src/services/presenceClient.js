@@ -163,10 +163,26 @@ export const presenceClient = new PresenceClient();
  */
 export async function apiFetch(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
+  const authHeader = {};
+  if (typeof window !== 'undefined') {
+    try {
+      const session = localStorage.getItem('admin_session');
+      if (session) {
+        const parsed = JSON.parse(session);
+        if (parsed.token) {
+          authHeader['Authorization'] = `Bearer ${parsed.token}`;
+        }
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
   const headers = {
     'Content-Type': 'application/json',
     'x-admin-key': 'cms-master-2026',
     'x-admin-portal': 'true',
+    ...authHeader,
     ...options.headers,
   };
 
