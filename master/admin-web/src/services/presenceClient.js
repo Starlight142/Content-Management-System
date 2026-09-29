@@ -166,7 +166,7 @@ export async function apiFetch(endpoint, options = {}) {
   const authHeader = {};
   if (typeof window !== 'undefined') {
     try {
-      const session = localStorage.getItem('admin_session');
+      const session = sessionStorage.getItem('admin_session') || localStorage.getItem('admin_session');
       if (session) {
         const parsed = JSON.parse(session);
         if (parsed.token) {

@@ -1,6 +1,6 @@
 # 📋 เอกสารสรุปบริบทและสถานะโปรเจกต์ (Project Handover Document)
 
-> 🕒 **ปรับปรุงล่าสุด:** 28 กันยายน 2026 (Phase 25)  
+> 🕒 **ปรับปรุงล่าสุด:** 29 กันยายน 2026 (Phase 26)  
 > 📁 **Repository Path:** `d:\VsCode\Project\Content-Management-System`  
 > 🌿 **Git Branch:** `main`
 
@@ -21,7 +21,7 @@
    - **เทคโนโลยี:** React Native, Expo SDK 54, React Navigation (Native Stack & Bottom Tabs)
    - **พอร์ต / Tool:** Expo Metro Bundler (Port `8081`)
 4. **`docs/` (เอกสารกำกับระบบและคู่มือวิชาการ)**
-   - `docs/PROJECT-DEVELOPMENT-LOG.md`: บันทึกประวัติการพัฒนาและแก้ไขระบบอย่างละเอียดทุกเฟส (Phase 1 ถึง Phase 24)
+   - `docs/PROJECT-DEVELOPMENT-LOG.md`: บันทึกประวัติการพัฒนาและแก้ไขระบบอย่างละเอียดทุกเฟส (Phase 1 ถึง Phase 26)
    - `docs/academic/`: เอกสารวิชาการสถาปัตยกรรมระบบ 8 ฉบับ (Use Case, Activity, Sequence, Class, State, ER, Architecture Diagrams และ Figma Design Tokens)
 
 ---
@@ -29,7 +29,7 @@
 ## 2. ขอบเขตความต้องการของระบบ (System Scope & Requirements)
 
 ### 2.1 ผู้ดูแลระบบ (Admin) บน Web Application (ครบ 100%):
-1. **เข้าสู่ระบบ:** ยืนยันตัวตนด้วย JWT, จัดเก็บ Session ปลอดภัย, มี Route Guard และ Master Key Bypass (`x-admin-key: cms-master-2026`) สำหรับแอดมิน
+1. **เข้าสู่ระบบ & Route Guard (เริ่มต้นเว็บที่หน้า Login ทุกครั้ง):** ยืนยันตัวตนด้วย JWT, บังคับเปิดหน้า Login (`/login`) เสมอเมื่อเริ่มต้นเข้าสู่เว็บไซต์ใหม่หรือเปิดเบราว์เซอร์ใหม่ ผ่าน Next.js Middleware (HTTP 307 Redirect) ร่วมกับ AdminShell Auth Guard, จัดเก็บ Session ในระดับ Session Cookie และ `sessionStorage` เพื่อความปลอดภัยสูงสุด พร้อมปุ่มกรอกข้อมูลทดสอบด่วน (`admin@studio.com`) และ Master Key Bypass (`x-admin-key: cms-master-2026`)
 2. **จัดการข้อมูลผู้ใช้งานและทีม:** ดูรายชื่อผู้ใช้งานทั้งหมด, เพิ่มผู้ใช้ใหม่, ปรับเปลี่ยนบทบาท (Role: `ADMIN`, `MANAGER`, `MEMBER`), สร้างทีม และจัดการเพิ่ม/ย้ายสมาชิกในทีม
 3. **จัดการข้อมูลพื้นฐานของ Content:** ดูคลังคอนเทนต์ทั้งหมด, สร้างคอนเทนต์ใหม่, ลบคอนเทนต์, และแก้ไขข้อมูลพื้นฐาน (ชื่อ Content, แพลตฟอร์ม, กำหนดส่ง, หมวดหมู่, รายละเอียด) บันทึกลงฐานข้อมูล MongoDB จริงผ่าน `PATCH /api/contents/:id`
 4. **จัดการข้อมูลประเภท Task:**

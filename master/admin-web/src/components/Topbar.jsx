@@ -219,8 +219,10 @@ const Topbar = () => {
                 onClick={() => {
                   setIsSignoutModalOpen(false);
                   if (typeof window !== 'undefined') {
+                    document.cookie = 'admin_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                    sessionStorage.removeItem('admin_session');
                     localStorage.removeItem('admin_session');
-                    router.push('/login');
+                    router.replace('/login');
                   }
                 }}
                 className="px-4 py-2 bg-rose-600 text-white rounded-lg text-xs font-semibold hover:bg-rose-700 cursor-pointer shadow-xs"

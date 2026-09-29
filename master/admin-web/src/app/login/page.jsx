@@ -19,12 +19,14 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
+      let token = null;
       // Try backend authentication
       try {
-        await apiFetch('/auth/login', {
+        const loginRes = await apiFetch('/auth/login', {
           method: 'POST',
           body: JSON.stringify({ email, password }),
         });
+        token = loginRes?.token;
       } catch {
         // Fallback for standalone demo: check credentials
         if (email !== 'admin@studio.com') {
@@ -34,16 +36,19 @@ export default function AdminLoginPage() {
 
       setSuccess(true);
       if (typeof window !== 'undefined') {
-        localStorage.setItem('admin_session', JSON.stringify({
+        document.cookie = 'admin_session=active; path=/; SameSite=Lax';
+        sessionStorage.setItem('admin_session', JSON.stringify({
           email,
           role: 'ADMIN',
+          token,
           loginAt: new Date().toISOString(),
         }));
+        localStorage.removeItem('admin_session');
       }
 
       setTimeout(() => {
-        router.push('/');
-      }, 600);
+        router.replace('/');
+      }, 500);
     } catch (err) {
       setError(err.message || 'เข้าสู่ระบบล้มเหลว กรุณาตรวจสอบข้อมูล');
     } finally {

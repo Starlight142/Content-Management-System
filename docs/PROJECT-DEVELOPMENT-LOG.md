@@ -2,7 +2,7 @@
 > **โครงการ:** Draftly — Content Production Management System (ระบบจัดการกระบวนการผลิตสื่อครบวงจร)  
 > **เส้นทางโปรเจกต์:** `d:\Content-Management-System`  
 > **ผู้พัฒนา:** คุณ (Developer) & Antigravity (Senior AI Mentor / Pair Programmer)  
-> **อัปเดตล่าสุด:** 23 กันยายน 2026 เวลา 12:45 น.  
+> **อัปเดตล่าสุด:** 29 กันยายน 2026 เวลา 15:00 น.  
 
 ---
 
@@ -29,7 +29,13 @@
 | **23 ก.ย. 2026 (10:30 - 11:20 น.)** | [Phase 17: การยกระดับ UI/UX สู่ "Modern + Simple + Professional" (Visual Hierarchy & Emoji Clean)](#phase-17-การยกระดับ-uiux-สู่-modern--simple--professional-visual-hierarchy--semantic-status-tokens) | สำเร็จ ✅ |
 | **23 ก.ย. 2026 (11:35 - 12:05 น.)** | [Phase 18: การเพิ่มข้อมูลจำลองในฐานข้อมูล, ระบบตอบกลับการแก้ไขงาน, การแก้ปัญหาปุ่มส่งแก้ไข, และการลบหน้ากฎหมาย](#phase-18-การเพิ่มข้อมูลจำลองในฐานข้อมูล-ระบบตอบกลับการแก้ไขงาน-การแก้ปัญหาปุ่มส่งแก้ไข-และการลบหน้ากฎหมาย-database-seeding-revision-reply-system--screen-simplification) | สำเร็จ ✅ |
 | **23 ก.ย. 2026 (12:15 - 12:45 น.)** | [Phase 19: การปรับปรุงระบบส่วนอื่นๆ ให้สอดคล้องกันทั่วทั้งระบบ (Academic Docs 01-07, Admin Web, Tasks Revision Flow & Root README)](#phase-19-การปรับปรุงระบบส่วนอื่นๆ-ให้สอดคล้องกันทั่วทั้งระบบ-academic-architecture-docs-01-07-admin-web-tasks-revision-flow--root-readme) | สำเร็จ ✅ |
-| **23 ก.ย. 2026 (12:45 น.)** | [แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)](#แผนที่ไฟล์และดัชนีเอกสารทั้งหมด) | ปัจจุบัน 📍 |
+| **24 ก.ย. 2026** | [Phase 20: การแก้ไขแถบนำทางด้านล่างทับซ้อนกับระบบควบคุมเครื่อง (Android Gesture Navigation Safe Area Polish)](#phase-20-การแก้ไขแถบนำทางด้านล่างทับซ้อนกับระบบควบคุมเครื่อง-android-gesture-navigation-safe-area-polish) | สำเร็จ ✅ |
+| **25 ก.ย. 2026** | [Phase 21: ระบบอัปเดตสถานะ Online แบบ Real-Time และซิงค์ฐานข้อมูลสดทั้ง Web และ App (Real-Time Presence & Full Database Sync)](#phase-21-ระบบอัปเดตสถานะ-online-แบบ-real-time-และซิงค์ฐานข้อมูลสดทั้ง-web-และ-app-real-time-presence--full-database-sync) | สำเร็จ ✅ |
+| **26 ก.ย. 2026** | [Phase 22: สถาปัตยกรรม Real-time Pipeline Synchronization เต็มรูปแบบและการติดตั้งแอปพลิเคชันลงบนเครื่องจริง (Xiaomi 13 Pro Deployment)](#phase-22-สถาปัตยกรรม-real-time-pipeline-synchronization-เต็มรูปแบบและการติดตั้งแอปพลิเคชันลงบนเครื่องจริง-xiaomi-13-pro-deployment) | สำเร็จ ✅ |
+| **27 ก.ย. 2026** | [Phase 23: การบรรลุขอบเขตระบบวิชาการครบถ้วน 100% ข้าม Web และ Mobile (Complete Academic Scope Alignment 1.3.1 & 1.3.2)](#phase-23-การบรรลุขอบเขตระบบวิชาการครบถ้วน-100-ข้าม-web-และ-mobile-complete-academic-scope-alignment-131--132) | สำเร็จ ✅ |
+| **28 ก.ย. 2026** | [Phase 24: การปรับปรุงระบบ Admin Web สู่การใช้งานข้อมูลจริง 100% (Real Database Integration, Dynamic Audit Logs, All-Tasks Management & Live Monitoring)](#phase-24-การปรับปรุงระบบ-admin-web-สู่การใช้งานข้อมูลจริง-100-real-database-integration-dynamic-audit-logs-all-tasks-management--live-monitoring) | สำเร็จ ✅ |
+| **28 ก.ย. 2026 (ค่ำ)** | [Phase 25: ระบบสลับเซิร์ฟเวอร์ด่วนบนมือถือ, การแก้บั๊กการเชื่อมต่อ & ระบบลงทะเบียนด้วยรหัสทีม (Server Config Modal, Live Latency Ping & Team Code Registration)](#phase-25-ระบบสลับเซิร์ฟเวอร์ด่วนบนมือถือ-การแก้บั๊กการเชื่อมต่อ--ระบบลงทะเบียนด้วยรหัสทีม-server-config-modal-live-latency-ping--team-code-registration) | สำเร็จ ✅ |
+| **29 ก.ย. 2026** | [Phase 26: การปรับปรุง Admin Web Authentication Guard เริ่มต้นที่หน้า Login ทุกครั้ง (Next.js Middleware HTTP 307 Redirect & Session Guard)](#phase-26-การปรับปรุง-admin-web-authentication-guard-เริ่มต้นที่หน้า-login-ทุกครั้ง-nextjs-middleware-http-307-redirect--session-guard) | ปัจจุบัน 📍 |
 
 ---
 
@@ -1250,6 +1256,64 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - ตรวจสอบไวยากรณ์ Backend ทุกไฟล์: `node -c` $\rightarrow$ **0 syntax errors**
    - รัน ESLint บน Next.js 14: `npm run lint` $\rightarrow$ **0 errors, 0 warnings**
    - คอมไพล์โปรดักชัน: `npm run build` $\rightarrow$ **Compiled successfully, 100% Static & Dynamic routes validated**
+
+---
+
+### Phase 25: ระบบสลับเซิร์ฟเวอร์ด่วนบนมือถือ, การแก้บั๊กการเชื่อมต่อ & ระบบลงทะเบียนด้วยรหัสทีม (Server Config Modal, Live Latency Ping & Team Code Registration)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 28 กันยายน 2026 (ค่ำ)
+
+**เป้าหมายการดำเนินงาน**: ยกระดับระบบ Mobile Application ให้มีความยืดหยุ่นในการเชื่อมต่อเซิร์ฟเวอร์ทั้งแบบไร้สาย (Wi-Fi LAN), สาย USB (ADB Reverse) และ Cloudflare Tunnel พร้อมแก้ไขปัญหาการตอบสนองของการตั้งค่า (3 Bugs) และเพิ่มระบบจับคู่ทีมด้วยรหัสเข้าร่วมทีม (Team Code) ให้ครบวงจรตั้งแต่การสมัครสมาชิกจนถึงการจัดการใน Admin Web:
+
+1. **การแก้ไขปัญหาและปรับปรุงการตอบสนอง 3 ข้อ (Bug Fixes)**:
+   - **ข้อ 1 (เลือกตั้งค่าไม่ได้)**: ปรับปรุงระบบใน [`ServerConfigModal.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/components/ServerConfigModal.jsx) เป็นแบบ **1-Tap Direct Preset Selection** แตะเลือกโหมดแล้วสลับ URL และทดสอบสัญญาณทันที โดยตัด `useEffect` ที่เกิดอาการ Re-render Loop ออกทั้งหมด
+   - **ข้อ 2 (เชื่อมต่อไม่ตอบสนอง Realtime)**: เพิ่ม `AbortController` Timeout (2,500ms) ในฟังก์ชัน `pingServer` บน [`api.js`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/services/api.js) ทำให้วัดความเร็ว Latency ได้เร็วทันใจ ไม่ค้าง พร้อมเพิ่ม **Latency Badge สด** (เช่น `🟢 ⚡ Wi-Fi (38ms) ⚙️`) บนหน้า Login และในหน้าต่างตั้งค่า
+   - **ข้อ 3 (ไม่อัปเดตสีสถานะที่เลือกไว้)**: ปรับแต่ง Dynamic Styling ให้แสดงกรอบสีน้ำเงินเด่นชัด `#2563EB` หนา 2px, พื้นหลังสีฟ้าอ่อน `#EFF6FF` พร้อมป้ายกำกับสถานะ `[✓ ใช้งาน]` ทันทีที่แตะเลือก
+   - **การแก้ปัญหา Touch Gesture Cancellation บน Android**: เพิ่มคุณสมบัติ `keyboardShouldPersistTaps="handled"` บน `ScrollView` ใน [`LoginScreen.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/auth/LoginScreen.jsx) ป้องกันไม่ให้อีเวนต์การแตะถูกยกเลิกโดยระบบ Gesture Responder ของ Android
+
+2. **ระบบลงทะเบียนด้วยรหัสทีม (Team Code Registration Architecture)**:
+   - **Backend Mongoose Schema ([`Team.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/database/models/Team.js))**: เพิ่มฟิลด์ `code: { type: String, uppercase: true, trim: true, sparse: true }`
+   - **Database Seeding ([`seed.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/database/seed.js))**: กำหนดรหัสทีมมาตรฐาน `code: 'TEAM-A'` (Content Team A) และ `code: 'TEAM-B'` (Beta Studio)
+   - **Authentication Controller ([`auth.controller.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/auth/auth.controller.js))**: บังคับส่ง `teamCode` ตอนลงทะเบียน (`POST /api/auth/register`), ค้นหาทีมแบบ Case-Insensitive, บันทึกผู้ใช้เข้า `team.members` และผูก `user.teamId` พร้อมส่งคืน `teamId` และ `teamName` ให้ทั้งตอนลงทะเบียนและเข้าสู่ระบบ (`POST /api/auth/login`)
+   - **Teams Controller ([`teams.controller.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/teams/teams.controller.js))**: ส่งคืน `code` ในข้อมูล Dashboard และรองรับการระบุ code ตอนสร้างทีมใหม่
+   - **Mobile App Register Form ([`LoginScreen.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/auth/LoginScreen.jsx))**: เพิ่มช่องกรอก *รหัสสำหรับเข้าทีม (Team Code) \** พร้อมข้อความช่วยเหลือระบุรหัสทีมหลัก `TEAM-A` และจัดระเบียบปุ่ม Demo Accounts ให้ซ่อนอยู่ในลิ้นชักแบบ Dropdown
+   - **Mobile Workspace Header ([`TeamOverviewScreen.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/team/TeamOverviewScreen.jsx))**: แสดง Badge `รหัสทีม: TEAM-A` ที่ส่วนหัวของหน้าห้องทำงาน เพื่อให้หัวหน้าทีมและสมาชิกทราบรหัสทีมสำหรับแชร์ให้ผู้อื่น
+   - **Admin Web Teams Management ([`users/page.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/app/users/page.jsx))**: แสดง Badge รหัสทีมในการ์ดรายชื่อทีม และเพิ่มช่องกรอกรหัสทีมใน Modal สร้างทีมใหม่
+
+3. **การรองรับการเชื่อมต่อไร้สาย & สลับ WebSocket Dynamic URL**:
+   - กำหนดค่าเริ่มต้นของ Mobile App เป็น IP เครือข่าย Wi-Fi LAN (`192.168.0.104:5000/api`) เพื่อให้สามารถใช้งานแอปบนโทรศัพท์จริงได้โดยไม่ต้องต่อสาย USB
+   - สร้างสคริปต์อัตโนมัติ [`start-cloudflare-tunnel.ps1`](file:///d:/VsCode/Project/Content-Management-System/start-cloudflare-tunnel.ps1) สำหรับเชื่อมต่อผ่าน Cloudflare Tunnel ไปยังพอร์ต 5000 เมื่อใช้งานผ่านเน็ตมือถือ 4G/5G
+   - เพิ่มฟังก์ชัน `setCustomWsUrl` ใน [`presenceService.js`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/services/presenceService.js) เพื่อให้ WebSocket สลับ URL และเชื่อมต่อใหม่ทันทีเมื่อเปลี่ยน Server
+
+---
+
+### Phase 26: การปรับปรุง Admin Web Authentication Guard เริ่มต้นที่หน้า Login ทุกครั้ง (Next.js Middleware HTTP 307 Redirect & Session Guard)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 29 กันยายน 2026
+
+**เป้าหมายการดำเนินงาน**: ปรับเปลี่ยนพฤติกรรมการเข้าสู่ระบบของเว็บผู้ดูแลระบบ (`master/admin-web`) ให้เริ่มต้นที่หน้า Login (`/login`) เสมอเมื่อเปิดเบราว์เซอร์หรือเริ่มต้นเข้าสู่เว็บไซต์ใหม่ ป้องกันการเข้าถึงหน้า Dashboard โดยไม่ผ่านการพิสูจน์ตัวตน:
+
+1. **Next.js Server-Side Middleware Guard ([`src/middleware.js`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/middleware.js))**:
+   - สร้าง Middleware ดักจับทุก Request ที่เข้ามายังเว็บ
+   - เมื่อผู้ใช้เข้าสู่ `http://localhost:3000/` หรือเปิด URL ภายในใดๆ (เช่น `/users`, `/contents`, `/tasks`, `/logs`, `/settings`) โดยที่ยังไม่มี Session Cookie (`admin_session`) เซิร์ฟเวอร์จะตอบสนองด้วย **HTTP 307 Temporary Redirect** ส่งไปยัง `/login` ทันทีตั้งแต่คำขอแรก โดยไม่มีการประมวลผลหรือโหลดเนื้อหาของแดชบอร์ด
+
+2. **Client-Side Shell Route Guard ([`src/components/AdminShell.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/components/AdminShell.jsx))**:
+   - เพิ่มการตรวจสอบสิทธิ์ระดับ Root Shell Component ที่ครอบทุกหน้าจอ
+   - หากตรวจพบว่าไม่มี Session ที่ถูกต้อง ระบบจะล็อกการเรนเดอร์ของ `Sidebar`, `Topbar` และ `children` ทั้งหมด พร้อมแสดงหน้าจอโหลดตรวจสอบสิทธิ์ และสั่ง `router.replace('/login')` ทันที ทำให้ไม่มีการกะพริบ (FOUC) ของหน้า Dashboard ให้เห็นแม้แต่เสี้ยววินาที
+
+3. **Session Lifecycle Management สู่ Session Cookie & `sessionStorage`**:
+   - **เข้าสู่ระบบ ([`src/app/login/page.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/app/login/page.jsx))**: เมื่อยืนยันตัวตนสำเร็จ ระบบจะบันทึก Session Cookie (`admin_session=active; path=/; SameSite=Lax`) แบบไม่มีวันหมดอายุ (Browser Session Cookie) พร้อมบันทึกข้อมูลและ Token ลงใน `sessionStorage` และล้างข้อมูลเก่าใน `localStorage`
+   - **การสิ้นสุดเซสชันอัตโนมัติ**: เมื่อผู้ใช้ปิดเบราว์เซอร์หรือเปิดเว็บใหม่ ข้อมูล Session Cookie และ `sessionStorage` จะถูกล้างโดยอัตโนมัติตามมาตรฐานความปลอดภัยของเบราว์เซอร์ ทำให้ทุกครั้งที่เริ่มต้นเว็บใหม่ ผู้ใช้จะต้องผ่านหน้า Login เสมอ
+   - **ออกจากระบบ ([`src/components/Topbar.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/components/Topbar.jsx))**: ปรับปรุงปุ่ม "ออกจากระบบ" ให้ทำลายทั้ง Session Cookie, `sessionStorage` และ `localStorage` ให้สะอาดหมดจดพร้อมส่งกลับไปยังหน้า `/login`
+
+4. **การส่งต่อสิทธิ์ผ่าน API Fetch ([`src/services/presenceClient.js`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/services/presenceClient.js))**:
+   - ปรับปรุงฟังก์ชัน `apiFetch` ให้อ่าน JWT Token จาก `sessionStorage` เพื่อส่งใน Header `Authorization: Bearer <token>` ทำให้การเรียกใช้ API ทุกรายการยังคงได้รับสิทธิ์ของแอดมินอย่างถูกต้องและปลอดภัย
+
+5. **ผลการตรวจสอบคุณภาพ (Quality Verification)**:
+   - ทดสอบเปิดหน้าเว็บใหม่: `curl http://localhost:3000/` $\rightarrow$ **HTTP 307 Redirect ไปยัง `/login` สำเร็จ 100%**
+   - ทดสอบหน้าภายในโดยไม่ล็อกอิน: `curl http://localhost:3000/contents` $\rightarrow$ **HTTP 307 Redirect ไปยัง `/login` สำเร็จ 100%**
+   - ทดสอบเมื่อมี Session: `curl -H "Cookie: admin_session=active" http://localhost:3000/` $\rightarrow$ **HTTP 200 OK สำเร็จ 100%**
+   - รัน ESLint: `npm run lint` $\rightarrow$ **0 errors, 0 warnings**
+   - คอมไพล์โปรดักชัน: `npm run build` $\rightarrow$ **Compiled successfully, All routes validated**
+
 
 
 
