@@ -22,7 +22,7 @@ import { presenceClient, apiFetch } from '../../services/presenceClient';
 export default function LogsPage() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isWsConnected, setIsWsConnected] = useState(false);
+  const [isWsConnected, setIsWsConnected] = useState(() => presenceClient.isConnected);
   const [searchTerm, setSearchTerm] = useState('');
   const [actionFilter, setActionFilter] = useState('ALL');
   const [toastMessage, setToastMessage] = useState('');
@@ -59,6 +59,10 @@ export default function LogsPage() {
       .finally(() => {
         if (isMounted) setLoading(false);
       });
+
+    if (presenceClient.isConnected) {
+      setIsWsConnected(true);
+    }
 
     presenceClient.connect('admin_logs_monitor');
 

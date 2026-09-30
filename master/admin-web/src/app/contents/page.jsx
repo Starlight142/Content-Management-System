@@ -49,7 +49,7 @@ export default function ContentsPage() {
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isWsConnected, setIsWsConnected] = useState(false);
+  const [isWsConnected, setIsWsConnected] = useState(() => presenceClient.isConnected);
 
   // States for search and filter
   const [searchTerm, setSearchTerm] = useState(() => {
@@ -153,6 +153,10 @@ export default function ContentsPage() {
     };
 
     fetchInitial();
+
+    if (presenceClient.isConnected) {
+      setIsWsConnected(true);
+    }
 
     // Connect WebSocket
     presenceClient.connect('admin_web_contents');

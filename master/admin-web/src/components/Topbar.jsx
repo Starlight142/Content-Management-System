@@ -12,7 +12,7 @@ const Topbar = () => {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isSignoutModalOpen, setIsSignoutModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [onlineCount, setOnlineCount] = useState(0);
+  const [onlineCount, setOnlineCount] = useState(() => presenceClient.getOnlineCount());
 
   const fetchRecentNotifications = useCallback(async () => {
     try {

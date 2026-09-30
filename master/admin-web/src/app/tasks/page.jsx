@@ -35,7 +35,7 @@ export default function TasksPage() {
   const [contents, setContents] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isWsConnected, setIsWsConnected] = useState(false);
+  const [isWsConnected, setIsWsConnected] = useState(() => presenceClient.isConnected);
   const [taskSearch, setTaskSearch] = useState('');
   const [taskStatusFilter, setTaskStatusFilter] = useState('ALL');
 
@@ -144,6 +144,10 @@ export default function TasksPage() {
     }).finally(() => {
       if (isMounted) setLoading(false);
     });
+
+    if (presenceClient.isConnected) {
+      setIsWsConnected(true);
+    }
 
     presenceClient.connect('admin_tasks_monitor');
 

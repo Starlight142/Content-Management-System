@@ -1,7 +1,51 @@
 // Client-side Real-time WebSocket Presence Service for Admin Web
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:5000';
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+export function getWsUrl() {
+  if (process.env.NEXT_PUBLIC_WS_URL) return process.env.NEXT_PUBLIC_WS_URL;
+  if (typeof window !== 'undefined') {
+    const isHttps = window.location.protocol === 'https:';
+    const proto = isHttps ? 'wss:' : 'ws:';
+    const hostname = window.location.hostname;
+
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `${proto}//localhost:5000`;
+    }
+
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) {
+      return `${proto}//${hostname}:5000`;
+    }
+
+    if (window.location.port && window.location.port !== '80' && window.location.port !== '443') {
+      return `${proto}//${hostname}:5000`;
+    }
+    return `${proto}//${window.location.host}/ws`;
+  }
+  return 'ws://localhost:5000';
+}
+
+export function getApiBaseUrl() {
+  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+  if (typeof window !== 'undefined') {
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `${protocol}//localhost:5000/api`;
+    }
+
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) {
+      return `${protocol}//${hostname}:5000/api`;
+    }
+
+    if (window.location.port && window.location.port !== '80' && window.location.port !== '443') {
+      return `${protocol}//${hostname}:5000/api`;
+    }
+    return `${protocol}//${window.location.host}/api`;
+  }
+  return 'http://localhost:5000/api';
+}
+
+export const API_BASE_URL = getApiBaseUrl();
 
 class PresenceClient {
   constructor() {
@@ -18,12 +62,18 @@ class PresenceClient {
     if (typeof window === 'undefined') return;
     this.currentUserId = userId;
 
-    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.isConnected = true;
+      this.notifyListeners({ type: 'CONNECTION_CHANGE', isConnected: true });
+      return;
+    }
+
+    if (this.ws && this.ws.readyState === WebSocket.CONNECTING) {
       return;
     }
 
     try {
-      this.ws = new WebSocket(WS_URL);
+      this.ws = new WebSocket(getWsUrl());
 
       this.ws.onopen = () => {
         this.isConnected = true;
@@ -54,7 +104,8 @@ class PresenceClient {
 
       this.ws.onerror = (err) => {
         console.warn('Presence WebSocket connection error:', err);
-        this.ws?.close();
+        this.isConnected = false;
+        this.notifyListeners({ type: 'CONNECTION_CHANGE', isConnected: false });
       };
     } catch (e) {
       console.warn('Failed to initialize WebSocket:', e);
@@ -96,6 +147,16 @@ class PresenceClient {
       this.eventListeners.set(eventType, new Set());
     }
     this.eventListeners.get(eventType).add(callback);
+
+    // If already connected and listener is waiting for CONNECTION_CHANGE, fire immediately
+    if (eventType === 'CONNECTION_CHANGE' && this.isConnected) {
+      try {
+        callback({ type: 'CONNECTION_CHANGE', isConnected: true });
+      } catch (err) {
+        console.error('Error in immediate CONNECTION_CHANGE callback:', err);
+      }
+    }
+
     return () => this.off(eventType, callback);
   }
 
@@ -107,6 +168,19 @@ class PresenceClient {
 
   subscribe(listener) {
     this.listeners.add(listener);
+
+    // If already connected, immediately inform subscriber
+    if (this.isConnected) {
+      try {
+        listener({ type: 'CONNECTION_CHANGE', isConnected: true }, this.onlineUserIds);
+        if (this.onlineUserIds.size > 0) {
+          listener({ type: 'ONLINE_USERS_SYNC', onlineUserIds: Array.from(this.onlineUserIds) }, this.onlineUserIds);
+        }
+      } catch (err) {
+        console.error('Error in immediate subscribe callback:', err);
+      }
+    }
+
     return () => {
       this.listeners.delete(listener);
     };
@@ -162,7 +236,8 @@ export const presenceClient = new PresenceClient();
  * Standard REST API helper for Admin Web with Master Key authorization
  */
 export async function apiFetch(endpoint, options = {}) {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const baseUrl = getApiBaseUrl();
+  const url = `${baseUrl}${endpoint}`;
   const authHeader = {};
   if (typeof window !== 'undefined') {
     try {

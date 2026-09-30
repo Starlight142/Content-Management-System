@@ -52,7 +52,7 @@ export default function UsersPage() {
   ]);
 
   const [loading, setLoading] = useState(false);
-  const [isWsConnected, setIsWsConnected] = useState(false);
+  const [isWsConnected, setIsWsConnected] = useState(() => presenceClient.isConnected);
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, ONLINE, OFFLINE
   const [search, setSearch] = useState('');
   const [teamSearch, setTeamSearch] = useState('');
@@ -124,6 +124,10 @@ export default function UsersPage() {
     };
 
     fetchInitial();
+
+    if (presenceClient.isConnected) {
+      setIsWsConnected(true);
+    }
 
     // Connect to WebSocket Presence Server
     presenceClient.connect('admin_web_dashboard');

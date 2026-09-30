@@ -52,7 +52,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
 
   // System Health States (Admin Requirement 5)
-  const [isWsConnected, setIsWsConnected] = useState(false);
+  const [isWsConnected, setIsWsConnected] = useState(() => presenceClient.isConnected);
   const [pinging, setPinging] = useState(false);
   const [latency, setLatency] = useState(null);
   const [healthInfo, setHealthInfo] = useState({
@@ -125,6 +125,10 @@ export default function SettingsPage() {
         }
       })
       .catch(() => {});
+
+    if (presenceClient.isConnected) {
+      setIsWsConnected(true);
+    }
 
     presenceClient.connect('admin_web_settings');
     const handleConn = (payload) => {

@@ -1314,6 +1314,36 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - รัน ESLint: `npm run lint` $\rightarrow$ **0 errors, 0 warnings**
    - คอมไพล์โปรดักชัน: `npm run build` $\rightarrow$ **Compiled successfully, All routes validated**
 
+---
+
+### Phase 27: แก้ไขสถานะการเชื่อมต่อ WebSocket ค้าง "Connecting WebSocket..." บน Admin Web (WebSocket State Synchronization & Dynamic URL)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 1 ตุลาคม 2026
+
+**สาเหตุของปัญหา (Root Cause)**:
+1. **Race Condition & ขาดการแจ้งเตือนสถานะปัจจุบันเมื่อ Subscribe หรือ On (`presenceClient.js`)**:
+   - เมื่อเปิดเว็บ คอมโพเนนต์เลย์เอาต์ส่วนบน (`Topbar.jsx`) หรือหน้าแรก (`page.jsx`) จะเรียก `presenceClient.connect(...)` ก่อน ทำให้การเชื่อมต่อ WebSocket เปิดสำเร็จ (`readyState === WebSocket.OPEN`)
+   - ต่อมาเมื่อผู้ใช้เข้าสู่หน้า `/contents`, `/users`, `/tasks`, `/logs` หรือ `/settings` คอมโพเนนต์เหล่านี้ประกาศ State เริ่มต้นเป็น `isWsConnected = false` แล้วจึงเรียก `presenceClient.connect(...)`
+   - ในฟังก์ชัน `connect()` เดิม มีการตรวจพบว่าเชื่อมต่ออยู่แล้วและสั่ง `return` ออกไปทันที โดยไม่ยิงเหตุการณ์ `CONNECTION_CHANGE` ซ้ำ
+   - เมธอด `on('CONNECTION_CHANGE', ...)` และ `subscribe(...)` เดิม ก็ไม่มีการเรียก Callback ให้ทันทีเมื่อ State เชื่อมต่ออยู่แล้ว ส่งผลให้ State `isWsConnected` ในหน้าเหล่านั้นติดค้างอยู่ที่ `false` ตลอดเวลา และ UI แสดงข้อความค้างว่า `"Connecting WebSocket..."`
+2. **การระบุ URL แบบคงที่ (`ws://localhost:5000`)**:
+   - หากเปิดใช้งานผ่านเครือข่าย IP LAN หรือเปิดผ่านโฮสต์เนมอื่น การเชื่อมต่อไปยัง `localhost:5000` อาจไม่ตรงกับพอร์ตเซิร์ฟเวอร์ หรือพบข้อจำกัดของ Cross-Origin / IPv4-IPv6
+
+**รายละเอียดการแก้ไข**:
+1. **ปรับปรุง Service `presenceClient.js` ([`src/services/presenceClient.js`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/services/presenceClient.js))**:
+   - **Immediate State Dispatch บน `connect()`**: หากการเชื่อมต่อ WebSocket เปิดอยู่แล้ว (`WebSocket.OPEN`) ให้เซ็ต `isConnected = true` และส่งแจ้งเตือน `{ type: 'CONNECTION_CHANGE', isConnected: true }` ไปยัง Listener ทันที
+   - **Immediate Callback บน `on('CONNECTION_CHANGE', cb)`**: หากสถานะเป็น Connected อยู่แล้ว ให้เรียก Callback ทันทีที่ผู้ฟังลงทะเบียน
+   - **Immediate Callback บน `subscribe(listener)`**: หากเชื่อมต่ออยู่แล้ว ให้ส่ง `{ type: 'CONNECTION_CHANGE', isConnected: true }` พร้อม `ONLINE_USERS_SYNC` ข้อมูลผู้ใช้ออนไลน์ปัจจุบันให้ผู้ฟังทันที
+   - **Dynamic URL Resolution**: เพิ่มฟังก์ชัน `getWsUrl()` และ `getApiBaseUrl()` คำนวณ Protocol (`ws`/`wss`) และ Hostname ตามสภาพแวดล้อมจริงอัตโนมัติ
+   - ปรับปรุงการจัดการใน `onerror` และ `onclose` ให้เซ็ต `isConnected = false` และแจ้งเตือน Listener ทุกครั้ง
+2. **ปรับปรุง State Initialization ในทุกหน้าจอ**:
+   - ใน [`contents/page.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/app/contents/page.jsx), [`users/page.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/app/users/page.jsx), [`tasks/page.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/app/tasks/page.jsx), [`logs/page.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/app/logs/page.jsx), และ [`settings/page.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/app/settings/page.jsx):
+     - กำหนด State เริ่มต้นด้วยค่าปัจจุบัน: `useState(() => presenceClient.isConnected)`
+     - ใน `useEffect`: ตรวจสอบสถานะทันทีเมื่อ Mount `if (presenceClient.isConnected) setIsWsConnected(true)`
+   - ใน [`Topbar.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/admin-web/src/components/Topbar.jsx): กำหนดค่าเริ่มต้น `useState(() => presenceClient.getOnlineCount())`
+3. **ผลการทดสอบและการตรวจสอบคุณภาพ**:
+   - ทดสอบรันการคอมไพล์โปรดักชัน: `npm run build` ใน `master/admin-web` $\rightarrow$ สำเร็จ 100% (Compiled successfully, All routes validated)
+   - สถานะ Badge บนเว็บเปลี่ยนเป็น **"Real-time WebSocket Live"** / **"Live Socket Sync"** ทันทีเมื่อ WebSocket เชื่อมต่อ ไม่เกิดอาการค้าง
+
 
 
 
