@@ -14,7 +14,7 @@ const seedDatabase = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/content_management';
     await mongoose.connect(mongoUri);
-    console.log('🌱 Connected to MongoDB for seeding...');
+    console.log('[Seed] Connected to MongoDB...');
 
     // Clear existing collections
     await User.deleteMany({});
@@ -24,7 +24,7 @@ const seedDatabase = async () => {
     await Team.deleteMany({});
     await LegalArticle.deleteMany({});
     await TeamActivity.deleteMany({});
-    console.log('🧹 Cleaned existing database collections');
+    console.log('[Seed] Cleaned existing database collections');
 
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash('123456', salt);
@@ -492,21 +492,21 @@ const seedDatabase = async () => {
         source: 'พ.ร.บ. คุ้มครองผู้บริโภค',
       },
     ]);
-    console.log('✅ Created 3 Legal Articles');
+    console.log('[Seed] Created 3 Legal Articles');
 
-    console.log('\n🎉 DATABASE SEEDING COMPLETED SUCCESSFULLY!');
+    console.log('\n[Seed] Database seeding completed successfully.');
     console.log('----------------------------------------------------');
-    console.log('🔑 บัญชีทดสอบระบบ (รหัสผ่านคือ 123456 ทั้งหมด):');
-    console.log('👑 Admin:             admin@studio.com');
-    console.log('👔 Manager (Somsri):   manager@studio.com');
-    console.log('🎬 Member (John - Ed): member@studio.com');
-    console.log('📝 Member (Jane - Sc): jane@studio.com');
-    console.log('🎨 Member (Mike - Gr): mike@studio.com');
+    console.log('Test Accounts (Password: 123456):');
+    console.log('Admin:             admin@studio.com');
+    console.log('Manager (Somsri):   manager@studio.com');
+    console.log('Member (John - Ed): member@studio.com');
+    console.log('Member (Jane - Sc): jane@studio.com');
+    console.log('Member (Mike - Gr): mike@studio.com');
     console.log('----------------------------------------------------');
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Seeding failed:', error);
+    console.error('[Seed Error] Seeding failed:', error);
     process.exit(1);
   }
 };

@@ -133,7 +133,7 @@ export default function ProfileScreen({ user, onLogout }) {
               onPress={handleOpenEdit}
               activeOpacity={0.8}
             >
-              <Text style={[styles.editProfileText, { color: colors.primary }]}>แก้ไขโปรไฟล์ส่วนตัว ✎</Text>
+              <Text style={[styles.editProfileText, { color: colors.primary }]}>แก้ไขโปรไฟล์ส่วนตัว</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -172,7 +172,7 @@ export default function ProfileScreen({ user, onLogout }) {
           <View style={[styles.divider, { backgroundColor: colors.divider }]} />
           <View style={styles.menuItem}>
             <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>สังกัดทีม</Text>
-            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>Content Team A</Text>
+            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>{localUser?.teamName || localUser?.team || 'Content Team A'}</Text>
           </View>
           <View style={[styles.divider, { backgroundColor: colors.divider }]} />
           <View style={styles.menuItem}>
@@ -180,7 +180,7 @@ export default function ProfileScreen({ user, onLogout }) {
             <View style={styles.statusRow}>
               <View style={[styles.activeDot, { backgroundColor: isOnline ? colors.statusApprovedText : colors.textMuted }]} />
               <Text style={[styles.statusText, { color: isOnline ? colors.statusApprovedText : colors.textSecondary }]}>
-                {isOnline ? 'ออนไลน์ (Online • Live)' : 'ออฟไลน์ (Offline)'}
+                {isOnline ? 'ออนไลน์' : 'ออฟไลน์'}
               </Text>
             </View>
           </View>

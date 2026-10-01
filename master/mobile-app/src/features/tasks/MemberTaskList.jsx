@@ -411,7 +411,7 @@ export default function MemberTaskList({ user, onNavigate }) {
                 activeOpacity={0.7}
               >
                 <Text style={[styles.submittedUrl, { color: colors.primary, textDecorationLine: 'underline' }]} numberOfLines={1}>
-                  🌐 เปิดดูผลงาน: {item.submissionUrl}
+                  เปิดดูผลงาน: {item.submissionUrl}
                 </Text>
               </TouchableOpacity>
             ) : null}

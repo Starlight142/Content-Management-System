@@ -122,7 +122,7 @@ export default function LoginScreen({ onLoginSuccess }) {
       });
 
       Alert.alert(
-        'ลงทะเบียนสำเร็จ 🎉',
+        'ลงทะเบียนสำเร็จ',
         `ยินดีต้อนรับเข้าสู่ทีม ${res.user?.teamName || teamCode}!\nกรุณาเข้าสู่ระบบด้วยบัญชีของคุณ`,
         [
           {
@@ -150,16 +150,16 @@ export default function LoginScreen({ onLoginSuccess }) {
 
   // Format short display for current server URL pill
   const getShortServerLabel = () => {
-    if (!currentServerUrl) return 'Server ⚙️';
-    if (currentServerUrl.includes('trycloudflare.com')) return '☁️ Cloudflare ⚙️';
+    if (!currentServerUrl) return 'Server';
+    if (currentServerUrl.includes('trycloudflare.com')) return 'Cloudflare Tunnel';
     if (currentServerUrl.includes('192.168.')) {
       const match = currentServerUrl.match(/192\.168\.\d+\.\d+/);
-      return `⚡ Wi-Fi (${match ? match[0] : 'LAN'}) ⚙️`;
+      return `Wi-Fi (${match ? match[0] : 'LAN'})`;
     }
     if (currentServerUrl.includes('127.0.0.1') || currentServerUrl.includes('localhost')) {
-      return '🔌 USB / Local ⚙️';
+      return 'USB / Local';
     }
-    return '🌐 Server ⚙️';
+    return 'Server';
   };
 
   return (
@@ -303,7 +303,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                     autoCorrect={false}
                   />
                   <Text style={[styles.helperText, { color: colors.textSecondary }]}>
-                    💡 รหัสทีมหลักของสตูดิโอคือ <Text style={{ fontWeight: 'bold', color: '#2563EB' }}>TEAM-A</Text> (หรือ TEAM-B)
+                    รหัสทีมเริ่มต้น: <Text style={{ fontWeight: 'bold', color: '#2563EB' }}>TEAM-A</Text> (หรือ TEAM-B)
                   </Text>
                 </View>
               </>
@@ -356,7 +356,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                         selectedRole === 'MEMBER' && { color: colors.textPrimary, fontWeight: '700' },
                       ]}
                     >
-                      🎨 Member (ทีมงาน)
+                      Member (ทีมงาน)
                     </Text>
                   </TouchableOpacity>
 
@@ -375,7 +375,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                         selectedRole === 'MANAGER' && { color: colors.textPrimary, fontWeight: '700' },
                       ]}
                     >
-                      👔 Manager (หัวหน้า)
+                      Manager (หัวหน้า)
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -407,21 +407,21 @@ export default function LoginScreen({ onLoginSuccess }) {
               activeOpacity={0.7}
             >
               <Text style={[styles.demoToggleText, { color: colors.textSecondary }]}>
-                {showDemoDrawer ? '▲ ซ่อนบัญชีทดสอบระบบ' : '▼ บัญชีสำหรับทดสอบด่วน (Demo Accounts)'}
+                {showDemoDrawer ? 'ซ่อนบัญชีทดสอบระบบ' : 'บัญชีสำหรับทดสอบด่วน (Demo Accounts)'}
               </Text>
             </TouchableOpacity>
 
             {showDemoDrawer && (
               <View style={[styles.demoCard, { backgroundColor: isDark ? colors.surface : '#F8FAFC', borderColor: colors.border }]}>
                 <Text style={[styles.demoHint, { color: colors.textSecondary }]}>
-                  กดเลือกบัญชีเพื่อกรอกข้อมูลเข้าสู่ระบบอัตโนมัติ (รหัสผ่าน: 123456):
+                  เลือกบัญชีเพื่อเข้าสู่ระบบทดสอบ (รหัสผ่าน: 123456):
                 </Text>
                 <View style={styles.demoBtnsRow}>
                   <TouchableOpacity
                     style={[styles.demoPill, { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }]}
                     onPress={() => applyDemoAccount('manager@studio.com', 'MANAGER')}
                   >
-                    <Text style={styles.demoPillTitle}>👔 Manager</Text>
+                    <Text style={styles.demoPillTitle}>Manager</Text>
                     <Text style={styles.demoPillSub}>สมศรี จัดการทีม</Text>
                   </TouchableOpacity>
 
@@ -429,7 +429,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                     style={[styles.demoPill, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }]}
                     onPress={() => applyDemoAccount('member@studio.com', 'MEMBER')}
                   >
-                    <Text style={styles.demoPillTitle}>🎬 Editor</Text>
+                    <Text style={styles.demoPillTitle}>Editor</Text>
                     <Text style={styles.demoPillSub}>John Editor</Text>
                   </TouchableOpacity>
 
@@ -437,7 +437,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                     style={[styles.demoPill, { backgroundColor: '#FAF5FF', borderColor: '#E9D5FF' }]}
                     onPress={() => applyDemoAccount('mike@studio.com', 'MEMBER')}
                   >
-                    <Text style={styles.demoPillTitle}>🎨 Graphic</Text>
+                    <Text style={styles.demoPillTitle}>Graphic</Text>
                     <Text style={styles.demoPillSub}>Mike Graphic</Text>
                   </TouchableOpacity>
                 </View>

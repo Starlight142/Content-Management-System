@@ -422,7 +422,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
             onPress={() => handleOpenUrl(item.latestSubmissionUrl)}
           >
             <Text style={[styles.btnPreviewLinkText, { color: colors.primary }]} numberOfLines={1}>
-              🌐 เปิดดูผลงาน: {item.latestSubmissionUrl}
+              เปิดดูผลงาน: {item.latestSubmissionUrl}
             </Text>
           </TouchableOpacity>
         )}
@@ -892,7 +892,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
                     onPress={() => setAssignedToId(memberId)}
                   >
                     <Text style={[styles.choiceChipText, { color: colors.textSecondary }, isSelected && { color: '#fff', fontWeight: '700' }]}>
-                      👤 {memberName}
+                      {memberName}
                     </Text>
                   </TouchableOpacity>
                 );

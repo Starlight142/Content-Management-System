@@ -71,7 +71,7 @@ const handleUserOnline = async (userId, clientType = 'web') => {
         role: updated.role,
         clientType,
       });
-      console.log(`🟢 User Online [${clientType}]: ${updated.username} (${userId})`);
+      console.log(`[Presence] User Online [${clientType}]: ${updated.username} (${userId})`);
     }
   } catch (err) {
     console.error(`Error marking user ${userId} online:`, err.message);
@@ -104,7 +104,7 @@ const handleUserOffline = async (userId) => {
         workingStatus: updated.workingStatus,
         role: updated.role,
       });
-      console.log(`⚪ User Offline: ${updated.username} (${userId})`);
+      console.log(`[Presence] User Offline: ${updated.username} (${userId})`);
     }
   } catch (err) {
     console.error(`Error marking user ${userId} offline:`, err.message);
@@ -117,7 +117,7 @@ const handleUserOffline = async (userId) => {
 const resetAllPresence = async () => {
   try {
     const result = await User.updateMany({}, { isOnline: false });
-    console.log(`🔄 Reset presence in database: ${result.modifiedCount} users set to offline on server startup.`);
+    console.log(`[Presence] Reset presence in database: ${result.modifiedCount} users set to offline on server startup.`);
   } catch (err) {
     console.error('Error resetting presence in database:', err.message);
   }
@@ -260,7 +260,7 @@ const initPresenceServer = (httpServer) => {
   const interval = setInterval(() => {
     for (const [ws, info] of clients.entries()) {
       if (!info.isAlive) {
-        console.log(`💀 Terminating inactive socket for user ${info.userId || 'anonymous'}`);
+        console.log(`[Presence] Terminating inactive socket for user ${info.userId || 'anonymous'}`);
         clients.delete(ws);
         if (info.userId) {
           handleUserOffline(info.userId);
@@ -281,7 +281,7 @@ const initPresenceServer = (httpServer) => {
     clearInterval(interval);
   });
 
-  console.log('⚡ Real-time Presence WebSocket Server initialized successfully');
+  console.log('Real-time Presence WebSocket Server initialized successfully');
   return wss;
 };
 

@@ -18,7 +18,7 @@ import { presenceService } from '../services/presenceService';
 const PRESETS = [
   {
     key: 'wifi',
-    label: '⚡ Wi-Fi ในบ้าน (LAN)',
+    label: 'Wi-Fi (LAN)',
     desc: '192.168.0.104:5000 (ไร้สาย แนะนำ)',
     url: 'http://192.168.0.104:5000/api',
     tag: 'ไร้สาย LAN',
@@ -27,7 +27,7 @@ const PRESETS = [
   },
   {
     key: 'usb',
-    label: '🔌 USB / ADB Reverse',
+    label: 'USB / ADB Reverse',
     desc: '127.0.0.1:5000 (ต่อสาย USB กับคอม)',
     url: 'http://127.0.0.1:5000/api',
     tag: 'สาย USB',
@@ -36,7 +36,7 @@ const PRESETS = [
   },
   {
     key: 'tunnel',
-    label: '☁️ Cloudflare Tunnel',
+    label: 'Cloudflare Tunnel',
     desc: 'สำหรับเน็ต 4G/5G หรือภายนอก',
     url: 'https://limits-claims-herself-folks.trycloudflare.com/api',
     tag: 'เน็ตมือถือ',
@@ -131,7 +131,7 @@ export default function ServerConfigModal({ visible, onClose, onServerChanged })
     }
 
     executePing(appliedUrl);
-    Alert.alert('สลับเซิร์ฟเวอร์สำเร็จ 🎉', `ใช้งานที่:\n${appliedUrl}`);
+    Alert.alert('สลับเซิร์ฟเวอร์สำเร็จ', `ใช้งานที่:\n${appliedUrl}`);
   };
 
   return (
@@ -146,9 +146,9 @@ export default function ServerConfigModal({ visible, onClose, onServerChanged })
           {/* Header */}
           <View style={styles.header}>
             <View>
-              <Text style={[styles.title, { color: colors.textPrimary }]}>🌐 ตั้งค่า Server URL</Text>
+              <Text style={[styles.title, { color: colors.textPrimary }]}>ตั้งค่า Server URL</Text>
               <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-                แตะเพื่อสลับ Wi-Fi, Cloudflare หรือ USB ทันที
+                สลับ Wi-Fi, Cloudflare หรือ USB
               </Text>
             </View>
             <TouchableOpacity
@@ -172,16 +172,16 @@ export default function ServerConfigModal({ visible, onClose, onServerChanged })
                 {testing ? (
                   <View style={styles.badgeTesting}>
                     <ActivityIndicator size="small" color="#2563EB" />
-                    <Text style={styles.badgeTestingText}>กำลังเช็คสัญญาณ...</Text>
+                    <Text style={styles.badgeTestingText}>กำลังตรวจสอบ...</Text>
                   </View>
                 ) : pingResult?.ok ? (
                   <View style={styles.badgeSuccess}>
-                    <Text style={styles.badgeSuccessText}>🟢 Online ({pingResult.latency}ms)</Text>
+                    <Text style={styles.badgeSuccessText}>Online ({pingResult.latency}ms)</Text>
                   </View>
                 ) : (
                   <View style={styles.badgeError}>
                     <Text style={styles.badgeErrorText}>
-                      🔴 {pingResult ? (pingResult.error || 'Offline') : 'ยังไม่ได้เชื่อมต่อ'}
+                      {pingResult ? (pingResult.error || 'Offline') : 'ยังไม่ได้เชื่อมต่อ'}
                     </Text>
                   </View>
                 )}
@@ -292,7 +292,7 @@ export default function ServerConfigModal({ visible, onClose, onServerChanged })
               {testing ? (
                 <ActivityIndicator size="small" color="#2563EB" />
               ) : (
-                <Text style={styles.testBtnText}>⚡ ตรวจสอบ Ping</Text>
+                <Text style={styles.testBtnText}>ตรวจสอบการเชื่อมต่อ</Text>
               )}
             </TouchableOpacity>
 
@@ -301,7 +301,7 @@ export default function ServerConfigModal({ visible, onClose, onServerChanged })
               onPress={handleSaveCustom}
               activeOpacity={0.8}
             >
-              <Text style={styles.saveBtnText}>💾 บันทึกและใช้</Text>
+              <Text style={styles.saveBtnText}>บันทึกและเชื่อมต่อ</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -499,10 +499,10 @@ export default function TasksPage() {
                               onChange={(e) => handleQuickStatusChange(taskId, e.target.value)}
                               className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 outline-hidden hover:border-blue-400 focus:border-blue-500 cursor-pointer shadow-2xs"
                             >
-                              <option value="TODO">⚪ TODO</option>
-                              <option value="IN_PROGRESS">🔵 IN_PROGRESS</option>
-                              <option value="REVIEW">🟠 REVIEW</option>
-                              <option value="DONE">🟢 DONE</option>
+                              <option value="TODO">TODO</option>
+                              <option value="IN_PROGRESS">IN_PROGRESS</option>
+                              <option value="REVIEW">REVIEW</option>
+                              <option value="DONE">DONE</option>
                             </select>
                           </td>
                           <td className="py-4 px-5 text-center whitespace-nowrap">
