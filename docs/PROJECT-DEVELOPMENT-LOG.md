@@ -1352,6 +1352,22 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - **ลบ `master/backend/src/year4-extensions/`**: ลบโค้ดทดลองที่ยังไม่ได้ mount เข้ากับแอปหลัก (`analytics`, `recommendations`, `trends`)
    - **ลบ `master/backend/src/integrations/`**: ลบ `tiktok.client.js` และ `youtube.client.js` ที่ไม่ได้ถูกนำมาเรียกใช้จริง
    - **ลบไดเรกทอรีว่างใน Mobile App**: ลบ 12 โฟลเดอร์ที่ไม่มีไฟล์ภายใน `master/mobile-app/src` (`features/analytics`, `calendar`, `contents`, `notifications`, `recommendations`, `review`, `trends`, `workflow`, `assets`, `hooks`, `store`, `utils`)
+   - **บันทึกวัตถุประสงค์สถาปัตยกรรมของ 12 ไดเรกทอรีที่ถูกตัดออก (Architecture Reference for Future Features)**:
+     - *หมวดฟังก์ชันเฉพาะทาง (Domain Features)*:
+       - `features/analytics`: หน้าจอดูกราฟสถิติยอดวิว, ยอดแชร์, Engagement Rate และเปรียบเทียบผลงานแต่ละคลิป
+       - `features/calendar`: หน้าจอตารางปฏิทินงานผลิต (Editorial Calendar / Content Schedule) และ Deadline
+       - `features/contents`: หน้ารายการคอนเทนต์ทั้งหมดแบบละเอียด มีตัวกรองค้นหา และประวัติเวอร์ชันของคอนเทนต์
+       - `features/notifications`: หน้ารวมประวัติการแจ้งเตือนส่วนตัว (In-App Notification Center)
+       - `features/recommendations`: หน้าจอแสดงคำแนะนำวิเคราะห์เนื้อหาและเวลาที่เหมาะสมในการโพสต์คลิป
+       - `features/review`: ห้องตรวจงานเฉพาะทาง เช่น ดูตัวอย่างวิดีโอพร้อม Timecode และระบบคอมเมนต์ตรวจงาน
+       - `features/trends`: หน้าจอดึงข้อมูลเทรนด์หรือแฮชแท็กโซเชียลมีเดียแบบเรียลไทม์เพื่อระดมไอเดีย
+       - `features/workflow`: หน้าจอกระดานงานแบบ Kanban Board สำหรับลากและย้ายสเตจการผลิตอย่างอิสระ
+     - *หมวดโครงสร้างส่วนกลาง (Shared Code / Architecture)*:
+       - `assets`: ที่เก็บรูปภาพโลโก้, ไอคอน SVG/PNG และฟอนต์เฉพาะของระบบ
+       - `hooks`: ที่เก็บ Custom React Hooks สำหรับแชร์ Logic ซ้ำๆ (เช่น `useAuth`, `useNetwork`, `useDebounce`)
+       - `store`: ที่ติดตั้ง Global State Management ตัวเต็ม (เช่น Redux Toolkit หรือ Zustand) เมื่อระบบมีความซับซ้อนขึ้น
+       - `utils`: ที่เก็บฟังก์ชัน Helper ส่วนกลาง เช่น ฟังก์ชันจัดฟอร์แมตวันที่ภาษาไทย หรือแปลงขนาดไฟล์
+     - *เหตุผลการตัดออก*: ฟังก์ชันการทำงานหลักของระบบปัจจุบันถูกรวบศูนย์เข้าสู่โมดูลที่ใช้งานจริงแล้ว ([`api.js`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/services/api.js), [`presenceService.js`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/services/presenceService.js), [`ThemeContext.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/theme/ThemeContext.jsx) และ 6 หน้าจอหลัก) การลบไดเรกทอรีว่างออกช่วยให้โครงสร้างโค้ดสะอาด เป็นระเบียบ และสามารถสร้างใหม่ได้ทันทีเมื่อพร้อมต่อยอดฟีเจอร์เหล่านั้น
 
 3. **การปรับแต่ง UI และลดการใช้อีโมจิ (UI Simplification & Professional Tone)**:
    - ตรวจสอบและค้นหาอีโมจิทั่วทั้งโปรเจกต์ใน `master/mobile-app/src`, `master/admin-web/src` และ `master/backend/src`
