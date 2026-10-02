@@ -448,6 +448,7 @@
       <li class="nav-item"><a href="#phase-27" class="nav-link"><span class="nav-tag">P27</span>WebSocket Fix & Port 5000</a></li>
       <li class="nav-item"><a href="#phase-28" class="nav-link"><span class="nav-tag">P28</span>Cleanup, Simplicity & QA</a></li>
       <li class="nav-item"><a href="#phase-29" class="nav-link"><span class="nav-tag">P29</span>AI Memory & Transfer</a></li>
+      <li class="nav-item"><a href="#phase-30" class="nav-link"><span class="nav-tag">P30</span>Untrack Handover Doc</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -513,6 +514,7 @@
           <tr><td>30 ก.ย. 2026 (14:00 - 17:30 น.)</td><td><a href="#phase-27">Phase 27: แก้ปัญหา WebSocket บน Admin Web & พอร์ต 5000 Conflict</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>1 ต.ค. 2026 (11:00 - 12:30 น.)</td><td><a href="#phase-28">Phase 28: การล้างฐานข้อมูลและโค้ดที่ไม่ใช้งาน, ปรับแต่ง UI & การทดสอบระบบครบวงจร</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>2 ต.ค. 2026 (16:00 - 16:30 น.)</td><td><a href="#phase-29">Phase 29: การสร้างระบบไฟล์ความจำและบริบทสำหรับ AI เพื่อการย้ายเครื่องทำงาน</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>2 ต.ค. 2026 (16:30 - 16:45 น.)</td><td><a href="#phase-30">Phase 30: การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก GitHub (.gitignore)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
         </tbody>
       </table>
     </section>
@@ -1175,6 +1177,34 @@
         <li>รัน ESLint: <code>npm run lint</code> &rarr; <strong>0 errors, 0 warnings</strong></li>
         <li>คอมไพล์โปรดักชัน Next.js: <code>npm run build</code> &rarr; <strong>Compiled successfully in 7.3s, 100% routes validated</strong></li>
         <li>เอกสารระบุบริบทครบถ้วน รองรับการถ่ายโอนโปรเจกต์ไปยังคอมพิวเตอร์เครื่องอื่นได้อย่างสมบูรณ์ โดยไม่ขาดตกบกพร่อง</li>
+      </ul>
+    </section>
+
+    <!-- Phase 30 -->
+    <section class="section-card" id="phase-30">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 30: การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก GitHub (.gitignore)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 2 ตุลาคม 2026 (16:30 น.)</span>
+        <span>🔒 Security & Git Tracking Exclusion</span>
+      </div>
+      <p>ซ่อนไฟล์เอกสารส่งมอบงานเดิม <code>PROJECT-HANDOVER.md</code> ออกจาก Git Remote Repository (GitHub) ตามความต้องการของผู้ใช้ โดยเก็บรักษาไฟล์จริงในเครื่องไว้เหมือนเดิม 100% ไม่สูญหาย และป้องกันไม่ให้ Git ตรวจจับหรืออัปโหลดไฟล์นี้ขึ้น GitHub อีกในอนาคต:</p>
+      <h3>1. การยกเลิกการติดตามใน Git Index (Untracking from Git Cache):</h3>
+      <ul>
+        <li>ใช้คำสั่ง <code>git rm --cached PROJECT-HANDOVER.md</code> เพื่อนำไฟล์ออกจาก Git Staging Index</li>
+        <li>ยืนยันสถานะ: ไฟล์ <code>PROJECT-HANDOVER.md</code> บน Local Disk ยังคงอยู่ครบถ้วน ไม่มีการแก้ไขเนื้อหาใดๆ ภายในไฟล์</li>
+      </ul>
+      <h3>2. การเพิ่มข้อกำหนดใน <code>.gitignore</code>:</h3>
+      <ul>
+        <li>เพิ่ม <code>PROJECT-HANDOVER.md</code> ลงในหมวด <code># Local private documents</code> ใน <code>.gitignore</code></li>
+        <li>ป้องกันไม่ให้ Git นำไฟล์นี้กลับเข้ามาใน Working Tree แม้จะมีการเปลี่ยนแปลงใดๆ บนเครื่องในอนาคต</li>
+      </ul>
+      <h3>3. ผลการตรวจสอบคุณภาพ (Quality Verification):</h3>
+      <ul>
+        <li>ยืนยันไฟล์บนเครื่อง: <code>Test-Path PROJECT-HANDOVER.md</code> &rarr; <strong>True</strong> (ไฟล์ไม่สูญหาย)</li>
+        <li>ยืนยันการซ่อน: Git แสดงสถานะ <code>deleted: PROJECT-HANDOVER.md</code> สำหรับการพุชขึ้น Remote และ <code>.gitignore</code> ครอบคลุมสมบูรณ์</li>
       </ul>
     </section>
 

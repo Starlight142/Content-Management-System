@@ -1434,6 +1434,29 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - คอมไพล์โปรดักชัน Next.js: `npm run build` $\rightarrow$ **Compiled successfully in 7.3s, 100% routes validated**
    - เอกสารระบุบริบทครบถ้วน รองรับการถ่ายโอนโปรเจกต์ไปยังคอมพิวเตอร์เครื่องอื่นได้อย่างสมบูรณ์ โดยไม่ขาดตกบกพร่อง
 
+---
+
+### Phase 30: การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก GitHub (Untracking & Git-ignoring PROJECT-HANDOVER.md)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 2 ตุลาคม 2026 (16:30 น.)
+
+**เป้าหมายการดำเนินงาน**: ซ่อนไฟล์เอกสารส่งมอบงานเดิม [`PROJECT-HANDOVER.md`](file:///d:/VsCode/Project/Content-Management-System/PROJECT-HANDOVER.md) ออกจาก Git Remote Repository (GitHub) ตามความต้องการของผู้ใช้ โดยเก็บรักษาไฟล์จริงในเครื่องไว้เหมือนเดิม 100% ไม่สูญหาย และป้องกันไม่ให้ Git ตรวจจับหรืออัปโหลดไฟล์นี้ขึ้น GitHub อีกในอนาคต:
+
+1. **การยกเลิกการติดตามใน Git Index (Untracking from Git Cache)**:
+   - ใช้คำสั่ง `git rm --cached PROJECT-HANDOVER.md` เพื่อนำไฟล์ออกจาก Git Staging Index
+   - ยืนยันสถานะ: ไฟล์ `PROJECT-HANDOVER.md` บน Local Disk ยังคงอยู่ครบถ้วน ไม่มีการแก้ไขเนื้อหาใดๆ ภายในไฟล์
+
+2. **การเพิ่มข้อกำหนดใน [`.gitignore`](file:///d:/VsCode/Project/Content-Management-System/.gitignore)**:
+   - เพิ่ม `PROJECT-HANDOVER.md` ลงในหมวด `# Local private documents` ใน `.gitignore`
+   - ป้องกันไม่ให้ Git นำไฟล์นี้กลับเข้ามาใน Working Tree แม้จะมีการเปลี่ยนแปลงใดๆ บนเครื่องในอนาคต
+
+3. **การบันทึกสถานะในเอกสารบริบทของระบบ**:
+   - ปรับปรุง [**`AI-MEMORY.md`**](file:///d:/VsCode/Project/Content-Management-System/AI-MEMORY.md) และ [**`AGENTS.md`**](file:///d:/VsCode/Project/Content-Management-System/AGENTS.md) ให้อธิบายสถานะของ `PROJECT-HANDOVER.md` ว่าเป็น Local-only Document ที่ถูกยกเว้นการติดตามบน GitHub อย่างเป็นทางการ
+
+4. **ผลการตรวจสอบคุณภาพ (Quality Verification)**:
+   - ยืนยันไฟล์บนเครื่อง: `Test-Path PROJECT-HANDOVER.md` $\rightarrow$ **True** (ไฟล์ไม่สูญหาย)
+   - ยืนยันการซ่อน: Git แสดงสถานะ `deleted: PROJECT-HANDOVER.md` สำหรับการพุชขึ้น Remote และ `.gitignore` ครอบคลุมสมบูรณ์
+
+
 
 
 

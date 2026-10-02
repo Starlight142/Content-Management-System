@@ -56,3 +56,6 @@ powershell.cmd
 compass-connections.json
 tools/
 *.exe
+
+# Local private documents
+PROJECT-HANDOVER.md
