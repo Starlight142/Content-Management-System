@@ -151,6 +151,12 @@ npm run dev
      - **Mode 3: Cloudflare Tunnel**: Runs via `start-cloudflare-tunnel.ps1`, generating a public HTTPS URL without router port forwarding.
    - Network ping helper in `api.js` has a strict 2,500ms `AbortController` timeout to prevent UI blocking.
    - Real-time WebSocket dynamically updates via `presenceService.setCustomWsUrl(newWsUrl)`.
+4. **Mobile App Modal Dialogs & Window Blur**:
+   - Centralized under `master/mobile-app/src/components/SmoothModal.jsx`.
+   - Uses `KeyboardAvoidingView` + `ScrollView` (`keyboardShouldPersistTaps="handled"`) to prevent Android soft keyboard from covering form fields or buttons.
+   - Fluid spring physics (`friction: 9, tension: 65`) and cubic ease fade curves replace rigid default transitions.
+   - Multi-layered frosted backdrop with contrast diffusion and subtle top specular border.
+   - In `android/app/src/main/res/values-v31/styles.xml`, native hardware-accelerated window blur (`android:windowBlurBehindEnabled="true"`, `android:windowBlurBehindRadius="28dp"`) is enabled for dialog windows on Android 12+ (API 31+).
 
 ---
 
@@ -274,3 +280,4 @@ Before delivering any work, always execute the following quality checks:
    git commit -m "<concise descriptive message>"
    git push origin main
    ```
+

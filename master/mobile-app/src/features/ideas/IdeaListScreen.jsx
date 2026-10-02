@@ -7,13 +7,13 @@ import {
   TextInput,
   StyleSheet,
   Alert,
-  Modal,
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ideaApi } from '../../services/api';
 import { useTheme } from '../../theme/ThemeContext';
+import SmoothModal from '../../components/SmoothModal';
 
 export default function IdeaListScreen({ onBack }) {
   const { isDark, colors } = useTheme();
@@ -291,95 +291,79 @@ export default function IdeaListScreen({ onBack }) {
       </ScrollView>
 
       {/* Propose Idea Modal */}
-      <Modal visible={isModalOpen} animationType="slide" transparent>
-        <View
+      <SmoothModal
+        visible={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="นำเสนอไอเดียใหม่"
+        subtitle="เสนอแนวคิดคอนเทนต์ใหม่เข้าสู่สตูดิโอ"
+      >
+        <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>ชื่อไอเดีย (Title)</Text>
+        <TextInput
           style={[
-            styles.modalOverlay,
-            { backgroundColor: isDark ? 'rgba(0,0,0,0.75)' : 'rgba(15, 23, 42, 0.6)' },
+            styles.textInput,
+            {
+              backgroundColor: colors.inputBg,
+              borderColor: colors.inputBorder,
+              color: colors.textPrimary,
+            },
           ]}
-        >
-          <View
-            style={[
-              styles.modalContent,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-            ]}
-          >
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>นำเสนอไอเดียใหม่</Text>
-              <TouchableOpacity onPress={() => setIsModalOpen(false)}>
-                <Text style={[styles.modalCloseText, { color: colors.textMuted }]}>✕</Text>
-              </TouchableOpacity>
-            </View>
+          placeholder="เช่น รีวิวไมโครโฟนไร้สายสำหรับ Creator..."
+          placeholderTextColor={colors.textMuted}
+          value={title}
+          onChangeText={setTitle}
+        />
 
-            <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>ชื่อไอเดีย (Title)</Text>
-            <TextInput
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor: colors.inputBg,
-                  borderColor: colors.inputBorder,
-                  color: colors.textPrimary,
-                },
-              ]}
-              placeholder="เช่น รีวิวไมโครโฟนไร้สายสำหรับ Creator..."
-              placeholderTextColor={colors.textMuted}
-              value={title}
-              onChangeText={setTitle}
-            />
-
-            <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>แพลตฟอร์มเป้าหมาย</Text>
-            <View style={styles.platformSelectRow}>
-              {['YouTube', 'TikTok', 'Instagram'].map((p) => (
-                <TouchableOpacity
-                  key={p}
-                  style={[
-                    styles.platOption,
-                    { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
-                    platform === p && { backgroundColor: colors.primary, borderColor: colors.primary },
-                  ]}
-                  onPress={() => setPlatform(p)}
-                >
-                  <Text
-                    style={[
-                      styles.platOptionText,
-                      { color: colors.textSecondary },
-                      platform === p && { color: '#FFFFFF' },
-                    ]}
-                  >
-                    {p}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>คำอธิบายและแนวคิด (Concept & Hook)</Text>
-            <TextInput
-              style={[
-                styles.textInput,
-                styles.textArea,
-                {
-                  backgroundColor: colors.inputBg,
-                  borderColor: colors.inputBorder,
-                  color: colors.textPrimary,
-                },
-              ]}
-              placeholder="อธิบายจุดขาย และสิ่งที่ผู้ชมจะได้รับ..."
-              placeholderTextColor={colors.textMuted}
-              value={desc}
-              onChangeText={setDesc}
-              multiline
-              numberOfLines={3}
-            />
-
+        <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>แพลตฟอร์มเป้าหมาย</Text>
+        <View style={styles.platformSelectRow}>
+          {['YouTube', 'TikTok', 'Instagram'].map((p) => (
             <TouchableOpacity
-              style={[styles.submitIdeaBtn, { backgroundColor: colors.primary }]}
-              onPress={handleCreateIdea}
+              key={p}
+              style={[
+                styles.platOption,
+                { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+                platform === p && { backgroundColor: colors.primary, borderColor: colors.primary },
+              ]}
+              onPress={() => setPlatform(p)}
             >
-              <Text style={styles.submitIdeaBtnText}>ส่งข้อเสนอไอเดีย (Submit)</Text>
+              <Text
+                style={[
+                  styles.platOptionText,
+                  { color: colors.textSecondary },
+                  platform === p && { color: '#FFFFFF' },
+                ]}
+              >
+                {p}
+              </Text>
             </TouchableOpacity>
-          </View>
+          ))}
         </View>
-      </Modal>
+
+        <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>คำอธิบายและแนวคิด (Concept & Hook)</Text>
+        <TextInput
+          style={[
+            styles.textInput,
+            styles.textArea,
+            {
+              backgroundColor: colors.inputBg,
+              borderColor: colors.inputBorder,
+              color: colors.textPrimary,
+            },
+          ]}
+          placeholder="อธิบายจุดขาย และสิ่งที่ผู้ชมจะได้รับ..."
+          placeholderTextColor={colors.textMuted}
+          value={desc}
+          onChangeText={setDesc}
+          multiline
+          numberOfLines={3}
+        />
+
+        <TouchableOpacity
+          style={[styles.submitIdeaBtn, { backgroundColor: colors.primary, marginTop: 16 }]}
+          onPress={handleCreateIdea}
+        >
+          <Text style={styles.submitIdeaBtnText}>ส่งข้อเสนอไอเดีย (Submit)</Text>
+        </TouchableOpacity>
+      </SmoothModal>
     </SafeAreaView>
   );
 }

@@ -56,3 +56,4 @@ Before performing any action, read [AI-MEMORY.md](./AI-MEMORY.md) for complete t
   - Manager: `manager@studio.com` (Mobile App - Team A)
   - Member: `member@studio.com` (Mobile App - Team A)
 - **Team Code**: `TEAM-A` (Content Team A), `TEAM-B` (Beta Studio)
+

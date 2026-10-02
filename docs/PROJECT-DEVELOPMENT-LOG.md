@@ -35,7 +35,12 @@
 | **27 ก.ย. 2026** | [Phase 23: การบรรลุขอบเขตระบบวิชาการครบถ้วน 100% ข้าม Web และ Mobile (Complete Academic Scope Alignment 1.3.1 & 1.3.2)](#phase-23-การบรรลุขอบเขตระบบวิชาการครบถ้วน-100-ข้าม-web-และ-mobile-complete-academic-scope-alignment-131--132) | สำเร็จ ✅ |
 | **28 ก.ย. 2026** | [Phase 24: การปรับปรุงระบบ Admin Web สู่การใช้งานข้อมูลจริง 100% (Real Database Integration, Dynamic Audit Logs, All-Tasks Management & Live Monitoring)](#phase-24-การปรับปรุงระบบ-admin-web-สู่การใช้งานข้อมูลจริง-100-real-database-integration-dynamic-audit-logs-all-tasks-management--live-monitoring) | สำเร็จ ✅ |
 | **28 ก.ย. 2026 (ค่ำ)** | [Phase 25: ระบบสลับเซิร์ฟเวอร์ด่วนบนมือถือ, การแก้บั๊กการเชื่อมต่อ & ระบบลงทะเบียนด้วยรหัสทีม (Server Config Modal, Live Latency Ping & Team Code Registration)](#phase-25-ระบบสลับเซิร์ฟเวอร์ด่วนบนมือถือ-การแก้บั๊กการเชื่อมต่อ--ระบบลงทะเบียนด้วยรหัสทีม-server-config-modal-live-latency-ping--team-code-registration) | สำเร็จ ✅ |
-| **29 ก.ย. 2026** | [Phase 26: การปรับปรุง Admin Web Authentication Guard เริ่มต้นที่หน้า Login ทุกครั้ง (Next.js Middleware HTTP 307 Redirect & Session Guard)](#phase-26-การปรับปรุง-admin-web-authentication-guard-เริ่มต้นที่หน้า-login-ทุกครั้ง-nextjs-middleware-http-307-redirect--session-guard) | ปัจจุบัน 📍 |
+| **29 ก.ย. 2026** | [Phase 26: การปรับปรุง Admin Web Authentication Guard เริ่มต้นที่หน้า Login ทุกครั้ง (Next.js Middleware HTTP 307 Redirect & Session Guard)](#phase-26-การปรับปรุง-admin-web-authentication-guard-เริ่มต้นที่หน้า-login-ทุกครั้ง-nextjs-middleware-http-307-redirect--session-guard) | สำเร็จ ✅ |
+| **30 ก.ย. 2026** | [Phase 27: การแก้ไขปัญหา WebSocket Connection Drop & ปรับปรุงความเสถียรในการเชื่อมต่อ Real-time](#phase-27-การแก้ไขปัญหา-websocket-connection-drop--ปรับปรุงความเสถียรในการเชื่อมต่อ-real-time) | สำเร็จ ✅ |
+| **1 ต.ค. 2026** | [Phase 28: การทำความสะอาดโค้ดและฐานข้อมูล, การลบ Dead Code, การจัดระเบียบ UI ปราศจากอีโมจิฟุ่มเฟือย](#phase-28-การทำความสะอาดโค้ดและฐานข้อมูล-การลบ-dead-code-การจัดระเบียบ-ui-ปราศจากอีโมจิฟุ่มเฟือย) | สำเร็จ ✅ |
+| **2 ต.ค. 2026 (บ่าย)** | [Phase 29: การสร้างระบบไฟล์ความจำและบริบทสำหรับ AI เพื่อการย้ายเครื่องทำงาน (AI Memory Files & Cross-PC Transfer Architecture)](#phase-29-การสร้างระบบไฟล์ความจำและบริบทสำหรับ-ai-เพื่อการย้ายเครื่องทำงาน-ai-memory-files--cross-pc-transfer-architecture) | สำเร็จ ✅ |
+| **2 ต.ค. 2026 (16:30 น.)** | [Phase 30: การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก GitHub (Untracking & Git-ignoring PROJECT-HANDOVER.md)](#phase-30-การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก-github-untracking--git-ignoring-project-handovermd) | สำเร็จ ✅ |
+| **2 ต.ค. 2026 (17:15 น.)** | [Phase 31: การพัฒนาระบบ SmoothModal พร้อมแอนิเมชัน Spring, แก้ไขปัญหาคีย์บอร์ดบังช่องกรอก และระบบเบลอพื้นหลัง](#phase-31-การพัฒนาระบบ-smoothmodal-พร้อมแอนิเมชัน-spring-แก้ไขปัญหาคีย์บอร์ดบังช่องกรอก-และระบบเบลอพื้นหลัง-smoothmodal-with-spring-physics-keyboard-avoiding-scrollview--frosted-window-blur-backdrop) | สำเร็จ ✅ |
 
 ---
 
@@ -1455,6 +1460,60 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 4. **ผลการตรวจสอบคุณภาพ (Quality Verification)**:
    - ยืนยันไฟล์บนเครื่อง: `Test-Path PROJECT-HANDOVER.md` $\rightarrow$ **True** (ไฟล์ไม่สูญหาย)
    - ยืนยันการซ่อน: Git แสดงสถานะ `deleted: PROJECT-HANDOVER.md` สำหรับการพุชขึ้น Remote และ `.gitignore` ครอบคลุมสมบูรณ์
+
+---
+
+### Phase 31: การพัฒนาระบบ SmoothModal พร้อมแอนิเมชัน Spring, แก้ไขปัญหาคีย์บอร์ดบังช่องกรอก และระบบเบลอพื้นหลัง (SmoothModal with Spring Physics, Keyboard-Avoiding ScrollView & Frosted Window Blur Backdrop)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 2 ตุลาคม 2026 (17:15 น.)
+
+**เป้าหมายการดำเนินงาน**: ยกระดับประสบการณ์การใช้งานกล่องข้อความโต้ตอบ (Modal Dialogs) บน Mobile App ให้มีความลื่นไหล เป็นธรรมชาติ สวยงามประณีตแบบที่วิศวกรซอฟต์แวร์ออกแบบเอง (Human-crafted UI) พร้อมแก้ปัญหาคีย์บอร์ดบน Android บดบังช่องกรอกข้อมูลและปุ่มดำเนินการ:
+
+1. **การวิเคราะห์ปัญหาเดิม (Problem Root Causes)**:
+   - **ปัญหาคีย์บอร์ดบดบังช่องกรอก**: ในหน้า [`ManagerDashboard.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/dashboard/ManagerDashboard.jsx) กล่อง Modal เดิมใช้ `justifyContent: 'center'` ภายใต้โครงสร้างที่ไม่มี `ScrollView` เมื่อผู้ใช้แตะที่ช่องกรอกรายละเอียด (Description) แป้นพิมพ์ Android จะเด้งขึ้นมาปิดทับส่วนล่างของกล่อง ทำให้มองไม่เห็นข้อความที่พิมพ์ และไม่สามารถเลื่อนหน้าจอเพื่อกดปุ่มยืนยันหรือยกเลิกได้
+   - **แอนิเมชันแข็งกระด้าง (Stiff Transition)**: การใช้ `animationType="slide"` มาตรฐานของ Android เป็นการเลื่อนหน้าต่างขึ้นตรงๆ แบบ Linear ปราศจากความโค้งมนหรือการหน่วง (Damping) ไม่มีเอฟเฟกต์เฟดฉากหลัง ทำให้รู้สึกกระตุกและแข็ง
+   - **ฉากหลังทึบแบน (Flat Dark Dimming)**: สีพื้นหลังเดิมใช้ `rgba(15, 23, 42, 0.6)` เป็นเพียงฟิล์มสีเทาดำแบนๆ ปราศจากการเบลอหรือลดความเปรียบต่าง ทำให้เห็นข้อความด้านหลังตัดกับกล่องอย่างไม่เป็นระเบียบ
+
+2. **การสร้างคอมโพเนนต์กลาง [`SmoothModal.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/components/SmoothModal.jsx)**:
+   - สร้างโมดูลหน้าต่างโต้ตอบระดับสูงที่นำกลับมาใช้ซ้ำได้ทั่วทั้งแอป
+   - **ระบบจัดการคีย์บอร์ดอัจฉริยะ**:
+     - ผสาน `KeyboardAvoidingView` กำหนดพฤติกรรมตามแพลตฟอร์ม (`Platform.OS === 'ios' ? 'padding' : 'height'`)
+     - รองรับการเลื่อนดูเนื้อหาด้วย `ScrollView` (`keyboardShouldPersistTaps="handled"` และ `contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}`)
+     - เพิ่มฟังก์ชันแตะพื้นที่ว่างเพื่อยุบแป้นพิมพ์ (`Keyboard.dismiss`) โดยอัตโนมัติ
+   - **ระบบแอนิเมชันคู่ขนาน (Parallel Organic Animation)**:
+     - ใช้ `Animated.spring` ปรับขนาด (Scale: `0.92 -> 1.0`) ด้วยสปริงฟิสิกส์ (`friction: 9, tension: 65`) ให้ความรู้สึกเด้งนุ่มนวลแบบโมบายล์แอปยุคใหม่
+     - สไลด์ขึ้นในแนวดิ่ง (Slide Y: `24 -> 0`) พร้อมกับ Fade Opacity (`0 -> 1`) ภายใน 200ms ด้วย `Easing.out(Easing.cubic)`
+     - แอนิเมชันปิดตัว (Exit Transition) ที่รวดเร็วกระชับ (150ms) ปราศจากอาการค้างหน่วง
+   - **ฉากหลังโปร่งแสงแบบ Frosted Glass Diffusion Layer**:
+     - ปรับค่าความทึบของฉากหลังให้สมดุล (`rgba(15, 23, 42, 0.42)` ใน Light Mode และ `rgba(5, 10, 20, 0.65)` ใน Dark Mode)
+     - เสริมเลเยอร์ Diffusion อ่อนๆ เพื่อลดความเปรียบต่างของหน้าจอด้านล่าง ให้ความรู้สึกลึก นุ่มนวล เสมือนกระจกฝ้า
+   - **การตกแต่งการ์ดแบบมืออาชีพ (Senior Polish)**:
+     - เพิ่มแถบ Handle Pill ขนาดเล็กด้านบน สำหรับบอกทิศทางและให้ความรู้สึกแบบ Bottom Sheet
+     - ขอบมนโค้งมนประณีต `borderRadius: 22` พร้อมแสงสะท้อนขอบบน (Top Specular Highlight Border)
+     - ปุ่มปิดมุมขวาบน `✕` สวยงามและตอบสนองต่อการสัมผัส (`hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}`)
+
+3. **การเปิดใช้งาน Native Hardware-Accelerated Window Blur สำหรับ Android 12+ (API 31+)**:
+   - สร้างไฟล์สไตล์เฉพาะรุ่น [`values-v31/styles.xml`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/android/app/src/main/res/values-v31/styles.xml)
+   - กำหนดสไตล์ `Theme.FullScreenDialog` และ `Theme.ReactNative.Modal` ให้เปิดใช้งานคุณสมบัติ:
+     - `android:windowBlurBehindEnabled = true`
+     - `android:windowBlurBehindRadius = 28dp`
+   - ทำให้ระบบแสดงผล SurfaceFlinger ของ Android ประมวลผลการเบลอฉากหลังในระดับชิปประมวลผลกราฟิก (GPU) ทันทีที่เปิดหน้าต่าง Modal
+
+4. **การนำไปใช้งานทดแทน Modal เดิมในทุกหน้าจอ (Application-wide Rollout)**:
+   - [`ManagerDashboard.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/dashboard/ManagerDashboard.jsx):
+     - ปรับปรุง Create Content Modal (สร้าง Content ชิ้นใหม่)
+     - ปรับปรุง Revision Modal (ส่งกลับแก้ไขชิ้นงาน)
+     - ปรับปรุง Assign Task Modal (มอบหมายงานย่อย)
+   - [`IdeaListScreen.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/ideas/IdeaListScreen.jsx):
+     - ปรับปรุง Propose Idea Modal (ส่งข้อเสนอไอเดีย)
+   - [`ProfileScreen.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/profile/ProfileScreen.jsx):
+     - ปรับปรุง Edit Profile Modal (แก้ไขข้อมูลส่วนตัว)
+   - ทำความสะอาดโค้ดและลบการนำเข้า Unused `Modal` และ `KeyboardAvoidingView` ในทุกไฟล์
+
+5. **ผลการตรวจสอบคุณภาพ (Quality Verification)**:
+   - ตรวจสอบไวยากรณ์ React Native: โค้ดผ่านเกณฑ์ 100% ปราศจาก Syntax Error หรือ Unclosed Tag
+   - ปัญหาแป้นพิมพ์บดบังช่องกรอก: ได้รับการแก้ไขอย่างเด็ดขาด สามารถเลื่อนดูช่องกรอกและปุ่มกดยืนยันได้ครบถ้วน
+   - แอนิเมชันและความสวยงาม: มีความนุ่มนวล เรียบง่าย ดูเป็นธรรมชาติแบบที่วิศวกรซอฟต์แวร์ออกแบบเอง ปราศจากอีโมจิฟุ่มเฟือย
+
 
 
 

@@ -414,7 +414,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <h2>📜 Draftly Dev Log</h2>
-      <p>บันทึกวิศวกรรมระบบ 28 เฟส</p>
+      <p>บันทึกวิศวกรรมระบบ 31 เฟส</p>
       <input type="text" id="phaseSearch" class="search-box" placeholder="🔍 ค้นหาเฟส / ฟีเจอร์...">
     </div>
     <ul class="nav-list" id="navList">
@@ -449,6 +449,7 @@
       <li class="nav-item"><a href="#phase-28" class="nav-link"><span class="nav-tag">P28</span>Cleanup, Simplicity & QA</a></li>
       <li class="nav-item"><a href="#phase-29" class="nav-link"><span class="nav-tag">P29</span>AI Memory & Transfer</a></li>
       <li class="nav-item"><a href="#phase-30" class="nav-link"><span class="nav-tag">P30</span>Untrack Handover Doc</a></li>
+      <li class="nav-item"><a href="#phase-31" class="nav-link"><span class="nav-tag">P31</span>SmoothModal & Window Blur</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -515,6 +516,7 @@
           <tr><td>1 ต.ค. 2026 (11:00 - 12:30 น.)</td><td><a href="#phase-28">Phase 28: การล้างฐานข้อมูลและโค้ดที่ไม่ใช้งาน, ปรับแต่ง UI & การทดสอบระบบครบวงจร</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>2 ต.ค. 2026 (16:00 - 16:30 น.)</td><td><a href="#phase-29">Phase 29: การสร้างระบบไฟล์ความจำและบริบทสำหรับ AI เพื่อการย้ายเครื่องทำงาน</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>2 ต.ค. 2026 (16:30 - 16:45 น.)</td><td><a href="#phase-30">Phase 30: การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก GitHub (.gitignore)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>2 ต.ค. 2026 (17:15 น.)</td><td><a href="#phase-31">Phase 31: การพัฒนาระบบ SmoothModal พร้อมแอนิเมชัน Spring, แก้ปัญหาคีย์บอร์ดบังช่องกรอก & เบลอพื้นหลัง</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
         </tbody>
       </table>
     </section>
@@ -1205,6 +1207,55 @@
       <ul>
         <li>ยืนยันไฟล์บนเครื่อง: <code>Test-Path PROJECT-HANDOVER.md</code> &rarr; <strong>True</strong> (ไฟล์ไม่สูญหาย)</li>
         <li>ยืนยันการซ่อน: Git แสดงสถานะ <code>deleted: PROJECT-HANDOVER.md</code> สำหรับการพุชขึ้น Remote และ <code>.gitignore</code> ครอบคลุมสมบูรณ์</li>
+      </ul>
+    </section>
+
+    <!-- Phase 31 -->
+    <section class="section-card" id="phase-31">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 31: การพัฒนาระบบ SmoothModal พร้อมแอนิเมชัน Spring, แก้ไขปัญหาคีย์บอร์ดบังช่องกรอก และระบบเบลอพื้นหลัง</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 2 ตุลาคม 2026 (17:15 น.)</span></div>
+
+      <div class="callout callout-info">
+        <strong>Mobile UX Polish & Keyboard Optimization:</strong><br>
+        พัฒนาระบบกล่องโต้ตอบ <code>SmoothModal.jsx</code> แบบรวมศูนย์ แก้ปัญหาคีย์บอร์ดบน Android บดบังช่องกรอกและปุ่มกดยืนยัน พร้อมใส่แอนิเมชัน Spring Physics และเลเยอร์เบลอพื้นหลังแบบ Frosted Glass
+      </div>
+
+      <h3>1. การวิเคราะห์ปัญหาเดิม (Problem Analysis):</h3>
+      <ul>
+        <li><strong>คีย์บอร์ดบดบังช่องกรอกข้อมูล:</strong> ในหน้าจอ <code>ManagerDashboard.jsx</code> เมื่อแตะเพื่อพิมพ์รายละเอียดงาน คีย์บอร์ด Android เด้งขึ้นมาปิดทับส่วนล่างของ Modal ทำให้ไม่สามารถเลื่อนหน้าจอหรือกดปุ่มยืนยันสร้างงานได้</li>
+        <li><strong>แอนิเมชันกระตุกและแข็ง:</strong> ใช้ <code>animationType="slide"</code> มาตรฐานของ Android ซึ่งเลื่อนขึ้นแบบ Linear ไร้ความโค้งมนหรือสปริงฟิสิกส์ และฉากหลังไม่มีการเฟด</li>
+        <li><strong>ฉากหลังทึบแบน:</strong> ใช้สีทึบดำ <code>rgba(15, 23, 42, 0.6)</code> ปราศจากการเบลอหรือลดคอนทราสต์ ทำให้ฉากหลังดูแข็ง ไม่เป็นธรรมชาติ</li>
+      </ul>
+
+      <h3>2. การสร้างคอมโพเนนต์กลาง <code>SmoothModal.jsx</code>:</h3>
+      <ul>
+        <li><strong>ผสาน KeyboardAvoidingView & ScrollView:</strong> ปรับพฤติกรรมตามระบบปฏิบัติการ (iOS: padding, Android: height) พร้อมตั้งค่า <code>keyboardShouldPersistTaps="handled"</code> และรองรับการแตะพื้นที่ว่างเพื่อยุบคีย์บอร์ดอัตโนมัติ</li>
+        <li><strong>แอนิเมชันสปริงและเฟดคู่ขนาน:</strong> ใช้ <code>Animated.spring</code> (Scale: 0.92 &rarr; 1.0, Slide Y: 24 &rarr; 0) ด้วยค่า <code>friction: 9, tension: 65</code> ให้การเคลื่อนไหวที่นุ่มนวลและเป็นธรรมชาติ</li>
+        <li><strong>ฉากหลัง Frosted Diffusion Layer:</strong> ปรับความทึบแสงให้โปร่งพอดี และซ้อนเลเยอร์ Diffusion อ่อนๆ เพื่อลดความเปรียบต่างของหน้าจอด้านล่าง เลียนแบบเอฟเฟกต์กระจกฝ้า</li>
+        <li><strong>ดีไซน์การ์ดระดับพรีเมียม:</strong> เพิ่มแถบ Handle Pill สำหรับบอกทิศทาง, มุมโค้ง <code>borderRadius: 22</code>, แสงสะท้อนขอบบน (Top Specular Highlight Border), และเงาฟุ้งซอฟต์</li>
+      </ul>
+
+      <h3>3. การเปิดใช้งาน Native Window Blur บน Android 12+ (API 31+):</h3>
+      <ul>
+        <li>สร้างไฟล์ <code>master/mobile-app/android/app/src/main/res/values-v31/styles.xml</code></li>
+        <li>เปิดใช้งาน <code>android:windowBlurBehindEnabled = true</code> และกำหนดรัศมี <code>android:windowBlurBehindRadius = 28dp</code> ในระดับหน้าต่าง Dialog ของ Android SurfaceFlinger</li>
+      </ul>
+
+      <h3>4. การปรับใช้ทั่วทั้งแอปพลิเคชัน (Mobile App Rollout):</h3>
+      <ul>
+        <li><code>ManagerDashboard.jsx</code>: ใช้งานกับ Create Content Modal, Revision Modal, และ Assign Task Modal</li>
+        <li><code>IdeaListScreen.jsx</code>: ใช้งานกับ Propose Idea Modal</li>
+        <li><code>ProfileScreen.jsx</code>: ใช้งานกับ Edit Profile Modal</li>
+        <li>ทำความสะอาดโค้ด ลบ Unused <code>Modal</code> และ <code>KeyboardAvoidingView</code> ออกจากทุกไฟล์</li>
+      </ul>
+
+      <h3>5. ผลการตรวจสอบคุณภาพ (Quality Verification):</h3>
+      <ul>
+        <li>สามารถพิมพ์ข้อความในช่องกรอก และเลื่อนหน้าจอดูปุ่มยืนยัน/ยกเลิกได้อย่างสมบูรณ์</li>
+        <li>แอนิเมชันเปิดปิดนุ่มนวล ลื่นไหล ดูเป็นธรรมชาติแบบที่วิศวกรซอฟต์แวร์ออกแบบเอง ปราศจากความแข็งกระด้าง</li>
       </ul>
     </section>
 

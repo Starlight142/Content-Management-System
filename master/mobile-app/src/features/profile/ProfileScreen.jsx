@@ -7,7 +7,6 @@ import {
   ScrollView,
   Alert,
   Switch,
-  Modal,
   TextInput,
   ActivityIndicator,
 } from 'react-native';
@@ -15,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { presenceService } from '../../services/presenceService';
 import { userApi } from '../../services/api';
+import SmoothModal from '../../components/SmoothModal';
 
 export default function ProfileScreen({ user, onLogout }) {
   const { isDark, toggleTheme, colors } = useTheme();
@@ -227,58 +227,56 @@ export default function ProfileScreen({ user, onLogout }) {
       </ScrollView>
 
       {/* Edit Profile Modal */}
-      <Modal visible={isEditModalOpen} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>แก้ไขข้อมูลส่วนตัว</Text>
-            <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>อัปเดตชื่อและนามสกุลสำหรับแสดงผลในระบบ</Text>
-
-            <View style={styles.inputGroup}>
-              <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>ชื่อ (First Name)</Text>
-              <TextInput
-                style={[styles.input, { backgroundColor: colors.surfaceSubtle, color: colors.textPrimary, borderColor: colors.border }]}
-                value={editFirstName}
-                onChangeText={setEditFirstName}
-                placeholder="ชื่อของคุณ"
-                placeholderTextColor={colors.textMuted}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>นามสกุล (Last Name)</Text>
-              <TextInput
-                style={[styles.input, { backgroundColor: colors.surfaceSubtle, color: colors.textPrimary, borderColor: colors.border }]}
-                value={editLastName}
-                onChangeText={setEditLastName}
-                placeholder="นามสกุลของคุณ"
-                placeholderTextColor={colors.textMuted}
-              />
-            </View>
-
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={[styles.modalBtnCancel, { backgroundColor: colors.surfaceSubtle }]}
-                onPress={() => setIsEditModalOpen(false)}
-                activeOpacity={0.8}
-              >
-                <Text style={[styles.modalBtnCancelText, { color: colors.textSecondary }]}>ยกเลิก</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalBtnSubmit, { backgroundColor: colors.primary }]}
-                onPress={handleSaveProfile}
-                disabled={saving}
-                activeOpacity={0.8}
-              >
-                {saving ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
-                ) : (
-                  <Text style={styles.modalBtnSubmitText}>บันทึกข้อมูล</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
+      <SmoothModal
+        visible={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title="แก้ไขข้อมูลส่วนตัว"
+        subtitle="อัปเดตชื่อและนามสกุลสำหรับแสดงผลในระบบ"
+      >
+        <View style={styles.inputGroup}>
+          <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>ชื่อ (First Name)</Text>
+          <TextInput
+            style={[styles.input, { backgroundColor: colors.surfaceSubtle, color: colors.textPrimary, borderColor: colors.border }]}
+            value={editFirstName}
+            onChangeText={setEditFirstName}
+            placeholder="ชื่อของคุณ"
+            placeholderTextColor={colors.textMuted}
+          />
         </View>
-      </Modal>
+
+        <View style={styles.inputGroup}>
+          <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>นามสกุล (Last Name)</Text>
+          <TextInput
+            style={[styles.input, { backgroundColor: colors.surfaceSubtle, color: colors.textPrimary, borderColor: colors.border }]}
+            value={editLastName}
+            onChangeText={setEditLastName}
+            placeholder="นามสกุลของคุณ"
+            placeholderTextColor={colors.textMuted}
+          />
+        </View>
+
+        <View style={styles.modalButtons}>
+          <TouchableOpacity
+            style={[styles.modalBtnCancel, { backgroundColor: colors.surfaceSubtle }]}
+            onPress={() => setIsEditModalOpen(false)}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.modalBtnCancelText, { color: colors.textSecondary }]}>ยกเลิก</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.modalBtnSubmit, { backgroundColor: colors.primary }]}
+            onPress={handleSaveProfile}
+            disabled={saving}
+            activeOpacity={0.8}
+          >
+            {saving ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.modalBtnSubmitText}>บันทึกข้อมูล</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </SmoothModal>
     </SafeAreaView>
   );
 }

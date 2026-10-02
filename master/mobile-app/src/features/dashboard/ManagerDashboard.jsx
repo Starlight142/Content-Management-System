@@ -8,9 +8,7 @@ import {
   Alert,
   RefreshControl,
   ActivityIndicator,
-  Modal,
   TextInput,
-  KeyboardAvoidingView,
   Platform,
   Linking,
 } from 'react-native';
@@ -18,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { contentApi, taskApi, userApi } from '../../services/api';
 import { presenceService } from '../../services/presenceService';
 import { useTheme } from '../../theme/ThemeContext';
+import SmoothModal from '../../components/SmoothModal';
 
 export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   const { colors } = useTheme();
@@ -678,261 +677,225 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
       </ScrollView>
 
       {/* Revision Modal Dialog */}
-      <Modal
+      <SmoothModal
         visible={revisionModalVisible}
-        animationType="fade"
-        transparent
-        onRequestClose={() => setRevisionModalVisible(false)}
+        onClose={() => setRevisionModalVisible(false)}
+        title="ส่งกลับแก้ไขชิ้นงาน"
+        subtitle={`${revisionTargetItem?.title || ''} • ผู้รับผิดชอบ: ${revisionTargetItem?.creator || 'ทีมงาน'}`}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={styles.modalOverlay}
-        >
-          <View style={[styles.modalCard, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>ส่งกลับแก้ไขชิ้นงาน</Text>
-            <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
-              {revisionTargetItem?.title} • ผู้รับผิดชอบ: {revisionTargetItem?.creator || 'ทีมงาน'}
-            </Text>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>
+          ระบุข้อคิดเห็น / คำแนะนำสิ่งที่ต้องแก้ไข:
+        </Text>
+        <TextInput
+          style={[
+            styles.modalInput,
+            {
+              backgroundColor: colors.inputBg,
+              borderColor: colors.inputBorder,
+              color: colors.textPrimary,
+            },
+          ]}
+          placeholder="เช่น นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป..."
+          placeholderTextColor={colors.textMuted}
+          value={revisionFeedback}
+          onChangeText={setRevisionFeedback}
+          multiline
+          numberOfLines={4}
+        />
 
-            <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>
-              ระบุข้อคิดเห็น / คำแนะนำสิ่งที่ต้องแก้ไข:
-            </Text>
-            <TextInput
-              style={[
-                styles.modalInput,
-                {
-                  backgroundColor: colors.inputBg,
-                  borderColor: colors.inputBorder,
-                  color: colors.textPrimary,
-                },
-              ]}
-              placeholder="เช่น นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป..."
-              placeholderTextColor={colors.textMuted}
-              value={revisionFeedback}
-              onChangeText={setRevisionFeedback}
-              multiline
-              numberOfLines={4}
-            />
+        <View style={styles.modalBtnRow}>
+          <TouchableOpacity
+            style={[styles.modalCancelBtn, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
+            onPress={() => setRevisionModalVisible(false)}
+            disabled={submittingReview}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.modalCancelBtnText, { color: colors.textSecondary }]}>ยกเลิก</Text>
+          </TouchableOpacity>
 
-            <View style={styles.modalBtnRow}>
-              <TouchableOpacity
-                style={[styles.modalCancelBtn, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
-                onPress={() => setRevisionModalVisible(false)}
-                disabled={submittingReview}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.modalCancelBtnText, { color: colors.textSecondary }]}>ยกเลิก</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.modalConfirmBtn, { backgroundColor: colors.statusRevisionText }]}
-                onPress={confirmSubmitRevision}
-                disabled={submittingReview}
-                activeOpacity={0.7}
-              >
-                {submittingReview ? (
-                  <ActivityIndicator color="#FFFFFF" size="small" />
-                ) : (
-                  <Text style={styles.modalConfirmBtnText}>ยืนยันส่งกลับแก้ไข</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+          <TouchableOpacity
+            style={[styles.modalConfirmBtn, { backgroundColor: colors.statusRevisionText }]}
+            onPress={confirmSubmitRevision}
+            disabled={submittingReview}
+            activeOpacity={0.7}
+          >
+            {submittingReview ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Text style={styles.modalConfirmBtnText}>ยืนยันส่งกลับแก้ไข</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </SmoothModal>
 
       {/* Create Content Modal (User Requirement 1.3.1 #6) */}
-      <Modal
+      <SmoothModal
         visible={createModalVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setCreateModalVisible(false)}
+        onClose={() => setCreateModalVisible(false)}
+        title="สร้าง Content ชิ้นใหม่"
+        subtitle="เปิดโปรเจกต์งานสื่อใหม่เข้าสู่สายพานการผลิต"
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={styles.modalOverlay}
-        >
-          <View style={[styles.modalCard, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>สร้าง Content ชิ้นใหม่</Text>
-            <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
-              เปิดโปรเจกต์งานสื่อใหม่เข้าสู่สายพานการผลิต
-            </Text>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>ชื่อชิ้นงาน (Title) *</Text>
+        <TextInput
+          style={[styles.modalSingleInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+          placeholder="เช่น รีวิวฟีเจอร์ AI ในสมาร์ตโฟน..."
+          placeholderTextColor={colors.textMuted}
+          value={newTitle}
+          onChangeText={setNewTitle}
+        />
 
-            <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>ชื่อชิ้นงาน (Title) *</Text>
-            <TextInput
-              style={[styles.modalSingleInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
-              placeholder="เช่น รีวิวฟีเจอร์ AI ในสมาร์ตโฟน..."
-              placeholderTextColor={colors.textMuted}
-              value={newTitle}
-              onChangeText={setNewTitle}
-            />
+        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>แพลตฟอร์มเผยแพร่</Text>
+        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+          {['TikTok', 'YouTube', 'Instagram'].map((p) => (
+            <TouchableOpacity
+              key={p}
+              style={[
+                styles.choiceChip,
+                { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+                newPlatform === p && { backgroundColor: colors.primary, borderColor: colors.primary },
+              ]}
+              onPress={() => setNewPlatform(p)}
+            >
+              <Text style={[styles.choiceChipText, { color: colors.textSecondary }, newPlatform === p && { color: '#fff', fontWeight: '700' }]}>
+                {p}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-            <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>แพลตฟอร์มเผยแพร่</Text>
-            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
-              {['TikTok', 'YouTube', 'Instagram'].map((p) => (
-                <TouchableOpacity
-                  key={p}
-                  style={[
-                    styles.choiceChip,
-                    { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
-                    newPlatform === p && { backgroundColor: colors.primary, borderColor: colors.primary },
-                  ]}
-                  onPress={() => setNewPlatform(p)}
-                >
-                  <Text style={[styles.choiceChipText, { color: colors.textSecondary }, newPlatform === p && { color: '#fff', fontWeight: '700' }]}>
-                    {p}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>กำหนดส่งงาน (YYYY-MM-DD)</Text>
+        <TextInput
+          style={[styles.modalSingleInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+          placeholder="2026-10-15"
+          placeholderTextColor={colors.textMuted}
+          value={newDueDate}
+          onChangeText={setNewDueDate}
+        />
 
-            <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>กำหนดส่งงาน (YYYY-MM-DD)</Text>
-            <TextInput
-              style={[styles.modalSingleInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
-              placeholder="2026-10-15"
-              placeholderTextColor={colors.textMuted}
-              value={newDueDate}
-              onChangeText={setNewDueDate}
-            />
+        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>คำอธิบาย / รายละเอียดเบื้องต้น</Text>
+        <TextInput
+          style={[styles.modalInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary, height: 70 }]}
+          placeholder="เนื้อหาคร่าวๆ, จุดประสงค์ หรือแนวคิด..."
+          placeholderTextColor={colors.textMuted}
+          value={newDesc}
+          onChangeText={setNewDesc}
+          multiline
+        />
 
-            <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>คำอธิบาย / รายละเอียดเบื้องต้น</Text>
-            <TextInput
-              style={[styles.modalInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary, height: 60 }]}
-              placeholder="เนื้อหาคร่าวๆ, จุดประสงค์ หรือแนวคิด..."
-              placeholderTextColor={colors.textMuted}
-              value={newDesc}
-              onChangeText={setNewDesc}
-              multiline
-            />
+        <View style={styles.modalBtnRow}>
+          <TouchableOpacity
+            style={[styles.modalCancelBtn, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
+            onPress={() => setCreateModalVisible(false)}
+            disabled={submittingCreate}
+          >
+            <Text style={[styles.modalCancelBtnText, { color: colors.textSecondary }]}>ยกเลิก</Text>
+          </TouchableOpacity>
 
-            <View style={styles.modalBtnRow}>
-              <TouchableOpacity
-                style={[styles.modalCancelBtn, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
-                onPress={() => setCreateModalVisible(false)}
-                disabled={submittingCreate}
-              >
-                <Text style={[styles.modalCancelBtnText, { color: colors.textSecondary }]}>ยกเลิก</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.modalConfirmBtn, { backgroundColor: colors.primary }]}
-                onPress={handleCreateContent}
-                disabled={submittingCreate}
-              >
-                {submittingCreate ? (
-                  <ActivityIndicator color="#FFFFFF" size="small" />
-                ) : (
-                  <Text style={styles.modalConfirmBtnText}>ยืนยันสร้างงาน</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+          <TouchableOpacity
+            style={[styles.modalConfirmBtn, { backgroundColor: colors.primary }]}
+            onPress={handleCreateContent}
+            disabled={submittingCreate}
+          >
+            {submittingCreate ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Text style={styles.modalConfirmBtnText}>ยืนยันสร้างงาน</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </SmoothModal>
 
       {/* Assign Task Modal (User Requirement 1.3.1 #7) */}
-      <Modal
+      <SmoothModal
         visible={assignModalVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setAssignModalVisible(false)}
+        onClose={() => setAssignModalVisible(false)}
+        title="มอบหมายงานย่อย (Assign Task)"
+        subtitle={`สำหรับชิ้นงาน: ${assignTargetContent?.title || ''}`}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={styles.modalOverlay}
-        >
-          <View style={[styles.modalCard, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>มอบหมายงานย่อย (Assign Task)</Text>
-            <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
-              สำหรับชิ้นงาน: {assignTargetContent?.title}
-            </Text>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>ชื่องานย่อย *</Text>
+        <TextInput
+          style={[styles.modalSingleInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+          placeholder="เช่น ตัดต่อคลิปหลัก 60 วินาที..."
+          placeholderTextColor={colors.textMuted}
+          value={taskTitle}
+          onChangeText={setTaskTitle}
+        />
 
-            <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>ชื่องานย่อย *</Text>
-            <TextInput
-              style={[styles.modalSingleInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
-              placeholder="เช่น ตัดต่อคลิปหลัก 60 วินาที..."
-              placeholderTextColor={colors.textMuted}
-              value={taskTitle}
-              onChangeText={setTaskTitle}
-            />
+        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>ประเภทงาน (Task Type)</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+          {['Editing', 'Scripting', 'Filming', 'Graphic Design', 'Sound Design'].map((type) => (
+            <TouchableOpacity
+              key={type}
+              style={[
+                styles.choiceChip,
+                { backgroundColor: colors.surfaceSubtle, borderColor: colors.border, marginRight: 6 },
+                taskType === type && { backgroundColor: colors.primary, borderColor: colors.primary },
+              ]}
+              onPress={() => setTaskType(type)}
+            >
+              <Text style={[styles.choiceChipText, { color: colors.textSecondary }, taskType === type && { color: '#fff', fontWeight: '700' }]}>
+                {type}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-            <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>ประเภทงาน (Task Type)</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-              {['Editing', 'Scripting', 'Filming', 'Graphic Design', 'Sound Design'].map((type) => (
-                <TouchableOpacity
-                  key={type}
-                  style={[
-                    styles.choiceChip,
-                    { backgroundColor: colors.surfaceSubtle, borderColor: colors.border, marginRight: 6 },
-                    taskType === type && { backgroundColor: colors.primary, borderColor: colors.primary },
-                  ]}
-                  onPress={() => setTaskType(type)}
-                >
-                  <Text style={[styles.choiceChipText, { color: colors.textSecondary }, taskType === type && { color: '#fff', fontWeight: '700' }]}>
-                    {type}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-
-            <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>มอบหมายให้ (Assignee)</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-              {teamMembers.map((m) => {
-                const memberId = m._id || m.id;
-                const memberName = m.firstName ? `${m.firstName} (${m.role})` : (m.name || m.username);
-                const isSelected = assignedToId === memberId;
-                return (
-                  <TouchableOpacity
-                    key={memberId}
-                    style={[
-                      styles.choiceChip,
-                      { backgroundColor: colors.surfaceSubtle, borderColor: colors.border, marginRight: 6 },
-                      isSelected && { backgroundColor: colors.primary, borderColor: colors.primary },
-                    ]}
-                    onPress={() => setAssignedToId(memberId)}
-                  >
-                    <Text style={[styles.choiceChipText, { color: colors.textSecondary }, isSelected && { color: '#fff', fontWeight: '700' }]}>
-                      {memberName}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-
-            <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>คำสั่งการ / รายละเอียดงาน</Text>
-            <TextInput
-              style={[styles.modalInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary, height: 50 }]}
-              placeholder="ระบุข้อกำหนดเฉพาะเจาะจง..."
-              placeholderTextColor={colors.textMuted}
-              value={taskNotes}
-              onChangeText={setTaskNotes}
-              multiline
-            />
-
-            <View style={styles.modalBtnRow}>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>มอบหมายให้ (Assignee)</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+          {teamMembers.map((m) => {
+            const memberId = m._id || m.id;
+            const memberName = m.firstName ? `${m.firstName} (${m.role})` : (m.name || m.username);
+            const isSelected = assignedToId === memberId;
+            return (
               <TouchableOpacity
-                style={[styles.modalCancelBtn, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
-                onPress={() => setAssignModalVisible(false)}
-                disabled={submittingAssign}
+                key={memberId}
+                style={[
+                  styles.choiceChip,
+                  { backgroundColor: colors.surfaceSubtle, borderColor: colors.border, marginRight: 6 },
+                  isSelected && { backgroundColor: colors.primary, borderColor: colors.primary },
+                ]}
+                onPress={() => setAssignedToId(memberId)}
               >
-                <Text style={[styles.modalCancelBtnText, { color: colors.textSecondary }]}>ยกเลิก</Text>
+                <Text style={[styles.choiceChipText, { color: colors.textSecondary }, isSelected && { color: '#fff', fontWeight: '700' }]}>
+                  {memberName}
+                </Text>
               </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
 
-              <TouchableOpacity
-                style={[styles.modalConfirmBtn, { backgroundColor: colors.primary }]}
-                onPress={handleAssignTask}
-                disabled={submittingAssign}
-              >
-                {submittingAssign ? (
-                  <ActivityIndicator color="#FFFFFF" size="small" />
-                ) : (
-                  <Text style={styles.modalConfirmBtnText}>มอบหมายงาน</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>คำสั่งการ / รายละเอียดงาน</Text>
+        <TextInput
+          style={[styles.modalInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary, height: 60 }]}
+          placeholder="ระบุข้อกำหนดเฉพาะเจาะจง..."
+          placeholderTextColor={colors.textMuted}
+          value={taskNotes}
+          onChangeText={setTaskNotes}
+          multiline
+        />
+
+        <View style={styles.modalBtnRow}>
+          <TouchableOpacity
+            style={[styles.modalCancelBtn, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
+            onPress={() => setAssignModalVisible(false)}
+            disabled={submittingAssign}
+          >
+            <Text style={[styles.modalCancelBtnText, { color: colors.textSecondary }]}>ยกเลิก</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.modalConfirmBtn, { backgroundColor: colors.primary }]}
+            onPress={handleAssignTask}
+            disabled={submittingAssign}
+          >
+            {submittingAssign ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Text style={styles.modalConfirmBtnText}>มอบหมายงาน</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </SmoothModal>
     </SafeAreaView>
   );
 }
