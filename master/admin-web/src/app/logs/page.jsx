@@ -60,10 +60,6 @@ export default function LogsPage() {
         if (isMounted) setLoading(false);
       });
 
-    if (presenceClient.isConnected) {
-      setIsWsConnected(true);
-    }
-
     presenceClient.connect('admin_logs_monitor');
 
     const handleConn = (payload) => {

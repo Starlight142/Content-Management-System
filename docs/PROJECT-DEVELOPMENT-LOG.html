@@ -447,6 +447,7 @@
       <li class="nav-item"><a href="#phase-26" class="nav-link"><span class="nav-tag">P26</span>Auth Guard & Login Default</a></li>
       <li class="nav-item"><a href="#phase-27" class="nav-link"><span class="nav-tag">P27</span>WebSocket Fix & Port 5000</a></li>
       <li class="nav-item"><a href="#phase-28" class="nav-link"><span class="nav-tag">P28</span>Cleanup, Simplicity & QA</a></li>
+      <li class="nav-item"><a href="#phase-29" class="nav-link"><span class="nav-tag">P29</span>AI Memory & Transfer</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -511,6 +512,7 @@
           <tr><td>29 ก.ย. 2026 (10:00 - 14:00 น.)</td><td><a href="#phase-26">Phase 26: ปรับปรุง Admin Web Authentication Guard เริ่มต้นที่หน้า Login ทุกครั้ง</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>30 ก.ย. 2026 (14:00 - 17:30 น.)</td><td><a href="#phase-27">Phase 27: แก้ปัญหา WebSocket บน Admin Web & พอร์ต 5000 Conflict</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>1 ต.ค. 2026 (11:00 - 12:30 น.)</td><td><a href="#phase-28">Phase 28: การล้างฐานข้อมูลและโค้ดที่ไม่ใช้งาน, ปรับแต่ง UI & การทดสอบระบบครบวงจร</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>2 ต.ค. 2026 (16:00 - 16:30 น.)</td><td><a href="#phase-29">Phase 29: การสร้างระบบไฟล์ความจำและบริบทสำหรับ AI เพื่อการย้ายเครื่องทำงาน</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
         </tbody>
       </table>
     </section>
@@ -1138,12 +1140,52 @@
       </ul>
     </section>
 
+    <!-- Phase 29 -->
+    <section class="section-card" id="phase-29">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 29: การสร้างระบบไฟล์ความจำและบริบทสำหรับ AI เพื่อการย้ายเครื่องทำงาน</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 2 ตุลาคม 2026</span>
+        <span>💻 Root Level Documentation & Transfer Architecture</span>
+      </div>
+      <p>สร้างชุดไฟล์ความจำและบริบทของระบบ (AI Memory & Context Files) เพื่อให้โมเดล AI หรือผู้พัฒนาคนต่อไปสามารถอ่านและเข้าใจสถาปัตยกรรม, กฎเหล็กของโปรเจกต์, ฐานข้อมูล, บัญชีทดสอบ, พอร์ตและเครือข่าย ได้อย่างครบถ้วน 100% โดยไม่มีข้อมูลตกหล่นเมื่อย้ายโค้ดไปเปิดบนคอมพิวเตอร์เครื่องใหม่:</p>
+      <h3>1. การสร้างไฟล์ความจำหลัก <code>AI-MEMORY.md</code>:</h3>
+      <ul>
+        <li>จัดทำเอกสารบริบทเชิงลึกที่ Root ของโปรเจกต์ ครอบคลุมภาพรวมระบบ, กฎเหล็ก (ห้ามแตะต้อง <code>PROJECT-HANDOVER.md</code>, ไม่สร้างโค้ดเก่าที่ถูกลบไปแล้ว, ไม่ใช้อีโมจิฟุ่มเฟือย), ตารางเทคโนโลยีและเวอร์ชัน</li>
+        <li>บันทึกขั้นตอนการติดตั้งเมื่อย้ายไปเครื่องใหม่ (Step-by-Step Setup Guide สำหรับ Backend, Admin Web, และ Mobile App บน Android Emulator พร้อมคำสั่ง Forward พอร์ต ADB)</li>
+        <li>บันทึกปัญหาเฉพาะของเครือข่าย (พอร์ต 5000 ชนกับ SMTC-Bridge, การแก้ปัญหาด้วย Dual-stack IPv6 <code>[::1]:5000</code>, ระบบ Route Guard 307 ของ Next.js, และโหมดสลับเซิร์ฟเวอร์ 3 แบบของมือถือ)</li>
+        <li>บันทึกข้อมูล 7 Collections ในฐานข้อมูล <code>content_management</code>, รหัสทีม <code>TEAM-A</code> และ <code>TEAM-B</code>, พร้อมบัญชีทดสอบทุกระดับสิทธิ์ (รหัสผ่าน <code>123456</code>)</li>
+      </ul>
+      <h3>2. การสร้างไฟล์คำสั่งมาตรฐานสำหรับ AI Agent <code>AGENTS.md</code>:</h3>
+      <ul>
+        <li>จัดทำไฟล์มาตรฐานตามรูปแบบของ Coding Agent สมัยใหม่ (Cursor, Antigravity, Claude Code, GitHub Copilot) เพื่อเป็นจุดเริ่มต้นอ่านบริบททันทีเมื่อเริ่มเซสชันใหม่</li>
+        <li>กำหนด Prime Directives, Quick Commands, และข้อมูล Credential สำคัญแบบกระชับ ชัดเจน</li>
+      </ul>
+      <h3>3. การสร้างไฟล์แม่แบบตัวแปรสภาพแวดล้อม <code>master/backend/.env.example</code>:</h3>
+      <ul>
+        <li>สร้างไฟล์ต้นแบบ <code>.env.example</code> ระบุ <code>PORT=5000</code>, <code>MONGODB_URI=mongodb://127.0.0.1:27017/content_management</code>, <code>JWT_SECRET=supersecretjwtkey_cms2026</code>, และ <code>NODE_ENV=development</code></li>
+        <li>แก้ปัญหาเมื่อย้ายไปเครื่องใหม่แล้วไฟล์ <code>.env</code> ไม่ติดไปกับ Git เนื่องจากถูก Ignore ไว้ตามมาตรฐานความปลอดภัย</li>
+      </ul>
+      <h3>4. ผลการตรวจสอบคุณภาพ (Quality Verification):</h3>
+      <ul>
+        <li>ตรวจสอบไวยากรณ์และความถูกต้องของไฟล์ Markdown ทั้งหมด (<code>AI-MEMORY.md</code>, <code>AGENTS.md</code>)</li>
+        <li>แก้ไขกฎ ESLint 9 / React 19 (<code>react-hooks/set-state-in-effect</code>) ในหน้า <code>contents</code>, <code>logs</code>, <code>settings</code>, <code>tasks</code>, และ <code>users</code> โดยตัดการเรียก <code>setIsWsConnected</code> แบบ synchronous ใน <code>useEffect</code> ที่ซ้ำซ้อนออก</li>
+        <li>รัน ESLint: <code>npm run lint</code> &rarr; <strong>0 errors, 0 warnings</strong></li>
+        <li>คอมไพล์โปรดักชัน Next.js: <code>npm run build</code> &rarr; <strong>Compiled successfully in 7.3s, 100% routes validated</strong></li>
+        <li>เอกสารระบุบริบทครบถ้วน รองรับการถ่ายโอนโปรเจกต์ไปยังคอมพิวเตอร์เครื่องอื่นได้อย่างสมบูรณ์ โดยไม่ขาดตกบกพร่อง</li>
+      </ul>
+    </section>
+
     <!-- Section Catalog -->
     <section class="section-card" id="catalog">
       <h2 class="section-title">แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)</h2>
-      <div class="phase-meta"><span>🕒 ปัจจุบัน 1 ตุลาคม 2026</span></div>
+      <div class="phase-meta"><span>🕒 ปัจจุบัน 2 ตุลาคม 2026</span></div>
       <p>เอกสารทั้งหมดในระบบจัดเก็บเป็นสัดส่วนพร้อมเรียกใช้งาน:</p>
       <ul>
+        <li><strong><code>AI-MEMORY.md</code>:</strong> ไฟล์ความจำและบริบทระบบเชิงลึกสำหรับ AI และการย้ายเครื่องทำงาน</li>
+        <li><strong><code>AGENTS.md</code>:</strong> ข้อกำหนดและคู่มือปฏิบัติการมาตรฐานสำหรับ Coding Agent</li>
         <li><strong><code>docs/academic/</code>:</strong> 8 เอกสารวิชาการและพิมพ์เขียว Figma พร้อมส่งอาจารย์</li>
         <li><strong><code>docs/learning/</code>:</strong> บทเรียนการเขียนโค้ด Backend ด้วยมือตนเอง (Lesson 1-3)</li>
         <li><strong><code>docs/year-4-capstone/</code>:</strong> 6 พิมพ์เขียวสถาปัตยกรรมสำหรับต่อยอดปี 4 (แยกไว้ใน Branch <code>feature/year4-capstone</code>)</li>

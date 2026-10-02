@@ -125,10 +125,6 @@ export default function UsersPage() {
 
     fetchInitial();
 
-    if (presenceClient.isConnected) {
-      setIsWsConnected(true);
-    }
-
     // Connect to WebSocket Presence Server
     presenceClient.connect('admin_web_dashboard');
 

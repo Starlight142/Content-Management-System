@@ -126,10 +126,6 @@ export default function SettingsPage() {
       })
       .catch(() => {});
 
-    if (presenceClient.isConnected) {
-      setIsWsConnected(true);
-    }
-
     presenceClient.connect('admin_web_settings');
     const handleConn = (payload) => {
       if (isMounted) setIsWsConnected(!!payload?.isConnected);

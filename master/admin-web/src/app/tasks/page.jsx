@@ -145,10 +145,6 @@ export default function TasksPage() {
       if (isMounted) setLoading(false);
     });
 
-    if (presenceClient.isConnected) {
-      setIsWsConnected(true);
-    }
-
     presenceClient.connect('admin_tasks_monitor');
 
     const handleConn = (payload) => {

@@ -1397,6 +1397,44 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - UI Integrity: ไม่มีอีโมจิส่วนเกิน หน้าจอเรียบง่าย ชัดเจน และทำงานได้เต็มประสิทธิภาพ
    - Production Build: Admin Web และ Mobile App คอมไพล์และทำงานได้อย่างสมบูรณ์
 
+---
+
+### Phase 29: การสร้างระบบไฟล์ความจำและบริบทสำหรับ AI เพื่อการย้ายเครื่องทำงาน (AI Memory Files & Cross-PC Transfer Architecture)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 2 ตุลาคม 2026
+
+**เป้าหมายการดำเนินงาน**: สร้างชุดไฟล์ความจำและบริบทของระบบ (AI Memory & Context Files) เพื่อให้โมเดล AI หรือผู้พัฒนาคนต่อไปสามารถอ่านและเข้าใจสถาปัตยกรรม, กฎเหล็กของโปรเจกต์, ฐานข้อมูล, บัญชีทดสอบ, พอร์ตและเครือข่าย ได้อย่างครบถ้วน 100% โดยไม่มีข้อมูลตกหล่นเมื่อย้ายโค้ดไปเปิดบนคอมพิวเตอร์เครื่องใหม่:
+
+1. **การสร้างไฟล์ความจำหลัก [`AI-MEMORY.md`](file:///d:/VsCode/Project/Content-Management-System/AI-MEMORY.md)**:
+   - จัดทำเอกสารบริบทเชิงลึกที่ Root ของโปรเจกต์ ครอบคลุม:
+     - **ภาพรวมและเป้าหมายของระบบ**: ระบบ Draftly CMS สำหรับจัดการกระบวนการผลิตสื่อในสตูดิโอ (Idea -> Production -> Review/Revision Loop -> Direct Approval)
+     - **กฎเหล็กและข้อห้าม (Non-Negotiable Invariants)**:
+       - ห้ามแตะต้องหรือแก้ไขไฟล์ `PROJECT-HANDOVER.md` เด็ดขาด
+       - ห้ามสร้างไดเรกทอรีหรือโค้ดเก่าที่ถูกลบไปแล้วขึ้นมาใหม่ (`learning/`, `year4-extensions/`, `integrations/`, 12 โฟลเดอร์ว่างใน mobile-app, และฐานข้อมูล `cms_database`)
+       - รักษาความเรียบง่าย ไม่ใช้อีโมจิฟุ่มเฟือย และไม่ใช้ภาษาอวยหรือสรรเสริญ AI
+       - ต้องบันทึกประวัติการทำงานลงในทั้ง `docs/PROJECT-DEVELOPMENT-LOG.md` และ `docs/PROJECT-DEVELOPMENT-LOG.html` ทุกครั้ง
+       - ต้อง Commit และ Push ขึ้น GitHub ทุกครั้งหลังจบงาน
+     - **ตารางเทคโนโลยีและเวอร์ชัน**: Node.js >=20, Express 5.2.1, MongoDB Mongoose 9.10.1, WebSocket ws 8.21.3, Next.js 16.3.5, React 19.2.8, React Native 0.87.1
+     - **ขั้นตอนการติดตั้งเมื่อย้ายไปเครื่องใหม่ (Step-by-Step Setup Guide)**: คำสั่งติดตั้ง Dependencies, สร้างไฟล์ `.env`, รัน Seed ข้อมูล, รัน Backend, Admin Web, และ Mobile App บน Android Emulator พร้อมคำสั่ง Forward พอร์ต ADB
+     - **ปัญหาเฉพาะของเครือข่ายและระบบปฏิบัติการ (Network Quirks & Workarounds)**: การแก้ปัญหาพอร์ต 5000 ชนกับ `SMTC-Bridge.exe` บน Windows, การเชื่อมต่อแบบ Dual-stack IPv6 `[::1]:5000`, ระบบ Route Guard 307 ของ Next.js, และโหมดการเชื่อมต่อเซิร์ฟเวอร์ 3 แบบของมือถือ
+     - **ข้อมูลฐานข้อมูลและบัญชีทดสอบ**: รายละเอียด 7 Collections ในฐานข้อมูล `content_management`, ทีมและรหัสทีม (`TEAM-A`, `TEAM-B`), และบัญชีทดสอบทุกระดับสิทธิ์ (รหัสผ่าน `123456`)
+     - **แผนผังโครงสร้างโปรเจกต์ (Key Files Map)**: ระบุหน้าที่ของไฟล์และโฟลเดอร์สำคัญทุกส่วน
+
+2. **การสร้างไฟล์คำสั่งมาตรฐานสำหรับ AI Agent [`AGENTS.md`](file:///d:/VsCode/Project/Content-Management-System/AGENTS.md)**:
+   - จัดทำไฟล์มาตรฐานตามรูปแบบของเครื่องมือ Coding Agent สมัยใหม่ (Cursor, Antigravity, Claude Code, GitHub Copilot) เพื่อเป็นจุดเริ่มต้นอ่านบริบททันทีเมื่อเริ่มเซสชันใหม่
+   - กำหนด Prime Directives, Quick Commands, และข้อมูล Credential สำคัญแบบกระชับ
+
+3. **การสร้างไฟล์แม่แบบตัวแปรสภาพแวดล้อม [`master/backend/.env.example`](file:///d:/VsCode/Project/Content-Management-System/master/backend/.env.example)**:
+   - สร้างไฟล์ต้นแบบ `.env.example` ระบุ `PORT=5000`, `MONGODB_URI=mongodb://127.0.0.1:27017/content_management`, `JWT_SECRET=supersecretjwtkey_cms2026`, และ `NODE_ENV=development`
+   - แก้ปัญหาเมื่อย้ายไปเครื่องใหม่แล้วไฟล์ `.env` ไม่ติดไปกับ Git เนื่องจากถูก Ignore ไว้
+
+4. **ผลการตรวจสอบคุณภาพ (Quality Verification)**:
+   - ตรวจสอบไวยากรณ์และความถูกต้องของไฟล์ Markdown ทั้งหมด (`AI-MEMORY.md`, `AGENTS.md`)
+   - แก้ไขกฎ ESLint 9 / React 19 (`react-hooks/set-state-in-effect`) ในหน้า `contents`, `logs`, `settings`, `tasks`, และ `users` โดยตัดการเรียก `setIsWsConnected` แบบ synchronous ใน `useEffect` ที่ซ้ำซ้อนออก
+   - รัน ESLint: `npm run lint` $\rightarrow$ **0 errors, 0 warnings**
+   - คอมไพล์โปรดักชัน Next.js: `npm run build` $\rightarrow$ **Compiled successfully in 7.3s, 100% routes validated**
+   - เอกสารระบุบริบทครบถ้วน รองรับการถ่ายโอนโปรเจกต์ไปยังคอมพิวเตอร์เครื่องอื่นได้อย่างสมบูรณ์ โดยไม่ขาดตกบกพร่อง
+
+
 
 
 

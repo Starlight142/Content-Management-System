@@ -154,10 +154,6 @@ export default function ContentsPage() {
 
     fetchInitial();
 
-    if (presenceClient.isConnected) {
-      setIsWsConnected(true);
-    }
-
     // Connect WebSocket
     presenceClient.connect('admin_web_contents');
 
