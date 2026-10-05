@@ -414,7 +414,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <h2>📜 Draftly Dev Log</h2>
-      <p>บันทึกวิศวกรรมระบบ 31 เฟส</p>
+      <p>บันทึกวิศวกรรมระบบ 32 เฟส</p>
       <input type="text" id="phaseSearch" class="search-box" placeholder="🔍 ค้นหาเฟส / ฟีเจอร์...">
     </div>
     <ul class="nav-list" id="navList">
@@ -450,6 +450,7 @@
       <li class="nav-item"><a href="#phase-29" class="nav-link"><span class="nav-tag">P29</span>AI Memory & Transfer</a></li>
       <li class="nav-item"><a href="#phase-30" class="nav-link"><span class="nav-tag">P30</span>Untrack Handover Doc</a></li>
       <li class="nav-item"><a href="#phase-31" class="nav-link"><span class="nav-tag">P31</span>SmoothModal & Window Blur</a></li>
+      <li class="nav-item"><a href="#phase-32" class="nav-link"><span class="nav-tag">P32</span>Deploy Phone (Xiaomi)</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -517,6 +518,7 @@
           <tr><td>2 ต.ค. 2026 (16:00 - 16:30 น.)</td><td><a href="#phase-29">Phase 29: การสร้างระบบไฟล์ความจำและบริบทสำหรับ AI เพื่อการย้ายเครื่องทำงาน</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>2 ต.ค. 2026 (16:30 - 16:45 น.)</td><td><a href="#phase-30">Phase 30: การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก GitHub (.gitignore)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>2 ต.ค. 2026 (17:15 น.)</td><td><a href="#phase-31">Phase 31: การพัฒนาระบบ SmoothModal พร้อมแอนิเมชัน Spring, แก้ปัญหาคีย์บอร์ดบังช่องกรอก & เบลอพื้นหลัง</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>5 ต.ค. 2026 (22:15 น.)</td><td><a href="#phase-32">Phase 32: การคอมไพล์และติดตั้งแอปพลิเคชัน Standalone Release APK ลงบนโทรศัพท์จริง (Xiaomi 13 Pro)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
         </tbody>
       </table>
     </section>
@@ -1256,6 +1258,40 @@
       <ul>
         <li>สามารถพิมพ์ข้อความในช่องกรอก และเลื่อนหน้าจอดูปุ่มยืนยัน/ยกเลิกได้อย่างสมบูรณ์</li>
         <li>แอนิเมชันเปิดปิดนุ่มนวล ลื่นไหล ดูเป็นธรรมชาติแบบที่วิศวกรซอฟต์แวร์ออกแบบเอง ปราศจากความแข็งกระด้าง</li>
+      </ul>
+    </section>
+
+    <!-- Phase 32 -->
+    <section class="section-card" id="phase-32">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 32: การคอมไพล์และติดตั้งแอปพลิเคชัน Standalone Release APK ลงบนโทรศัพท์จริง (Xiaomi 13 Pro Real Device Deployment)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 5 ตุลาคม 2026 (22:15 น.)</span></div>
+
+      <div class="callout callout-info">
+        <strong>Real Device Production APK Deployment:</strong><br>
+        คอมไพล์แอปพลิเคชันเวอร์ชันเต็มแบบ Standalone Release APK ฝังแพ็กเกจ JavaScript, Hermes Bytecode และ Assets ทั้งหมดลงในตัวติดตั้ง พร้อมติดตั้งลงบนสมาร์ตโฟนจริง Xiaomi 13 Pro ผ่านสาย USB (ADB) สำเร็จ 100%
+      </div>
+
+      <h3>1. การจัดเตรียมและตั้งค่าสภาพแวดล้อม Build Tool:</h3>
+      <ul>
+        <li>กำหนดค่า <code>sdk.dir</code> ในไฟล์ <code>master/mobile-app/android/local.properties</code> ไปยัง Android SDK</li>
+        <li>ใช้ OpenJDK 21 (Android Studio JBR) ในการคอมไพล์ เพื่อความเข้ากันได้สมบูรณ์กับ React Native 0.87 และ Android Gradle Plugin</li>
+      </ul>
+
+      <h3>2. การคอมไพล์ Standalone Release APK:</h3>
+      <ul>
+        <li>รันคำสั่ง <code>./gradlew assembleRelease</code> สร้างไฟล์ <code>app-release.apk</code> ขนาด 95.7 MB</li>
+        <li>ฝัง Hermes Bytecode และ Assets รูปภาพ/เวกเตอร์ทั้งหมดลงในตัว APK ทำให้ผู้ใช้เปิดใช้งานบนมือถือได้ทันทีโดยไม่ต้องพึ่งพา Metro Bundler Server</li>
+      </ul>
+
+      <h3>3. การติดตั้งและเชื่อมต่อบนอุปกรณ์จริง:</h3>
+      <ul>
+        <li>เชื่อมต่อและตรวจสอบอุปกรณ์ Xiaomi 13 Pro (Model 2211133C, Device ID: <code>70b48d7</code>)</li>
+        <li>ติดตั้งตัวแอปพลิเคชันผ่าน <code>adb install -r</code> สำเร็จ (Streaming Install Success)</li>
+        <li>ทำ Reverse Port Forwarding <code>adb reverse tcp:5000 tcp:5000</code> เพื่อรองรับการเชื่อมต่อกับเครื่องคอมพิวเตอร์ผ่านสาย USB</li>
+        <li>สั่งเปิดแอปพลิเคชันบนมือถือจริงผ่าน <code>adb shell am start -n com.mobileapp/.MainActivity</code> พร้อมใช้งานทันที</li>
       </ul>
     </section>
 

@@ -41,6 +41,7 @@
 | **2 ต.ค. 2026 (บ่าย)** | [Phase 29: การสร้างระบบไฟล์ความจำและบริบทสำหรับ AI เพื่อการย้ายเครื่องทำงาน (AI Memory Files & Cross-PC Transfer Architecture)](#phase-29-การสร้างระบบไฟล์ความจำและบริบทสำหรับ-ai-เพื่อการย้ายเครื่องทำงาน-ai-memory-files--cross-pc-transfer-architecture) | สำเร็จ ✅ |
 | **2 ต.ค. 2026 (16:30 น.)** | [Phase 30: การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก GitHub (Untracking & Git-ignoring PROJECT-HANDOVER.md)](#phase-30-การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก-github-untracking--git-ignoring-project-handovermd) | สำเร็จ ✅ |
 | **2 ต.ค. 2026 (17:15 น.)** | [Phase 31: การพัฒนาระบบ SmoothModal พร้อมแอนิเมชัน Spring, แก้ไขปัญหาคีย์บอร์ดบังช่องกรอก และระบบเบลอพื้นหลัง](#phase-31-การพัฒนาระบบ-smoothmodal-พร้อมแอนิเมชัน-spring-แก้ไขปัญหาคีย์บอร์ดบังช่องกรอก-และระบบเบลอพื้นหลัง-smoothmodal-with-spring-physics-keyboard-avoiding-scrollview--frosted-window-blur-backdrop) | สำเร็จ ✅ |
+| **5 ต.ค. 2026 (22:15 น.)** | [Phase 32: การคอมไพล์และติดตั้งแอปพลิเคชัน Standalone Release APK ลงบนโทรศัพท์จริง (Xiaomi 13 Pro Real Device Deployment)](#phase-32-การคอมไพล์และติดตั้งแอปพลิเคชัน-standalone-release-apk-ลงบนโทรศัพท์จริง-xiaomi-13-pro-real-device-deployment) | สำเร็จ ✅ |
 
 ---
 
@@ -1513,6 +1514,25 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - ตรวจสอบไวยากรณ์ React Native: โค้ดผ่านเกณฑ์ 100% ปราศจาก Syntax Error หรือ Unclosed Tag
    - ปัญหาแป้นพิมพ์บดบังช่องกรอก: ได้รับการแก้ไขอย่างเด็ดขาด สามารถเลื่อนดูช่องกรอกและปุ่มกดยืนยันได้ครบถ้วน
    - แอนิเมชันและความสวยงาม: มีความนุ่มนวล เรียบง่าย ดูเป็นธรรมชาติแบบที่วิศวกรซอฟต์แวร์ออกแบบเอง ปราศจากอีโมจิฟุ่มเฟือย
+
+---
+
+### Phase 32: การคอมไพล์และติดตั้งแอปพลิเคชัน Standalone Release APK ลงบนโทรศัพท์จริง (Xiaomi 13 Pro Real Device Deployment)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 5 ตุลาคม 2026 (22:15 น.)
+
+**เป้าหมายการดำเนินงาน**: ดำเนินการคอมไพล์แอปพลิเคชันเวอร์ชันเต็มรูปแบบ Standalone Release APK พร้อมฝัง JavaScript Bundle, Hermes Bytecode และ Assets ทั้งหมดเข้าสู่ตัวแพ็กเกจ แล้วนำไปติดตั้งและเปิดใช้งานจริงบนโทรศัพท์มือถือ Xiaomi 13 Pro (Model 2211133C) ผ่านสาย USB (ADB):
+
+1. **การตั้งค่าสภาพแวดล้อม Build Tool**:
+   - กำหนดค่า `sdk.dir` ใน [`local.properties`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/android/local.properties) ชี้ไปยัง Android SDK (`C:\Users\itzmo\AppData\Local\Android\Sdk`)
+   - ใช้ OpenJDK 21 (Android Studio JBR) ในการรัน Gradle Daemon ป้องกันปัญหาความเข้ากันได้ของรุ่น Java
+2. **การคอมไพล์ Standalone Release APK**:
+   - รันคำสั่งคอมไพล์ `./gradlew assembleRelease` ในโฟลเดอร์ `master/mobile-app/android`
+   - ฝัง Hermes Bytecode และ Assets ลงใน `app-release.apk` (ขนาด 95.7 MB) ทำให้สามารถเปิดแอปพลิเคชันบนมือถือจริงได้อย่างอิสระและรวดเร็ว โดยไม่ต้องเปิดเซิร์ฟเวอร์ Metro Bundler ค้างไว้
+3. **การติดตั้งและเปิดแอปพลิเคชันบนอุปกรณ์จริง**:
+   - ทำการติดตั้งลงบนเครื่อง Xiaomi 13 Pro (Device ID: `70b48d7`) ผ่าน `adb install -r` สำเร็จ 100% (Streaming Install Success)
+   - เปิดพอร์ตเชื่อมโยงเครือข่าย `adb reverse tcp:5000 tcp:5000` สำหรับการเชื่อมต่อเข้าเซิร์ฟเวอร์ผ่านสาย USB
+   - สั่งเปิดแอปพลิเคชัน `adb shell am start -n com.mobileapp/.MainActivity` ขึ้นสู่หน้าจอมือถือจริงพร้อมใช้งานทันที
+
 
 
 
