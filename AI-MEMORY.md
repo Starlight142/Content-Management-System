@@ -197,6 +197,7 @@ Content-Management-System/
 ├── docs/                             # Project documentation
 │   ├── academic/                     # 7 formal IEEE/Cockburn diagrams and data dictionary
 │   ├── year-4-capstone/              # Future architecture expansion blueprints
+│   ├── screenshots/mobile/           # 17 QA screenshots covering all roles, Dark Mode, and Launcher Icon
 │   ├── PROJECT-DEVELOPMENT-LOG.md    # Master development history log (Markdown)
 │   └── PROJECT-DEVELOPMENT-LOG.html  # Master development history log (Interactive HTML)
 │
@@ -238,7 +239,8 @@ Content-Management-System/
 │       ├── package.json              # Mobile dependencies (RN 0.87.1)
 │       └── src/
 │           ├── components/
-│           │   └── ServerConfigModal.jsx # 1-tap server switcher (Wi-Fi, USB, Tunnel)
+│           │   ├── ServerConfigModal.jsx # 1-tap server switcher (Wi-Fi, USB, Tunnel)
+│           │   └── SmoothModal.jsx   # KeyboardAvoiding spring animated modal with backdrop blur
 │           ├── features/
 │           │   ├── auth/LoginScreen.jsx  # Sign In / Sign Up with Team Code input
 │           │   ├── dashboard/ManagerDashboard.jsx # Manager overview, action queue, 1-tap review

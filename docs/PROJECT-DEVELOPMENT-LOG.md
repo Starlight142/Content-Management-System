@@ -43,6 +43,7 @@
 | **2 ต.ค. 2026 (17:15 น.)** | [Phase 31: การพัฒนาระบบ SmoothModal พร้อมแอนิเมชัน Spring, แก้ไขปัญหาคีย์บอร์ดบังช่องกรอก และระบบเบลอพื้นหลัง](#phase-31-การพัฒนาระบบ-smoothmodal-พร้อมแอนิเมชัน-spring-แก้ไขปัญหาคีย์บอร์ดบังช่องกรอก-และระบบเบลอพื้นหลัง-smoothmodal-with-spring-physics-keyboard-avoiding-scrollview--frosted-window-blur-backdrop) | สำเร็จ ✅ |
 | **5 ต.ค. 2026 (22:15 น.)** | [Phase 32: การคอมไพล์และติดตั้งแอปพลิเคชัน Standalone Release APK ลงบนโทรศัพท์จริง (Xiaomi 13 Pro Real Device Deployment)](#phase-32-การคอมไพล์และติดตั้งแอปพลิเคชัน-standalone-release-apk-ลงบนโทรศัพท์จริง-xiaomi-13-pro-real-device-deployment) | สำเร็จ ✅ |
 | **7 ต.ค. 2026 (00:30 น.)** | [Phase 33: การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ Draftly (Official App Icon Design & Android Mipmap Generation)](#phase-33-การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ-draftly-official-app-icon-design--android-mipmap-generation) | สำเร็จ ✅ |
+| **7 ต.ค. 2026 (01:30 น.)** | [Phase 34: การจับภาพหน้าจอระบบ Mobile App ครบทุกบทบาทหน้าที่ (Editor, Graphic Designer & Member Features QA)](#phase-34-การจับภาพหน้าจอระบบ-mobile-app-ครบทุกบทบาทหน้าที่-editor-graphic-designer--member-features-qa) | สำเร็จ ✅ |
 
 ---
 
@@ -1558,6 +1559,50 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 3. **การคอมไพล์แพ็กเกจ APK ใหม่ (Release Build Verification)**:
    - คอมไพล์ Standalone Release APK ผ่าน Gradle (`./gradlew assembleRelease`) สำเร็จสมบูรณ์ (BUILD SUCCESSFUL ในเวลา 37 วินาที)
    - ตัวติดตั้ง `app-release.apk` ใหม่บรรจุไอคอน Draftly ทั้งหมดพร้อมสำหรับการติดตั้งและแสดงผลบน Launcher ของ Android ทันที
+
+---
+
+### Phase 34: การจับภาพหน้าจอระบบ Mobile App ครบทุกบทบาทหน้าที่ (Editor, Graphic Designer & Member Features QA)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 7 ตุลาคม 2026 (01:30 น.)
+
+**เป้าหมายการดำเนินงาน**: ดำเนินการทดสอบและจับภาพหน้าจอการทำงานจริงของแอปพลิเคชันมือถือใน Android Virtual Machine (Emulator) ครบทุกบทบาทหน้าที่ตามที่ระบบรองรับ (ทั้งบัญชีทดสอบ Editor และ Graphic Designer) รวมถึงหน้าต่างฟังก์ชันสำคัญและโหมดการแสดงผลแบบ Dark Mode:
+
+1. **บทบาทการทดสอบและบัญชีผู้ใช้งาน (Role & Test Accounts QA)**:
+   - **Login & Demo Drawer**: หน้าจอเข้าสู่ระบบพร้อมลิ้นชักบัญชีทดสอบด่วน (Quick Demo Accounts) ทั้ง 3 บทบาท
+   - **Editor Position (John Editor - `member@studio.com`)**:
+     - *ทีมของฉัน (Team Overview)*: แสดงสรุปความคืบหน้าทีม 57%, สมาชิกในทีม 4 คน พร้อมตัวระบุ "ฉัน" และสถานะ Online
+     - *งานของฉัน (Member Tasks)*: บัตรสรุปสถานะงาน 4 หมวด, งานตัดต่อวิดีโอ (Editing), กล่องข้อคิดเห็นและคำแนะนำจากหัวหน้าทีม, และช่องกรอกตอบกลับพร้อมแนบลิงก์ผลงาน
+     - *คลังไอเดีย (Idea Brainstorming)*: คลังระดมไอเดียของทีมพร้อมแท็บตัวกรอง
+     - *SmoothModal นำเสนอไอเดียใหม่*: หน้าต่างป๊อปอัปสไตล์ Spring Animation พร้อมฉากหลังเบลอ (Frosted Window Blur)
+     - *ข้อมูลส่วนตัวและตั้งค่า (Profile)*: ข้อมูลบัญชี รหัสผู้ใช้ และปุ่มออกจากระบบ
+     - *SmoothModal แก้ไขโปรไฟล์ส่วนตัว*: หน้าต่างแก้ไขชื่อและนามสกุล
+   - **Graphic Designer Position (Mike Graphic - `mike@studio.com`)**:
+     - *ทีมของฉัน*: แสดงสถานะ Online ของ Mike Graphic และสถิติงานเฉพาะบุคคล
+     - *งานของฉัน*: การ์ดงานด้านกราฟิกดีไซน์ เช่น Cover Art Minimalist, Infographic สถิติ และแบนเนอร์ปก
+     - *โปรไฟล์*: ข้อมูลประจำตัวของ Designer
+   - **Dark Mode Preview**: การแสดงผลชุดรูปแบบสีกรมท่าเข้ม (Slate Navy) ครบทุกแท็บ
+   - **Launcher Icon**: แสดงผลไอคอน Draftly ทางการบน Dock ของหน้าจอหลัก Android
+
+2. **การจัดเก็บไฟล์ภาพหลักฐานการทดสอบ (Asset Catalog)**:
+   - ไฟล์ภาพความละเอียดสูงทั้งหมดถูกจัดเก็บไว้อย่างเป็นระเบียบในโฟลเดอร์ [`docs/screenshots/mobile/`](file:///d:/VsCode/Project/Content-Management-System/docs/screenshots/mobile/):
+     - `01_login_demo_drawer.png`: หน้าเข้าสู่ระบบและลิ้นชัก Demo Accounts
+     - `02_editor_team_overview.png`: หน้าสรุปทีมของ Editor
+     - `03_member_my_tasks.png`: หน้างานของฉันพร้อมฟีดแบ็กหัวหน้า
+     - `04_member_my_tasks_scroll.png`: งานส่งมอบและแนบลิงก์ผลงาน
+     - `05_member_ideas_screen.png`: คลังไอเดียคอนเทนต์
+     - `06_member_propose_idea_modal.png`: ป๊อปอัปเสนอไอเดียใหม่แบบ SmoothModal
+     - `07_member_profile_screen.png`: โปรไฟล์และการตั้งค่าของ Member
+     - `08_member_edit_profile_modal.png`: ป๊อปอัปแก้ไขข้อมูลส่วนตัว
+     - `09_member_profile_bottom.png`: ส่วนท้ายโปรไฟล์และปุ่ม Logout
+     - `10_graphic_team_overview.png`: หน้าทีมของ Graphic Designer
+     - `11_graphic_tasks_screen.png`: หน้างานกราฟิกดีไซน์
+     - `12_graphic_profile_screen.png`: โปรไฟล์ของ Graphic Designer
+     - `13_member_dark_mode_profile.png`: โปรไฟล์โหมดมืด (Dark Mode)
+     - `14_member_dark_mode_tasks.png`: รายการงานในโหมดมืด
+     - `15_member_dark_mode_team.png`: สรุปทีมในโหมดมืด
+     - `16_member_dark_mode_ideas.png`: คลังไอเดียในโหมดมืด
+     - `17_android_home_launcher_icon.png`: ไอคอน Draftly บน Android Launcher Dock
+
 
 
 

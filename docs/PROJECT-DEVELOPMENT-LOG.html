@@ -452,6 +452,7 @@
       <li class="nav-item"><a href="#phase-31" class="nav-link"><span class="nav-tag">P31</span>SmoothModal & Window Blur</a></li>
       <li class="nav-item"><a href="#phase-32" class="nav-link"><span class="nav-tag">P32</span>Deploy Phone (Xiaomi)</a></li>
       <li class="nav-item"><a href="#phase-33" class="nav-link"><span class="nav-tag">P33</span>Draftly App Icon</a></li>
+      <li class="nav-item"><a href="#phase-34" class="nav-link"><span class="nav-tag">P34</span>Mobile App Screenshots QA</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -521,6 +522,7 @@
           <tr><td>2 ต.ค. 2026 (17:15 น.)</td><td><a href="#phase-31">Phase 31: การพัฒนาระบบ SmoothModal พร้อมแอนิเมชัน Spring, แก้ปัญหาคีย์บอร์ดบังช่องกรอก & เบลอพื้นหลัง</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>5 ต.ค. 2026 (22:15 น.)</td><td><a href="#phase-32">Phase 32: การคอมไพล์และติดตั้งแอปพลิเคชัน Standalone Release APK ลงบนโทรศัพท์จริง (Xiaomi 13 Pro)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>7 ต.ค. 2026 (00:30 น.)</td><td><a href="#phase-33">Phase 33: การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ Draftly (Official App Icon Design & Android Mipmap Generation)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>7 ต.ค. 2026 (01:30 น.)</td><td><a href="#phase-34">Phase 34: การจับภาพหน้าจอระบบ Mobile App ครบทุกบทบาทหน้าที่ (Editor, Graphic Designer & Member Features QA)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
         </tbody>
       </table>
     </section>
@@ -1335,6 +1337,63 @@
       <ul>
         <li>คอมไพล์ Standalone Release APK ด้วย <code>./gradlew assembleRelease</code> สำเร็จสมบูรณ์ (BUILD SUCCESSFUL ใน 37 วินาที)</li>
         <li>ไฟล์ตัวติดตั้ง <code>app-release.apk</code> ใหม่ได้รับการอัปเดตบรรจุไอคอน Draftly ครบถ้วนพร้อมติดตั้งบนเครื่องจริง</li>
+      </ul>
+    </section>
+
+    <!-- Phase 34 -->
+    <section class="section-card" id="phase-34">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 34: การจับภาพหน้าจอระบบ Mobile App ครบทุกบทบาทหน้าที่ (Editor, Graphic Designer & Member Features QA)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 7 ตุลาคม 2026 (01:30 น.)</span></div>
+
+      <div class="callout callout-info">
+        <strong>Mobile App Screenshots & Role QA:</strong><br>
+        ทดสอบและบันทึกภาพหน้าจอการทำงานจริงบน Android Virtual Machine (Emulator) ครบทุกบทบาทในทีม ทั้งตำแหน่ง Editor (John Editor) และ Graphic Designer (Mike Graphic) พร้อมทั้งตรวจสอบการทำงานของ SmoothModal, การแสดงความคิดเห็นตอบกลับงาน และการแสดงผลโหมดมืด (Dark Mode)
+      </div>
+
+      <h3>1. สรุปหน้าจอและบทบาทที่บันทึกภาพ (Captured Roles & Features):</h3>
+      <ul>
+        <li><strong>เข้าสู่ระบบ (Authentication & Quick Demo):</strong> หน้า Login พร้อมลิ้นชัก Demo Accounts สำหรับสลับบทบาททดสอบด่วน</li>
+        <li><strong>Editor (John Editor - <code>member@studio.com</code>):</strong>
+          <ul>
+            <li>หน้าทีมของฉัน (Team Overview) แสดงสรุปความคืบหน้า 57% และสถานะออนไลน์ของสมาชิก</li>
+            <li>หน้างายของฉัน (My Tasks) แสดงสถิติงาน 4 หมวด บัตรงานประเภท Editing และกล่องฟีดแบ็กจากหัวหน้าทีม</li>
+            <li>หน้าคลังไอเดีย (Idea Brainstorming) และป๊อปอัปนำเสนอไอเดียใหม่แบบ SmoothModal เบลอพื้นหลัง</li>
+            <li>หน้าข้อมูลส่วนตัวและตั้งค่า (Profile) พร้อมป๊อปอัปแก้ไขชื่อ-นามสกุล</li>
+          </ul>
+        </li>
+        <li><strong>Graphic Designer (Mike Graphic - <code>mike@studio.com</code>):</strong>
+          <ul>
+            <li>หน้าทีมและงานของฉันสำหรับสายงาน Graphic Design (Cover Art Minimalist, Infographic, Thumbnail)</li>
+            <li>หน้าโปรไฟล์เฉพาะบุคคล</li>
+          </ul>
+        </li>
+        <li><strong>โหมดมืด (Dark Mode):</strong> บันทึกภาพเปรียบเทียบในโทนสี Dark Slate Navy สวยงาม ครบทุกหน้าจอหลัก</li>
+        <li><strong>แอปไอคอนอย่างเป็นทางการ:</strong> แสดงผลไอคอน Draftly โฉมใหม่บนหน้าจอหลัก (Home Screen Launcher) ของ Android</li>
+      </ul>
+
+      <h3>2. สารบบไฟล์ภาพหลักฐานการทดสอบ (Folder: <code>docs/screenshots/mobile/</code>):</h3>
+      <p>จัดเก็บไฟล์ภาพหลักฐานทั้งสิ้น 17 ภาพความละเอียดสูง:</p>
+      <ul>
+        <li><code>01_login_demo_drawer.png</code>: ลิ้นชักบัญชีทดสอบด่วนบนหน้าเข้าสู่ระบบ</li>
+        <li><code>02_editor_team_overview.png</code>: หน้าภาพรวมทีมของ Editor</li>
+        <li><code>03_member_my_tasks.png</code>: รายการงานที่ต้องดำเนินการพร้อมกล่องคำแนะนำจากหัวหน้า</li>
+        <li><code>04_member_my_tasks_scroll.png</code>: ส่วนส่งงานและแนบลิงก์ผลงาน</li>
+        <li><code>05_member_ideas_screen.png</code>: คลังระดมไอเดียคอนเทนต์</li>
+        <li><code>06_member_propose_idea_modal.png</code>: SmoothModal เสนอไอเดียใหม่พร้อมพื้นหลังเบลอ</li>
+        <li><code>07_member_profile_screen.png</code>: หน้าข้อมูลส่วนตัวและตั้งค่า</li>
+        <li><code>08_member_edit_profile_modal.png</code>: SmoothModal แก้ไขข้อมูลส่วนตัว</li>
+        <li><code>09_member_profile_bottom.png</code>: ส่วนท้ายโปรไฟล์และปุ่มออกจากระบบ</li>
+        <li><code>10_graphic_team_overview.png</code>: หน้าภาพรวมทีมของ Graphic Designer</li>
+        <li><code>11_graphic_tasks_screen.png</code>: หน้ารายการงานด้าน Graphic Design</li>
+        <li><code>12_graphic_profile_screen.png</code>: ข้อมูลโปรไฟล์ของ Graphic Designer</li>
+        <li><code>13_member_dark_mode_profile.png</code>: โปรไฟล์ในโหมด Dark Mode</li>
+        <li><code>14_member_dark_mode_tasks.png</code>: รายการงานในโหมด Dark Mode</li>
+        <li><code>15_member_dark_mode_team.png</code>: ภาพรวมทีมในโหมด Dark Mode</li>
+        <li><code>16_member_dark_mode_ideas.png</code>: คลังไอเดียในโหมด Dark Mode</li>
+        <li><code>17_android_home_launcher_icon.png</code>: ไอคอน Draftly บนหน้าจอโฮมและด็อกก์ของ Android</li>
       </ul>
     </section>
 
