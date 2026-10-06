@@ -42,6 +42,7 @@
 | **2 ต.ค. 2026 (16:30 น.)** | [Phase 30: การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก GitHub (Untracking & Git-ignoring PROJECT-HANDOVER.md)](#phase-30-การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก-github-untracking--git-ignoring-project-handovermd) | สำเร็จ ✅ |
 | **2 ต.ค. 2026 (17:15 น.)** | [Phase 31: การพัฒนาระบบ SmoothModal พร้อมแอนิเมชัน Spring, แก้ไขปัญหาคีย์บอร์ดบังช่องกรอก และระบบเบลอพื้นหลัง](#phase-31-การพัฒนาระบบ-smoothmodal-พร้อมแอนิเมชัน-spring-แก้ไขปัญหาคีย์บอร์ดบังช่องกรอก-และระบบเบลอพื้นหลัง-smoothmodal-with-spring-physics-keyboard-avoiding-scrollview--frosted-window-blur-backdrop) | สำเร็จ ✅ |
 | **5 ต.ค. 2026 (22:15 น.)** | [Phase 32: การคอมไพล์และติดตั้งแอปพลิเคชัน Standalone Release APK ลงบนโทรศัพท์จริง (Xiaomi 13 Pro Real Device Deployment)](#phase-32-การคอมไพล์และติดตั้งแอปพลิเคชัน-standalone-release-apk-ลงบนโทรศัพท์จริง-xiaomi-13-pro-real-device-deployment) | สำเร็จ ✅ |
+| **7 ต.ค. 2026 (00:30 น.)** | [Phase 33: การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ Draftly (Official App Icon Design & Android Mipmap Generation)](#phase-33-การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ-draftly-official-app-icon-design--android-mipmap-generation) | สำเร็จ ✅ |
 
 ---
 
@@ -1532,6 +1533,32 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - ทำการติดตั้งลงบนเครื่อง Xiaomi 13 Pro (Device ID: `70b48d7`) ผ่าน `adb install -r` สำเร็จ 100% (Streaming Install Success)
    - เปิดพอร์ตเชื่อมโยงเครือข่าย `adb reverse tcp:5000 tcp:5000` สำหรับการเชื่อมต่อเข้าเซิร์ฟเวอร์ผ่านสาย USB
    - สั่งเปิดแอปพลิเคชัน `adb shell am start -n com.mobileapp/.MainActivity` ขึ้นสู่หน้าจอมือถือจริงพร้อมใช้งานทันที
+
+---
+
+### Phase 33: การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ Draftly (Official App Icon Design & Android Mipmap Generation)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 7 ตุลาคม 2026 (00:30 น.)
+
+**เป้าหมายการดำเนินงาน**: ออกแบบสร้างสรรค์ไอคอนประจำแอปพลิเคชันอย่างเป็นทางการสำหรับระบบ Draftly ตามอัตลักษณ์ของระบบบริหารจัดการผลิตคอนเทนต์และสตูดิโอสื่อสร้างสรรค์ พร้อมประมวลผลขนาดและสร้างชุดไฟล์ Android Mipmap ครบทุกระดับความละเอียด:
+
+1. **แนวคิดการออกแบบและอัตลักษณ์ของแบรนด์ (Design Concept & Brand Identity)**:
+   - **สัญลักษณ์ (Monogram)**: อักษรย่อ **"D"** ที่ออกแบบในสไตล์เรขาคณิตโมเดิร์น ฝั่งก้านแนวตั้งประกอบด้วยเลเยอร์แผ่นงานดราฟต์และสตอรี่บอร์ด (Drafting Layers) เชื่อมโยงกับหัวดินสอร่างแบบ (Drafting Pen/Pencil Tip) ทแยงลงสู่ศูนย์กลาง สื่อถึงการผลิตงานสื่อจากขั้นร่างไอเดียสู่ผลงานจริง
+   - **โทนสีและมิติ (Color & Shading)**: การไล่เฉดสี Electric Cyan (`#38BDF8`), Cobalt Blue และ Royal Blue (`#2563EB`) บนการ์ด Squircle สี Dark Slate Navy (`#0B0F17` / `#1E293B`) ให้ความรู้สึกพรีเมียม โมเดิร์น สะอาดตา และสอดรับกับโทนสีหลักของแอป Draftly
+2. **การประมวลผลและสร้างไฟล์ไอคอน (Asset Processing & Mipmap Generation)**:
+   - สกัดและจัดเก็บไฟล์ไอคอนต้นฉบับความละเอียดสูง (Master Assets) ในโฟลเดอร์ [`master/mobile-app/src/assets/`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/assets/):
+     - `draftly-icon-master.png` (รูปภาพต้นฉบับ 1024×1024 px)
+     - `draftly-icon-squircle.png` (ไอคอนทรงขอบมนพร้อมมิติแสง)
+     - `draftly-icon-round.png` (ไอคอนทรงกลมสำหรับ Launcher แบบ Round)
+   - ประมวลผลสร้างไฟล์ไอคอนลงในโฟลเดอร์ Mipmap ตามมาตรฐาน Android (Lanczos Resampling พร้อม Alpha Anti-aliasing):
+     - `mipmap-mdpi`: 48×48 px (`ic_launcher.png`, `ic_launcher_round.png`)
+     - `mipmap-hdpi`: 72×72 px (`ic_launcher.png`, `ic_launcher_round.png`)
+     - `mipmap-xhdpi`: 96×96 px (`ic_launcher.png`, `ic_launcher_round.png`)
+     - `mipmap-xxhdpi`: 144×144 px (`ic_launcher.png`, `ic_launcher_round.png`)
+     - `mipmap-xxxhdpi`: 192×192 px (`ic_launcher.png`, `ic_launcher_round.png`)
+3. **การคอมไพล์แพ็กเกจ APK ใหม่ (Release Build Verification)**:
+   - คอมไพล์ Standalone Release APK ผ่าน Gradle (`./gradlew assembleRelease`) สำเร็จสมบูรณ์ (BUILD SUCCESSFUL ในเวลา 37 วินาที)
+   - ตัวติดตั้ง `app-release.apk` ใหม่บรรจุไอคอน Draftly ทั้งหมดพร้อมสำหรับการติดตั้งและแสดงผลบน Launcher ของ Android ทันที
+
 
 
 

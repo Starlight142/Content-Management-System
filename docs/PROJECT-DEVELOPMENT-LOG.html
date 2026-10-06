@@ -451,6 +451,7 @@
       <li class="nav-item"><a href="#phase-30" class="nav-link"><span class="nav-tag">P30</span>Untrack Handover Doc</a></li>
       <li class="nav-item"><a href="#phase-31" class="nav-link"><span class="nav-tag">P31</span>SmoothModal & Window Blur</a></li>
       <li class="nav-item"><a href="#phase-32" class="nav-link"><span class="nav-tag">P32</span>Deploy Phone (Xiaomi)</a></li>
+      <li class="nav-item"><a href="#phase-33" class="nav-link"><span class="nav-tag">P33</span>Draftly App Icon</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -519,6 +520,7 @@
           <tr><td>2 ต.ค. 2026 (16:30 - 16:45 น.)</td><td><a href="#phase-30">Phase 30: การยกเลิกการติดตามและซ่อนไฟล์ส่งมอบระบบจาก GitHub (.gitignore)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>2 ต.ค. 2026 (17:15 น.)</td><td><a href="#phase-31">Phase 31: การพัฒนาระบบ SmoothModal พร้อมแอนิเมชัน Spring, แก้ปัญหาคีย์บอร์ดบังช่องกรอก & เบลอพื้นหลัง</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>5 ต.ค. 2026 (22:15 น.)</td><td><a href="#phase-32">Phase 32: การคอมไพล์และติดตั้งแอปพลิเคชัน Standalone Release APK ลงบนโทรศัพท์จริง (Xiaomi 13 Pro)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>7 ต.ค. 2026 (00:30 น.)</td><td><a href="#phase-33">Phase 33: การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ Draftly (Official App Icon Design & Android Mipmap Generation)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
         </tbody>
       </table>
     </section>
@@ -1292,6 +1294,47 @@
         <li>ติดตั้งตัวแอปพลิเคชันผ่าน <code>adb install -r</code> สำเร็จ (Streaming Install Success)</li>
         <li>ทำ Reverse Port Forwarding <code>adb reverse tcp:5000 tcp:5000</code> เพื่อรองรับการเชื่อมต่อกับเครื่องคอมพิวเตอร์ผ่านสาย USB</li>
         <li>สั่งเปิดแอปพลิเคชันบนมือถือจริงผ่าน <code>adb shell am start -n com.mobileapp/.MainActivity</code> พร้อมใช้งานทันที</li>
+      </ul>
+    </section>
+
+    <!-- Phase 33 -->
+    <section class="section-card" id="phase-33">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 33: การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ Draftly (Official App Icon Design & Android Mipmap Generation)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta"><span>🕒 7 ตุลาคม 2026 (00:30 น.)</span></div>
+
+      <div class="callout callout-info">
+        <strong>Official Mobile Brand Identity:</strong><br>
+        ออกแบบและสร้างสรรค์ไอคอนอย่างเป็นทางการสำหรับแอปพลิเคชัน Draftly โดยผสมผสานตัวอักษรย่อ "D" เข้ากับแผ่นงานดราฟต์สตอรี่บอร์ดและปลายดินสอร่างแบบ พร้อมตัดต่อขนาดความละเอียดและกระจายลงโฟลเดอร์ Mipmap ครบทุกระดับความละเอียดบน Android
+      </div>
+
+      <h3>1. แนวคิดการออกแบบและอัตลักษณ์ของแบรนด์:</h3>
+      <ul>
+        <li><strong>สัญลักษณ์ (Monogram):</strong> ตัวอักษร "D" เรขาคณิต ฝั่งก้านตั้งเป็นเลเยอร์แผ่นงานดราฟต์และสตอรี่บอร์ด เชื่อมต่อกับปลายดินสอร่างแบบ (Drafting Pen/Pencil Tip) ทแยงมุมเข้าสู่ศูนย์กลาง</li>
+        <li><strong>โทนสีและแสงเงา:</strong> ไล่เฉดสี Electric Cyan (<code>#38BDF8</code>) และ Royal Blue (<code>#2563EB</code>) บนแผ่นหลัง Squircle สีกรมท่าเข้ม Dark Slate Navy (<code>#0B0F17</code>) พร้อมแสงเรืองนวลตา</li>
+      </ul>
+
+      <h3>2. การประมวลผลและการจัดชุดไฟล์ Mipmap:</h3>
+      <ul>
+        <li>จัดเก็บ Master Assets ความละเอียดสูงไว้ใน <code>master/mobile-app/src/assets/</code> (Master 1024×1024, Squircle, Round)</li>
+        <li>ประมวลผลตัดขนาดด้วย Lanczos Resampling พร้อมขอบมนและเงาตกกระทบแบบ Anti-aliasing ครบทุกขนาด:
+          <ul>
+            <li><code>mipmap-mdpi</code> (48×48 px)</li>
+            <li><code>mipmap-hdpi</code> (72×72 px)</li>
+            <li><code>mipmap-xhdpi</code> (96×96 px)</li>
+            <li><code>mipmap-xxhdpi</code> (144×144 px)</li>
+            <li><code>mipmap-xxxhdpi</code> (192×192 px)</li>
+          </ul>
+        </li>
+        <li>รองรับทั้ง <code>ic_launcher.png</code> (Squircle นุ่มนวล) และ <code>ic_launcher_round.png</code> (Circle เต็มวงสำหรับ HyperOS / Pixel)</li>
+      </ul>
+
+      <h3>3. การคอมไพล์แพ็กเกจ APK ใหม่:</h3>
+      <ul>
+        <li>คอมไพล์ Standalone Release APK ด้วย <code>./gradlew assembleRelease</code> สำเร็จสมบูรณ์ (BUILD SUCCESSFUL ใน 37 วินาที)</li>
+        <li>ไฟล์ตัวติดตั้ง <code>app-release.apk</code> ใหม่ได้รับการอัปเดตบรรจุไอคอน Draftly ครบถ้วนพร้อมติดตั้งบนเครื่องจริง</li>
       </ul>
     </section>
 
