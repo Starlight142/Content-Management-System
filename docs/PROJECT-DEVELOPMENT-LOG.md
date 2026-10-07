@@ -44,6 +44,7 @@
 | **5 ต.ค. 2026 (22:15 น.)** | [Phase 32: การคอมไพล์และติดตั้งแอปพลิเคชัน Standalone Release APK ลงบนโทรศัพท์จริง (Xiaomi 13 Pro Real Device Deployment)](#phase-32-การคอมไพล์และติดตั้งแอปพลิเคชัน-standalone-release-apk-ลงบนโทรศัพท์จริง-xiaomi-13-pro-real-device-deployment) | สำเร็จ ✅ |
 | **7 ต.ค. 2026 (00:30 น.)** | [Phase 33: การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ Draftly (Official App Icon Design & Android Mipmap Generation)](#phase-33-การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ-draftly-official-app-icon-design--android-mipmap-generation) | สำเร็จ ✅ |
 | **7 ต.ค. 2026 (01:30 น.)** | [Phase 34: การจับภาพหน้าจอระบบ Mobile App ครบทุกบทบาทหน้าที่ (Editor, Graphic Designer & Member Features QA)](#phase-34-การจับภาพหน้าจอระบบ-mobile-app-ครบทุกบทบาทหน้าที่-editor-graphic-designer--member-features-qa) | สำเร็จ ✅ |
+| **7 ต.ค. 2026 (12:55 น.)** | [Phase 35: การอัปเดตและซิงค์ฐานข้อมูล MongoDB สู่ Schema ล่าสุด & การสร้างคอนฟิก .env (Database Reseeding & Environment Setup)](#phase-35-การอัปเดตและซิงค์ฐานข้อมูล-mongodb-สู่-schema-ล่าสุด--การสร้างคอนฟิก-env-database-reseeding--environment-setup) | สำเร็จ ✅ |
 
 ---
 
@@ -1617,3 +1618,28 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 
 
 
+
+
+---
+
+## Phase 35: การอัปเดตและซิงค์ฐานข้อมูล MongoDB สู่ Schema ล่าสุด & การสร้างคอนฟิก .env (Database Reseeding & Environment Setup)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 7 ตุลาคม 2026 (12:45 - 12:55 น.)
+
+### 35.1 การสร้างไฟล์สภาพแวดล้อม `.env` สำหรับ Backend
+- ตรวจพบว่าในโฟลเดอร์ `master/backend` มีเฉพาะ `.env.example` แต่ยังไม่มี `.env` ตัวจริง
+- ทำการสร้าง `master/backend/.env` เพื่อระบุตัวแปรสภาพแวดล้อมให้ตรงตามมาตรฐาน:
+  - `PORT=5000`
+  - `MONGODB_URI=mongodb://127.0.0.1:27017/content_management`
+  - `JWT_SECRET=supersecretjwtkey_cms2026`
+  - `NODE_ENV=development`
+- ตรวจสอบความปลอดภัย `.env` ถูกรวมอยู่ใน `.gitignore` เรียบร้อย ไม่ถูกแทร็กขึ้น Git
+
+### 35.2 การอัปเดตและ Reseed ฐานข้อมูล MongoDB (`content_management`)
+- ดำเนินการรันคำสั่ง Seed (`node master/backend/src/database/seed.js`):
+  - ทำความสะอาดและสร้างชุดข้อมูลมาตรฐานใหม่ทั้งหมดลงฐานข้อมูล `content_management`
+  - เพิ่มฟิลด์ `code` ให้กับทีมครบถ้วนตาม Schema ล่าสุด (`TEAM-A` สำหรับ Content Team A และ `TEAM-B` สำหรับ Content Team B)
+  - กำหนดความสัมพันธ์ระหว่างบัญชีผู้ใช้งาน (Users) กับ TeamId โดยตรง (Manager, John, Jane, Mike ผูกกับ Team A; Outsider ผูกกับ Team B)
+  - จำลองรายการ Content ทั้ง 6 รายการครอบคลุมทุกสถานะงาน (Production, Review, Revision, Approved, Planning)
+  - จำลอง Task ทั้ง 10 รายการ ผูกกับผู้รับผิดชอบ และมี Reply Notes พร้อมลิงก์ส่งงานสมบูรณ์
+  - บันทึกคลังความรู้กฎหมายสื่อ (Legal Articles) 3 รายการ และประวัติกิจกรรมทีม (Team Activities) 6 รายการ
+- ผ่านการทดสอบและ Query ยืนยันข้อมูลแบบ Deep Verification ครบทั้ง 7 Collections ถูกต้อง 100%

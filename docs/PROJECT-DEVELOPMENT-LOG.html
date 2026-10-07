@@ -453,6 +453,7 @@
       <li class="nav-item"><a href="#phase-32" class="nav-link"><span class="nav-tag">P32</span>Deploy Phone (Xiaomi)</a></li>
       <li class="nav-item"><a href="#phase-33" class="nav-link"><span class="nav-tag">P33</span>Draftly App Icon</a></li>
       <li class="nav-item"><a href="#phase-34" class="nav-link"><span class="nav-tag">P34</span>Mobile App Screenshots QA</a></li>
+      <li class="nav-item"><a href="#phase-35" class="nav-link"><span class="nav-tag">P35</span>Database Reseed & .env</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -523,6 +524,7 @@
           <tr><td>5 ต.ค. 2026 (22:15 น.)</td><td><a href="#phase-32">Phase 32: การคอมไพล์และติดตั้งแอปพลิเคชัน Standalone Release APK ลงบนโทรศัพท์จริง (Xiaomi 13 Pro)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>7 ต.ค. 2026 (00:30 น.)</td><td><a href="#phase-33">Phase 33: การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ Draftly (Official App Icon Design & Android Mipmap Generation)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>7 ต.ค. 2026 (01:30 น.)</td><td><a href="#phase-34">Phase 34: การจับภาพหน้าจอระบบ Mobile App ครบทุกบทบาทหน้าที่ (Editor, Graphic Designer & Member Features QA)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>7 ต.ค. 2026 (12:55 น.)</td><td><a href="#phase-35">Phase 35: การอัปเดตและซิงค์ฐานข้อมูล MongoDB สู่ Schema ล่าสุด & การสร้างคอนฟิก .env</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
         </tbody>
       </table>
     </section>
@@ -1394,6 +1396,42 @@
         <li><code>15_member_dark_mode_team.png</code>: ภาพรวมทีมในโหมด Dark Mode</li>
         <li><code>16_member_dark_mode_ideas.png</code>: คลังไอเดียในโหมด Dark Mode</li>
         <li><code>17_android_home_launcher_icon.png</code>: ไอคอน Draftly บนหน้าจอโฮมและด็อกก์ของ Android</li>
+      </ul>
+    </section>
+
+    <!-- Phase 35 -->
+    <section class="section-card" id="phase-35">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 35: การอัปเดตและซิงค์ฐานข้อมูล MongoDB สู่ Schema ล่าสุด & การสร้างคอนฟิก .env</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 7 ตุลาคม 2026 (12:45 - 12:55 น.)</span>
+        <span>•</span>
+        <span>📁 <code>master/backend/.env</code> & <code>master/backend/src/database/seed.js</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Database Reseeding & Environment Configuration:</strong><br>
+        สร้างไฟล์คอนฟิก <code>.env</code> สำหรับ Backend และรันคำสั่ง Seed ฐานข้อมูล <code>content_management</code> ใหม่ เพื่อปรับปรุงโครงสร้างข้อมูลให้ตรงกับ Schema ล่าสุด 100% โดยเฉพาะฟิลด์ <code>code</code> สำหรับระบบ Team Code (<code>TEAM-A</code>, <code>TEAM-B</code>) พร้อมจำลองสถานะงานครบทุกขั้นตอน
+      </div>
+
+      <h3>1. การสร้างไฟล์คอนฟิกสภาพแวดล้อม (Environment Configuration):</h3>
+      <ul>
+        <li>สร้างไฟล์ <code>master/backend/.env</code> คัดลอกจาก <code>.env.example</code></li>
+        <li>กำหนดตัวแปร: <code>PORT=5000</code>, <code>MONGODB_URI=mongodb://127.0.0.1:27017/content_management</code>, <code>JWT_SECRET</code>, <code>NODE_ENV=development</code></li>
+        <li>ยืนยันความปลอดภัย ไฟล์ <code>.env</code> ได้รับการละเว้นใน <code>.gitignore</code></li>
+      </ul>
+
+      <h3>2. การปรับปรุงข้อมูลในฐานข้อมูล MongoDB (MongoDB Collections Updated):</h3>
+      <ul>
+        <li><strong>Teams (2 รายการ):</strong> บันทึกรหัสทีม <code>TEAM-A</code> (Content Team A) และ <code>TEAM-B</code> (Content Team B / Beta Studio) พร้อมรายชื่อสมาชิกและบทบาท Lead/Editor/Creator/Designer</li>
+        <li><strong>Users (6 รายการ):</strong> บัญชีทดสอบมาตรฐาน 3 บทบาท (Admin, Manager, Member) เข้ารหัสผ่าน bcrypt และผูกกับ <code>teamId</code> อย่างถูกต้อง</li>
+        <li><strong>Contents (6 รายการ):</strong> ครอบคลุมสถานะ Production, Review, Revision, Approved และ Planning พร้อม Legal Checklist และ Engagement Metrics</li>
+        <li><strong>Tasks (10 รายการ):</strong> งานย่อยแบ่งตามประเภท Scripting, Filming, Editing, Graphic Design พร้อม Reply Notes และ Deliverable URLs</li>
+        <li><strong>Ideas (3 รายการ):</strong> คลังระดมความคิดเห็นพร้อมสถิติการโหวต</li>
+        <li><strong>Team Activities (6 รายการ):</strong> Audit Log ประวัติการทำงานสดในทีม</li>
+        <li><strong>Legal Articles (3 รายการ):</strong> คลังความรู้กฎหมายลิขสิทธิ์และ PDPA</li>
       </ul>
     </section>
 
