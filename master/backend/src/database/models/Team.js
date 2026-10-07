@@ -29,6 +29,22 @@ const teamSchema = new mongoose.Schema({
     uppercase: true,
     sparse: true,
   },
+  joinCode: {
+    type: String,
+    required: true,
+    uppercase: true,
+    trim: true,
+    index: true,
+  },
+  leader: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  status: {
+    type: String,
+    enum: ['ACTIVE', 'ARCHIVED'],
+    default: 'ACTIVE',
+  },
   description: {
     type: String,
     default: '',

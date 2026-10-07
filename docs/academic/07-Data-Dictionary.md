@@ -18,13 +18,14 @@
 | ชื่อฟิลด์ | ชนิดข้อมูล | ความยาว | ข้อจำกัด (Constraints) | Nullable | ค่าเริ่มต้น | คำอธิบาย |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id` | UUID / VARCHAR | 36 | PK | NO | gen_random_uuid() | รหัสประจำตัวผู้ใช้สากล |
-| `role_id` | INT | - | FK (`roles.id`) | NO | - | อ้างอิงบทบาทหน้าที่ |
+| `role_id` | INT | - | FK (`roles.id`) | NO | - | อ้างอิงบทบาทหน้าที่ (`ADMIN`, `MANAGER`, `MEMBER`) |
 | `username` | VARCHAR | 50 | UNIQUE | NO | - | ชื่อสำหรับเข้าสู่ระบบ |
 | `email` | VARCHAR | 100 | UNIQUE | NO | - | อีเมลสำหรับติดต่อและแจ้งเตือน |
 | `password_hash`| VARCHAR | 255 | - | NO | - | รหัสผ่านที่เข้ารหัสด้วย bcrypt (Salt 10) |
 | `first_name` | VARCHAR | 100 | - | YES | NULL | ชื่อจริง |
 | `last_name` | VARCHAR | 100 | - | YES | NULL | นามสกุล |
-| `team_id` | UUID / VARCHAR | 36 | FK (`teams.id`) | YES | NULL | ทีมหลักที่สังกัด |
+| `position` | VARCHAR | 50 | CHECK in ('Video Editor','Graphic Designer','Script Writer','Content Creator','Production Manager','Other') | NO | 'Video Editor' | ตำแหน่งงานทางวิชาชีพ |
+| `team_id` | UUID / VARCHAR | 36 | FK (`teams.id`) | YES | NULL | ทีมหลักที่สังกัด (Single Active Team Policy) |
 | `working_status` | VARCHAR | 30 | CHECK in ('WORKING','REVIEWING','IDLE','OFFLINE') | NO | 'IDLE' | สถานะการทำงานปัจจุบันของสมาชิก |
 | `is_online` | BOOLEAN | - | - | NO | FALSE | สถานะการเชื่อมต่อออนไลน์แบบ Real-time |
 | `last_active_at`| TIMESTAMP | - | - | NO | CURRENT_TIMESTAMP | วันและเวลาที่มีกิจกรรมในระบบล่าสุด |
@@ -38,7 +39,10 @@
 | ชื่อฟิลด์ | ชนิดข้อมูล | ความยาว | ข้อจำกัด (Constraints) | Nullable | ค่าเริ่มต้น | คำอธิบาย |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id` | UUID / VARCHAR | 36 | PK | NO | gen_random_uuid() | รหัสประจำตัวทีม |
-| `name` | VARCHAR | 100 | - | NO | - | ชื่อทีม (เช่น Production Team A) |
+| `name` | VARCHAR | 100 | - | NO | - | ชื่อทีม (เช่น Content Team A) |
+| `join_code` | VARCHAR | 6 | UNIQUE, 6-CHAR ALPHANUMERIC | NO | - | รหัสเข้าร่วมทีม (เช่น TEAM01, K7P92X) |
+| `leader_id` | UUID / VARCHAR | 36 | FK (`users.id`) | YES | NULL | รหัสหัวหน้าทีมผู้ดูแล |
+| `status` | VARCHAR | 20 | CHECK in ('ACTIVE','ARCHIVED') | NO | 'ACTIVE' | สถานะของทีม |
 | `description`| TEXT | - | - | YES | NULL | รายละเอียดความเชี่ยวชาญของทีม |
 | `created_at` | TIMESTAMP | - | - | NO | CURRENT_TIMESTAMP | วันเวลาที่สร้างทีม |
 
@@ -78,7 +82,7 @@
 | `description`| TEXT | - | - | YES | NULL | รายละเอียดและบรีฟงาน |
 | `platform` | VARCHAR | 50 | CHECK in ('YouTube','TikTok','Instagram','Other') | NO | 'TikTok' | แพลตฟอร์มหลัก |
 | `category` | VARCHAR | 50 | - | YES | 'General' | หมวดหมู่ |
-| `status` | VARCHAR | 30 | CHECK in ('PLANNING','PRODUCTION','REVIEW','REVISION','APPROVED','SCHEDULED','PUBLISHED') | NO | 'PLANNING' | สถานะของวงจรการผลิต (State Machine) |
+| `status` | VARCHAR | 30 | CHECK in ('IDEA','PLANNING','IN_PROGRESS','REVIEW','REVISION','APPROVED','SCHEDULED','PUBLISHED') | NO | 'PLANNING' | สถานะของวงจรการผลิต (Workflow State Machine) |
 | `progress` | INT | - | CHECK (progress BETWEEN 0 AND 100) | NO | 0 | ความคืบหน้ารวมของชิ้นงาน (เปอร์เซ็นต์ 0-100%) |
 | `team_id` | UUID / VARCHAR | 36 | FK (`teams.id`) | NO | - | รหัสทีมผู้รับผิดชอบงานผลิตคอนเทนต์นี้ |
 | `created_by` | UUID / VARCHAR | 36 | FK (`users.id`) | NO | - | ผู้เปิดโปรเจกต์งาน |

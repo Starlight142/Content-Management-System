@@ -52,6 +52,7 @@ erDiagram
         string password_hash
         string first_name
         string last_name
+        string position
         string working_status
         boolean is_online
         datetime last_active_at
@@ -63,6 +64,9 @@ erDiagram
     TEAMS {
         uuid id PK
         string name
+        string join_code UK
+        uuid leader_id FK
+        string status
         string description
         datetime created_at
     }

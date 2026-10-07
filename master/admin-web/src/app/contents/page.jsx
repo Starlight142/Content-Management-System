@@ -259,11 +259,12 @@ export default function ContentsPage() {
             REVISION
           </span>
         );
+      case 'IN_PROGRESS':
       case 'PRODUCTION':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
             <Video size={13} className="text-blue-600" />
-            PRODUCTION
+            IN_PROGRESS
           </span>
         );
       case 'PLANNING':
@@ -511,7 +512,7 @@ export default function ContentsPage() {
           {/* Filter Dropdown Popover */}
           {isFilterMenuOpen && (
             <div className="absolute right-0 top-12 mt-1 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1.5 z-20">
-              {['ALL', 'PLANNING', 'PRODUCTION', 'REVIEW', 'REVISION', 'APPROVED', 'PUBLISHED'].map((st) => (
+              {['ALL', 'PLANNING', 'IN_PROGRESS', 'REVIEW', 'REVISION', 'APPROVED', 'PUBLISHED'].map((st) => (
                 <button
                   key={st}
                   onClick={() => {
@@ -612,7 +613,7 @@ export default function ContentsPage() {
                             <p className="px-3 py-1 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                               เปลี่ยนสถานะเป็น
                             </p>
-                            {['PLANNING', 'PRODUCTION', 'REVIEW', 'REVISION', 'APPROVED', 'PUBLISHED'].map((st) => (
+                            {['PLANNING', 'IN_PROGRESS', 'REVIEW', 'REVISION', 'APPROVED', 'PUBLISHED'].map((st) => (
                               <button
                                 key={st}
                                 onClick={() => handleUpdateStatus(item.id, st)}
@@ -716,7 +717,7 @@ export default function ContentsPage() {
             <div>
               <span className="text-xs text-slate-400 block font-medium mb-2">อัปเดตสถานะงานด่วน:</span>
               <div className="grid grid-cols-4 gap-2">
-                {['PLANNING', 'PRODUCTION', 'REVIEW', 'PUBLISHED'].map((st) => (
+                {['PLANNING', 'IN_PROGRESS', 'REVIEW', 'PUBLISHED'].map((st) => (
                   <button
                     key={st}
                     onClick={() => handleUpdateStatus(selectedContent.id, st)}

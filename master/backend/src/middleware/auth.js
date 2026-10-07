@@ -14,7 +14,7 @@ const verifyToken = (req, res, next) => {
   }
   
   try {
-    const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET || 'supersecretkey');
+    const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET || 'supersecretjwtkey_cms2026');
     req.user = decoded;
   } catch (err) {
     return res.status(401).json({ message: 'Invalid Token' });
@@ -48,13 +48,15 @@ const verifyTeamAccess = async (req, res, next) => {
       return res.status(404).json({ message: 'Team not found' });
     }
 
-    const isMember = team.members.some(
-      (m) => m.user && m.user.toString() === (req.user.userId || req.user.id || '').toString()
-    );
+    const userIdStr = (req.user.userId || req.user.id || '').toString();
+    const isMember = (req.user.teamId && req.user.teamId.toString() === team._id.toString()) ||
+      team.members.some(
+        (m) => m.user && m.user.toString() === userIdStr
+      );
 
     if (!isMember) {
       return res.status(403).json({
-        message: 'Access denied: You do not have permission to view or manage this team workspace',
+        message: 'Access denied: You do not have permission to view or manage this team workspace (ไม่มีสิทธิ์เข้าถึงข้อมูลของทีมอื่น)',
       });
     }
 

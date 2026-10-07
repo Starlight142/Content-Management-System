@@ -3,15 +3,21 @@ const Content = require('../../database/models/Content');
 const User = require('../../database/models/User');
 const TeamActivity = require('../../database/models/TeamActivity');
 const { broadcast } = require('../../services/presence.service');
+const workflowService = require('../../services/workflow.service');
 
 // @route GET /api/tasks
 // @access Private
 const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find()
-      .populate('assignedTo', 'username email firstName lastName role workingStatus')
+    const filter = {};
+    if (req.user && req.user.role !== 'ADMIN' && req.user.teamId) {
+      filter.teamId = req.user.teamId;
+    }
+
+    const tasks = await Task.find(filter)
+      .populate('assignedTo', 'username email firstName lastName position role workingStatus')
       .populate('contentId', 'title platform status progress')
-      .populate('teamId', 'name')
+      .populate('teamId', 'name code')
       .sort({ dueDate: 1, createdAt: -1 });
 
     res.status(200).json(tasks);
@@ -92,9 +98,23 @@ const updateTaskStatus = async (req, res) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
-    // Role-based protection: Member can only modify their own task
-    if (req.user.role === 'MEMBER') {
-      const isAssigned = existingTask.assignedTo && existingTask.assignedTo._id.toString() === userId.toString();
+    // Role-based protection & Workflow transition validation
+    if (status !== undefined) {
+      try {
+        workflowService.validateTaskTransition(
+          existingTask,
+          status,
+          userId,
+          req.user.role || 'MEMBER'
+        );
+      } catch (wfErr) {
+        return res.status(403).json({ message: wfErr.message });
+      }
+    } else if (req.user.role === 'MEMBER') {
+      const assigneeId = (existingTask.assignedTo && (existingTask.assignedTo._id || existingTask.assignedTo.id))
+        ? (existingTask.assignedTo._id || existingTask.assignedTo.id).toString()
+        : (existingTask.assignedTo ? existingTask.assignedTo.toString() : null);
+      const isAssigned = Boolean(assigneeId && assigneeId === userId.toString());
       if (!isAssigned) {
         return res.status(403).json({
           message: 'Permission denied: Members can only update their own assigned tasks',
@@ -117,7 +137,7 @@ const updateTaskStatus = async (req, res) => {
       updateFields,
       { new: true, runValidators: true }
     )
-      .populate('assignedTo', 'username firstName lastName email role workingStatus')
+      .populate('assignedTo', 'username firstName lastName email position role workingStatus')
       .populate('contentId', 'title status platform')
       .populate('teamId', 'name');
 
@@ -129,10 +149,10 @@ const updateTaskStatus = async (req, res) => {
       await User.findByIdAndUpdate(task.assignedTo._id, { workingStatus: newWorkingStatus });
     }
 
-    // If task is submitted for review and parent content is in PRODUCTION, auto-promote to REVIEW
+    // If task is submitted for review and parent content is IN_PROGRESS, auto-promote to REVIEW
     if (status === 'REVIEW' && task.contentId) {
       const parentContent = await Content.findById(task.contentId._id);
-      if (parentContent && (parentContent.status === 'PRODUCTION' || parentContent.status === 'REVISION')) {
+      if (parentContent && (parentContent.status === 'IN_PROGRESS' || parentContent.status === 'PRODUCTION' || parentContent.status === 'REVISION')) {
         parentContent.status = 'REVIEW';
         if (submissionUrl) {
           const nextVer = (parentContent.versions?.length || 0) + 1;

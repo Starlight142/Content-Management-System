@@ -123,7 +123,7 @@ export default function ProfileScreen({ user, onLogout }) {
             <Text style={[styles.userEmail, { color: colors.textSecondary }]}>{localUser?.email || 'user@studio.com'}</Text>
             <View style={[styles.roleBadge, { backgroundColor: colors.surfaceSubtle }]}>
               <Text style={[styles.roleText, { color: colors.textPrimary }]}>
-                {isManager ? 'ผู้จัดการฝ่ายผลิต (Manager)' : 'ทีมงานสร้างสรรค์ (Member)'}
+                {localUser?.position ? `${localUser.position} • ` : ''}{isManager ? 'ผู้จัดการ (Manager)' : 'ทีมงาน (Member)'}
               </Text>
             </View>
 
@@ -168,6 +168,11 @@ export default function ProfileScreen({ user, onLogout }) {
           <View style={styles.menuItem}>
             <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>รหัสผู้ใช้งาน</Text>
             <Text style={[styles.menuValue, { color: colors.textSecondary }]}>#{localUser?.id || localUser?._id || '2026-01'}</Text>
+          </View>
+          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
+          <View style={styles.menuItem}>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>ตำแหน่งงาน (Position)</Text>
+            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>{localUser?.position || 'Video Editor'}</Text>
           </View>
           <View style={[styles.divider, { backgroundColor: colors.divider }]} />
           <View style={styles.menuItem}>

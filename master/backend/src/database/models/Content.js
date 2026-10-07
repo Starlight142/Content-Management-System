@@ -19,14 +19,6 @@ const fileSchema = new mongoose.Schema({
   uploadedAt: { type: Date, default: Date.now },
 }, { _id: false });
 
-const legalCheckItemSchema = new mongoose.Schema({
-  ruleTitle: { type: String, required: true },
-  passed: { type: Boolean, default: false },
-  note: { type: String, default: '' },
-  checkedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  checkedAt: { type: Date },
-}, { _id: false });
-
 const versionSchema = new mongoose.Schema({
   versionNumber: { type: Number, default: 1 },
   fileUrl: { type: String, required: true },
@@ -41,14 +33,6 @@ const reviewSchema = new mongoose.Schema({
   notes: { type: String, default: '' },
   reviewedAt: { type: Date, default: Date.now },
 }, { _id: false });
-
-const DEFAULT_LEGAL_RULES = [
-  { ruleTitle: 'ตรวจสอบสิทธิ์การใช้เพลงประกอบ (Music License)', passed: false },
-  { ruleTitle: 'ตรวจสอบแหล่งที่มาของรูปภาพและฟุตเทจ (Stock License)', passed: false },
-  { ruleTitle: 'ตรวจสอบความยินยอมข้อมูลส่วนบุคคลและใบหน้า (PDPA)', passed: false },
-  { ruleTitle: 'ตรวจสอบเครื่องหมายการค้าและการแสดงสปอนเซอร์ (Trademark)', passed: false },
-  { ruleTitle: 'ตรวจสอบเกณฑ์ชุมชนและข้อห้ามแพลตฟอร์ม (Community Rules)', passed: false },
-];
 
 const contentSchema = new mongoose.Schema({
   title: {
@@ -67,7 +51,7 @@ const contentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['PLANNING', 'PRODUCTION', 'REVIEW', 'REVISION', 'APPROVED', 'SCHEDULED', 'PUBLISHED'],
+    enum: ['IDEA', 'PLANNING', 'IN_PROGRESS', 'REVIEW', 'REVISION', 'APPROVED', 'SCHEDULED', 'PUBLISHED'],
     default: 'PLANNING',
   },
   category: {
@@ -104,10 +88,6 @@ const contentSchema = new mongoose.Schema({
   versions: [versionSchema],
   reviewHistory: [reviewSchema],
   metrics: [metricSnapshotSchema],
-  legalChecklist: {
-    type: [legalCheckItemSchema],
-    default: DEFAULT_LEGAL_RULES,
-  },
 }, {
   timestamps: true,
 });

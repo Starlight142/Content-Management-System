@@ -203,6 +203,7 @@ Content-Management-System/
 │   ├── academic/                     # 7 formal IEEE/Cockburn diagrams and data dictionary
 │   ├── year-4-capstone/              # Future architecture expansion blueprints
 │   ├── screenshots/mobile/           # 17 QA screenshots covering all roles, Dark Mode, and Launcher Icon
+│   ├── TEAM-BASED-WORKSPACE-ARCHITECTURE-PLAN.md # Master Team-Based Workspace & Year 4 Architecture Plan
 │   ├── PROJECT-DEVELOPMENT-LOG.md    # Master development history log (Markdown)
 │   └── PROJECT-DEVELOPMENT-LOG.html  # Master development history log (Interactive HTML)
 │

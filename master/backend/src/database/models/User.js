@@ -26,7 +26,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-    role: {
+  position: {
+    type: String,
+    enum: ['Video Editor', 'Graphic Designer', 'Script Writer', 'Content Creator', 'Production Manager', 'Other'],
+    default: 'Content Creator',
+    trim: true,
+  },
+  role: {
     type: String,
     enum: ['ADMIN', 'MANAGER', 'MEMBER'],
     default: 'MEMBER',

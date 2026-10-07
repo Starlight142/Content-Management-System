@@ -47,6 +47,7 @@
 | **7 ต.ค. 2026 (12:55 น.)** | [Phase 35: การอัปเดตและซิงค์ฐานข้อมูล MongoDB สู่ Schema ล่าสุด & การสร้างคอนฟิก .env (Database Reseeding & Environment Setup)](#phase-35-การอัปเดตและซิงค์ฐานข้อมูล-mongodb-สู่-schema-ล่าสุด--การสร้างคอนฟิก-env-database-reseeding--environment-setup) | สำเร็จ ✅ |
 | **7 ต.ค. 2026 (13:10 น.)** | [Phase 36: การลบฐานข้อมูลและโมดูลกฎหมายที่ไม่ใช้งาน (Unused Legal Articles & Module Removal)](#phase-36-การลบฐานข้อมูลและโมดูลกฎหมายที่ไม่ใช้งาน-unused-legal-articles--module-removal) | สำเร็จ ✅ |
 | **7 ต.ค. 2026 (13:25 น.)** | [Phase 37: การแก้ไขปัญหาคอมไพล์ Android จากแคชเส้นทางเดิม & ชื่อโฟลเดอร์ภาษาไทย (Android Build Path Cache & Unicode Path Override)](#phase-37-การแก้ไขปัญหาคอมไพล์-android-จากแคชเส้นทางเดิม--ชื่อโฟลเดอร์ภาษาไทย-android-build-path-cache--unicode-path-override) | สำเร็จ ✅ |
+| **8 ต.ค. 2026 (02:45 น.)** | [Phase 38: การยกระดับสถาปัตยกรรมสู่ Team-Based Workspace, การแยก Role/Position/Team, การรักษาความปลอดภัย RBAC, รหัสเข้าร่วมทีม Join Code และการล้างระบบกฎหมาย](#phase-38-การยกระดับสถาปัตยกรรมสู่-team-based-workspace-การแยก-rolepositionteam-การรักษาความปลอดภัย-rbac-รหัสเข้าร่วมทีม-join-code-และการล้างระบบกฎหมาย-corporate-team-based-workspace-architecture--full-rbac-enforcement) | สำเร็จ ✅ |
 
 ---
 
@@ -1686,3 +1687,79 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - เพิ่มการตั้งค่า `android.overridePathCheck=true` ในไฟล์ `master/mobile-app/android/gradle.properties`
 3. **การทดสอบยืนยันผล (Verification)**:
    - ทดสอบรันการประเมินโครงสร้างโปรเจกต์ผ่าน `./gradlew projects`: ผลการทำงาน **BUILD SUCCESSFUL** ผ่านฉลุย 100% สามารถตรวจพบ `:react-native-safe-area-context` และ `:app` ได้อย่างถูกต้องสมบูรณ์
+
+---
+
+## Phase 38: การยกระดับสถาปัตยกรรมสู่ Team-Based Workspace, การแยก Role/Position/Team, การรักษาความปลอดภัย RBAC, รหัสเข้าร่วมทีม Join Code และการล้างระบบกฎหมาย (Corporate Team-Based Workspace Architecture & Full RBAC Enforcement)
+> ช่วงเวลาดำเนินงาน: 8 ตุลาคม 2026 (02:00 - 02:45 น.)
+
+### 38.1 วัตถุประสงค์และขอบเขตการยกระดับระบบ
+1. ยกระดับ Draftly CMS ให้สมจริงตามสภาพแวดล้อมการทำงานของบริษัทสื่อ (Corporate Media Production Environment) โดยเน้นความลึกของ Business Logic และ Team-Based Isolation
+2. แยกแยะความแตกต่างอย่างเด็ดขาดระหว่าง:
+   - **Position (ตำแหน่งวิชาชีพ)**: `Video Editor`, `Graphic Designer`, `Script Writer`, `Content Creator`, `Production Manager`, `Other`
+   - **Role (สิทธิ์ในระบบ)**: `ADMIN`, `MANAGER`, `MEMBER`
+   - **Team (องค์กรอิสระ)**: สังกัดทีมเดียว (Single Active Team Policy) พร้อมรหัสเข้าร่วมทีม (Join Code 6 หลัก)
+3. ปรับปรุงกระบวนการลงทะเบียน (Register Flow): ผู้ใช้ใหม่ได้รับสิทธิ์เป็น `MEMBER` เสมอ (ป้องกัน Privilege Escalation) และไม่บังคับกรอกรหัสทีมตั้งแต่ขั้นตอนลงทะเบียน
+4. ล้างระบบตรวจสอบกฎหมาย (Legal Check & Compliance Checklist) ออกจากฐานข้อมูล, Models, Controllers, Routes, Seed และหน้าจอส่วนหน้าทั้งหมด 100%
+5. จัดทำเอกสารแผนงานสถาปัตยกรรมฉบับสมบูรณ์ใน `docs/TEAM-BASED-WORKSPACE-ARCHITECTURE-PLAN.md` พร้อมแนวทางการต่อยอดสู่ปี 4 (Multi-Tenant, Analytics, Trend Analysis)
+
+### 38.2 การพัฒนาฝั่ง Backend และ Service Layer
+1. **Mongoose Models ปรับปรุงใหม่**:
+   - `User.js`: เพิ่มฟิลด์ `position` (enum 6 ตำแหน่ง), จัดการความสัมพันธ์ `teamId`
+   - `Team.js`: เพิ่มฟิลด์ `joinCode` (String 6 ตัวอักษร Alphanumeric ไม่ซ้ำกัน), `leader` (ref User), และ `status` (`ACTIVE`, `ARCHIVED`)
+   - `Content.js`: ลบ `legalChecklist` schema ออกทั้งหมด, กำหนด enum สถานะตาม State Machine: `['IDEA', 'PLANNING', 'IN_PROGRESS', 'REVIEW', 'REVISION', 'APPROVED', 'SCHEDULED', 'PUBLISHED']`
+   - `Task.js`: ลบตัวเลือก `'Legal Check'` ออกจาก `taskType`
+   - `TeamActivity.js`: รองรับ Action Types ใหม่ เช่น `TEAM_CREATED`, `TEAM_JOINED`, `JOIN_CODE_REGENERATED`, `TASK_ASSIGNED`
+2. **การสร้าง Service Layer (`master/backend/src/services/`)**:
+   - `auth.service.js`: จัดการ Registration ปลอดภัย (บังคับ `role = 'MEMBER'`, ตรวจสอบตำแหน่ง), จัดการ Login พร้อม Sign JWT Token ด้วย secret จากสภาพแวดล้อม
+   - `team.service.js`: สร้างทีม, สุ่ม Join Code 6 หลัก, ตรวจสอบและเข้าร่วมทีมด้วยรหัสผ่าน `joinTeamByCode`, สร้างรหัสใหม่ `regenerateJoinCode` และคำนวณสถิติแดชบอร์ดทีม
+   - `workflow.service.js`: ตรวจสอบความถูกต้องของการเปลี่ยนสถานะ (State Machine Transition Guards) สำหรับ Content และ Task พร้อมระบบป้องกันสิทธิ์ (Member แก้ไขได้เฉพาะ Task ของตนเอง, ไม่อนุญาตให้ Member อนุมัติ Content)
+3. **การปรับปรุง Controllers และ Routes**:
+   - `teams.routes.js` & `teams.controller.js`: เพิ่มเอนด์พอยต์ `POST /api/teams/join`, `POST /api/teams/:id/regenerate-code`, `GET /api/teams/my`, และครอบด้วยมิดเดิลแวร์ `verifyTeamAccess`
+   - `contents.routes.js` & `contents.controller.js`: ถอดถอนเอนด์พอยต์ `PUT /:id/legal-check`, เชื่อมโยงการเปลี่ยนสถานะผ่าน `workflowService.validateContentTransition`
+   - `tasks.controller.js`: ปรับปรุงการตรวจสอบสิทธิ์การอัปเดตงานให้รองรับ Document ที่ถูก Populate, กรองงานตามขอบเขตทีม (`teamId`) และปฏิเสธการเข้าถึงข้ามทีมด้วยรหัส 403
+   - `app.js`: เพิ่ม `require('dotenv').config()` บรรทัดแรกสุด เพื่อป้องกัน Token Sign/Verify Secret Mismatch
+
+### 38.3 การปรับปรุง Mobile App (React Native)
+1. `LoginScreen.jsx`:
+   - ถอดปุ่มเลือกสิทธิ์ (Role) ออกจากการลงทะเบียน (กำหนด Member โดยอัตโนมัติ)
+   - เพิ่มชิปเลือกตำแหน่งวิชาชีพ (Position Chips) 6 ตำแหน่ง
+   - ปรับช่องรหัสทีมให้เป็นทางเลือก (Optional)
+   - เพิ่มปุ่มลัดสำหรับเข้าสู่ระบบด้วยบัญชีทดสอบตำแหน่งต่างๆ (Manager, Editor, Script Writer, Graphic Designer)
+2. `TeamOverviewScreen.jsx`:
+   - แสดงป้ายรหัสเข้าร่วมทีม (Join Code Badge) พร้อมปุ่มคัดลอก และปุ่มสุ่มรหัสใหม่สำหรับ Manager
+   - แสดงรายชื่อสมาชิกในทีมพร้อมป้ายแสดงตำแหน่งวิชาชีพ (Position) และสิทธิ์ (Role)
+   - เพิ่มหน้าจอและฟอร์มสำหรับผู้ใช้ที่ยังไม่มีทีม ให้สามารถกรอก Join Code 6 หลักเพื่อเข้าร่วมทีมได้ทันที
+3. `MemberTaskList.jsx`:
+   - เพิ่ม Scope Switcher: สลับดูระหว่าง "งานของฉัน" กับ "งานในทีมทั้งหมด"
+   - แสดงป้ายชื่อและตำแหน่งของผู้รับผิดชอบแต่ละงาน
+   - บล็อกการแก้ไขและปุ่มส่งงานสำหรับงานที่เป็นของสมาชิกคนอื่น (แสดงป้าย Read-only)
+4. `ProfileScreen.jsx`:
+   - แสดงป้ายตำแหน่งวิชาชีพ (Position Badge) ใต้ชื่อผู้ใช้ และในตารางข้อมูลบัญชี
+5. ล้างโค้ดระบบ Legal:
+   - นำ `updateLegalChecklist` ออกจาก `src/services/api.js`
+   - ถอดไอคอนและแท็บ 'legal' ออกจาก `TabIcon.jsx` และ `ManagerDashboard.jsx`
+
+### 38.4 การปรับปรุง Admin Web (Next.js)
+1. `master/admin-web/src/app/users/page.jsx`:
+   - เพิ่มคอลัมน์ "ตำแหน่ง (Position)" ในตารางแสดงรายชื่อผู้ใช้งาน
+   - เพิ่มตัวเลือกตำแหน่งงานใน Modal เพิ่มผู้ใช้ใหม่
+   - แสดงป้ายรหัสเข้าร่วมทีม (Join Code) ในการ์ดแสดงรายชื่อทีม
+2. `master/admin-web/src/app/contents/page.jsx`:
+   - แทนที่สถานะ `PRODUCTION` เดิมด้วย `IN_PROGRESS` ครอบคลุมการแสดง Badge, ตัวกรองสถานะ และปุ่มอัปเดตสถานะด่วน
+3. ทดสอบการคอมไพล์ Admin Web: รัน `npm run build` ผ่าน 100% ไร้ข้อผิดพลาด
+
+### 38.5 การตรวจสอบและยืนยันผลแบบอัตโนมัติ (Automated Verification)
+- จัดทำสคริปต์ทดสอบ RBAC & Workspace ครอบคลุม 25 กรณีทดสอบ:
+  1. การเข้าสู่ระบบของ Admin, Manager และ Member
+  2. การสมัครสมาชิกใหม่บังคับสิทธิ์เป็น MEMBER และบันทึก Position ถูกต้อง
+  3. ผู้ใช้ที่ยังไม่มีทีมสามารถเข้าร่วมทีมด้วย Join Code 6 หลัก
+  4. การป้องกันการเข้าถึงข้ามทีม (Foreign team member ได้รับ 403 Forbidden)
+  5. สมาชิกเข้าถึงงานในทีมตนเองได้ทั้งหมด (200 OK)
+  6. สมาชิกอัปเดตสถานะและ Progress ของตนเองได้สำเร็จ (200 OK)
+  7. สมาชิกถูกบล็อกเมื่อพยายามแก้ไขงานของคนอื่น (403 Forbidden)
+  8. สมาชิกถูกบล็อกเมื่อพยายามอนุมัติ Content (403 Forbidden)
+  9. Manager อนุมัติ Content ได้สำเร็จ (200 OK)
+  10. Manager สุ่มสร้าง Join Code ใหม่ได้สำเร็จ และสมาชิกทั่วไปถูกบล็อก (403 Forbidden)
+- ผลการทดสอบ: **ผ่านทั้งหมด 25/25 การตรวจสอบ (Total Passed: 25, Total Failed: 0)**
+

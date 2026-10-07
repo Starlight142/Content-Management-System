@@ -16,6 +16,15 @@ import { authApi, setAuthToken, getBaseUrl } from '../../services/api';
 import { useTheme } from '../../theme/ThemeContext';
 import ServerConfigModal from '../../components/ServerConfigModal';
 
+const POSITIONS = [
+  { value: 'Video Editor', label: 'ตัดต่อวิดีโอ (Video Editor)' },
+  { value: 'Graphic Designer', label: 'กราฟิกดีไซน์ (Graphic Designer)' },
+  { value: 'Script Writer', label: 'เขียนบทสคริปต์ (Script Writer)' },
+  { value: 'Content Creator', label: 'ครีเอเตอร์ (Content Creator)' },
+  { value: 'Production Manager', label: 'ผู้จัดการโปรดักชัน (Manager)' },
+  { value: 'Other', label: 'ทั่วไป / อื่นๆ (Other)' },
+];
+
 export default function LoginScreen({ onLoginSuccess }) {
   const { isDark, colors } = useTheme();
   const [activeTab, setActiveTab] = useState('login'); // 'login' | 'register'
@@ -30,6 +39,7 @@ export default function LoginScreen({ onLoginSuccess }) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [teamCode, setTeamCode] = useState('');
+  const [selectedPosition, setSelectedPosition] = useState('Video Editor');
   const [selectedRole, setSelectedRole] = useState('MEMBER');
   const [loading, setLoading] = useState(false);
 
@@ -56,8 +66,9 @@ export default function LoginScreen({ onLoginSuccess }) {
         id: res.user?.id || 1,
         name: res.user?.firstName
           ? `${res.user.firstName} ${res.user.lastName || ''}`.trim()
-          : (selectedRole === 'MANAGER' ? 'สมศรี (Manager)' : 'จอห์น (Member)'),
+          : (res.user?.role === 'MANAGER' ? 'สมศรี (Manager)' : 'จอห์น (Member)'),
         role: res.user?.role || selectedRole,
+        position: res.user?.position || 'Video Editor',
         email: email.trim(),
         teamId: res.user?.teamId,
         teamName: res.user?.teamName,
@@ -80,6 +91,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                   id: selectedRole === 'MANAGER' ? 101 : 202,
                   name: selectedRole === 'MANAGER' ? 'Somsri (Manager)' : 'John (Creator/Member)',
                   role: selectedRole,
+                  position: 'Video Editor',
                   email: email.trim(),
                 });
               },
@@ -98,11 +110,6 @@ export default function LoginScreen({ onLoginSuccess }) {
       return;
     }
 
-    if (!teamCode.trim()) {
-      Alert.alert('จำเป็นต้องมีรหัสทีม', 'กรุณาระบุรหัสสำหรับเข้าทีม (เช่น TEAM-A หรือ TEAM-B)');
-      return;
-    }
-
     if (password.length < 6) {
       Alert.alert('ข้อผิดพลาด', 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร');
       return;
@@ -117,13 +124,17 @@ export default function LoginScreen({ onLoginSuccess }) {
         password,
         firstName: firstName.trim(),
         lastName: lastName.trim() || '',
-        role: selectedRole,
-        teamCode: teamCode.trim().toUpperCase(),
+        position: selectedPosition,
+        teamCode: teamCode.trim() ? teamCode.trim().toUpperCase() : undefined,
       });
+
+      const successMsg = res.user?.teamName
+        ? `ยินดีต้อนรับเข้าสู่ทีม ${res.user.teamName}!\nกรุณาเข้าสู่ระบบด้วยบัญชีของคุณ`
+        : 'ลงทะเบียนสำเร็จเรียบร้อยแล้ว!\nคุณสามารถเข้าสู่ระบบและใส่รหัส Join Code ของทีมได้ในภายหลัง';
 
       Alert.alert(
         'ลงทะเบียนสำเร็จ',
-        `ยินดีต้อนรับเข้าสู่ทีม ${res.user?.teamName || teamCode}!\nกรุณาเข้าสู่ระบบด้วยบัญชีของคุณ`,
+        successMsg,
         [
           {
             text: 'เข้าสู่ระบบเลย',
@@ -279,11 +290,11 @@ export default function LoginScreen({ onLoginSuccess }) {
                   </View>
                 </View>
 
-                {/* Team Access Code Field */}
+                {/* Team Access Code Field (Optional) */}
                 <View style={styles.inputGroup}>
                   <View style={styles.labelRow}>
-                    <Text style={[styles.label, { color: colors.textPrimary }]}>รหัสสำหรับเข้าทีม (Team Code) *</Text>
-                    <Text style={styles.badgeRequired}>จำเป็น</Text>
+                    <Text style={[styles.label, { color: colors.textPrimary }]}>รหัสเข้าร่วมทีม (Join Code)</Text>
+                    <Text style={styles.badgeOptional}>ไม่บังคับ</Text>
                   </View>
                   <TextInput
                     style={[
@@ -291,11 +302,11 @@ export default function LoginScreen({ onLoginSuccess }) {
                       styles.teamCodeInput,
                       {
                         backgroundColor: isDark ? '#1E293B' : '#EFF6FF',
-                        borderColor: '#3B82F6',
+                        borderColor: isDark ? '#3B82F6' : '#93C5FD',
                         color: colors.textPrimary,
                       },
                     ]}
-                    placeholder="เช่น TEAM-A หรือ TEAM-B"
+                    placeholder="เช่น TEAM01 หรือ K7P92X (เว้นว่างได้)"
                     placeholderTextColor={colors.textMuted}
                     value={teamCode}
                     onChangeText={setTeamCode}
@@ -303,7 +314,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                     autoCorrect={false}
                   />
                   <Text style={[styles.helperText, { color: colors.textSecondary }]}>
-                    รหัสทีมเริ่มต้น: <Text style={{ fontWeight: 'bold', color: '#2563EB' }}>TEAM-A</Text> (หรือ TEAM-B)
+                    หากยังไม่มีรหัสทีม สามารถเว้นว่างไว้แล้วใส่ Join Code ในภายหลังได้
                   </Text>
                 </View>
               </>
@@ -336,48 +347,39 @@ export default function LoginScreen({ onLoginSuccess }) {
               />
             </View>
 
-            {/* Role Selector (in Register mode) */}
+            {/* Position Picker (in Register mode) */}
             {activeTab === 'register' && (
               <View style={styles.roleGroup}>
-                <Text style={[styles.label, { color: colors.textPrimary }]}>บทบาทในทีม:</Text>
-                <View style={styles.roleButtons}>
-                  <TouchableOpacity
-                    style={[
-                      styles.roleBtn,
-                      { backgroundColor: colors.surface, borderColor: colors.border },
-                      selectedRole === 'MEMBER' && { borderColor: colors.primary, backgroundColor: isDark ? colors.surfaceSubtle : '#F1F5F9' },
-                    ]}
-                    onPress={() => setSelectedRole('MEMBER')}
-                  >
-                    <Text
-                      style={[
-                        styles.roleBtnText,
-                        { color: colors.textSecondary },
-                        selectedRole === 'MEMBER' && { color: colors.textPrimary, fontWeight: '700' },
-                      ]}
-                    >
-                      Member (ทีมงาน)
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.roleBtn,
-                      { backgroundColor: colors.surface, borderColor: colors.border },
-                      selectedRole === 'MANAGER' && { borderColor: colors.primary, backgroundColor: isDark ? colors.surfaceSubtle : '#F1F5F9' },
-                    ]}
-                    onPress={() => setSelectedRole('MANAGER')}
-                  >
-                    <Text
-                      style={[
-                        styles.roleBtnText,
-                        { color: colors.textSecondary },
-                        selectedRole === 'MANAGER' && { color: colors.textPrimary, fontWeight: '700' },
-                      ]}
-                    >
-                      Manager (หัวหน้า)
-                    </Text>
-                  </TouchableOpacity>
+                <Text style={[styles.label, { color: colors.textPrimary }]}>ตำแหน่งงานหลัก (Position):</Text>
+                <View style={styles.positionGrid}>
+                  {POSITIONS.map((pos) => {
+                    const isSelected = selectedPosition === pos.value;
+                    return (
+                      <TouchableOpacity
+                        key={pos.value}
+                        style={[
+                          styles.positionChip,
+                          { backgroundColor: colors.surface, borderColor: colors.border },
+                          isSelected && {
+                            borderColor: colors.primary,
+                            backgroundColor: isDark ? colors.surfaceSubtle : '#EFF6FF',
+                          },
+                        ]}
+                        onPress={() => setSelectedPosition(pos.value)}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.positionChipText,
+                            { color: colors.textSecondary },
+                            isSelected && { color: colors.primary, fontWeight: '700' },
+                          ]}
+                        >
+                          {pos.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
               </View>
             )}
@@ -422,7 +424,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                     onPress={() => applyDemoAccount('manager@studio.com', 'MANAGER')}
                   >
                     <Text style={styles.demoPillTitle}>Manager</Text>
-                    <Text style={styles.demoPillSub}>สมศรี จัดการทีม</Text>
+                    <Text style={styles.demoPillSub}>สมศรี (หัวหน้า)</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -439,6 +441,14 @@ export default function LoginScreen({ onLoginSuccess }) {
                   >
                     <Text style={styles.demoPillTitle}>Graphic</Text>
                     <Text style={styles.demoPillSub}>Mike Graphic</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.demoPill, { backgroundColor: '#FEF3C7', borderColor: '#FDE68A' }]}
+                    onPress={() => applyDemoAccount('jane@studio.com', 'MEMBER')}
+                  >
+                    <Text style={styles.demoPillTitle}>Script</Text>
+                    <Text style={styles.demoPillSub}>Jane Script</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -581,6 +591,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
+  },
+  badgeOptional: {
+    fontSize: 10,
+    color: '#64748B',
+    fontWeight: '600',
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  positionGrid: {
+    gap: 8,
+  },
+  positionChip: {
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+  },
+  positionChipText: {
+    fontSize: 12,
+    fontWeight: '500',
   },
   input: {
     borderWidth: 1,

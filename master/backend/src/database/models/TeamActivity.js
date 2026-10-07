@@ -23,6 +23,7 @@ const teamActivitySchema = new mongoose.Schema({
       'TASK_DELETED',
       'CONTENT_CREATED',
       'CONTENT_UPDATED',
+      'CONTENT_STATUS_CHANGED',
       'CONTENT_REVIEWED',
       'CONTENT_APPROVED',
       'CONTENT_REVISED',
@@ -33,6 +34,11 @@ const teamActivitySchema = new mongoose.Schema({
       'USER_CREATED',
       'USER_UPDATED',
       'USER_DELETED',
+      'TEAM_CREATED',
+      'TEAM_JOINED',
+      'JOIN_CODE_REGENERATED',
+      'REVIEW_REQUESTED',
+      'REVISION_REQUESTED',
       'SETTINGS_UPDATED',
     ],
     required: true,
@@ -52,7 +58,7 @@ const teamActivitySchema = new mongoose.Schema({
   },
   entityModel: {
     type: String,
-    enum: ['Task', 'Content', 'Idea', 'User'],
+    enum: ['Task', 'Content', 'Idea', 'User', 'Team'],
   },
 }, {
   timestamps: true,

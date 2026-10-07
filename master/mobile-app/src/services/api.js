@@ -147,10 +147,6 @@ export const contentApi = {
     method: 'PATCH',
     body: JSON.stringify({ status }),
   }),
-  updateLegalChecklist: (id, items) => request(`/contents/${id}/legal-check`, {
-    method: 'PUT',
-    body: JSON.stringify({ items }),
-  }),
   submitReview: (id, decision, notes) => request(`/contents/${id}/review`, {
     method: 'POST',
     body: JSON.stringify({ decision, notes }),
@@ -197,6 +193,17 @@ export const ideaApi = {
 export const teamApi = {
   getAll: () => request('/teams'),
   getMyTeam: () => request('/teams/my-team'),
+  joinTeam: (joinCode) => request('/teams/join', {
+    method: 'POST',
+    body: JSON.stringify({ joinCode: (joinCode || '').trim().toUpperCase() }),
+  }),
+  regenerateCode: (teamId) => request(`/teams/${teamId}/regenerate-code`, {
+    method: 'POST',
+  }),
+  createTeam: (teamData) => request('/teams', {
+    method: 'POST',
+    body: JSON.stringify(teamData),
+  }),
   getDashboard: (teamId) => request(`/teams/${teamId}/dashboard`),
   getTeamTasks: (teamId) => request(`/teams/${teamId}/tasks`),
   getTeamContents: (teamId) => request(`/teams/${teamId}/contents`),

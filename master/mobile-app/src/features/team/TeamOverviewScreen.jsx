@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   RefreshControl,
   Platform,
+  TextInput,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { teamApi } from '../../services/api';
@@ -20,14 +22,23 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
   const [refreshing, setRefreshing] = useState(false);
   const [teamData, setTeamData] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [hasNoTeam, setHasNoTeam] = useState(false);
+  const [inputJoinCode, setInputJoinCode] = useState('');
+  const [joining, setJoining] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
+
+  const isManager = user?.role === 'MANAGER' || user?.role === 'ADMIN';
 
   const fetchTeamWorkspace = async () => {
     try {
       setErrorMessage(null);
+      setHasNoTeam(false);
       // 1. Fetch current user's team
-      const myTeam = await teamApi.getMyTeam();
+      const myTeam = await teamApi.getMyTeam().catch(() => null);
       if (!myTeam || !myTeam._id) {
-        throw new Error('ไม่พบข้อมูลทีมที่คุณสังกัดในระบบ');
+        setHasNoTeam(true);
+        setTeamData(null);
+        return;
       }
 
       // 2. Fetch team dashboard aggregate
@@ -35,12 +46,66 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
       setTeamData(dashboard);
     } catch (err) {
       console.warn('fetchTeamWorkspace error:', err.message);
-      setErrorMessage(err.message || 'ไม่สามารถโหลดข้อมูลทีมได้ กรุณาตรวจสอบการเชื่อมต่อ Backend');
+      if (err.message && (err.message.includes('สังกัด') || err.message.includes('team') || err.message.includes('ทีม'))) {
+        setHasNoTeam(true);
+      } else {
+        setErrorMessage(err.message || 'ไม่สามารถโหลดข้อมูลทีมได้ กรุณาตรวจสอบการเชื่อมต่อ Backend');
+      }
       setTeamData(null);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
+  };
+
+  const handleJoinTeam = async () => {
+    if (!inputJoinCode.trim()) {
+      Alert.alert('ข้อผิดพลาด', 'กรุณาระบุรหัส Join Code 6 หลัก');
+      return;
+    }
+    try {
+      setJoining(true);
+      const res = await teamApi.joinTeam(inputJoinCode.trim());
+      Alert.alert('สำเร็จ', `เข้าร่วมทีม ${res.team?.name || ''} เรียบร้อยแล้ว`);
+      setInputJoinCode('');
+      setHasNoTeam(false);
+      setLoading(true);
+      fetchTeamWorkspace();
+    } catch (err) {
+      Alert.alert('เข้าร่วมทีมไม่สำเร็จ', err.message || 'รหัส Join Code ไม่ถูกต้อง');
+    } finally {
+      setJoining(false);
+    }
+  };
+
+  const handleCopyCode = (code) => {
+    Alert.alert('รหัสเชิญเข้าร่วมทีม (Join Code)', `รหัสของทีมนี้คือ: ${code}\nสามารถส่งรหัสนี้ให้เพื่อนร่วมทีมเพื่อเข้าร่วมได้ทันที`);
+  };
+
+  const handleRegenerateCode = () => {
+    if (!teamData?.team?._id) return;
+    Alert.alert(
+      'สร้างรหัส Join Code ใหม่',
+      'คุณต้องการรีเซ็ตรหัส Join Code ใหม่สำหรับทีมนี้ใช่หรือไม่? รหัสเดิมจะไม่สามารถใช้ได้อีก',
+      [
+        { text: 'ยกเลิก', style: 'cancel' },
+        {
+          text: 'ยืนยันเปลี่ยนรหัส',
+          onPress: async () => {
+            try {
+              setRegenerating(true);
+              const res = await teamApi.regenerateCode(teamData.team._id);
+              Alert.alert('เปลี่ยนรหัสสำเร็จ', `รหัส Join Code ใหม่คือ: ${res.joinCode}`);
+              fetchTeamWorkspace();
+            } catch (err) {
+              Alert.alert('ผิดพลาด', err.message || 'ไม่สามารถสร้างรหัสใหม่ได้');
+            } finally {
+              setRegenerating(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   useEffect(() => {
@@ -164,15 +229,33 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
           </Text>
         </View>
         {teamData?.team && (
-          <View style={{ alignItems: 'flex-end', gap: 4 }}>
+          <View style={{ alignItems: 'flex-end', gap: 6 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <TouchableOpacity
+                style={[styles.teamCodeBadge, { backgroundColor: isDark ? '#1E293B' : '#EFF6FF', borderColor: isDark ? '#3B82F6' : '#BFDBFE' }]}
+                onPress={() => handleCopyCode(teamData.team.joinCode || teamData.team.code)}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.teamCodeBadgeText, { color: isDark ? '#93C5FD' : '#1D4ED8' }]}>
+                  รหัส: {teamData.team.joinCode || teamData.team.code} 📋
+                </Text>
+              </TouchableOpacity>
+              {isManager && (
+                <TouchableOpacity
+                  style={[styles.regenBtn, { backgroundColor: isDark ? colors.surfaceSubtle : '#F1F5F9', borderColor: colors.border }]}
+                  onPress={handleRegenerateCode}
+                  disabled={regenerating}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.regenBtnText, { color: colors.textSecondary }]}>
+                    {regenerating ? '...' : '⟳'}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
             <View style={[styles.memberCountBadge, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
               <Text style={[styles.memberCountText, { color: colors.textPrimary }]}>
-                {teamData.team.totalMembers} สมาชิก
-              </Text>
-            </View>
-            <View style={[styles.teamCodeBadge, { backgroundColor: isDark ? '#1E293B' : '#EFF6FF', borderColor: isDark ? '#3B82F6' : '#BFDBFE' }]}>
-              <Text style={[styles.teamCodeBadgeText, { color: isDark ? '#93C5FD' : '#1D4ED8' }]}>
-                รหัสทีม: {teamData.team.code || 'TEAM-A'}
+                {teamData.team.totalMembers || teamData.members?.length || 0} สมาชิก
               </Text>
             </View>
           </View>
@@ -188,6 +271,49 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
           <View style={styles.centerBox}>
             <ActivityIndicator size="large" color={colors.primary} />
             <Text style={[styles.centerText, { color: colors.textSecondary }]}>กำลังดึงข้อมูลทีมสดจาก MongoDB...</Text>
+          </View>
+        ) : hasNoTeam ? (
+          <View style={[styles.noTeamCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+            <View style={[styles.noTeamIconBox, { backgroundColor: isDark ? '#1E293B' : '#EFF6FF' }]}>
+              <Text style={styles.noTeamIconText}>👥</Text>
+            </View>
+            <Text style={[styles.noTeamTitle, { color: colors.textPrimary }]}>
+              ยังไม่ได้เข้าร่วมทีมผลิตคอนเทนต์
+            </Text>
+            <Text style={[styles.noTeamSubtitle, { color: colors.textSecondary }]}>
+              กรุณากรอกรหัส Join Code 6 หลักที่ได้รับจากหัวหน้าทีมของคุณ (เช่น TEAM01 หรือ TEAM02) เพื่อเข้าถึงพื้นที่การทำงานร่วมกัน
+            </Text>
+
+            <View style={styles.joinInputBox}>
+              <TextInput
+                style={[
+                  styles.joinCodeInput,
+                  {
+                    backgroundColor: colors.inputBg,
+                    borderColor: colors.inputBorder,
+                    color: colors.textPrimary,
+                  },
+                ]}
+                placeholder="เช่น TEAM01"
+                placeholderTextColor={colors.textMuted}
+                value={inputJoinCode}
+                onChangeText={(t) => setInputJoinCode(t.toUpperCase())}
+                autoCapitalize="characters"
+                maxLength={10}
+              />
+              <TouchableOpacity
+                style={[styles.joinSubmitBtn, { backgroundColor: colors.primary }]}
+                onPress={handleJoinTeam}
+                disabled={joining}
+                activeOpacity={0.8}
+              >
+                {joining ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.joinSubmitBtnText}>เข้าร่วมทีม</Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         ) : errorMessage ? (
           <View style={styles.centerBox}>
@@ -319,7 +445,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                           )}
                         </View>
                         <Text style={[styles.memberRole, { color: colors.textSecondary }]}>
-                          {member.roleInTeam} • {member.role}
+                          {(member.position || member.roleInTeam || 'Member')} • {member.role}
                         </Text>
                       </View>
                       <View style={[styles.workingBadge, { backgroundColor: badge.bg }]}>
@@ -494,6 +620,76 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  regenBtn: {
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  regenBtnText: {
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  noTeamCard: {
+    padding: 24,
+    borderRadius: 20,
+    borderWidth: 1,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  noTeamIconBox: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  noTeamIconText: {
+    fontSize: 28,
+  },
+  noTeamTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  noTeamSubtitle: {
+    fontSize: 13,
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 20,
+  },
+  joinInputBox: {
+    width: '100%',
+    flexDirection: 'row',
+    gap: 10,
+  },
+  joinCodeInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 15,
+    fontWeight: 'bold',
+    letterSpacing: 1.5,
+    textAlign: 'center',
+  },
+  joinSubmitBtn: {
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  joinSubmitBtnText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 13,
   },
   scrollContent: {
     padding: 16,

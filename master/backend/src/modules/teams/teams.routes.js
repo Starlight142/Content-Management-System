@@ -7,6 +7,10 @@ router.use(verifyToken);
 
 // All logged-in users can fetch their own team
 router.get('/my-team', teamsController.getMyTeam);
+router.get('/my', teamsController.getMyTeam);
+
+// Join team via 6-character Join Code
+router.post('/join', teamsController.joinTeam);
 
 // All logged-in users can list all teams (metadata)
 router.get('/', teamsController.getAllTeams);
@@ -18,8 +22,9 @@ router.get('/:teamId/contents', verifyTeamAccess, teamsController.getTeamContent
 router.get('/:teamId/activity', verifyTeamAccess, teamsController.getTeamActivity);
 router.get('/:teamId/members', verifyTeamAccess, teamsController.getTeamMembers);
 
-// Only Admin/Manager can create teams or add members
+// Only Admin/Manager can create teams, add members, or regenerate code
 router.post('/', verifyRole(['ADMIN', 'MANAGER']), teamsController.createTeam);
+router.post('/:id/regenerate-code', verifyRole(['ADMIN', 'MANAGER']), teamsController.regenerateCode);
 router.post('/:id/members', verifyRole(['ADMIN', 'MANAGER']), teamsController.addMemberToTeam);
 router.delete('/:id', verifyRole(['ADMIN']), teamsController.deleteTeam);
 

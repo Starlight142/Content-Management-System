@@ -34,6 +34,7 @@ const seedDatabase = async () => {
       passwordHash,
       firstName: 'สมชาย',
       lastName: 'ดูแลระบบ',
+      position: 'Other',
       role: 'ADMIN',
       status: 'ACTIVE',
       workingStatus: 'WORKING',
@@ -45,6 +46,7 @@ const seedDatabase = async () => {
       passwordHash,
       firstName: 'สมศรี',
       lastName: 'จัดการทีม',
+      position: 'Production Manager',
       role: 'MANAGER',
       status: 'ACTIVE',
       workingStatus: 'WORKING',
@@ -56,6 +58,7 @@ const seedDatabase = async () => {
       passwordHash,
       firstName: 'John',
       lastName: 'Editor',
+      position: 'Video Editor',
       role: 'MEMBER',
       status: 'ACTIVE',
       workingStatus: 'WORKING',
@@ -67,6 +70,7 @@ const seedDatabase = async () => {
       passwordHash,
       firstName: 'Jane',
       lastName: 'Script',
+      position: 'Script Writer',
       role: 'MEMBER',
       status: 'ACTIVE',
       workingStatus: 'REVIEWING',
@@ -78,6 +82,7 @@ const seedDatabase = async () => {
       passwordHash,
       firstName: 'Mike',
       lastName: 'Graphic',
+      position: 'Graphic Designer',
       role: 'MEMBER',
       status: 'ACTIVE',
       workingStatus: 'WORKING',
@@ -89,6 +94,7 @@ const seedDatabase = async () => {
       passwordHash,
       firstName: 'Bob',
       lastName: 'Outsider',
+      position: 'Content Creator',
       role: 'MEMBER',
       status: 'ACTIVE',
       workingStatus: 'IDLE',
@@ -100,6 +106,9 @@ const seedDatabase = async () => {
     const teamA = await Team.create({
       name: 'Content Team A',
       code: 'TEAM-A',
+      joinCode: 'TEAM01',
+      leader: managerUser._id,
+      status: 'ACTIVE',
       description: 'ทีมผลิต Content หลักประจำปี 2026 สำหรับ TikTok & YouTube',
       members: [
         { user: managerUser._id, roleInTeam: 'LEAD' },
@@ -112,6 +121,9 @@ const seedDatabase = async () => {
     const teamB = await Team.create({
       name: 'Content Team B (Beta Studio)',
       code: 'TEAM-B',
+      joinCode: 'TEAM02',
+      leader: adminUser._id,
+      status: 'ACTIVE',
       description: 'ทีมสำรองสำหรับทดสอบการกั้นสิทธิ์ความปลอดภัยข้ามทีม',
       members: [
         { user: adminUser._id, roleInTeam: 'LEAD' },
@@ -123,7 +135,7 @@ const seedDatabase = async () => {
     await User.updateMany({ _id: { $in: [managerUser._id, johnMember._id, janeMember._id, mikeMember._id] } }, { teamId: teamA._id });
     await User.updateMany({ _id: { $in: [outsiderMember._id] } }, { teamId: teamB._id });
 
-    console.log('✅ Created Teams: Content Team A and Team B');
+    console.log('✅ Created Teams: Content Team A (TEAM01) and Team B (TEAM02)');
 
     // 3. Seed Ideas
     const idea1 = await Idea.create({
@@ -163,7 +175,7 @@ const seedDatabase = async () => {
       title: 'AI Tutorial EP.01',
       description: 'เจาะลึกการใช้ AI ช่วย Generate Prompt และสร้าง Storyboard ฉบับสมบูรณ์',
       platform: 'TikTok',
-      status: 'PRODUCTION',
+      status: 'IN_PROGRESS',
       category: 'Education',
       progress: 70,
       teamId: teamA._id,
@@ -172,11 +184,6 @@ const seedDatabase = async () => {
       dueDate: new Date('2026-09-26'),
       metrics: [
         { views: 45200, likes: 6200, comments: 480, shares: 1250, engagementRate: 17.5 },
-      ],
-      legalChecklist: [
-        { ruleTitle: 'ตรวจสอบลิขสิทธิ์เพลงและเสียงประกอบ', passed: true, note: 'ใช้เพลงลิขสิทธิ์สตูดิโอ' },
-        { ruleTitle: 'ตรวจสอบสิทธิ์ของภาพและฟุตเทจ', passed: true, note: 'ภาพถ่ายทำและเรนเดอร์เอง' },
-        { ruleTitle: 'ตรวจสอบความเหมาะสมของเนื้อหา', passed: true, note: 'เนื้อหาผ่านเกณฑ์ชุมชน' },
       ],
     });
 
@@ -193,18 +200,13 @@ const seedDatabase = async () => {
       metrics: [
         { views: 18400, likes: 2100, comments: 195, shares: 320, engagementRate: 14.2 },
       ],
-      legalChecklist: [
-        { ruleTitle: 'ตรวจสอบลิขสิทธิ์เพลงและเสียงประกอบ', passed: true, note: 'ใบอนุญาต Epidemic Sound' },
-        { ruleTitle: 'ตรวจสอบสิทธิ์ของภาพและฟุตเทจ', passed: true, note: 'ภาพถ่ายจากสตูดิโอจริง' },
-        { ruleTitle: 'ตรวจสอบความเหมาะสมของเนื้อหา', passed: true, note: 'ระบุผู้สนับสนุนครบถ้วน' },
-      ],
     });
 
     const content3 = await Content.create({
       title: 'Thumbnail Campaign',
       description: 'ชุดภาพปกและแคมเปญโปรโมตสื่อประจำสัปดาห์บน Instagram',
       platform: 'Instagram',
-      status: 'PRODUCTION',
+      status: 'IN_PROGRESS',
       category: 'Design',
       progress: 30,
       teamId: teamA._id,

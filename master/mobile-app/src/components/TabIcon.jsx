@@ -31,7 +31,6 @@ export default function TabIcon({ name, active }) {
       );
 
     case 'audit':
-    case 'legal':
       return (
         <View style={styles.iconContainer}>
           <View style={[styles.auditCircle, { borderColor: color }]}>

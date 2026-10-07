@@ -62,6 +62,7 @@ export default function UsersPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('MEMBER');
+  const [position, setPosition] = useState('Video Editor');
   const [submitting, setSubmitting] = useState(false);
 
   // Modals for Teams
@@ -192,7 +193,8 @@ export default function UsersPage() {
     const matchesSearch =
       fullName.includes(search.toLowerCase()) ||
       (u.email || '').toLowerCase().includes(search.toLowerCase()) ||
-      (u.role || '').toLowerCase().includes(search.toLowerCase());
+      (u.role || '').toLowerCase().includes(search.toLowerCase()) ||
+      (u.position || '').toLowerCase().includes(search.toLowerCase());
 
     if (!matchesSearch) return false;
     if (statusFilter === 'ONLINE') return u.isOnline;
@@ -228,6 +230,7 @@ export default function UsersPage() {
           username: email.split('@')[0],
           email,
           role,
+          position,
         }),
       });
 
@@ -242,6 +245,7 @@ export default function UsersPage() {
           name,
           email,
           role,
+          position,
           status: 'Active',
           isOnline: false,
         };
@@ -250,6 +254,7 @@ export default function UsersPage() {
 
       setName('');
       setEmail('');
+      setPosition('Video Editor');
       setIsModalOpen(false);
     } catch (err) {
       alert(`ไม่สามารถเพิ่มผู้ใช้ได้: ${err.message}`);
@@ -568,7 +573,8 @@ export default function UsersPage() {
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
                   <th className="py-3.5 px-5">Member / Name</th>
                   <th className="py-3.5 px-5">Email</th>
-                  <th className="py-3.5 px-5">Role (คลิกเพื่อเปลี่ยน)</th>
+                  <th className="py-3.5 px-5">Position (ตำแหน่งงาน)</th>
+                  <th className="py-3.5 px-5">Role (สิทธิ์ระบบ)</th>
                   <th className="py-3.5 px-5">Real-time Presence</th>
                   <th className="py-3.5 px-5 text-center">Actions</th>
                 </tr>
@@ -603,6 +609,11 @@ export default function UsersPage() {
                           </div>
                         </td>
                         <td className="py-4 px-5 text-slate-500">{user.email}</td>
+                        <td className="py-4 px-5">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                            {user.position || 'Video Editor'}
+                          </span>
+                        </td>
                         <td className="py-4 px-5">
                           <button
                             onClick={() => handleToggleRole(uid)}
@@ -650,7 +661,7 @@ export default function UsersPage() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center text-slate-400">
+                    <td colSpan={6} className="py-8 text-center text-slate-400">
                       {loading ? 'กำลังโหลดข้อมูลผู้ใช้...' : 'ไม่พบผู้ใช้งานที่ตรงกับเงื่อนไขการค้นหา'}
                     </td>
                   </tr>
@@ -702,8 +713,11 @@ export default function UsersPage() {
                           <div>
                             <div className="flex items-center gap-2 flex-wrap">
                               <h3 className="text-base font-bold text-slate-900">{team.name}</h3>
-                              <span className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 font-mono font-bold text-[11px]">
-                                {team.code || 'TEAM-A'}
+                              <span
+                                title="รหัสเชิญเข้าร่วมทีม (Join Code 6 หลัก)"
+                                className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 font-mono font-bold text-[11px]"
+                              >
+                                Join Code: {team.joinCode || team.code || 'TEAM01'}
                               </span>
                             </div>
                             <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
@@ -818,7 +832,22 @@ export default function UsersPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">ตำแหน่ง (Role)</label>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">ตำแหน่งงาน (Job Position)</label>
+                <select
+                  value={position}
+                  onChange={(e) => setPosition(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500"
+                >
+                  <option value="Video Editor">Video Editor (ตัดต่อวิดีโอ)</option>
+                  <option value="Graphic Designer">Graphic Designer (กราฟิกดีไซน์)</option>
+                  <option value="Script Writer">Script Writer (เขียนบทสคริปต์)</option>
+                  <option value="Content Creator">Content Creator (คอนเทนต์ครีเอเตอร์)</option>
+                  <option value="Production Manager">Production Manager (ผู้จัดการฝ่ายผลิต)</option>
+                  <option value="Other">Other (ทั่วไป / อื่นๆ)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">สิทธิ์ในระบบ (Role)</label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
@@ -873,15 +902,15 @@ export default function UsersPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">รหัสเข้าร่วมทีม (Team Code)</label>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">รหัสเข้าร่วมทีม (Join Code 6 หลัก)</label>
                 <input
                   type="text"
                   value={newTeamCode}
                   onChange={(e) => setNewTeamCode(e.target.value.toUpperCase())}
-                  placeholder="เช่น TEAM-C (เว้นว่างเพื่อสร้างให้อัตโนมัติ)"
+                  placeholder="เช่น TEAM01 หรือ K7P92X (เว้นว่างเพื่อสร้างอัตโนมัติ)"
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 font-mono uppercase"
                 />
-                <p className="text-[11px] text-slate-400 mt-1">ใช้สำหรับให้สมาชิกกรอกตอนลงทะเบียนบน Mobile App</p>
+                <p className="text-[11px] text-slate-400 mt-1">รหัส 6 ตัวอักษรใช้สำหรับให้สมาชิกกรอกเข้าร่วมทีมบน Mobile App</p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">คำอธิบายทีม</label>

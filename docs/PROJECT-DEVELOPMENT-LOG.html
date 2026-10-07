@@ -456,6 +456,7 @@
       <li class="nav-item"><a href="#phase-35" class="nav-link"><span class="nav-tag">P35</span>Database Reseed & .env</a></li>
       <li class="nav-item"><a href="#phase-36" class="nav-link"><span class="nav-tag">P36</span>Remove Legal Articles</a></li>
       <li class="nav-item"><a href="#phase-37" class="nav-link"><span class="nav-tag">P37</span>Android Path Fix</a></li>
+      <li class="nav-item"><a href="#phase-38" class="nav-link"><span class="nav-tag">P38</span>Team Workspace & RBAC</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -1490,6 +1491,36 @@
         <li><strong>ล้างโฟลเดอร์แคชเก่า:</strong> ลบ <code>.gradle</code>, <code>build</code>, <code>app/build</code>, <code>app/.cxx</code> ออกทั้งหมด</li>
         <li><strong>เปิดใช้การอนุญาต Non-ASCII Path:</strong> เพิ่ม <code>android.overridePathCheck=true</code> ใน <code>gradle.properties</code> เพื่อรองรับชื่อโฟลเดอร์ภาษาไทย</li>
         <li><strong>ทดสอบการประเมินโปรเจกต์:</strong> รัน <code>./gradlew projects</code> ผลการทำงาน <strong>BUILD SUCCESSFUL</strong> โครงสร้าง Autolinking ตรวจพบโมดูลปลอดภัย 100%</li>
+      </ul>
+    </section>
+
+    <!-- Phase 38 -->
+    <section class="section-card" id="phase-38">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 38: การยกระดับสถาปัตยกรรมสู่ Team-Based Workspace, การแยก Role/Position/Team, การรักษาความปลอดภัย RBAC, รหัสเข้าร่วมทีม Join Code และการล้างระบบกฎหมาย</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 8 ตุลาคม 2026 (02:00 - 02:45 น.)</span>
+        <span>•</span>
+        <span>📁 <code>master/backend/</code>, <code>master/mobile-app/</code>, <code>master/admin-web/</code> & <code>docs/</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Corporate Team-Based Workspace Architecture & Full RBAC Enforcement:</strong><br>
+        ปฏิรูประบบสู่สถาปัตยกรรมระดับองค์กรจริง (Corporate Media Production Environment) โดยแยกแยะ Position (วิชาชีพ: Video Editor, Graphic Designer, Script Writer, Content Creator, Production Manager, Other) ออกจาก Role (สิทธิ์ระบบ: ADMIN, MANAGER, MEMBER) และ Team อย่างเด็ดขาด บังคับใช้นโยบาย Single Active Team ต่อผู้ใช้หนึ่งคน, ระบบรหัสเข้าร่วมทีม Join Code 6 หลัก, บังคับสิทธิ์ผู้สมัครใหม่เป็น Member ป้องกัน Privilege Escalation, วางระบบ State Machine ครบวงจร, และล้างระบบกฎหมาย (Legal Check) ออกจาก Database และ Codebase 100%
+      </div>
+
+      <h3>สาระสำคัญและการพัฒนาระบบ (Key Engineering Accomplishments):</h3>
+      <ul>
+        <li><strong>Permanent Architecture Plan:</strong> บันทึกแผนสถาปัตยกรรมระบบอย่างละเอียดและแนวทางต่อยอดสู่ปี 4 ใน <code>docs/TEAM-BASED-WORKSPACE-ARCHITECTURE-PLAN.md</code> (593 บรรทัด)</li>
+        <li><strong>Backend Service Layer:</strong> สร้าง <code>auth.service.js</code>, <code>team.service.js</code>, และ <code>workflow.service.js</code> เพื่อแยก Business Logic ออกจาก Controller อย่างเป็นสัดส่วน</li>
+        <li><strong>Workflow State Machine Guards:</strong> ควบคุมสถานะ Content (<code>IDEA &rarr; PLANNING &rarr; IN_PROGRESS &rarr; REVIEW &rarr; REVISION / APPROVED &rarr; SCHEDULED &rarr; PUBLISHED</code>) และ Task (<code>TODO &rarr; IN_PROGRESS &rarr; REVIEW &rarr; REVISION / DONE</code>) อย่างเข้มงวด สมาชิกแก้ได้เฉพาะ Task ของตนเอง และไม่สามารถ Approve งานได้</li>
+        <li><strong>Team Isolation & Join Code:</strong> สมาชิกมองเห็นเฉพาะงานและกิจกรรมภายในทีมตนเอง การเข้าถึงงานข้ามทีมส่งรหัส <code>403 Forbidden</code> พร้อมฟังก์ชันสุ่มรหัสทีม 6 ตัวอักษรใหม่สำหรับ Manager</li>
+        <li><strong>Purge Legal Check:</strong> ลบ <code>legalChecklist</code> ออกจาก Mongoose Schema, ถอด <code>'Legal Check'</code> ออกจาก Task Types, ลบ endpoint <code>PUT /:id/legal-check</code> และล้างฟิลด์ใน Database</li>
+        <li><strong>Mobile App Experience Polish:</strong> ปรับปรุง <code>LoginScreen</code> (มี Position Chips, ซ่อน Role), <code>TeamOverviewScreen</code> (แสดง Join Code, ปุ่มคัดลอก/สุ่มใหม่, Member Role/Position, หน้าจอ Join Team สำหรับผู้ใช้ไม่มีทีม), <code>MemberTaskList</code> (สลับดูงานฉัน vs งานทีม, Read-only สำหรับงานคนอื่น), และ <code>ProfileScreen</code> (ป้าย Position)</li>
+        <li><strong>Admin Web Consistency:</strong> ปรับปรุงคอลัมน์และ Dropdown Position ใน <code>/users</code>, แสดง Join Code ในการ์ดทีม, และซิงค์สถานะ <code>IN_PROGRESS</code> ใน <code>/contents</code> ตรวจสอบ <code>npm run build</code> ผ่าน 100%</li>
+        <li><strong>Automated Test Verification:</strong> รันชุดทดสอบความปลอดภัยและการทำงาน <code>scratch/test-workspace-rbac.js</code> ผ่านฉลุย 25 จาก 25 การตรวจสอบ (Total Passed: 25, Total Failed: 0)</li>
       </ul>
     </section>
 

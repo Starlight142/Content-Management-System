@@ -40,7 +40,7 @@ export default function Home() {
           if (c.status === 'PUBLISHED' || c.status === 'APPROVED') percent = 100;
           else if (c.status === 'REVIEW') percent = 80;
           else if (c.status === 'REVISION') percent = 60;
-          else if (c.status === 'PRODUCTION') percent = 45;
+          else if (c.status === 'IN_PROGRESS' || c.status === 'PRODUCTION') percent = 45;
           else percent = 15;
         }
         return {
@@ -87,7 +87,7 @@ export default function Home() {
             if (c.status === 'PUBLISHED' || c.status === 'APPROVED') percent = 100;
             else if (c.status === 'REVIEW') percent = 80;
             else if (c.status === 'REVISION') percent = 60;
-            else if (c.status === 'PRODUCTION') percent = 45;
+            else if (c.status === 'IN_PROGRESS' || c.status === 'PRODUCTION') percent = 45;
             else percent = 15;
           }
           return {
@@ -147,7 +147,7 @@ export default function Home() {
   const recentWorkflow = liveStats.workflows.length > 0 ? liveStats.workflows : [
     { id: 1, title: 'รีวิวแก็ดเจ็ตใหม่ 2026', platform: 'YouTube', step: 'PUBLISHED', percent: 100, creator: 'John Creator' },
     { id: 2, title: 'สรุปข่าว AI ภายใน 1 นาที', platform: 'TikTok', step: 'REVIEW', percent: 75, creator: 'Jane Editor' },
-    { id: 3, title: 'Vlog พาเที่ยวออฟฟิศ', platform: 'Instagram', step: 'PRODUCTION', percent: 45, creator: 'Somchai Admin' },
+    { id: 3, title: 'Vlog พาเที่ยวออฟฟิศ', platform: 'Instagram', step: 'IN_PROGRESS', percent: 45, creator: 'Somchai Admin' },
   ];
 
   return (

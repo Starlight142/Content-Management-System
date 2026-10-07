@@ -12,7 +12,7 @@ const taskSchema = new mongoose.Schema({
   },
   taskType: {
     type: String,
-    enum: ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Legal Check', 'Other'],
+    enum: ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'],
     default: 'Editing',
   },
   assignedTo: {

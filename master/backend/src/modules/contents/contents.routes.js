@@ -10,9 +10,8 @@ router.get('/', contentsController.getAllContents);
 router.get('/:id', contentsController.getContentById);
 router.patch('/:id', contentsController.updateContent);
 
-// Status and Review Workflows (Admin / Manager)
-router.patch('/:id/status', verifyRole(['ADMIN', 'MANAGER']), contentsController.updateContentStatus);
-router.put('/:id/legal-check', verifyRole(['ADMIN', 'MANAGER']), contentsController.updateLegalChecklist);
+// Status and Review Workflows (Workflow RBAC enforced in controller/service)
+router.patch('/:id/status', contentsController.updateContentStatus);
 router.post('/:id/review', verifyRole(['ADMIN', 'MANAGER']), contentsController.submitReview);
 
 // Versioning & Assets

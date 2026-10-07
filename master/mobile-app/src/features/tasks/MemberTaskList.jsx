@@ -17,8 +17,9 @@ import { presenceService } from '../../services/presenceService';
 import { useTheme } from '../../theme/ThemeContext';
 
 export default function MemberTaskList({ user, onNavigate }) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const [tasks, setTasks] = useState([]);
+  const [taskScope, setTaskScope] = useState('MY_TASKS'); // 'MY_TASKS' | 'TEAM_TASKS'
   const [loading, setLoading] = useState(true);
   const [submissionInputs, setSubmissionInputs] = useState({});
   const [replyInputs, setReplyInputs] = useState({});
@@ -48,6 +49,11 @@ export default function MemberTaskList({ user, onNavigate }) {
         const mapped = list.map((t) => {
           const rawDate = t.dueDate ? t.dueDate.split('T')[0] : null;
           const dl = checkDeadline(rawDate);
+          const assignedId = t.assignedTo?._id || t.assignedTo;
+          const isMyTask = currentUserId
+            ? (assignedId?.toString() === currentUserId.toString())
+            : true;
+
           return {
             id: t._id || String(Date.now()),
             title: t.title,
@@ -60,16 +66,16 @@ export default function MemberTaskList({ user, onNavigate }) {
             notes: t.notes || t.revisionNotes || '',
             type: t.taskType || 'Production',
             submissionUrl: t.submissionUrl || '',
-            assignedToId: t.assignedTo?._id || t.assignedTo,
+            assignedToId: assignedId,
+            assigneeName: t.assignedTo?.firstName
+              ? `${t.assignedTo.firstName} ${t.assignedTo.lastName || ''}`.trim()
+              : (t.assignedTo?.username || 'ยังไม่ได้มอบหมาย'),
+            progress: t.progress || (t.status === 'DONE' ? 100 : t.status === 'REVIEW' ? 85 : t.status === 'IN_PROGRESS' ? 50 : 0),
+            isMyTask,
           };
         });
 
-        // Filter to show tasks assigned to this member
-        const myTasks = currentUserId
-          ? mapped.filter((t) => t.assignedToId && t.assignedToId.toString() === currentUserId.toString())
-          : mapped;
-
-        setTasks(myTasks);
+        setTasks(mapped);
       }
     } catch (err) {
       console.warn('fetchTasks error:', err.message);
@@ -220,9 +226,12 @@ export default function MemberTaskList({ user, onNavigate }) {
     }
   };
 
-  // Visual Hierarchy: Priority tasks needing immediate action
-  const urgentTasks = tasks.filter((t) => t.status === 'REVISION' || t.isOverdue || t.isUrgent);
-  const generalTasks = tasks.filter((t) => !(t.status === 'REVISION' || t.isOverdue || t.isUrgent));
+  // Visual Hierarchy: Filtered by active scope (My Tasks vs Team Tasks)
+  const displayedTasks = taskScope === 'MY_TASKS'
+    ? tasks.filter((t) => t.isMyTask)
+    : tasks;
+  const urgentTasks = displayedTasks.filter((t) => t.status === 'REVISION' || t.isOverdue || t.isUrgent);
+  const generalTasks = displayedTasks.filter((t) => !(t.status === 'REVISION' || t.isOverdue || t.isUrgent));
 
   const renderTaskCard = (item, isActionRequiredSection = false) => {
     const st = getStatusColor(item.status, item.isOverdue);
@@ -260,6 +269,38 @@ export default function MemberTaskList({ user, onNavigate }) {
           <Text style={[styles.parentContentTitle, { color: colors.textPrimary }]}>
             {item.contentTitle} ({item.platform})
           </Text>
+        </View>
+
+        {/* Assignee & Ownership Tag */}
+        <View style={styles.assigneeRow}>
+          <Text style={[styles.assigneeText, { color: colors.textSecondary }]}>
+            ผู้รับผิดชอบ: <Text style={{ fontWeight: '700', color: colors.textPrimary }}>{item.assigneeName}</Text>
+          </Text>
+          {item.isMyTask ? (
+            <View style={[styles.myTaskTag, { backgroundColor: colors.statusInProgressBg, borderColor: colors.statusInProgressBorder }]}>
+              <Text style={[styles.myTaskTagText, { color: colors.statusInProgressText }]}>งานของคุณ</Text>
+            </View>
+          ) : (
+            <View style={[styles.otherTaskTag, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+              <Text style={[styles.otherTaskTagText, { color: colors.textSecondary }]}>งานเพื่อนร่วมทีม</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Progress Bar for Individual Task */}
+        <View style={styles.progressRow}>
+          <View style={[styles.progressBarBg, { backgroundColor: colors.surfaceSubtle }]}>
+            <View
+              style={[
+                styles.progressBarFill,
+                {
+                  width: `${item.progress || 0}%`,
+                  backgroundColor: st.text,
+                },
+              ]}
+            />
+          </View>
+          <Text style={[styles.progressText, { color: colors.textSecondary }]}>{item.progress || 0}%</Text>
         </View>
 
         {/* Revision Feedback Callout (Priority 2) */}
@@ -300,122 +341,132 @@ export default function MemberTaskList({ user, onNavigate }) {
           </Text>
         </View>
 
-        {/* Action Area based on status */}
-        {item.status === 'TODO' && (
-          <TouchableOpacity
-            style={[styles.startBtn, { backgroundColor: colors.primary }]}
-            onPress={() => handleStartTask(item.id)}
-          >
-            <Text style={styles.startBtnText}>เริ่มทำงาน</Text>
-          </TouchableOpacity>
-        )}
-
-        {item.status === 'REVISION' && (
-          <View style={[styles.submitSection, { borderTopColor: colors.border }]}>
-            <View style={styles.replyBoxWrapper}>
-              <Text style={[styles.inputPrompt, { color: colors.statusRevisionText, fontWeight: '700' }]}>
-                ข้อความตอบกลับสำหรับการแก้ไขงาน:
-              </Text>
-              <TextInput
-                style={[
-                  styles.replyInput,
-                  {
-                    backgroundColor: colors.inputBg,
-                    borderColor: colors.statusRevisionBorder,
-                    color: colors.textPrimary,
-                  },
-                ]}
-                placeholder="ระบุสิ่งที่ได้ปรับปรุงแก้ไขตามคำแนะนำ เช่น ปรับระดับเสียงแล้ว..."
-                placeholderTextColor={colors.textMuted}
-                value={replyInputs[item.id] || ''}
-                onChangeText={(val) =>
-                  setReplyInputs({ ...replyInputs, [item.id]: val })
-                }
-                multiline
-                numberOfLines={3}
-              />
-            </View>
-
-            <Text style={[styles.inputPrompt, { color: colors.textSecondary, marginTop: 8 }]}>
-              แนบลิงก์ไฟล์ผลงานใหม่ (ถ้ามี):
+        {/* Action Area (Only editable if task is assigned to current user) */}
+        {!item.isMyTask ? (
+          <View style={[styles.otherMemberNoteBox, { backgroundColor: colors.surfaceSubtle }]}>
+            <Text style={[styles.otherMemberNoteText, { color: colors.textSecondary }]}>
+              มอบหมายให้ {item.assigneeName} • คุณสามารถติดตามความคืบหน้าได้ แต่ไม่สามารถแก้ไขงานของผู้อื่นได้
             </Text>
-            <TextInput
-              style={[
-                styles.urlInput,
-                {
-                  backgroundColor: colors.inputBg,
-                  borderColor: colors.inputBorder,
-                  color: colors.textPrimary,
-                },
-              ]}
-              placeholder="วางลิงก์ไฟล์ผลงานที่แก้ไขแล้ว..."
-              value={submissionInputs[item.id] !== undefined ? submissionInputs[item.id] : (item.submissionUrl || '')}
-              onChangeText={(val) =>
-                setSubmissionInputs({ ...submissionInputs, [item.id]: val })
-              }
-              autoCapitalize="none"
-              placeholderTextColor={colors.textMuted}
-            />
-
-            <TouchableOpacity
-              style={[styles.submitBtn, { backgroundColor: colors.primary }]}
-              onPress={() => handleSubmitTask(item.id, true)}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.submitBtnText}>ส่งงานที่แก้ไขแล้ว</Text>
-            </TouchableOpacity>
           </View>
-        )}
-
-        {item.status === 'IN_PROGRESS' && (
-          <View style={[styles.submitSection, { borderTopColor: colors.border }]}>
-            <Text style={[styles.inputPrompt, { color: colors.textSecondary }]}>
-              แนบลิงก์ไฟล์ผลงาน (Drive / Cloud Storage):
-            </Text>
-            <TextInput
-              style={[
-                styles.urlInput,
-                {
-                  backgroundColor: colors.inputBg,
-                  borderColor: colors.inputBorder,
-                  color: colors.textPrimary,
-                },
-              ]}
-              placeholder="วางลิงก์ไฟล์ผลงานที่นี่..."
-              value={submissionInputs[item.id] || ''}
-              onChangeText={(val) =>
-                setSubmissionInputs({ ...submissionInputs, [item.id]: val })
-              }
-              autoCapitalize="none"
-              placeholderTextColor={colors.textMuted}
-            />
-            <TouchableOpacity
-              style={[styles.submitBtn, { backgroundColor: colors.primary }]}
-              onPress={() => handleSubmitTask(item.id, false)}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.submitBtnText}>ส่งมอบงานให้ตรวจสอบ</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {item.status === 'REVIEW' && (
-          <View style={[styles.submittedBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
-            <Text style={[styles.submittedText, { color: colors.statusReviewText }]}>
-              ส่งงานเรียบร้อย • อยู่ในคิวรอการตรวจสอบ
-            </Text>
-            {item.submissionUrl ? (
+        ) : (
+          <>
+            {item.status === 'TODO' && (
               <TouchableOpacity
-                onPress={() => Linking.openURL(item.submissionUrl).catch(() => Alert.alert('ลิงก์ผลงาน', item.submissionUrl))}
-                style={{ marginTop: 6 }}
-                activeOpacity={0.7}
+                style={[styles.startBtn, { backgroundColor: colors.primary }]}
+                onPress={() => handleStartTask(item.id)}
               >
-                <Text style={[styles.submittedUrl, { color: colors.primary, textDecorationLine: 'underline' }]} numberOfLines={1}>
-                  เปิดดูผลงาน: {item.submissionUrl}
-                </Text>
+                <Text style={styles.startBtnText}>เริ่มทำงาน</Text>
               </TouchableOpacity>
-            ) : null}
-          </View>
+            )}
+
+            {item.status === 'REVISION' && (
+              <View style={[styles.submitSection, { borderTopColor: colors.border }]}>
+                <View style={styles.replyBoxWrapper}>
+                  <Text style={[styles.inputPrompt, { color: colors.statusRevisionText, fontWeight: '700' }]}>
+                    ข้อความตอบกลับสำหรับการแก้ไขงาน:
+                  </Text>
+                  <TextInput
+                    style={[
+                      styles.replyInput,
+                      {
+                        backgroundColor: colors.inputBg,
+                        borderColor: colors.statusRevisionBorder,
+                        color: colors.textPrimary,
+                      },
+                    ]}
+                    placeholder="ระบุสิ่งที่ได้ปรับปรุงแก้ไขตามคำแนะนำ เช่น ปรับระดับเสียงแล้ว..."
+                    placeholderTextColor={colors.textMuted}
+                    value={replyInputs[item.id] || ''}
+                    onChangeText={(val) =>
+                      setReplyInputs({ ...replyInputs, [item.id]: val })
+                    }
+                    multiline
+                    numberOfLines={3}
+                  />
+                </View>
+
+                <Text style={[styles.inputPrompt, { color: colors.textSecondary, marginTop: 8 }]}>
+                  แนบลิงก์ไฟล์ผลงานใหม่ (ถ้ามี):
+                </Text>
+                <TextInput
+                  style={[
+                    styles.urlInput,
+                    {
+                      backgroundColor: colors.inputBg,
+                      borderColor: colors.inputBorder,
+                      color: colors.textPrimary,
+                    },
+                  ]}
+                  placeholder="วางลิงก์ไฟล์ผลงานที่แก้ไขแล้ว..."
+                  value={submissionInputs[item.id] !== undefined ? submissionInputs[item.id] : (item.submissionUrl || '')}
+                  onChangeText={(val) =>
+                    setSubmissionInputs({ ...submissionInputs, [item.id]: val })
+                  }
+                  autoCapitalize="none"
+                  placeholderTextColor={colors.textMuted}
+                />
+
+                <TouchableOpacity
+                  style={[styles.submitBtn, { backgroundColor: colors.primary }]}
+                  onPress={() => handleSubmitTask(item.id, true)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.submitBtnText}>ส่งงานที่แก้ไขแล้ว</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {item.status === 'IN_PROGRESS' && (
+              <View style={[styles.submitSection, { borderTopColor: colors.border }]}>
+                <Text style={[styles.inputPrompt, { color: colors.textSecondary }]}>
+                  แนบลิงก์ไฟล์ผลงาน (Drive / Cloud Storage):
+                </Text>
+                <TextInput
+                  style={[
+                    styles.urlInput,
+                    {
+                      backgroundColor: colors.inputBg,
+                      borderColor: colors.inputBorder,
+                      color: colors.textPrimary,
+                    },
+                  ]}
+                  placeholder="วางลิงก์ไฟล์ผลงานที่นี่..."
+                  value={submissionInputs[item.id] || ''}
+                  onChangeText={(val) =>
+                    setSubmissionInputs({ ...submissionInputs, [item.id]: val })
+                  }
+                  autoCapitalize="none"
+                  placeholderTextColor={colors.textMuted}
+                />
+                <TouchableOpacity
+                  style={[styles.submitBtn, { backgroundColor: colors.primary }]}
+                  onPress={() => handleSubmitTask(item.id, false)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.submitBtnText}>ส่งมอบงานให้ตรวจสอบ</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {item.status === 'REVIEW' && (
+              <View style={[styles.submittedBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+                <Text style={[styles.submittedText, { color: colors.statusReviewText }]}>
+                  ส่งงานเรียบร้อย • อยู่ในคิวรอการตรวจสอบ
+                </Text>
+                {item.submissionUrl ? (
+                  <TouchableOpacity
+                    onPress={() => Linking.openURL(item.submissionUrl).catch(() => Alert.alert('ลิงก์ผลงาน', item.submissionUrl))}
+                    style={{ marginTop: 6 }}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[styles.submittedUrl, { color: colors.primary, textDecorationLine: 'underline' }]} numberOfLines={1}>
+                      เปิดดูผลงาน: {item.submissionUrl}
+                    </Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            )}
+          </>
         )}
       </View>
     );
@@ -472,18 +523,63 @@ export default function MemberTaskList({ user, onNavigate }) {
           </View>
         </View>
 
+        {/* Scope Switcher: My Tasks vs Team Tasks */}
+        <View style={[styles.scopeBar, { backgroundColor: isDark ? colors.surface : '#E2E8F0' }]}>
+          <TouchableOpacity
+            style={[
+              styles.scopeBtn,
+              taskScope === 'MY_TASKS' && [styles.scopeBtnActive, { backgroundColor: colors.cardBg }],
+            ]}
+            onPress={() => setTaskScope('MY_TASKS')}
+            activeOpacity={0.7}
+          >
+            <Text
+              style={[
+                styles.scopeBtnText,
+                { color: colors.textSecondary },
+                taskScope === 'MY_TASKS' && { color: colors.textPrimary, fontWeight: '700' },
+              ]}
+            >
+              งานของฉัน ({tasks.filter((t) => t.isMyTask).length})
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.scopeBtn,
+              taskScope === 'TEAM_TASKS' && [styles.scopeBtnActive, { backgroundColor: colors.cardBg }],
+            ]}
+            onPress={() => setTaskScope('TEAM_TASKS')}
+            activeOpacity={0.7}
+          >
+            <Text
+              style={[
+                styles.scopeBtnText,
+                { color: colors.textSecondary },
+                taskScope === 'TEAM_TASKS' && { color: colors.textPrimary, fontWeight: '700' },
+              ]}
+            >
+              งานในทีมทั้งหมด ({tasks.length})
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         {loading ? (
           <View style={styles.centerLoading}>
             <ActivityIndicator size="small" color={colors.primary} />
             <Text style={[styles.centerLoadingText, { color: colors.textSecondary }]}>
-              กำลังโหลดงานของคุณจากระบบ...
+              กำลังโหลดงานจากระบบ...
             </Text>
           </View>
-        ) : tasks.length === 0 ? (
+        ) : displayedTasks.length === 0 ? (
           <View style={[styles.emptyBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>ไม่มีงานที่ค้างอยู่</Text>
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+              {taskScope === 'MY_TASKS' ? 'คุณไม่มีงานที่ต้องรับผิดชอบขณะนี้' : 'ยังไม่มีงานในทีมขณะนี้'}
+            </Text>
             <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
-              คุณสามารถดูงานทั้งหมดและกิจกรรมของเพื่อนร่วมทีมได้ที่แท็บ "ทีมของฉัน"
+              {taskScope === 'MY_TASKS'
+                ? 'เลือกแท็บ "งานในทีมทั้งหมด" เพื่อติดตามความคืบหน้าของเพื่อนร่วมทีม'
+                : 'งานใหม่จะปรากฏที่นี่เมื่อหัวหน้าทีมมอบหมายงาน'}
             </Text>
           </View>
         ) : (
@@ -570,7 +666,93 @@ const styles = StyleSheet.create({
   kpiRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 20,
+    marginBottom: 14,
+  },
+  scopeBar: {
+    flexDirection: 'row',
+    padding: 3,
+    borderRadius: 12,
+    marginBottom: 18,
+  },
+  scopeBtn: {
+    flex: 1,
+    paddingVertical: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 9,
+  },
+  scopeBtnActive: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  scopeBtnText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  assigneeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  assigneeText: {
+    fontSize: 12,
+  },
+  myTaskTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  myTaskTagText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  otherTaskTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  otherTaskTagText: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 10,
+  },
+  progressBarBg: {
+    flex: 1,
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  progressText: {
+    fontSize: 11,
+    fontWeight: '700',
+    minWidth: 30,
+    textAlign: 'right',
+  },
+  otherMemberNoteBox: {
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 6,
+  },
+  otherMemberNoteText: {
+    fontSize: 11,
+    lineHeight: 16,
+    fontStyle: 'italic',
   },
   kpiBox: {
     flex: 1,

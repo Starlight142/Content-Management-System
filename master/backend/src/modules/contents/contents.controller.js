@@ -5,6 +5,7 @@ const Team = require('../../database/models/Team');
 const TeamActivity = require('../../database/models/TeamActivity');
 const Task = require('../../database/models/Task');
 const { broadcast } = require('../../services/presence.service');
+const workflowService = require('../../services/workflow.service');
 
 // @route POST /api/contents
 // @access Private
@@ -134,22 +135,12 @@ const updateContentStatus = async (req, res) => {
       return res.status(200).json({ message: 'Status is unchanged', content });
     }
 
-    // State Machine Validation Guard
-    const allowed = ALLOWED_TRANSITIONS[content.status] || [];
-    if (!allowed.includes(status)) {
-      return res.status(400).json({
-        message: `State Machine Error: Invalid transition from '${content.status}' to '${status}'. Allowed next states: [${allowed.join(', ')}]`,
-      });
-    }
-
-    // Legal Gatekeeper check when transitioning to APPROVED or PUBLISHED
-    if (status === 'APPROVED' || status === 'PUBLISHED') {
-      const isLegalPassed = content.legalChecklist?.length >= 3 && content.legalChecklist.every((i) => i.passed);
-      if (!isLegalPassed) {
-        return res.status(400).json({
-          message: 'Legal Gatekeeper Blocked: All compliance checklist items must pass before approving or publishing.',
-        });
-      }
+    // Validate state transition and role permission via Workflow Service
+    try {
+      const userRole = req.user?.role || 'MEMBER';
+      workflowService.validateContentTransition(content.status, status, userRole);
+    } catch (wfErr) {
+      return res.status(403).json({ message: wfErr.message });
     }
 
     content.status = status;
@@ -169,48 +160,6 @@ const updateContentStatus = async (req, res) => {
   } catch (error) {
     console.error('updateContentStatus error:', error);
     res.status(500).json({ message: 'Server error updating content status', error: error.message });
-  }
-};
-
-// @route PUT /api/contents/:id/legal-check
-// @access Private (Manager/Admin)
-const updateLegalChecklist = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { items } = req.body; // array of items: [{ ruleTitle, passed, note }]
-
-    const content = await Content.findById(id);
-    if (!content) {
-      return res.status(404).json({ message: 'Content not found' });
-    }
-
-    let userId = req.user?.userId;
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      const admin = await User.findOne({ role: 'ADMIN' }) || await User.findOne();
-      userId = admin?._id;
-    }
-    const checkedAt = new Date();
-
-    if (Array.isArray(items)) {
-      content.legalChecklist = items.map((item) => ({
-        ruleTitle: item.ruleTitle,
-        passed: Boolean(item.passed),
-        note: item.note || '',
-        checkedBy: userId,
-        checkedAt: item.passed ? checkedAt : null,
-      }));
-    }
-
-    await content.save();
-
-    res.status(200).json({
-      message: 'Legal checklist updated successfully',
-      legalChecklist: content.legalChecklist,
-      allPassed: content.legalChecklist.length >= 3 && content.legalChecklist.every((i) => i.passed),
-    });
-  } catch (error) {
-    console.error('updateLegalChecklist error:', error);
-    res.status(500).json({ message: 'Server error updating legal checklist' });
   }
 };
 
@@ -473,7 +422,6 @@ module.exports = {
   getContentById,
   updateContent,
   updateContentStatus,
-  updateLegalChecklist,
   submitReview,
   addContentVersion,
   deleteContent,

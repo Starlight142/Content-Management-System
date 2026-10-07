@@ -64,7 +64,6 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
           category: c.category || 'General',
           creator: c.createdBy?.firstName ? `${c.createdBy.firstName} ${c.createdBy.lastName || ''}`.trim() : (c.createdBy?.username || 'ผู้ผลิต'),
           dueDate: c.dueDate ? c.dueDate.split('T')[0] : '2026-09-30',
-          legalChecklist: c.legalChecklist || [],
           reviewHistory: c.reviewHistory || [],
           latestSubmissionUrl: (c.versions && c.versions.length > 0)
             ? c.versions[c.versions.length - 1].fileUrl
