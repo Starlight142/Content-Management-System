@@ -6,7 +6,6 @@ const contentsRoutes = require('./modules/contents/contents.routes');
 const teamsRoutes = require('./modules/teams/teams.routes');
 const ideasRoutes = require('./modules/ideas/ideas.routes');
 const tasksRoutes = require('./modules/tasks/tasks.routes');
-const legalRoutes = require('./modules/legal/legal.routes');
 const logsRoutes = require('./modules/logs/logs.routes');
 
 const mongoose = require('mongoose');
@@ -72,7 +71,6 @@ app.use('/api/contents', contentsRoutes);
 app.use('/api/teams', teamsRoutes);
 app.use('/api/ideas', ideasRoutes);
 app.use('/api/tasks', tasksRoutes);
-app.use('/api/legal', legalRoutes);
 app.use('/api/logs', logsRoutes);
 
 const http = require('http');

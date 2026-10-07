@@ -7,7 +7,6 @@ const Content = require('./models/Content');
 const Task = require('./models/Task');
 const Idea = require('./models/Idea');
 const Team = require('./models/Team');
-const LegalArticle = require('./models/LegalArticle');
 const TeamActivity = require('./models/TeamActivity');
 
 const seedDatabase = async () => {
@@ -22,7 +21,6 @@ const seedDatabase = async () => {
     await Task.deleteMany({});
     await Idea.deleteMany({});
     await Team.deleteMany({});
-    await LegalArticle.deleteMany({});
     await TeamActivity.deleteMany({});
     console.log('[Seed] Cleaned existing database collections');
 
@@ -467,32 +465,6 @@ const seedDatabase = async () => {
     ]);
 
     console.log('✅ Created 6 Team Activities for Team A');
-
-    // 7. Seed Legal Articles
-    await LegalArticle.create([
-      {
-        title: 'ลิขสิทธิ์เพลงประกอบเชิงพาณิชย์ (Commercial Music License)',
-        category: 'Music & Audio',
-        description: 'ข้อกำหนดการใช้เพลงในวิดีโอที่มีสปอนเซอร์',
-        content: 'ต้องใช้เพลงที่ได้รับอนุญาตแบบ Commercial License จากแหล่งที่ถูกกฎหมาย เช่น Artlist หรือ Epidemic Sound ห้ามนำเพลงติดลิขสิทธิ์ส่วนบุคคลมาใช้',
-        source: 'พ.ร.บ. ลิขสิทธิ์ พ.ศ. 2537 และฉบับแก้ไขเพิ่มเติม',
-      },
-      {
-        title: 'แนวปฏิบัติการเบลอหน้าบุคคลภายนอก (PDPA)',
-        category: 'PDPA',
-        description: 'การถ่ายทำในสถานที่สาธารณะ',
-        content: 'หากถ่ายติดบุคคลภายนอกที่ไม่ใช่บุคคลสาธารณะโดยไม่ได้รับความยินยอม ต้องทำการเบลอใบหน้าหรือตัดทอนออกเพื่อป้องกันการละเมิดข้อมูลส่วนบุคคล',
-        source: 'พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562',
-      },
-      {
-        title: 'การระบุข้อความโฆษณาและคำเตือนสินค้า',
-        category: 'Advertising',
-        description: 'สินค้าประเภทอาหารเสริม ยา และเครื่องสำอาง',
-        content: 'ต้องระบุข้อความว่า Sponsored หรือ ได้รับการสนับสนุนอย่างชัดเจน ห้ามโฆษณาเกินจริง และต้องผ่านการรับรองจาก อย. / สคบ.',
-        source: 'พ.ร.บ. คุ้มครองผู้บริโภค',
-      },
-    ]);
-    console.log('[Seed] Created 3 Legal Articles');
 
     console.log('\n[Seed] Database seeding completed successfully.');
     console.log('----------------------------------------------------');

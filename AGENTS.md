@@ -19,6 +19,7 @@ Before performing any action, read [AI-MEMORY.md](./AI-MEMORY.md) for complete t
    - `master/backend/src/integrations/` is deleted.
    - 12 empty mobile feature directories are deleted.
    - `cms_database` MongoDB database was dropped. Active DB is `content_management`.
+   - `legalarticles` collection, model, and `modules/legal` backend module are removed.
 4. **DOCUMENT ALL CHANGES IN BOTH LOGS**:
    - Every single task or update must be recorded in BOTH:
      - `docs/PROJECT-DEVELOPMENT-LOG.md` (Markdown format)

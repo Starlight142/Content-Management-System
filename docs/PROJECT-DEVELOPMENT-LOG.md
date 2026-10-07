@@ -45,6 +45,7 @@
 | **7 ต.ค. 2026 (00:30 น.)** | [Phase 33: การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ Draftly (Official App Icon Design & Android Mipmap Generation)](#phase-33-การออกแบบและติดตั้งไอคอนแอปพลิเคชันทางการสำหรับ-draftly-official-app-icon-design--android-mipmap-generation) | สำเร็จ ✅ |
 | **7 ต.ค. 2026 (01:30 น.)** | [Phase 34: การจับภาพหน้าจอระบบ Mobile App ครบทุกบทบาทหน้าที่ (Editor, Graphic Designer & Member Features QA)](#phase-34-การจับภาพหน้าจอระบบ-mobile-app-ครบทุกบทบาทหน้าที่-editor-graphic-designer--member-features-qa) | สำเร็จ ✅ |
 | **7 ต.ค. 2026 (12:55 น.)** | [Phase 35: การอัปเดตและซิงค์ฐานข้อมูล MongoDB สู่ Schema ล่าสุด & การสร้างคอนฟิก .env (Database Reseeding & Environment Setup)](#phase-35-การอัปเดตและซิงค์ฐานข้อมูล-mongodb-สู่-schema-ล่าสุด--การสร้างคอนฟิก-env-database-reseeding--environment-setup) | สำเร็จ ✅ |
+| **7 ต.ค. 2026 (13:10 น.)** | [Phase 36: การลบฐานข้อมูลและโมดูลกฎหมายที่ไม่ใช้งาน (Unused Legal Articles & Module Removal)](#phase-36-การลบฐานข้อมูลและโมดูลกฎหมายที่ไม่ใช้งาน-unused-legal-articles--module-removal) | สำเร็จ ✅ |
 
 ---
 
@@ -1643,3 +1644,23 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
   - จำลอง Task ทั้ง 10 รายการ ผูกกับผู้รับผิดชอบ และมี Reply Notes พร้อมลิงก์ส่งงานสมบูรณ์
   - บันทึกคลังความรู้กฎหมายสื่อ (Legal Articles) 3 รายการ และประวัติกิจกรรมทีม (Team Activities) 6 รายการ
 - ผ่านการทดสอบและ Query ยืนยันข้อมูลแบบ Deep Verification ครบทั้ง 7 Collections ถูกต้อง 100%
+
+
+---
+
+## Phase 36: การลบฐานข้อมูลและโมดูลกฎหมายที่ไม่ใช้งาน (Unused Legal Articles & Module Removal)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 7 ตุลาคม 2026 (13:05 - 13:10 น.)
+
+### 36.1 การถอดถอน Collection และโค้ดส่วนกฎหมาย (Legal Articles Cleanup)
+- ผู้ใช้งานแจ้งว่าส่วนฐานข้อมูลเกี่ยวกับกฎหมาย (`legalarticles`) ไม่ได้ถูกใช้งานจริงในระบบ (หน้าจอแอปมือถือถูกตัดออกไปแล้วตั้งแต่ Phase 18)
+- ดำเนินการลบและคลีนระบบให้หมดจด 100%:
+  1. **MongoDB**: ดร็อป Collection `legalarticles` ออกจากฐานข้อมูล `content_management` (เหลือ 6 Active Collections)
+  2. **Seed Script**: ตัดการอิมพอร์ต `LegalArticle.js`, คำสั่งล้างข้อมูล และคำสั่ง Seed ข้อมูลกฎหมายออกจาก `master/backend/src/database/seed.js`
+  3. **Mongoose Model**: ลบไฟล์ `master/backend/src/database/models/LegalArticle.js`
+  4. **API Modules**: ลบโฟลเดอร์ `master/backend/src/modules/legal/` (`legal.controller.js`, `legal.routes.js`)
+  5. **App Entrypoint**: ถอด `const legalRoutes` และการผูกเอนด์พอยต์ `app.use('/api/legal', ...)` ออกจาก `master/backend/src/app.js`
+
+### 36.2 การตรวจสอบและการยืนยันผล (Verification)
+- ตรวจสอบความถูกต้องของ Syntax: `node -c master/backend/src/app.js` และ `node -c master/backend/src/database/seed.js` ผ่านสมบูรณ์ ไร้ข้อผิดพลาด
+- ทดสอบ Re-seed ฐานข้อมูล: สร้างข้อมูลชุดใหม่ลง 6 Collections อย่างถูกต้อง
+- อัปเดตเอกสารอ้างอิงและกฎระบบใน `AGENTS.md` และ `AI-MEMORY.md` เพื่อป้องกันไม่ให้ AI ในอนาคตกู้คืนโค้ดส่วนนี้กลับมา

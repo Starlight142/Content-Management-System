@@ -28,6 +28,7 @@ Every AI working on this repository MUST strictly follow these rules:
    - `master/backend/src/integrations/` was removed.
    - 12 empty mobile feature directories were removed (`features/analytics`, `calendar`, `contents`, `notifications`, `recommendations`, `review`, `trends`, `workflow`, `assets`, `hooks`, `store`, `utils`).
    - MongoDB database `cms_database` was dropped. Only `content_management` is active.
+   - Collection `legalarticles`, model `LegalArticle.js`, and `master/backend/src/modules/legal/` were removed.
 3. **KEEP IT SIMPLE, PROFESSIONAL & EMOJI-FREE**:
    - Code, UI text, logs, and documentation must reflect realistic human software engineering standards.
    - Avoid decorative emojis in UI buttons, headings, badges, and console logs.
@@ -163,14 +164,13 @@ npm run dev
 ## 6. Database Reference & Seeded Accounts
 
 - **Database Name**: `content_management` (on `mongodb://127.0.0.1:27017/`)
-- **Active Collections (7)**:
+- **Active Collections (6)**:
   1. `users`: User profiles, hashed passwords, roles (`ADMIN`, `MANAGER`, `MEMBER`), team association, online presence.
   2. `teams`: Studio teams with unique team codes (`TEAM-A`, `TEAM-B`), leader ID, and member IDs.
   3. `contents`: Media production items with stages (`IDEA_SUBMITTED` -> `APPROVED` -> `PUBLISHED`), deadlines, review history.
   4. `tasks`: Subtasks assigned to members (`SCRIPT`, `SHOOTING`, `EDITING`, `AUDIO`, `GRAPHICS`), deliverables, and reply notes.
   5. `teamactivities`: Audit logs of all system events for activity feeds and analytics.
   6. `ideas`: Pitch proposals before formal production approval.
-  7. `legalarticles`: Media law, copyright, and compliance reference library.
 
 - **Pre-seeded Test Accounts** (Password for all: `123456`):
   | Role | Email | Password | Primary Interface | Team |
