@@ -159,6 +159,11 @@ npm run dev
    - Multi-layered frosted backdrop with contrast diffusion and subtle top specular border.
    - In `android/app/src/main/res/values-v31/styles.xml`, native hardware-accelerated window blur (`android:windowBlurBehindEnabled="true"`, `android:windowBlurBehindRadius="28dp"`) is enabled for dialog windows on Android 12+ (API 31+).
 
+5. **Android Build on Windows with Non-ASCII Path (`android.overridePathCheck=true`)**:
+   - When the project resides in a folder path with non-ASCII characters (e.g. `d:\Projecปี3-1\...`), Android Gradle Plugin halts the build with an error warning on Windows.
+   - This is resolved by setting `android.overridePathCheck=true` in `master/mobile-app/android/gradle.properties`.
+   - If the project directory is ever moved or renamed, Gradle's stale cache (`android/.gradle`, `android/build`, `android/app/build`, `android/app/.cxx`) must be removed and the daemon stopped (`./gradlew --stop`) to refresh all autolinked project paths.
+
 ---
 
 ## 6. Database Reference & Seeded Accounts

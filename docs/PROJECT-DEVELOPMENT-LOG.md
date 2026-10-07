@@ -46,6 +46,7 @@
 | **7 ต.ค. 2026 (01:30 น.)** | [Phase 34: การจับภาพหน้าจอระบบ Mobile App ครบทุกบทบาทหน้าที่ (Editor, Graphic Designer & Member Features QA)](#phase-34-การจับภาพหน้าจอระบบ-mobile-app-ครบทุกบทบาทหน้าที่-editor-graphic-designer--member-features-qa) | สำเร็จ ✅ |
 | **7 ต.ค. 2026 (12:55 น.)** | [Phase 35: การอัปเดตและซิงค์ฐานข้อมูล MongoDB สู่ Schema ล่าสุด & การสร้างคอนฟิก .env (Database Reseeding & Environment Setup)](#phase-35-การอัปเดตและซิงค์ฐานข้อมูล-mongodb-สู่-schema-ล่าสุด--การสร้างคอนฟิก-env-database-reseeding--environment-setup) | สำเร็จ ✅ |
 | **7 ต.ค. 2026 (13:10 น.)** | [Phase 36: การลบฐานข้อมูลและโมดูลกฎหมายที่ไม่ใช้งาน (Unused Legal Articles & Module Removal)](#phase-36-การลบฐานข้อมูลและโมดูลกฎหมายที่ไม่ใช้งาน-unused-legal-articles--module-removal) | สำเร็จ ✅ |
+| **7 ต.ค. 2026 (13:25 น.)** | [Phase 37: การแก้ไขปัญหาคอมไพล์ Android จากแคชเส้นทางเดิม & ชื่อโฟลเดอร์ภาษาไทย (Android Build Path Cache & Unicode Path Override)](#phase-37-การแก้ไขปัญหาคอมไพล์-android-จากแคชเส้นทางเดิม--ชื่อโฟลเดอร์ภาษาไทย-android-build-path-cache--unicode-path-override) | สำเร็จ ✅ |
 
 ---
 
@@ -1664,3 +1665,24 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 - ตรวจสอบความถูกต้องของ Syntax: `node -c master/backend/src/app.js` และ `node -c master/backend/src/database/seed.js` ผ่านสมบูรณ์ ไร้ข้อผิดพลาด
 - ทดสอบ Re-seed ฐานข้อมูล: สร้างข้อมูลชุดใหม่ลง 6 Collections อย่างถูกต้อง
 - อัปเดตเอกสารอ้างอิงและกฎระบบใน `AGENTS.md` และ `AI-MEMORY.md` เพื่อป้องกันไม่ให้ AI ในอนาคตกู้คืนโค้ดส่วนนี้กลับมา
+
+
+---
+
+## Phase 37: การแก้ไขปัญหาคอมไพล์ Android จากแคชเส้นทางเดิม & ชื่อโฟลเดอร์ภาษาไทย (Android Build Path Cache & Unicode Path Override)
+> 🕒 **ช่วงเวลาดำเนินงาน:** 7 ตุลาคม 2026 (13:18 - 13:25 น.)
+
+### 37.1 สาเหตุของปัญหา (Root Causes Analysis)
+1. **Gradle Build Cache Stale Path**:
+   - เมื่อโฟลเดอร์โปรเจกต์ย้ายมาอยู่ภายใต้ `D:\Projecปี3-1\Content-Management-System\` แต่แคชเดิมของ Gradle ในโฟลเดอร์ `.gradle/` และ `app/build/` ยังจำเส้นทางเดิม (`D:\Content-Management-System\`) ส่งผลให้ Gradle ฟ้องหาโฟลเดอร์ของ `:react-native-safe-area-context` ไม่พบ (`The configured projectDirectory ... does not exist`)
+2. **Android Gradle Plugin Non-ASCII Path Block**:
+   - เนื่องจากพาธของโปรเจกต์มีตัวอักษรภาษาไทย (`ปี3-1`) Android Gradle Plugin บน Windows จึงบล็อกการบิลด์เพื่อความปลอดภัยตามค่าเริ่มต้น
+
+### 37.2 วิธีการแก้ไขปัญหา (Resolution & Execution)
+1. **เคลียร์แคชและสั่งหยุด Gradle Daemon**:
+   - รันคำสั่ง `./gradlew --stop` เพื่อปิดโปรเซส Daemon เดิมที่จำค่าค้างไว้
+   - ลบโฟลเดอร์แคชและไฟล์บิลด์เดิมที่ตกค้าง: `android/.gradle`, `android/build`, `android/app/build`, `android/app/.cxx`
+2. **เปิดใช้การอนุญาต Non-ASCII Path**:
+   - เพิ่มการตั้งค่า `android.overridePathCheck=true` ในไฟล์ `master/mobile-app/android/gradle.properties`
+3. **การทดสอบยืนยันผล (Verification)**:
+   - ทดสอบรันการประเมินโครงสร้างโปรเจกต์ผ่าน `./gradlew projects`: ผลการทำงาน **BUILD SUCCESSFUL** ผ่านฉลุย 100% สามารถตรวจพบ `:react-native-safe-area-context` และ `:app` ได้อย่างถูกต้องสมบูรณ์
