@@ -457,6 +457,7 @@
       <li class="nav-item"><a href="#phase-36" class="nav-link"><span class="nav-tag">P36</span>Remove Legal Articles</a></li>
       <li class="nav-item"><a href="#phase-37" class="nav-link"><span class="nav-tag">P37</span>Android Path Fix</a></li>
       <li class="nav-item"><a href="#phase-38" class="nav-link"><span class="nav-tag">P38</span>Team Workspace & RBAC</a></li>
+      <li class="nav-item"><a href="#phase-39" class="nav-link"><span class="nav-tag">P39</span>Position Assignment RBAC</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -1521,6 +1522,33 @@
         <li><strong>Mobile App Experience Polish:</strong> ปรับปรุง <code>LoginScreen</code> (มี Position Chips, ซ่อน Role), <code>TeamOverviewScreen</code> (แสดง Join Code, ปุ่มคัดลอก/สุ่มใหม่, Member Role/Position, หน้าจอ Join Team สำหรับผู้ใช้ไม่มีทีม), <code>MemberTaskList</code> (สลับดูงานฉัน vs งานทีม, Read-only สำหรับงานคนอื่น), และ <code>ProfileScreen</code> (ป้าย Position)</li>
         <li><strong>Admin Web Consistency:</strong> ปรับปรุงคอลัมน์และ Dropdown Position ใน <code>/users</code>, แสดง Join Code ในการ์ดทีม, และซิงค์สถานะ <code>IN_PROGRESS</code> ใน <code>/contents</code> ตรวจสอบ <code>npm run build</code> ผ่าน 100%</li>
         <li><strong>Automated Test Verification:</strong> รันชุดทดสอบความปลอดภัยและการทำงาน <code>scratch/test-workspace-rbac.js</code> ผ่านฉลุย 25 จาก 25 การตรวจสอบ (Total Passed: 25, Total Failed: 0)</li>
+      </ul>
+    </section>
+
+    <!-- Phase 39 -->
+    <section class="section-card" id="phase-39">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 39: การปรับสิทธิ์การกำหนดตำแหน่งงาน (Position) ให้เป็นอำนาจของ Manager และ Admin เท่านั้น</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 8 ตุลาคม 2026 (02:50 - 03:00 น.)</span>
+        <span>•</span>
+        <span>📁 <code>master/backend/</code>, <code>master/mobile-app/</code> & <code>master/admin-web/</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Manager & Admin Exclusive Position Assignment:</strong><br>
+        ปรับกระบวนการทางธุรกิจให้สอดคล้องกับโครงสร้างองค์กรจริง โดยกำหนดให้ตำแหน่งงานวิชาชีพเฉพาะทาง (Position: Video Editor, Graphic Designer, Script Writer, Content Creator, Production Manager, Other) สามารถเลือก มอบหมาย หรือปรับเปลี่ยนได้โดย <strong>Manager ประจำทีม</strong> หรือ <strong>Admin</strong> เท่านั้น ผู้ใช้ใหม่ที่ลงทะเบียนจะได้รับตำแหน่งเริ่มต้นเป็น 'Other' เสมอ และไม่สามารถเลือกตำแหน่งเองได้
+      </div>
+
+      <h3>รายละเอียดการพัฒนาและการควบคุมสิทธิ์ (Technical Implementation):</h3>
+      <ul>
+        <li><strong>Backend RBAC API:</strong> เพิ่มเอนด์พอยต์ <code>PATCH /api/users/:id/position</code> ตรวจสอบสิทธิ์อย่างเข้มงวด: Admin กำหนดได้ทุกคน, Manager กำหนดได้เฉพาะสมาชิกในทีมตนเอง, และ Member จะถูกปฏิเสธด้วยรหัส <code>403 Forbidden</code></li>
+        <li><strong>Secure Registration:</strong> อัปเดต <code>registerUser</code> ใน <code>auth.service.js</code> ล็อกตำแหน่งเริ่มต้นเป็น <code>'Other'</code> ไม่รับค่าตำแหน่งที่ผู้ใช้ส่งเข้ามาเอง</li>
+        <li><strong>Mobile App Experience:</strong> ถอดชิปเลือกตำแหน่งออกจากหน้าจอลงทะเบียน (<code>LoginScreen.jsx</code>) พร้อมเพิ่มปุ่ม "กำหนดตำแหน่ง" และ <strong>Position Assignment Modal</strong> ในหน้า <code>TeamOverviewScreen.jsx</code> ให้ Manager สามารถกดเลือกปรับตำแหน่งสมาชิกในทีมได้ทันที</li>
+        <li><strong>Admin Web Interactive Dropdown:</strong> ปรับคอลัมน์ Position ในหน้า <code>/users</code> ให้เป็น Interactive <code>&lt;select&gt;</code> Dropdown ให้ Admin สามารถคลิกเลือกเปลี่ยนตำแหน่งของผู้ใช้งานทุกคนได้แบบ Real-time พร้อมส่งอัปเดตลงฐานข้อมูล</li>
+        <li><strong>Automated Test Suite:</strong> ขยายชุดทดสอบ <code>scratch/test-workspace-rbac.js</code> ครอบคลุม 31 กรณีทดสอบ ผลการทดสอบ <strong>ผ่านสมบูรณ์ 100% (31/31 Passed)</strong></li>
       </ul>
     </section>
 

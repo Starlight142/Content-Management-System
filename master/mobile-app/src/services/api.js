@@ -218,6 +218,10 @@ export const userApi = {
     method: 'PATCH',
     body: JSON.stringify(profileData),
   }),
+  updatePosition: (userId, position) => request(`/users/${userId}/position`, {
+    method: 'PATCH',
+    body: JSON.stringify({ position }),
+  }),
 };
 
 export default {

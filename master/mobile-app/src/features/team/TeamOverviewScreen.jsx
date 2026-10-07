@@ -10,11 +10,21 @@ import {
   Platform,
   TextInput,
   Alert,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { teamApi } from '../../services/api';
+import { teamApi, userApi } from '../../services/api';
 import { presenceService } from '../../services/presenceService';
 import { useTheme } from '../../theme/ThemeContext';
+
+const AVAILABLE_POSITIONS = [
+  'Video Editor',
+  'Graphic Designer',
+  'Script Writer',
+  'Content Creator',
+  'Production Manager',
+  'Other',
+];
 
 export default function TeamOverviewScreen({ user, onNavigate }) {
   const { isDark, colors } = useTheme();
@@ -26,8 +36,28 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
   const [inputJoinCode, setInputJoinCode] = useState('');
   const [joining, setJoining] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
+  const [updatingPosition, setUpdatingPosition] = useState(false);
 
   const isManager = user?.role === 'MANAGER' || user?.role === 'ADMIN';
+
+  const handleSelectPosition = async (newPosition) => {
+    if (!editingMember) return;
+    try {
+      setUpdatingPosition(true);
+      await userApi.updatePosition(editingMember._id, newPosition);
+      Alert.alert(
+        'สำเร็จ',
+        `ปรับตำแหน่งของ ${editingMember.firstName || editingMember.username} เป็น "${newPosition}" เรียบร้อยแล้ว`
+      );
+      setEditingMember(null);
+      fetchTeamWorkspace();
+    } catch (err) {
+      Alert.alert('ผิดพลาด', err.message || 'ไม่สามารถปรับตำแหน่งได้');
+    } finally {
+      setUpdatingPosition(false);
+    }
+  };
 
   const fetchTeamWorkspace = async () => {
     try {
@@ -444,9 +474,28 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                             </View>
                           )}
                         </View>
-                        <Text style={[styles.memberRole, { color: colors.textSecondary }]}>
-                          {(member.position || member.roleInTeam || 'Member')} • {member.role}
-                        </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginTop: 3 }}>
+                          <Text style={[styles.memberRole, { color: colors.textSecondary }]}>
+                            {(member.position || member.roleInTeam || 'Member')} • {member.role}
+                          </Text>
+                          {isManager && member.role !== 'ADMIN' && (
+                            <TouchableOpacity
+                              style={[
+                                styles.changePosBtn,
+                                {
+                                  backgroundColor: isDark ? colors.surfaceSubtle : '#EFF6FF',
+                                  borderColor: isDark ? '#3B82F6' : '#93C5FD',
+                                },
+                              ]}
+                              onPress={() => setEditingMember(member)}
+                              activeOpacity={0.7}
+                            >
+                              <Text style={[styles.changePosBtnText, { color: colors.primary }]}>
+                                กำหนดตำแหน่ง
+                              </Text>
+                            </TouchableOpacity>
+                          )}
+                        </View>
                       </View>
                       <View style={[styles.workingBadge, { backgroundColor: badge.bg }]}>
                         <View style={[styles.statusDot, { backgroundColor: badge.dotColor }]} />
@@ -566,6 +615,74 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
           </>
         )}
       </ScrollView>
+
+      {/* Position Assignment Modal for Manager / Admin */}
+      <Modal
+        visible={!!editingMember}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setEditingMember(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.positionModalCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+            <Text style={[styles.positionModalTitle, { color: colors.textPrimary }]}>
+              กำหนดตำแหน่งงาน
+            </Text>
+            <Text style={[styles.positionModalSub, { color: colors.textSecondary }]}>
+              เลือกตำแหน่งสำหรับ {editingMember?.firstName ? `${editingMember.firstName} ${editingMember.lastName || ''}`.trim() : editingMember?.username}
+            </Text>
+
+            <View style={styles.positionOptionList}>
+              {AVAILABLE_POSITIONS.map((pos) => {
+                const isCurrent = editingMember?.position === pos;
+                return (
+                  <TouchableOpacity
+                    key={pos}
+                    style={[
+                      styles.positionOptionItem,
+                      {
+                        backgroundColor: isCurrent
+                          ? (isDark ? '#1E293B' : '#EFF6FF')
+                          : (isDark ? colors.surfaceSubtle : '#F8FAFC'),
+                        borderColor: isCurrent ? colors.primary : colors.border,
+                      },
+                    ]}
+                    onPress={() => handleSelectPosition(pos)}
+                    disabled={updatingPosition}
+                    activeOpacity={0.7}
+                  >
+                    <Text
+                      style={[
+                        styles.positionOptionText,
+                        { color: isCurrent ? colors.primary : colors.textPrimary },
+                        isCurrent && { fontWeight: '700' },
+                      ]}
+                    >
+                      {pos}
+                    </Text>
+                    {isCurrent && (
+                      <Text style={[styles.currentPosBadge, { color: colors.primary }]}>✓ ปัจจุบัน</Text>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {updatingPosition && (
+              <ActivityIndicator size="small" color={colors.primary} style={{ marginTop: 12 }} />
+            )}
+
+            <TouchableOpacity
+              style={[styles.modalCancelBtn, { backgroundColor: isDark ? colors.surfaceSubtle : '#F1F5F9' }]}
+              onPress={() => setEditingMember(null)}
+              disabled={updatingPosition}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.modalCancelText, { color: colors.textPrimary }]}>ยกเลิก</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1049,6 +1166,69 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#64748B',
     marginTop: 2,
+  },
+  changePosBtn: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    marginLeft: 4,
+  },
+  changePosBtnText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  positionModalCard: {
+    width: '100%',
+    maxWidth: 340,
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 20,
+  },
+  positionModalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    marginBottom: 4,
+  },
+  positionModalSub: {
+    fontSize: 12,
+    marginBottom: 16,
+  },
+  positionOptionList: {
+    gap: 8,
+  },
+  positionOptionItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  positionOptionText: {
+    fontSize: 13,
+  },
+  currentPosBadge: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  modalCancelBtn: {
+    marginTop: 16,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalCancelText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
 

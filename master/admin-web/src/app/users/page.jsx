@@ -297,6 +297,20 @@ export default function UsersPage() {
     }
   };
 
+  const handleChangePosition = async (id, newPosition) => {
+    try {
+      await apiFetch(`/users/${id}/position`, {
+        method: 'PATCH',
+        body: JSON.stringify({ position: newPosition }),
+      });
+      setUsers((prev) =>
+        prev.map((u) => ((u._id || u.id) === id ? { ...u, position: newPosition } : u))
+      );
+    } catch (err) {
+      alert(`ไม่สามารถเปลี่ยนตำแหน่งได้: ${err.message}`);
+    }
+  };
+
   // --- Team Actions ---
   const handleCreateTeam = async (e) => {
     e.preventDefault();
@@ -610,9 +624,19 @@ export default function UsersPage() {
                         </td>
                         <td className="py-4 px-5 text-slate-500">{user.email}</td>
                         <td className="py-4 px-5">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                            {user.position || 'Video Editor'}
-                          </span>
+                          <select
+                            value={user.position || 'Content Creator'}
+                            onChange={(e) => handleChangePosition(uid, e.target.value)}
+                            className="text-xs font-semibold bg-slate-50 hover:bg-white text-slate-700 border border-slate-200 rounded-lg px-2.5 py-1.5 outline-hidden cursor-pointer transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            title="คลิกเพื่อเลือกกำหนดตำแหน่งงาน"
+                          >
+                            <option value="Video Editor">Video Editor</option>
+                            <option value="Graphic Designer">Graphic Designer</option>
+                            <option value="Script Writer">Script Writer</option>
+                            <option value="Content Creator">Content Creator</option>
+                            <option value="Production Manager">Production Manager</option>
+                            <option value="Other">Other</option>
+                          </select>
                         </td>
                         <td className="py-4 px-5">
                           <button

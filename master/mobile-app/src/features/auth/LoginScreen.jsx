@@ -124,7 +124,6 @@ export default function LoginScreen({ onLoginSuccess }) {
         password,
         firstName: firstName.trim(),
         lastName: lastName.trim() || '',
-        position: selectedPosition,
         teamCode: teamCode.trim() ? teamCode.trim().toUpperCase() : undefined,
       });
 
@@ -347,40 +346,23 @@ export default function LoginScreen({ onLoginSuccess }) {
               />
             </View>
 
-            {/* Position Picker (in Register mode) */}
+            {/* Position Note (in Register mode): Position is assigned by Manager / Admin */}
             {activeTab === 'register' && (
-              <View style={styles.roleGroup}>
-                <Text style={[styles.label, { color: colors.textPrimary }]}>ตำแหน่งงานหลัก (Position):</Text>
-                <View style={styles.positionGrid}>
-                  {POSITIONS.map((pos) => {
-                    const isSelected = selectedPosition === pos.value;
-                    return (
-                      <TouchableOpacity
-                        key={pos.value}
-                        style={[
-                          styles.positionChip,
-                          { backgroundColor: colors.surface, borderColor: colors.border },
-                          isSelected && {
-                            borderColor: colors.primary,
-                            backgroundColor: isDark ? colors.surfaceSubtle : '#EFF6FF',
-                          },
-                        ]}
-                        onPress={() => setSelectedPosition(pos.value)}
-                        activeOpacity={0.7}
-                      >
-                        <Text
-                          style={[
-                            styles.positionChipText,
-                            { color: colors.textSecondary },
-                            isSelected && { color: colors.primary, fontWeight: '700' },
-                          ]}
-                        >
-                          {pos.label}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
+              <View
+                style={[
+                  styles.positionNoteCard,
+                  {
+                    backgroundColor: isDark ? colors.surfaceSubtle : '#F8FAFC',
+                    borderColor: colors.border,
+                  },
+                ]}
+              >
+                <Text style={[styles.positionNoteTitle, { color: colors.textPrimary }]}>
+                  การกำหนดตำแหน่งงาน (Position)
+                </Text>
+                <Text style={[styles.positionNoteDesc, { color: colors.textSecondary }]}>
+                  เมื่อสมัครสมาชิกใหม่ สิทธิ์เริ่มต้นจะเป็น Member โดยตำแหน่งงานเฉพาะทาง (เช่น Video Editor, Graphic Designer, Script Writer) จะได้รับการกำหนดและมอบหมายโดย Manager ประจำทีม หรือ Admin
+                </Text>
               </View>
             )}
 
@@ -711,5 +693,20 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#64748B',
     marginTop: 2,
+  },
+  positionNoteCard: {
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    marginBottom: 16,
+  },
+  positionNoteTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  positionNoteDesc: {
+    fontSize: 11,
+    lineHeight: 16,
   },
 });

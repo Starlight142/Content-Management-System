@@ -76,7 +76,7 @@ const getUserById = async (req, res) => {
 // @access Private (Admin)
 const createUser = async (req, res) => {
   try {
-    const { name, username, email, role, password } = req.body;
+    const { name, username, email, role, password, position } = req.body;
 
     if (!email) {
       return res.status(400).json({ message: 'Email is required' });
@@ -100,6 +100,7 @@ const createUser = async (req, res) => {
       passwordHash,
       firstName,
       lastName,
+      position: position || 'Content Creator',
       role: role || 'MEMBER',
       status: 'ACTIVE',
       workingStatus: 'IDLE',
@@ -176,6 +177,90 @@ const updateUserRole = async (req, res) => {
   } catch (error) {
     console.error('updateUserRole error:', error);
     res.status(500).json({ message: 'Server error updating user role' });
+  }
+};
+
+// @route PATCH /api/users/:id/position
+// @access Private (Admin or Manager for own team)
+const updateUserPosition = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { position } = req.body;
+
+    const validPositions = [
+      'Video Editor',
+      'Graphic Designer',
+      'Script Writer',
+      'Content Creator',
+      'Production Manager',
+      'Other',
+    ];
+
+    if (!position || !validPositions.includes(position)) {
+      return res.status(400).json({
+        message: `ตำแหน่งไม่ถูกต้อง ต้องเป็นหนึ่งใน: ${validPositions.join(', ')}`,
+      });
+    }
+
+    const targetUser = await User.findById(id);
+    if (!targetUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const userRole = req.user?.role;
+    const userTeamId = req.user?.teamId ? req.user.teamId.toString() : null;
+
+    // RBAC check:
+    // Admin can update position of anyone.
+    // Manager can only update position of members within their OWN team.
+    if (userRole === 'MANAGER') {
+      const targetTeamId = targetUser.teamId ? targetUser.teamId.toString() : null;
+      if (!userTeamId || !targetTeamId || userTeamId !== targetTeamId) {
+        return res.status(403).json({
+          message: 'ไม่อนุญาต: ผู้จัดการ (Manager) สามารถกำหนดตำแหน่งได้เฉพาะสมาชิกในทีมของตนเองเท่านั้น',
+        });
+      }
+      if (targetUser.role === 'ADMIN') {
+        return res.status(403).json({
+          message: 'ไม่อนุญาต: ไม่สามารถแก้ไขตำแหน่งของผู้ดูแลระบบได้',
+        });
+      }
+    } else if (userRole !== 'ADMIN') {
+      return res.status(403).json({
+        message: 'ไม่อนุญาต: เฉพาะผู้จัดการ (Manager) หรือผู้ดูแลระบบ (Admin) เท่านั้นที่สามารถเลือกตำแหน่งงานได้',
+      });
+    }
+
+    targetUser.position = position;
+    await targetUser.save();
+
+    const safeUser = targetUser.toObject();
+    delete safeUser.passwordHash;
+
+    try {
+      const actorId = req.user?.userId || req.user?.id;
+      const actorName = req.user?.firstName || req.user?.username || (userRole === 'ADMIN' ? 'ผู้ดูแลระบบ' : 'ผู้จัดการ');
+      await TeamActivity.create({
+        teamId: targetUser.teamId || null,
+        actor: actorId || null,
+        actionType: 'USER_UPDATED',
+        title: `${actorName} กำหนดตำแหน่งของ ${safeUser.username} เป็น ${position}`,
+        details: `ผู้ใช้: ${safeUser.username} (${safeUser.email}) ตำแหน่งใหม่: ${position}`,
+        entityId: safeUser._id,
+        entityModel: 'User',
+      });
+      broadcast('ACTIVITY_CREATED', { teamId: targetUser.teamId });
+    } catch (logErr) {
+      console.warn('Logging updateUserPosition failed:', logErr.message);
+    }
+
+    notifyUserUpdated(safeUser);
+    broadcast('USER_UPDATED', { user: safeUser });
+
+    res.status(200).json({ message: 'User position updated successfully', user: safeUser });
+  } catch (error) {
+    console.error('updateUserPosition error:', error);
+    res.status(500).json({ message: 'Server error updating user position', error: error.message });
   }
 };
 
@@ -257,6 +342,7 @@ module.exports = {
   getUserById,
   createUser,
   updateUserRole,
+  updateUserPosition,
   deleteUser,
   updateProfile,
 };

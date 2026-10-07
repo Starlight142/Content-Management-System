@@ -21,6 +21,9 @@ router.patch('/profile', usersController.updateProfile);
 // Any authenticated user can get a specific user profile
 router.get('/:id', usersController.getUserById);
 
+// Admin & Manager position assignment
+router.patch('/:id/position', verifyRole(['ADMIN', 'MANAGER']), usersController.updateUserPosition);
+
 // Admin operations
 router.patch('/:id/role', verifyRole(['ADMIN']), usersController.updateUserRole);
 router.delete('/:id', verifyRole(['ADMIN']), usersController.deleteUser);

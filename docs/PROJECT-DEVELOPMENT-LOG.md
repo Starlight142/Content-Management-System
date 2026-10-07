@@ -48,6 +48,7 @@
 | **7 ต.ค. 2026 (13:10 น.)** | [Phase 36: การลบฐานข้อมูลและโมดูลกฎหมายที่ไม่ใช้งาน (Unused Legal Articles & Module Removal)](#phase-36-การลบฐานข้อมูลและโมดูลกฎหมายที่ไม่ใช้งาน-unused-legal-articles--module-removal) | สำเร็จ ✅ |
 | **7 ต.ค. 2026 (13:25 น.)** | [Phase 37: การแก้ไขปัญหาคอมไพล์ Android จากแคชเส้นทางเดิม & ชื่อโฟลเดอร์ภาษาไทย (Android Build Path Cache & Unicode Path Override)](#phase-37-การแก้ไขปัญหาคอมไพล์-android-จากแคชเส้นทางเดิม--ชื่อโฟลเดอร์ภาษาไทย-android-build-path-cache--unicode-path-override) | สำเร็จ ✅ |
 | **8 ต.ค. 2026 (02:45 น.)** | [Phase 38: การยกระดับสถาปัตยกรรมสู่ Team-Based Workspace, การแยก Role/Position/Team, การรักษาความปลอดภัย RBAC, รหัสเข้าร่วมทีม Join Code และการล้างระบบกฎหมาย](#phase-38-การยกระดับสถาปัตยกรรมสู่-team-based-workspace-การแยก-rolepositionteam-การรักษาความปลอดภัย-rbac-รหัสเข้าร่วมทีม-join-code-และการล้างระบบกฎหมาย-corporate-team-based-workspace-architecture--full-rbac-enforcement) | สำเร็จ ✅ |
+| **8 ต.ค. 2026 (03:00 น.)** | [Phase 39: การปรับสิทธิ์การกำหนดตำแหน่งงาน (Position) ให้เป็นอำนาจของ Manager และ Admin เท่านั้น](#phase-39-การปรับสิทธิ์การกำหนดตำแหน่งงาน-position-ให้เป็นอำนาจของ-manager-และ-admin-เท่านั้น-manager--admin-exclusive-position-assignment) | สำเร็จ ✅ |
 
 ---
 
@@ -1762,4 +1763,55 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
   9. Manager อนุมัติ Content ได้สำเร็จ (200 OK)
   10. Manager สุ่มสร้าง Join Code ใหม่ได้สำเร็จ และสมาชิกทั่วไปถูกบล็อก (403 Forbidden)
 - ผลการทดสอบ: **ผ่านทั้งหมด 25/25 การตรวจสอบ (Total Passed: 25, Total Failed: 0)**
+
+---
+
+## Phase 39: การปรับสิทธิ์การกำหนดตำแหน่งงาน (Position) ให้เป็นอำนาจของ Manager และ Admin เท่านั้น (Manager & Admin Exclusive Position Assignment)
+> ช่วงเวลาดำเนินงาน: 8 ตุลาคม 2026 (02:50 - 03:00 น.)
+
+### 39.1 วัตถุประสงค์และการเปลี่ยนแปลงเชิงธุรกิจ (Business Logic Refinement)
+1. ตามหลักการทำงานจริงของบริษัทสื่อ สมาชิกผู้ปฏิบัติงาน (Member) จะไม่สามารถกำหนดตำแหน่งงานวิชาชีพเฉพาะทางของตนเองตอนลงทะเบียนได้ โดยตำแหน่งงาน (Position: `Video Editor`, `Graphic Designer`, `Script Writer`, `Content Creator`, `Production Manager`, `Other`) จะต้องได้รับการคัดเลือก มอบหมาย หรือปรับเปลี่ยนโดย **Manager ประจำทีม** หรือ **Admin** เท่านั้น
+2. ผู้ใช้งานใหม่ที่ลงทะเบียนผ่านระบบจะได้รับตำแหน่งเริ่มต้นเป็น `'Other'` เสมอ จนกว่าหัวหน้าทีม (Manager) หรือผู้ดูแลระบบ (Admin) จะกำหนดตำแหน่งเฉพาะทางให้
+3. สมาชิกทั่วไปไม่สามารถเปลี่ยนตำแหน่งของตนเองหรือสมาชิกผู้อื่นได้ (ป้องกันสิทธิ์ข้ามสายงาน)
+
+### 39.2 การพัฒนาฝั่ง Backend API & RBAC
+1. **สร้างเอนด์พอยต์ `PATCH /api/users/:id/position`**:
+   - ควบคุมการเข้าถึงด้วยมิดเดิลแวร์ `verifyRole(['ADMIN', 'MANAGER'])`
+   - ตรวจสอบความถูกต้องของตำแหน่งงานจาก 6 ตำแหน่งมาตรฐาน
+   - **การตรวจสอบสิทธิ์ RBAC เชิงลึก**:
+     - `ADMIN`: สามารถกำหนดหรือแก้ไขตำแหน่งงานของผู้ใช้งานทุกคนในระบบได้อย่างอิสระ
+     - `MANAGER`: สามารถกำหนดตำแหน่งได้เฉพาะสมาชิกที่สังกัดทีมเดียวกันกับตนเองเท่านั้น (`targetUser.teamId === req.user.teamId`) และไม่สามารถแก้ไขตำแหน่งของ Admin ได้
+     - `MEMBER`: ไม่ได้รับอนุญาตให้เรียกใช้งานเอนด์พอยต์นี้ โดยระบบจะตอบกลับด้วย `403 Forbidden`
+   - บันทึกประวัติกิจกรรมทีม (`TeamActivity`) ประเภท `USER_UPDATED` และกระจายการแจ้งเตือน Real-time Socket Event
+2. **ปรับปรุง `registerUser` ใน `auth.service.js`**:
+   - กำหนดค่าตำแหน่งเริ่มต้นเป็น `'Other'` โดยตรง ป้องกันการส่งค่าตำแหน่งแอบแฝงเข้ามาในขั้นตอนสมัครสมาชิก
+3. **ปรับปรุง `createUser` ใน `users.controller.js`**:
+   - รองรับการระบุตำแหน่งงานตั้งแต่ขั้นตอนการสร้างผู้ใช้งานโดย Admin
+
+### 39.3 การปรับปรุง Mobile App (React Native)
+1. `LoginScreen.jsx`:
+   - ถอดชิปตัวเลือกตำแหน่งงาน (Position Chips) ออกจากแท็บลงทะเบียน
+   - แสดงการ์ดแจ้งข้อมูลชี้แจงให้ผู้ใช้ใหม่ทราบว่าสิทธิ์และตำแหน่งงานจะได้รับการกำหนดโดย Manager หรือ Admin
+2. `TeamOverviewScreen.jsx`:
+   - ในรายการสมาชิกทีม หากผู้ใช้งานเป็น Manager หรือ Admin จะปรากฏปุ่ม **"กำหนดตำแหน่ง"** ในแต่ละการ์ดสมาชิก
+   - เมื่อกดปุ่ม ระบบจะเปิด **Position Assignment Modal** แสดงรายชื่อตำแหน่งงานทั้ง 6 ตำแหน่ง พร้อมเครื่องหมายระบุตำแหน่งปัจจุบัน
+   - เมื่อ Manager เลือกตำแหน่ง ระบบจะเรียก `userApi.updatePosition` บันทึกลงฐานข้อมูลและรีเฟรชข้อมูลทีมทันที
+3. `api.js`:
+   - เพิ่มฟังก์ชัน `userApi.updatePosition(userId, position)` สำหรับเรียก API
+
+### 39.4 การปรับปรุง Admin Web (Next.js)
+1. `master/admin-web/src/app/users/page.jsx`:
+   - เพิ่มฟังก์ชัน `handleChangePosition(userId, newPosition)`
+   - ปรับคอลัมน์ "Position (ตำแหน่งงาน)" ในตาราง Users ให้เป็น Interactive `<select>` Dropdown ที่ Admin สามารถเลือกเปลี่ยนตำแหน่งงานของผู้ใช้แต่ละคนได้ทันที 1-คลิก
+   - อัปเดตข้อมูลบนหน้าจอและส่งคำขออัปเดตไปยัง Backend โดยอัตโนมัติ
+
+### 39.5 การทดสอบอัตโนมัติ (Automated Verification)
+- เพิ่มกรณีทดสอบ Position RBAC ลงในสคริปต์ `scratch/test-workspace-rbac.js`:
+  1. ยืนยันการสมัครสมาชิกใหม่ได้รับตำแหน่งเป็น 'Other'
+  2. สมาชิกทั่วไปไม่สามารถอัปเดตตำแหน่งงานได้ (403 Forbidden)
+  3. Manager อัปเดตตำแหน่งงานของสมาชิกในทีมตนเองได้สำเร็จ (200 OK)
+  4. Manager ไม่สามารถอัปเดตตำแหน่งงานของสมาชิกต่างทีมได้ (403 Forbidden)
+  5. Admin อัปเดตตำแหน่งงานของผู้ใช้งานคนใดก็ได้สำเร็จ (200 OK)
+- ผลการทดสอบ: **ผ่านสมบูรณ์ 31 จาก 31 การตรวจสอบ (Total Passed: 31, Total Failed: 0)**
+
 

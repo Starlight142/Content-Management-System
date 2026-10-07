@@ -34,16 +34,8 @@ const registerUser = async ({ firstName, lastName, position, email, password }) 
     throw new Error('อีเมลหรือชื่อผู้ใช้นี้มีอยู่ในระบบแล้ว กรุณาเข้าสู่ระบบหรือใช้อีเมลอื่น');
   }
 
-  // Validate position
-  const validPositions = [
-    'Video Editor',
-    'Graphic Designer',
-    'Script Writer',
-    'Content Creator',
-    'Production Manager',
-    'Other',
-  ];
-  const assignedPosition = validPositions.includes(position) ? position : 'Content Creator';
+  // Position is assigned exclusively by Manager or Admin. Self-registered users default to 'Other'
+  const assignedPosition = 'Other';
 
   const salt = await bcrypt.genSalt(10);
   const passwordHash = await bcrypt.hash(password, salt);
