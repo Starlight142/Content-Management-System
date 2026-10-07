@@ -458,6 +458,7 @@
       <li class="nav-item"><a href="#phase-37" class="nav-link"><span class="nav-tag">P37</span>Android Path Fix</a></li>
       <li class="nav-item"><a href="#phase-38" class="nav-link"><span class="nav-tag">P38</span>Team Workspace & RBAC</a></li>
       <li class="nav-item"><a href="#phase-39" class="nav-link"><span class="nav-tag">P39</span>Position Assignment RBAC</a></li>
+      <li class="nav-item"><a href="#phase-40" class="nav-link"><span class="nav-tag">P40</span>Permanent Legal Purge</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -1549,6 +1550,32 @@
         <li><strong>Mobile App Experience:</strong> ถอดชิปเลือกตำแหน่งออกจากหน้าจอลงทะเบียน (<code>LoginScreen.jsx</code>) พร้อมเพิ่มปุ่ม "กำหนดตำแหน่ง" และ <strong>Position Assignment Modal</strong> ในหน้า <code>TeamOverviewScreen.jsx</code> ให้ Manager สามารถกดเลือกปรับตำแหน่งสมาชิกในทีมได้ทันที</li>
         <li><strong>Admin Web Interactive Dropdown:</strong> ปรับคอลัมน์ Position ในหน้า <code>/users</code> ให้เป็น Interactive <code>&lt;select&gt;</code> Dropdown ให้ Admin สามารถคลิกเลือกเปลี่ยนตำแหน่งของผู้ใช้งานทุกคนได้แบบ Real-time พร้อมส่งอัปเดตลงฐานข้อมูล</li>
         <li><strong>Automated Test Suite:</strong> ขยายชุดทดสอบ <code>scratch/test-workspace-rbac.js</code> ครอบคลุม 31 กรณีทดสอบ ผลการทดสอบ <strong>ผ่านสมบูรณ์ 100% (31/31 Passed)</strong></li>
+      </ul>
+    </section>
+
+    <!-- Phase 40 -->
+    <section class="section-card" id="phase-40">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 40: การล้างคอลเลกชันกฎหมาย (legalarticles) ออกจาก MongoDB อย่างถาวร และการกำจัดโค้ดตกค้าง</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 8 ตุลาคม 2026 (03:10 - 03:15 น.)</span>
+        <span>•</span>
+        <span>📁 <code>master/backend/src/database/seed.js</code> & <code>master/backend/src/modules/contents/</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Permanent Database & Code Purge:</strong><br>
+        ดำเนินการลบคอลเลกชันทางกายภาพ <code>legalarticles</code> ออกจากฐานข้อมูล <code>content_management</code> ใน MongoDB ทันที และกำจัดโค้ดตกค้างในระบบทั้งหมด เพื่อไม่ให้หลงเหลือส่วนประกอบของระบบกฎหมายตามข้อกำหนด Prime Directives
+      </div>
+
+      <h3>รายละเอียดการดำเนินงาน (Implementation Details):</h3>
+      <ul>
+        <li><strong>Physical Collection Drop:</strong> สั่งคำสั่ง <code>db.dropCollection('legalarticles')</code> ผ่าน Mongoose Native Connection ส่งผลให้ฐานข้อมูลคงเหลือเฉพาะ 6 คอลเลกชันหลัก: <code>['contents', 'tasks', 'teamactivities', 'ideas', 'teams', 'users']</code></li>
+        <li><strong>Automatic Drop on Seed:</strong> เพิ่มคำสั่งตรวจสอบและลบคอลเลกชัน <code>legalarticles</code> ใน <code>seed.js</code> โดยอัตโนมัติ เพื่อป้องกันไม่ให้คอลเลกชันนี้กลับมาปรากฏขึ้นอีกในการ Seed ครั้งต่อไป</li>
+        <li><strong>Residual Code Cleanup:</strong> นำบล็อกลูป <code>content.legalChecklist</code> ใน <code>contents.controller.js</code> (ฟังก์ชัน <code>submitReview</code>) ออกโดยสมบูรณ์ และยืนยันว่าเอกสาร Content ทั้งหมดไม่มีฟิลด์ดังกล่าว</li>
+        <li><strong>Compass Cache Notice:</strong> MongoDB Compass ทำงานโดยการแคชรายชื่อคอลเลกชันไว้ แนะนำให้คลิกปุ่ม <strong>Refresh (<code>⟳</code>)</strong> บน MongoDB Compass เพื่ออัปเดตมุมมองล่าสุด</li>
       </ul>
     </section>
 

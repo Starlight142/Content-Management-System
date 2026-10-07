@@ -49,6 +49,7 @@
 | **7 ต.ค. 2026 (13:25 น.)** | [Phase 37: การแก้ไขปัญหาคอมไพล์ Android จากแคชเส้นทางเดิม & ชื่อโฟลเดอร์ภาษาไทย (Android Build Path Cache & Unicode Path Override)](#phase-37-การแก้ไขปัญหาคอมไพล์-android-จากแคชเส้นทางเดิม--ชื่อโฟลเดอร์ภาษาไทย-android-build-path-cache--unicode-path-override) | สำเร็จ ✅ |
 | **8 ต.ค. 2026 (02:45 น.)** | [Phase 38: การยกระดับสถาปัตยกรรมสู่ Team-Based Workspace, การแยก Role/Position/Team, การรักษาความปลอดภัย RBAC, รหัสเข้าร่วมทีม Join Code และการล้างระบบกฎหมาย](#phase-38-การยกระดับสถาปัตยกรรมสู่-team-based-workspace-การแยก-rolepositionteam-การรักษาความปลอดภัย-rbac-รหัสเข้าร่วมทีม-join-code-และการล้างระบบกฎหมาย-corporate-team-based-workspace-architecture--full-rbac-enforcement) | สำเร็จ ✅ |
 | **8 ต.ค. 2026 (03:00 น.)** | [Phase 39: การปรับสิทธิ์การกำหนดตำแหน่งงาน (Position) ให้เป็นอำนาจของ Manager และ Admin เท่านั้น](#phase-39-การปรับสิทธิ์การกำหนดตำแหน่งงาน-position-ให้เป็นอำนาจของ-manager-และ-admin-เท่านั้น-manager--admin-exclusive-position-assignment) | สำเร็จ ✅ |
+| **8 ต.ค. 2026 (03:15 น.)** | [Phase 40: การล้างคอลเลกชันกฎหมาย (legalarticles) ออกจาก MongoDB อย่างถาวร และการกำจัดโค้ดตกค้าง](#phase-40-การล้างคอลเลกชันกฎหมาย-legalarticles-ออกจาก-mongodb-อย่างถาวร-และการกำจัดโค้ดตกค้าง-permanent-legal-collection-purge--controller-residual-cleanup) | สำเร็จ ✅ |
 
 ---
 
@@ -1813,5 +1814,37 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
   4. Manager ไม่สามารถอัปเดตตำแหน่งงานของสมาชิกต่างทีมได้ (403 Forbidden)
   5. Admin อัปเดตตำแหน่งงานของผู้ใช้งานคนใดก็ได้สำเร็จ (200 OK)
 - ผลการทดสอบ: **ผ่านสมบูรณ์ 31 จาก 31 การตรวจสอบ (Total Passed: 31, Total Failed: 0)**
+
+---
+
+## <a id="phase-40-การล้างคอลเลกชันกฎหมาย-legalarticles-ออกจาก-mongodb-อย่างถาวร-และการกำจัดโค้ดตกค้าง-permanent-legal-collection-purge--controller-residual-cleanup"></a>40. การล้างคอลเลกชันกฎหมาย (legalarticles) ออกจาก MongoDB อย่างถาวร และการกำจัดโค้ดตกค้าง (Permanent Legal Collection Purge & Controller Residual Cleanup)
+> 🕒 **บันทึกเมื่อ:** 8 ตุลาคม 2026 (03:15 น.)
+
+### 40.1 วัตถุประสงค์และที่มาของปัญหา
+สืบเนื่องจากการตัดฟีเจอร์และเอกสารกฎหมายที่ไม่จำเป็นออกจากระบบตามข้อกำหนด Prime Directives ใน Phase 36 พบว่าคอลเลกชันทางกายภาพ `legalarticles` ใน MongoDB Compass ยังคงปรากฏอยู่ เนื่องจากยังไม่เคยมีการสั่ง `dropCollection` บน Database โดยตรง ประกอบกับ MongoDB Compass มีพฤติกรรมแคชรายชื่อคอลเลกชันไว้จนกว่าจะกดรีเฟรช และยังพบโค้ดตกค้างที่อ้างอิงถึง `legalChecklist` ในส่วน Review ของ Content Controller จึงดำเนินการเคลียร์ระบบให้เรียบร้อยสมบูรณ์ 100%
+
+### 40.2 การดำเนินงานทางเทคนิค
+1. **การลบคอลเลกชันทางกายภาพใน MongoDB (Drop Collection):**
+   - รันคำสั่งผ่านสคริปต์ Node.js เชื่อมต่อไปยัง `mongodb://127.0.0.1:27017/content_management`:
+     ```javascript
+     await mongoose.connection.db.dropCollection('legalarticles');
+     ```
+   - ตรวจสอบรายการคอลเลกชันคงเหลือ พบว่ามีเพียง 6 คอลเลกชันที่ใช้งานจริง:
+     ```javascript
+     ['contents', 'tasks', 'teamactivities', 'ideas', 'teams', 'users']
+     ```
+2. **การป้องกันการเกิดซ้ำใน Seed Script (`seed.js`):**
+   - เพิ่มกระบวนการตรวจสอบและดรอปคอลเลกชัน `legalarticles` ทันทีที่มีการรัน `npm run seed`:
+     ```javascript
+     const legalColls = await mongoose.connection.db.listCollections({ name: 'legalarticles' }).toArray();
+     if (legalColls.length > 0) {
+       await mongoose.connection.db.dropCollection('legalarticles');
+     }
+     ```
+3. **การกำจัดโค้ดตกค้างใน `contents.controller.js`:**
+   - นำบล็อกคำสั่ง `content.legalChecklist.forEach((i) => { i.passed = true; });` ในฟังก์ชัน `submitReview` ออกอย่างถาวร
+   - ตรวจสอบคอลเลกชัน `contents` ในฐานข้อมูล พบว่าไม่มีเอกสารใดหลงเหลือฟิลด์ `legalChecklist` (0 เอกสาร)
+4. **คำแนะนำสำหรับผู้ใช้งาน MongoDB Compass:**
+   - แนะนำให้คลิกปุ่ม **Refresh (`⟳`)** บริเวณรายชื่อฐานข้อมูล หรือกดปุ่ม Refresh บนแท็บ เพื่อล้างแคชคอลเลกชันที่เคยเปิดค้างไว้
 
 

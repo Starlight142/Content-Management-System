@@ -210,10 +210,6 @@ const submitReview = async (req, res) => {
         reviewedAt: new Date(),
       });
 
-      if (content.legalChecklist && content.legalChecklist.length > 0) {
-        content.legalChecklist.forEach((i) => { i.passed = true; });
-      }
-
       // Mark tasks under this content as completed
       await Task.updateMany(
         { contentId: content._id, status: { $ne: 'DONE' } },

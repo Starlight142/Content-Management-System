@@ -22,7 +22,13 @@ const seedDatabase = async () => {
     await Idea.deleteMany({});
     await Team.deleteMany({});
     await TeamActivity.deleteMany({});
-    console.log('[Seed] Cleaned existing database collections');
+
+    // Ensure deprecated legalarticles collection is permanently dropped
+    const legalColls = await mongoose.connection.db.listCollections({ name: 'legalarticles' }).toArray();
+    if (legalColls.length > 0) {
+      await mongoose.connection.db.dropCollection('legalarticles');
+    }
+    console.log('[Seed] Cleaned existing database collections and dropped legacy collections');
 
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash('123456', salt);
