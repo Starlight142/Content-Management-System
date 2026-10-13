@@ -1892,3 +1892,5 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - **Admin:** ตรวจสอบ System Health $\rightarrow$ บริหารจัดการผู้ใช้และทีม (Role/Position) $\rightarrow$ ตรวจสอบและจัดการ Audit Logs
 3. **การอัปเดตเอกสารวิชาการ:**
    - อัปเดต `docs/academic/03-Activity-Diagram.md` ให้เชื่อมโยงไฟล์ `activity-diagram.drawio` และภาพ `activity-diagram.png`
+4. **การปรับชุดสีสู่สไตล์ Academic Monochrome (ขาว-ดำ มาตรฐานวิชาการ):**
+   - ปรับเส้นขอบเป็นสีดำล้วน (`#000000`), กล่องกิจกรรมและสัญลักษณ์ Decision Diamond เป็นพื้นหลังสีขาว (`#ffffff`) ปราศจากสีพาสเทล เพื่อให้ตรงตามโทนเอกสารวิชาการมาตรฐานเดิมของผู้ใช้ 100%
