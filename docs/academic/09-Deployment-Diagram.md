@@ -86,3 +86,4 @@
 | **Admin Web &rarr; Application Server** | TCP/IP (Port `:5000`)<br/>HTTP REST API | Same-Origin / CORS, HttpOnly Session Cookie หรือ Bearer JWT | การบริหารจัดการผู้ใช้ ทีมงาน และการติดตามภาพรวมระบบผ่านเบราว์เซอร์ |
 | **Application Server &rarr; Database Server** | TCP (Port `:27017`)<br/>MongoDB Wire Protocol | SCRAM-SHA-256 Authentication / Local IPC Socket | การบันทึกและสืบค้นข้อมูลเอกสารผ่าน Mongoose ODM Connection Pool |
 | **Application Server &rarr; External Cloud** | HTTPS (Port `:443`)<br/>REST APIs | TLS 1.3 Encryption, OAuth 2.0 Access Token, API Key Signatures | การส่งต่อข้อมูลเผยแพร่สื่อ และการตรวจสอบความถูกต้องของ Deliverable Link |
+

@@ -1,143 +1,137 @@
 # 1. Use Case Diagram — Content Production Management System (CMS)
 
-## 📌 บทนำและภาพรวมของระบบ
-เอกสารนี้กำหนดขอบเขตของระบบ (System Boundary) และความสัมพันธ์ระหว่างผู้ใช้ (Actors) กับฟังก์ชันการทำงานหลัก (Use Cases) ของระบบ **Content Production Management System** เพื่อใช้สำหรับการวิเคราะห์และออกแบบระบบเชิงวัตถุ (OOAD) ในโครงงานระดับชั้นปีที่ 4 (Senior Capstone Project)
+## ภาพรวมของระบบ (System Overview)
+เอกสารนี้กำหนดขอบเขตของระบบ (System Boundary) และความสัมพันธ์ระหว่างผู้ใช้ (Actors) กับฟังก์ชันการทำงานหลัก (Use Cases) ของระบบ **Content Production Management System (Draftly)** เพื่อใช้สำหรับการวิเคราะห์และออกแบบระบบเชิงวัตถุ (OOAD) ในโครงงานระดับชั้นปีที่ 4 (Senior Capstone Project)
+
+ระบบได้รับการปรับโครงสร้างให้กระชับ สมจริงตามการทำงานจริงในสายการผลิตสื่อ (Production Pipeline) โดยตัดความซ้ำซ้อนของ Use Case ย่อยออก และจัดกลุ่มหน้าที่ตามบทบาทผู้ใช้ 3 กลุ่มหลักอย่างชัดเจน
 
 ---
 
-## 👥 นิยามผู้ใช้ระบบ (Actor Specifications)
+## แผนภาพ Use Case Diagram (Academic Monochrome)
 
-ระบบแบ่งบทบาทผู้ใช้งานออกเป็น 3 บทบาทหลัก (Primary Actors) และ 1 ระบบภายนอก (Secondary/External Actor):
+![Use Case Diagram](./use-case-diagram.png)
 
-1. **Admin (ผู้ดูแลระบบ)**
-   - รับผิดชอบงานด้าน Governance, Security, และ System Configuration
-   - จัดการสิทธิ์ผู้ใช้งาน (Users & Roles), จัดสรรโครงสร้างทีม (Teams & Member Assignment)
-   - กำหนดประเภทงานผลิต (Task Types) และการตั้งค่าระบบ (System Settings)
-   - ตรวจสอบประวัติการใช้งานระบบผ่าน Audit Logs
-
-2. **Manager (หัวหน้าทีมผู้ผลิต / บรรณาธิการ)**
-   - ควบคุมกระบวนการผลิตสื่อตั้งแต่ต้นน้ำยันปลายน้ำผ่าน Mobile App
-   - พิจารณาและอนุมัติไอเดียคอนเทนต์ (Content Ideas)
-   - สร้างชิ้นงานคอนเทนต์ (Content) และมอบหมายงานย่อย (Task Assignment)
-   - ตรวจสอบคุณภาพงาน (Content Review) สั่งแก้ไข (Revision) พร้อมระบุคำแนะนำ
-   - อนุมัติชิ้นงานโดยตรง (Direct 1-Tap Content Approval)
-   - กำหนดเวลาและคิวการเผยแพร่ (Scheduling & Publishing)
-
-3. **Member (ทีมงานฝ่ายสร้างสรรค์: Creator, Editor, Graphic, Scriptwriter)**
-   - เข้าใช้งานผ่าน Mobile App เพื่อจัดการงานที่ได้รับมอบหมาย
-   - เสนอไอเดียคอนเทนต์ใหม่เข้าสู่คลังของสตูดิโอ (Idea Pitching)
-   - อัปเดตสถานะงาน (`TODO` $\rightarrow$ `IN_PROGRESS` $\rightarrow$ `REVIEW`)
-   - แนบหลักฐานส่งมอบผลงาน (File Asset / Google Drive / Frame.io Links)
-   - รับข้อเสนอแนะและส่งงานรอบแก้ไขพร้อมระบุคำอธิบายชี้แจง (Revision Delivery & Reply Notes)
-
-4. **External Platform APIs (ระบบเชื่อมต่อภายนอก - YouTube / TikTok Data APIs)**
-   - Secondary Actor ที่ระบบทำการเชื่อมต่อเพื่อดึงสถิติยอดวิว, ยอดไลก์, คอมเมนต์, การแชร์ (Metrics Ingestion) และส่งข้อมูลตารางเผยแพร่
+> **ไฟล์ต้นฉบับสำหรับการแก้ไข:** [use-case-diagram.drawio](./use-case-diagram.drawio)  
+> รูปแบบการวาดเป็นไปตามมาตรฐาน UML 2.5 สไตล์ Academic Monochrome (ขาว-ดำ ไม่ใช้เอฟเฟกต์หรือสีสันตกแต่งเกินจำเป็น)
 
 ---
 
-## 📊 Use Case Diagram (UML Notation via Mermaid)
+## นิยามผู้ใช้ระบบ (3 Primary Actors)
+
+ระบบกำหนดบทบาทผู้ใช้งานออกเป็น **3 บทบาทหลัก** โดยไม่มีบทบาทนามธรรม (Generic User) แอบแฝง:
+
+1. **Member (สมาชิกฝ่ายผลิต)**
+   - ทีมงานผู้ปฏิบัติการผลิตสื่อ เช่น Creator, Video Editor, Graphic Designer, Scriptwriter
+   - เข้าใช้งานผ่าน **Mobile Application**
+   - เข้าร่วมทีมด้วยรหัสทีม (Team Code)
+   - บริหารจัดการงานย่อยที่ได้รับมอบหมาย อัปเดตสถานะ และส่งมอบไฟล์ชิ้นงาน/ลิงก์ส่งงาน
+   - เสนอแนวคิดคอนเทนต์ใหม่ (Pitch Ideas) และมีส่วนร่วมในการแสดงความคิดเห็น
+   - ติดตามกิจกรรมความเคลื่อนไหวและความคืบหน้าของทีมแบบเรียลไทม์
+
+2. **Manager (หัวหน้าทีมผู้ผลิต)**
+   - ผู้ควบคุมกระบวนการผลิตสื่อและบริหารจัดการทีม (Team Leader / Producer / Editorial Head)
+   - เข้าใช้งานผ่าน **Mobile Application**
+   - **ความสัมพันธ์เชิงสืบทอด (Actor Generalization):** Manager สืบทอดคุณสมบัติและสิทธิ์พื้นฐานทั้งหมดของ `Member` (`Manager` $\longrightarrow^{\triangleright}$ `Member`) ทำให้สามารถเข้าสู่ระบบ ร่วมเสนอไอเดีย และติดตามความคืบหน้าของทีมได้โดยอัตโนมัติ
+   - **บทบาทเฉพาะของ Manager:**
+     - บริหารจัดการโครงสร้างทีม สมาชิก และกำหนดตำแหน่งงานในทีม
+     - วางแผนกระบวนการผลิต สร้างชิ้นงานคอนเทนต์ (Content) และมอบหมายงานย่อย (Task Assignment)
+     - ตรวจทานคุณภาพงาน สั่งแก้ไข (Request Revision) พร้อมระบุข้อเสนอแนะ และอนุมัติชิ้นงาน (1-Tap Direct Approval)
+     - เผยแพร่ผลงานสู่ช่องทางสาธารณะ (Publish Content)
+
+3. **Admin (ผู้ดูแลระบบ)**
+   - ผู้บริหารจัดการระบบและกำกับดูแลความปลอดภัยระดับองค์กร (System Administrator)
+   - เข้าใช้งานผ่าน **Admin Web Application (Next.js)**
+   - บริหารจัดการบัญชีผู้ใช้ทั้งหมด จัดการทีม และกำหนดสิทธิ์การเข้าถึงระบบ (Role-Based Access Control - RBAC)
+   - กำกับดูแลภาพรวมของคอนเทนต์และภารกิจทั้งหมดในระบบ (Global CMS Supervision)
+   - ตรวจสอบสถานะระบบ การทำงานของ Server และตรวจสอบประวัติการดำเนินงานผ่าน Audit Logs
+
+---
+
+## รายละเอียด Use Cases ทั้ง 12 รายการ (Use Case Specifications)
+
+| รหัส | ชื่อ Use Case (ไทย / อังกฤษ) | Actor ที่เกี่ยวข้อง | วัตถุประสงค์และขอบเขตการทำงาน |
+| :--- | :--- | :--- | :--- |
+| **UC-01** | **เข้าสู่ระบบและจัดการบัญชีผู้ใช้**<br>*(Authentication & Profile Management)* | Member, Manager (สืบทอด), Admin | ยืนยันตัวตนเข้าสู่ระบบด้วย Email/Password จัดการข้อมูลส่วนตัว และความปลอดภัยของบัญชี |
+| **UC-02** | **เข้าร่วมทีมด้วยรหัสทีม**<br>*(Join Team by Code)* | Member, Manager (สืบทอด) | การเข้าร่วมพื้นที่ทำงานของทีมผลิตผ่าน Team Code (เช่น `TEAM-A`) เพื่อเข้าถึงภารกิจและทรัพยากรของทีม |
+| **UC-03** | **จัดการและส่งมอบงานย่อย**<br>*(Tasks & Deliverables Management)* | Member, Manager (สืบทอด) | สมาชิกดูงานที่ตนได้รับมอบหมาย ปรับสถานะงาน (`TODO` $\rightarrow$ `IN_PROGRESS` $\rightarrow$ `REVIEW`) แนบลิงก์ส่งมอบผลงาน (Google Drive, Frame.io) และตอบกลับคำสั่งแก้ไข |
+| **UC-04** | **เสนอและแลกเปลี่ยนแนวคิดคอนเทนต์**<br>*(Ideas & Brainstorming)* | Member, Manager (สืบทอด) | ระดมความคิด เสนอหัวข้อคอนเทนต์ใหม่เข้าสู่คลังไอเดีย และร่วมลงคะแนน/แสดงความคิดเห็นในทีม |
+| **UC-05** | **ติดตามความคืบหน้าและกิจกรรมทีมแบบเรียลไทม์**<br>*(Track Progress & Real-time Activities)* | Member, Manager (สืบทอด) | ตรวจสอบสถานะความคืบหน้าของโปรเจกต์ และรับการแจ้งเตือนกิจกรรมความเคลื่อนไหวภายในทีมแบบเรียลไทม์ |
+| **UC-06** | **บริหารจัดการทีมและกำหนดตำแหน่งงาน**<br>*(Team & Positions Management)* | Manager | หัวหน้าทีมสร้างทีม กำหนดบทบาทหน้าที่ (Positions) ให้แก่สมาชิก และดูแลความเรียบร้อยของทีม |
+| **UC-07** | **สร้างชิ้นงานและมอบหมายงานผลิต**<br>*(Content Creation & Task Assignment)* | Manager | เปิดสายการผลิตชิ้นงานคอนเทนต์ กำหนดประเภทงาน แตกงานย่อย (Sub-tasks) และมอบหมายงานให้สมาชิกผู้รับผิดชอบ |
+| **UC-08** | **ตรวจรับ สั่งแก้ไข และอนุมัติชิ้นงาน**<br>*(Review, Revision & Approval)* | Manager | ตรวจสอบไฟล์ผลงานที่สมาชิกส่งมอบ ระบุข้อความสั่งแก้ไข หรือดำเนินการอนุมัติชิ้นงานเพื่อพร้อมเผยแพร่ |
+| **UC-09** | **เผยแพร่ผลงานสู่สาธารณะ**<br>*(Publish Content)* | Manager | ดำเนินการเปลี่ยนสถานะชิ้นงานเป็นเผยแพร่แล้ว (`PUBLISHED`) พร้อมบันทึกช่องทางและลิงก์ผลงานจริง |
+| **UC-10** | **บริหารจัดการผู้ใช้งาน ทีมงาน และสิทธิ์ระบบ**<br>*(RBAC & User Administration)* | Admin | จัดการเพิ่ม/ระงับบัญชีผู้ใช้งาน จัดโครงสร้างทีม และควบคุมระดับสิทธิ์ของระบบผ่าน Web Dashboard |
+| **UC-11** | **กำกับดูแลชิ้นงานและภารกิจทั้งหมดในระบบ**<br>*(Global CMS Supervision)* | Admin | ติดตามและตรวจสอบรายการคอนเทนต์และงานผลิตทั้งหมดในระบบในมุมมองผู้ดูแลส่วนกลาง |
+| **UC-12** | **ตรวจสอบสถานะระบบและประวัติการดำเนินงาน**<br>*(System Status & Audit Logs)* | Admin | ตรวจสอบบันทึกความปลอดภัย ประวัติการทำธุรกรรมสำคัญในระบบ และสถานะความพร้อมของบริการ |
+
+---
+
+## โครงสร้างความสัมพันธ์ (Relationships Analysis)
+
+1. **Actor Generalization (การสืบทอดบทบาทของผู้ใช้)**:
+   - `Manager` สืบทอดมาจาก `Member` (`Manager` $\longrightarrow^{\triangleright}$ `Member`): ในเชิงสถาปัตยกรรม หัวหน้าทีมเป็นสมาชิกในทีมที่มีหน้าที่การผลิตพื้นฐานเช่นเดียวกัน จึงสืบทอด Use Case UC-01 ถึง UC-05 โดยไม่จำเป็นต้องลากเส้นเชื่อมซ้ำซ้อนข้ามกัน ซึ่งเป็นแนวทางปฏิบัติที่ดีตามมาตรฐาน UML ป้องกันปัญหาเส้นเชื่อมโยงสับสน (Spaghetti Lines)
+
+2. **การรวมฟังก์ชันที่ทำงานเหมือนกันเข้าด้วยกัน (Consolidation)**:
+   - รวมการติดตามงานย่อยและการรับแจ้งเตือนความเคลื่อนไหวเป็น Use Case เดียวคือ **UC-05: ติดตามความคืบหน้าและกิจกรรมทีมแบบเรียลไทม์**
+   - รวมการอัปเดตสถานะงานและการส่งไฟล์ชิ้นงานเป็น **UC-03: จัดการและส่งมอบงานย่อย**
+   - รวมกระบวนการตรวจรับ สั่งแก้ไข และอนุมัติผลงานเข้าเป็นกระบวนการต่อเนื่องใน **UC-08: ตรวจรับ สั่งแก้ไข และอนุมัติชิ้นงาน**
+
+---
+
+## แผนภาพ Mermaid (Structure Synchronization)
 
 ```mermaid
 flowchart LR
-    %% Definition of Actors
-    subgraph Actors["👥 System Actors"]
-        Admin(("👤 Admin\n(Web Dashboard)"))
-        Manager(("👔 Manager\n(Mobile App)"))
-        Member(("🎨 Member / Creator\n(Mobile App)"))
-        PlatformAPI(("🌐 YouTube & TikTok\nExternal APIs"))
+    classDef actorStyle fill:#ffffff,stroke:#000000,stroke-width:1.5px;
+    classDef ucStyle fill:#ffffff,stroke:#000000,stroke-width:1.2px;
+    classDef boundaryStyle fill:none,stroke:#000000,stroke-width:2px;
+
+    subgraph Boundary ["ระบบบริหารกระบวนการผลิตสื่อ (Content Production Management System)"]
+        %% Common
+        UC01(["UC-01: เข้าสู่ระบบและจัดการบัญชีผู้ใช้"]):::ucStyle
+
+        %% Member Functions
+        UC02(["UC-02: เข้าร่วมทีมด้วยรหัสทีม (Join Team)"]):::ucStyle
+        UC03(["UC-03: จัดการและส่งมอบงานย่อย (Tasks & Deliverables)"]):::ucStyle
+        UC04(["UC-04: เสนอและแลกเปลี่ยนแนวคิดคอนเทนต์ (Ideas)"]):::ucStyle
+        UC05(["UC-05: ติดตามความคืบหน้าและกิจกรรมทีมแบบเรียลไทม์"]):::ucStyle
+
+        %% Manager Functions
+        UC06(["UC-06: บริหารจัดการทีมและกำหนดตำแหน่งงาน (Team & Positions)"]):::ucStyle
+        UC07(["UC-07: สร้างชิ้นงานและมอบหมายงานผลิต (Content & Tasks)"]):::ucStyle
+        UC08(["UC-08: ตรวจรับ สั่งแก้ไข และอนุมัติชิ้นงาน (Review & Approval)"]):::ucStyle
+        UC09(["UC-09: เผยแพร่ผลงานสู่สาธารณะ (Publish Content)"]):::ucStyle
+
+        %% Admin Functions
+        UC10(["UC-10: บริหารจัดการผู้ใช้งาน ทีมงาน และสิทธิ์ระบบ (RBAC)"]):::ucStyle
+        UC11(["UC-11: กำกับดูแลชิ้นงานและภารกิจทั้งหมดในระบบ (Global CMS)"]):::ucStyle
+        UC12(["UC-12: ตรวจสอบสถานะระบบและประวัติการดำเนินงาน (Audit Logs)"]):::ucStyle
     end
 
-    %% System Boundary
-    subgraph CMS["🏢 Content Production Management System (System Boundary)"]
-        %% Ideation Subsystem
-        subgraph Sub_Ideation["1. Ideation & Planning"]
-            UC_ProposeIdea(["UC-01: Propose Content Idea"])
-            UC_VoteIdea(["UC-02: Vote & Comment Idea"])
-            UC_ApproveIdea(["UC-03: Approve / Reject Idea"])
-        end
+    %% Actors
+    Member(("Member\n(สมาชิกฝ่ายผลิต)")):::actorStyle
+    Manager(("Manager\n(หัวหน้าทีม)")):::actorStyle
+    Admin(("Admin\n(ผู้ดูแลระบบ)")):::actorStyle
 
-        %% Production & Team Workspace Subsystem
-        subgraph Sub_Production["2. Production & Team Workspace"]
-            UC_CreateContent(["UC-04: Create Content Pipeline"])
-            UC_AssignTask(["UC-05: Assign Production Tasks"])
-            UC_UpdateTask(["UC-06: Update My Task Status & Progress"])
-            UC_SubmitDeliverable(["UC-07: Submit Work Assets/Links"])
-            UC_ViewTeamOverview(["UC-19: View Team Workspace & Progress"])
-            UC_MonitorTeamActivity(["UC-20: Monitor Team Activity Feed"])
-        end
+    %% Generalization: Manager extends Member
+    Manager -.->|extends| Member
 
-        %% Quality & Review Subsystem
-        subgraph Sub_Quality["3. Quality Review & Approval"]
-            UC_ReviewContent(["UC-08: Review Content Draft"])
-            UC_RequestRevision(["UC-09: Request Work Revision (with Notes)"])
-            UC_SubmitRevisionReply(["UC-10: Submit Revision with Reply Notes"])
-            UC_ApproveContent(["UC-11: Approve Final Content (Direct Approval)"])
-        end
+    %% Associations Member
+    Member --- UC01
+    Member --- UC02
+    Member --- UC03
+    Member --- UC04
+    Member --- UC05
 
-        %% Publishing & Analytics Subsystem
-        subgraph Sub_Publishing["4. Publishing & Analytics"]
-            UC_SchedulePublish(["UC-12: Schedule & Publish Content"])
-            UC_SyncMetrics(["UC-13: Ingest Performance Metrics"])
-            UC_ViewAnalytics(["UC-14: View Intelligence Dashboard"])
-        end
+    %% Associations Manager (Exclusive)
+    Manager --- UC06
+    Manager --- UC07
+    Manager --- UC08
+    Manager --- UC09
 
-        %% System Admin Subsystem
-        subgraph Sub_Admin["5. System Administration"]
-            UC_ManageUsers(["UC-15: Manage Users & Teams"])
-            UC_ConfigureSettings(["UC-16: Configure System Settings & Task Types"])
-            UC_ViewLogs(["UC-17: Monitor System Audit Logs"])
-            UC_Auth(["UC-18: Authenticate (Login/2FA)"])
-        end
-    end
-
-    %% Relationships - Member
-    Member --> UC_Auth
-    Member --> UC_ProposeIdea
-    Member --> UC_VoteIdea
-    Member --> UC_UpdateTask
-    Member --> UC_SubmitDeliverable
-    Member --> UC_SubmitRevisionReply
-    Member --> UC_ViewTeamOverview
-    Member --> UC_MonitorTeamActivity
-
-    %% Relationships - Manager
-    Manager --> UC_Auth
-    Manager --> UC_ApproveIdea
-    Manager --> UC_CreateContent
-    Manager --> UC_AssignTask
-    Manager --> UC_ReviewContent
-    Manager --> UC_RequestRevision
-    Manager --> UC_ApproveContent
-    Manager --> UC_SchedulePublish
-    Manager --> UC_ViewAnalytics
-    Manager --> UC_ViewTeamOverview
-    Manager --> UC_MonitorTeamActivity
-
-    %% Relationships - Admin
-    Admin --> UC_Auth
-    Admin --> UC_ManageUsers
-    Admin --> UC_ConfigureSettings
-    Admin --> UC_ViewLogs
-    Admin --> UC_ViewAnalytics
-
-    %% External Connections
-    UC_SchedulePublish -.-> PlatformAPI
-    PlatformAPI -.-> UC_SyncMetrics
-    UC_SyncMetrics -.-> UC_ViewAnalytics
-
-    %% Includes & Extends
-    UC_CreateContent -.->|<<includes>>| UC_AssignTask
-    UC_ReviewContent -.->|<<extends>>| UC_RequestRevision
-    UC_RequestRevision -.->|<<includes>>| UC_SubmitRevisionReply
+    %% Associations Admin
+    Admin --- UC01
+    Admin --- UC10
+    Admin --- UC11
+    Admin --- UC12
 ```
-
----
-
-## 📑 สรุปความสัมพันธ์แบบ Include และ Extend
-1. **`<<include>>` UC-04 (Create Content Pipeline) $\rightarrow$ UC-05 (Assign Production Tasks)**:
-   - การสร้าง Content เพื่อส่งเข้าสู่สายการผลิต จะต้องมีการแตก Task ย่อยและกำหนดผู้รับผิดชอบอย่างน้อย 1 คน
-2. **`<<extends>>` UC-08 (Review Content Draft) $\leftarrow$ UC-09 (Request Work Revision)**:
-   - เมื่อ Manager ตรวจสอบงานแล้วพบจุดบกพร่อง สามารถเปิด Interactive Modal เพื่อระบุฟีดแบ็กคำแนะนำ (Revision Notes) ส่งกลับไปให้สมาชิกแก้ไข
-3. **`<<include>>` UC-09 (Request Work Revision) $\rightarrow$ UC-10 (Submit Revision with Reply Notes)**:
-   - เมื่อ Content ถูกส่งกลับแก้ไข สมาชิกผู้รับผิดชอบงานจะเข้าสู่หน้าต่างงานแก้ไข เพื่อตอบกลับคำชี้แจง (Reply Notes) พร้อมแนบเวอร์ชันใหม่ก่อนส่งตรวจซ้ำ
-

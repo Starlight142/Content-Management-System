@@ -1933,3 +1933,44 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 - **เอกสารประกอบ:** `docs/academic/09-Deployment-Diagram.md`
 - **สาระสำคัญ:** แสดงโหนดกายภาพ 4 ชั้น: Client Tier (Xiaomi 13 Pro React Native App & Administrator PC Web), Application Server Tier (Node.js/Express :5000 & Socket.io), Database Tier (MongoDB :27017), และ External Cloud Tier พร้อมรายละเอียดโพรโทคอล ADB Reverse Port Mapping, TCP/IP, WebSocket, และ HTTPS REST APIs
 
+
+
+---
+
+## <a id="phase-44-use-case-consolidation"></a>44. ปรับปรุง Use Case Diagram และคำอธิบายสู่มาตรฐาน 3 Actors พร้อมยุบรวมฟังก์ชันซ้ำซ้อน (Use Case Consolidation to 3 Actors: Member, Manager, Admin)
+> 🕒 **บันทึกเมื่อ:** 13 ตุลาคม 2026 (23:10 น.)
+
+### 44.1 ที่มาและการวิเคราะห์
+ผู้ใช้ได้ตรวจสอบร่าง Use Case Diagram เดิมและให้ข้อเสนอแนะในการปรับปรุง:
+1. **ตัด Actor นามธรรมออก:** ตัดตัวละคร `User` ทั่วไปออก และกำหนด Actor ประจำระบบจริงเพียง 3 ตัวละคร ได้แก่ `Member (สมาชิกฝ่ายผลิต)`, `Manager (หัวหน้าทีม)`, และ `Admin (ผู้ดูแลระบบ)`
+2. **ยุบรวม Use Case ซ้ำซ้อน (Consolidation):** ฟังก์ชันที่มีพฤติกรรมการทำงานเหมือนกันให้รวมเข้าด้วยกัน ไม่ให้ระบบดูรกหรือซับซ้อนเกินจริงจนดูเหมือนผลลัพธ์จาก AI (เช่น รวมการติดตามงานย่อยและการแจ้งเตือนกิจกรรมสดเป็น "ติดตามความคืบหน้าและกิจกรรมทีมแบบเรียลไทม์", รวมการอัปเดตสถานะและการส่งมอบไฟล์งานเป็น "จัดการและส่งมอบงานย่อย", และรวมขั้นตอนการตรวจรับ สั่งแก้ไข และอนุมัติผลงานเข้าเป็นกระบวนการต่อเนื่อง)
+3. **จัดผังให้สะอาดสมจริง (Academic Monochrome & Clean Layout):** เส้นเชื่อมโยงต้องไม่ทับซ้อนหรือพันกันเป็นใยแมงมุม (Zero Line Crossings) และใช้การสืบทอดบทบาท (Actor Generalization) ตามหลักวิศวกรรมซอฟต์แวร์
+
+### 44.2 การออกแบบสถาปัตยกรรม Use Case และผังการจัดวาง (UML 2.5 Architecture)
+1. **โครงสร้าง 3 Actors:**
+   - **Member (สมาชิกฝ่ายผลิต):** ใช้งานผ่าน Mobile App รับผิดชอบงานผลิต ส่งมอบผลงาน เสนอไอเดีย และติดตามความคืบหน้าของทีม
+   - **Manager (หัวหน้าทีม):** ใช้งานผ่าน Mobile App รับผิดชอบการบริหารจัดการทีม การวางแผนผลิต มอบหมายงาน ตรวจรับ/สั่งแก้ไข/อนุมัติชิ้นงาน และการเผยแพร่สื่อ
+   - **Admin (ผู้ดูแลระบบ):** ใช้งานผ่าน Web Portal รับผิดชอบการบริหารจัดการผู้ใช้ ทีม สิทธิ์ระบบ (RBAC) กำกับดูแลภาพรวมคอนเทนต์ และตรวจสอบ Audit Logs
+2. **การสืบทอดบทบาท (Actor Generalization: `Manager` $\longrightarrow^{\triangleright}$ `Member`):**
+   - หัวหน้าทีมเป็นสมาชิกในทีมที่มีสิทธิ์เข้าถึงฟังก์ชันพื้นฐานของ Member ทุกประการ จึงกำหนดความสัมพันธ์เชิงสืบทอด ทำให้สืบทอด Use Case ด้านการ Login, เข้าร่วมทีม, เสนอไอเดีย และติดตามงาน โดยไม่ต้องลากเส้นซ้ำซ้อนข้ามกัน
+3. **การยุบรวมเป็น 12 Use Cases หลัก:**
+   - **UC-01:** เข้าสู่ระบบและจัดการบัญชีผู้ใช้ *(Authentication & Profile Management)*
+   - **UC-02:** เข้าร่วมทีมด้วยรหัสทีม *(Join Team by Code)*
+   - **UC-03:** จัดการและส่งมอบงานย่อย *(Tasks & Deliverables Management)*
+   - **UC-04:** เสนอและแลกเปลี่ยนแนวคิดคอนเทนต์ *(Ideas & Brainstorming)*
+   - **UC-05:** ติดตามความคืบหน้าและกิจกรรมทีมแบบเรียลไทม์ *(Track Progress & Real-time Activities)*
+   - **UC-06:** บริหารจัดการทีมและกำหนดตำแหน่งงาน *(Team & Positions Management)*
+   - **UC-07:** สร้างชิ้นงานและมอบหมายงานผลิต *(Content Creation & Task Assignment)*
+   - **UC-08:** ตรวจรับ สั่งแก้ไข และอนุมัติชิ้นงาน *(Review, Revision & Approval)*
+   - **UC-09:** เผยแพร่ผลงานสู่สาธารณะ *(Publish Content)*
+   - **UC-10:** บริหารจัดการผู้ใช้งาน ทีมงาน และสิทธิ์ระบบ *(RBAC & User Administration)*
+   - **UC-11:** กำกับดูแลชิ้นงานและภารกิจทั้งหมดในระบบ *(Global CMS Supervision)*
+   - **UC-12:** ตรวจสอบสถานะระบบและประวัติการดำเนินงาน *(System Status & Audit Logs)*
+
+### 44.3 สิ่งที่ส่งมอบครบถ้วน 100%
+1. **ไฟล์ไดอะแกรมและภาพเรนเดอร์มาตรฐาน:**
+   - `docs/academic/use-case-diagram.drawio`: ไฟล์ XML มาตรฐานสำหรับ Draw.io / diagrams.net
+   - `docs/academic/use-case-diagram.png`: ภาพเรนเดอร์ความละเอียดสูงสไตล์ Academic Monochrome
+2. **เอกสารข้อกำหนดวิชาการ:**
+   - `docs/academic/01-Use-Case-Diagram.md`: ปรับปรุงบทนำ นิยาม 3 Actors ตารางแจกแจง 12 Use Cases และแผนภาพ Mermaid ซิงค์ตรง 1:1
+   - `docs/academic/02-Use-Case-Descriptions.md`: ปรับปรุงข้อกำหนด Fully Dressed Use Case Specification (Cockburn / IEEE Format) ครบทั้ง 12 รายการ

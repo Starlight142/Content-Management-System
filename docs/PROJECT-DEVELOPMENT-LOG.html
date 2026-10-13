@@ -462,6 +462,7 @@
       <li class="nav-item"><a href="#phase-41" class="nav-link"><span class="nav-tag">P41</span>Use Case Diagram Update</a></li>
       <li class="nav-item"><a href="#phase-42" class="nav-link"><span class="nav-tag">P42</span>Activity Diagram (Draw.io)</a></li>
       <li class="nav-item"><a href="#phase-43" class="nav-link"><span class="nav-tag">P43</span>Academic Diagrams Suite</a></li>
+      <li class="nav-item"><a href="#phase-44" class="nav-link"><span class="nav-tag">P44</span>Use Case Consolidation (3 Actors)</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -1685,6 +1686,38 @@
         <li><strong>Deployment Diagram (<code>docs/academic/deployment-diagram.*</code>):</strong>
           แผนภาพสถาปัตยกรรมกายภาพ 4 ชั้น: Client Tier (Xiaomi 13 Pro & Web Browser), Application Server Tier (Node.js/Express :5000), Database Tier (MongoDB :27017), และ External Cloud Services พร้อมเครือข่าย ADB Reverse, TCP/IP, WebSocket, และ HTTPS
         </li>
+      </ul>
+    </section>
+
+    <!-- Phase 44 -->
+    <section class="section-card" id="phase-44">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 44: ปรับปรุง Use Case Diagram และคำอธิบายสู่มาตรฐาน 3 Actors พร้อมยุบรวมฟังก์ชันซ้ำซ้อน (.drawio & .png)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 13 ตุลาคม 2026 (23:10 น.)</span>
+        <span>•</span>
+        <span>📁 <code>docs/academic/</code> (Use Case Diagram & Formal Descriptions)</span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>การออกแบบ Use Case สไตล์วิศวกรรมซอฟต์แวร์จริง (Real SE Practice vs Bloated AI):</strong><br>
+        ปรับโครงสร้าง Use Case Diagram สู่มาตรฐาน <strong>3 Actors (Member, Manager, Admin)</strong> โดยตัด Actor นามธรรม (Generic User) ออก ยุบรวม Use Case ย่อยที่พฤติกรรมทำงานเหมือนกันให้กระชับเหลือ <strong>12 Use Cases หลัก</strong> และประยุกต์ใช้ <strong>Actor Generalization (<code>Manager</code> extends <code>Member</code>)</strong> ทำให้ผังมีความสมดุล สะอาดตา ปราศจากเส้นตัดกัน (Zero Line Crossings) 100% สไตล์ Academic Monochrome
+      </div>
+
+      <h3>สาระสำคัญและการปรับปรุง:</h3>
+      <ul>
+        <li><strong>3 Primary Actors:</strong> <code>Member (สมาชิกฝ่ายผลิต)</code> (Mobile App), <code>Manager (หัวหน้าทีม)</code> (Mobile App), และ <code>Admin (ผู้ดูแลระบบ)</code> (Web Portal)</li>
+        <li><strong>Actor Generalization:</strong> <code>Manager</code> $\longrightarrow^{\triangleright}$ <code>Member</code> สืบทอดฟังก์ชันพื้นฐาน (Login, Join Team, Ideas, Tracking) โดยอัตโนมัติตามมาตรฐาน UML 2.5</li>
+        <li><strong>Consolidation 12 Use Cases:</strong>
+          <ul>
+            <li><strong>Shared & Member:</strong> UC-01 (เข้าสู่ระบบและจัดการบัญชีผู้ใช้), UC-02 (เข้าร่วมทีมด้วยรหัสทีม), UC-03 (จัดการและส่งมอบงานย่อย), UC-04 (เสนอและแลกเปลี่ยนแนวคิดคอนเทนต์), UC-05 (ติดตามความคืบหน้าและกิจกรรมทีมแบบเรียลไทม์)</li>
+            <li><strong>Manager Exclusive:</strong> UC-06 (บริหารจัดการทีมและกำหนดตำแหน่งงาน), UC-07 (สร้างชิ้นงานและมอบหมายงานผลิต), UC-08 (ตรวจรับ สั่งแก้ไข และอนุมัติชิ้นงาน), UC-09 (เผยแพร่ผลงานสู่สาธารณะ)</li>
+            <li><strong>Admin Exclusive:</strong> UC-10 (บริหารจัดการผู้ใช้งาน ทีมงาน และสิทธิ์ระบบ), UC-11 (กำกับดูแลชิ้นงานและภารกิจทั้งหมดในระบบ), UC-12 (ตรวจสอบสถานะระบบและประวัติการดำเนินงาน)</li>
+          </ul>
+        </li>
+        <li><strong>สิ่งที่ส่งมอบ:</strong> <code>docs/academic/use-case-diagram.drawio</code>, <code>docs/academic/use-case-diagram.png</code>, <code>docs/academic/01-Use-Case-Diagram.md</code>, และ <code>docs/academic/02-Use-Case-Descriptions.md</code> (ครบทั้ง 12 Use Cases ในฟอร์แมต Cockburn / IEEE)</li>
       </ul>
     </section>
 
