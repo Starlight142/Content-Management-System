@@ -1,10 +1,20 @@
-# 5. Sequence Diagrams — Content Production Management System
+# 5. Sequence Diagrams - ระบบบริหารกระบวนการผลิตสื่อ (Content Production Management System)
 
-เอกสารนี้แสดงแผนภาพลำดับขั้นการทำงาน (Sequence Diagrams) ในมาตรฐาน UML เพื่ออธิบายอันดับของข้อความ (Messages) ที่ส่งผ่านระหว่าง Actor, Mobile App UI, API Controller, Workflow State Validator, และ Database Layer บน 3 กระบวนการทำงานวิกฤต (3 Critical Paths)
+เอกสารนี้แสดงแผนภาพลำดับขั้นการทำงาน (Sequence Diagrams) ตามมาตรฐาน UML เพื่ออธิบายลำดับของข้อความ (Messages) ที่ส่งผ่านระหว่าง Actor (Member, Manager), Mobile App UI, Backend API Controller, Workflow State Validator, และ Database Layer บนกระบวนการทำงานหลักของระบบ
 
 ---
 
-## 🎯 ไดอะแกรมที่ 1: การสร้าง Content และมอบหมายงาน (Content Creation & Task Assignment)
+## แผนภาพ Sequence Diagram รวม (End-to-End Workflow)
+
+![Sequence Diagram](./sequence-diagram.png)
+
+ไฟล์ต้นฉบับสำหรับการแก้ไข: [`sequence-diagram.drawio`](./sequence-diagram.drawio)
+
+---
+
+## รายละเอียดแต่ละขั้นตอน (Workflow Breakdown)
+
+### ไดอะแกรมที่ 1: การสร้าง Content และมอบหมายงาน (Content Creation & Task Assignment)
 
 ```mermaid
 sequenceDiagram
@@ -35,7 +45,7 @@ sequenceDiagram
 
 ---
 
-## 🔄 ไดอะแกรมที่ 2: การส่งงาน, ตรวจสอบ และสั่งแก้ไข (Task Submission, Review & Revision Loop)
+### ไดอะแกรมที่ 2: การส่งงาน ตรวจสอบ และสั่งแก้ไข (Task Submission, Review & Revision Loop)
 
 ```mermaid
 sequenceDiagram
@@ -98,16 +108,16 @@ sequenceDiagram
 
 ---
 
-## 🚀 ไดอะแกรมที่ 3: การตรวจรับและอนุมัติชิ้นงานโดยตรง (Direct Content Approval & Publishing)
+### ไดอะแกรมที่ 3: การตรวจรับและอนุมัติชิ้นงานโดยตรง (Direct Content Approval & Publishing)
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Mgr as 👔 Manager
-    participant App as 📱 Mobile App (ManagerDashboard)
-    participant API as 🖥️ ContentController
-    participant Guard as 🛡️ StateMachineValidator
-    participant DB as 🗄️ Database
+    actor Mgr as Manager
+    participant App as Mobile App (ManagerDashboard)
+    participant API as ContentController
+    participant Guard as StateMachineValidator
+    participant DB as Database
 
     Mgr->>App: 1. เปิดดูคิวงานสถานะ REVIEW ใน Manager Dashboard
     Mgr->>App: 2. ตรวจสอบไฟล์งานและ Reply Notes จากสมาชิก
@@ -119,39 +129,38 @@ sequenceDiagram
     API->>DB: 7. UPDATE Content SET status='APPROVED', progress=100
     API->>DB: 8. UPDATE Tasks SET status='DONE', progress=100 WHERE contentId=:id
     API->>DB: 9. INSERT TeamActivity (activityType: 'CONTENT_APPROVED', title: 'อนุมัติชิ้นงานเรียบร้อยแล้ว')
-    API->>DB: 10. INSERT ActivityLog (action: 'CONTENT_APPROVED')
-    DB-->>API: 11. Transaction Committed
-    API-->>App: 12. HTTP 200 OK { message: "Content approved successfully", status: 'APPROVED' }
+    DB-->>API: 10. Transaction Committed
+    API-->>App: 11. HTTP 200 OK { message: "Content approved successfully", status: 'APPROVED' }
     deactivate API
-    App-->>Mgr: 13. แสดง Toast "อนุมัติชิ้นงานสำเร็จ พร้อมสำหรับการเผยแพร่"
+    App-->>Mgr: 12. แสดงผล "อนุมัติชิ้นงานสำเร็จ พร้อมสำหรับการเผยแพร่"
     
     opt เผยแพร่หรือตั้งเวลา (Publishing & Scheduling)
-        Mgr->>App: 14. กดปุ่ม "เผยแพร่ทันที" หรือกำหนดเวลา
-        App->>API: 15. POST /api/contents/:id/publish
-        API->>DB: 16. UPDATE Content SET status='PUBLISHED', publishedAt=NOW()
-        DB-->>API: 17. Updated successfully
-        API-->>App: 18. HTTP 200 OK
-        App-->>Mgr: 19. แสดงผล "เผยแพร่คอนเทนต์สู่สาธารณะเรียบร้อย"
+        Mgr->>App: 13. กดปุ่ม "เผยแพร่ทันที" หรือกำหนดเวลา
+        App->>API: 14. POST /api/contents/:id/publish
+        API->>DB: 15. UPDATE Content SET status='PUBLISHED', publishedAt=NOW()
+        DB-->>API: 16. Updated successfully
+        API-->>App: 17. HTTP 200 OK
+        App-->>Mgr: 18. แสดงผล "เผยแพร่คอนเทนต์สู่สาธารณะเรียบร้อย"
     end
 ```
 
 ---
 
-## 👥 ไดอะแกรมที่ 4: การเข้าถึงพื้นที่ทีมและการบันทึกกิจกรรมส่วนกลาง (Team Workspace Access & Event Dispatching)
+### ไดอะแกรมที่ 4: การเข้าถึงพื้นที่ทีมและการบันทึกกิจกรรมส่วนกลาง (Team Workspace Access & Event Dispatching)
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Mem as 🎨 Team Member (John)
-    participant App as 📱 Mobile App (TeamOverviewScreen)
-    participant Auth as 🛡️ Auth & TeamAccessGuard
-    participant API as 🖥️ Teams & Tasks Controller
-    participant DB as 🗄️ Database (MongoDB)
+    actor Mem as Member
+    participant App as Mobile App (TeamOverviewScreen)
+    participant Auth as Auth & TeamAccessGuard
+    participant API as Teams & Tasks Controller
+    participant DB as Database (MongoDB)
 
     %% 1. Loading Team Workspace
     rect rgb(238, 242, 255)
     Note over Mem, DB: ส่วนที่ 1: การโหลดข้อมูลภาพรวมทีมและการตรวจสอบสิทธิ์
-    Mem->>App: 1. แตะแท็บ "👥 ทีมของฉัน"
+    Mem->>App: 1. แตะแท็บ "ทีมของฉัน"
     App->>Auth: 2. GET /api/teams/:teamId/dashboard (Bearer JWT)
     Auth->>Auth: 3. verifyTeamAccess: ตรวจสอบ req.user.teamId == :teamId
     alt ละเมิดสิทธิ์ (ข้ามทีม)

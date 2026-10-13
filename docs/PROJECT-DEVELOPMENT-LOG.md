@@ -52,6 +52,7 @@
 | **8 ต.ค. 2026 (03:15 น.)** | [Phase 40: การล้างคอลเลกชันกฎหมาย (legalarticles) ออกจาก MongoDB อย่างถาวร และการกำจัดโค้ดตกค้าง](#phase-40-การล้างคอลเลกชันกฎหมาย-legalarticles-ออกจาก-mongodb-อย่างถาวร-และการกำจัดโค้ดตกค้าง-permanent-legal-collection-purge--controller-residual-cleanup) | สำเร็จ ✅ |
 | **13 ต.ค. 2026 (20:55 น.)** | [Phase 41: ปรับปรุง Use Case Diagram ให้ตรงกับโปรแกรมจริง (User / Member / Manager / Admin)](#phase-41-use-case-diagram-update) | สำเร็จ ✅ |
 | **13 ต.ค. 2026 (21:25 น.)** | [Phase 42: จัดทำ Activity Diagram (Swimlane Process Flow) ฉบับตรงตามโค้ดจริง (.drawio & .png)](#phase-42-activity-diagram-update) | สำเร็จ ✅ |
+| **13 ต.ค. 2026 (22:30 น.)** | [Phase 43: จัดทำชุดแผนภาพสถาปัตยกรรมระบบวิชาการครบสมบูรณ์ (Sequence, Class, ER, Workflow, Deployment) (.drawio & .png)](#phase-43-academic-diagrams-suite) | สำเร็จ ✅ |
 
 ---
 
@@ -1894,3 +1895,41 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - อัปเดต `docs/academic/03-Activity-Diagram.md` ให้เชื่อมโยงไฟล์ `activity-diagram.drawio` และภาพ `activity-diagram.png`
 4. **การปรับชุดสีสู่สไตล์ Academic Monochrome (ขาว-ดำ มาตรฐานวิชาการ):**
    - ปรับเส้นขอบเป็นสีดำล้วน (`#000000`), กล่องกิจกรรมและสัญลักษณ์ Decision Diamond เป็นพื้นหลังสีขาว (`#ffffff`) ปราศจากสีพาสเทล เพื่อให้ตรงตามโทนเอกสารวิชาการมาตรฐานเดิมของผู้ใช้ 100%
+
+---
+
+## <a id="phase-43-academic-diagrams-suite"></a>43. จัดทำชุดแผนภาพสถาปัตยกรรมระบบวิชาการครบสมบูรณ์ (Sequence, Class, ER, Workflow, Deployment) (.drawio & .png)
+> 🕒 **บันทึกเมื่อ:** 13 ตุลาคม 2026 (22:30 น.)
+
+### 43.1 ที่มาและวัตถุประสงค์
+ผู้ใช้ได้ตรวจสอบรายการเอกสารและแผนภาพวิชาการที่ต้องใช้ประกอบเล่มรายงานโครงงานปริญญานิพนธ์ โดยกำหนดข้อกำหนดสำคัญ 2 ประการ:
+1. **ความสอดคล้องระดับ 100% ระหว่าง Class Diagram และ ER Diagram:** เอนทิตี, แอตทริบิวต์, ชนิดข้อมูล, และตัวเชื่อมความสัมพันธ์ (Connectors/Multiplicity) ต้องเหมือนกันแบบหนึ่งต่อหนึ่ง
+2. **ห้ามดูเหมือน AI เจน (No AI-Generated Look/Tone):** ใช้โทนสี Academic Monochrome ขาว-ดำล้วน (White Fills, Black Strokes, Courier New / Tahoma Typography) เรียบง่าย คมชัด สมจริงตามแบบแผนงานวิศวกรรมซอฟต์แวร์วิชาการดั้งเดิม
+
+### 43.2 สิ่งที่จัดทำและส่งมอบครบถ้วน 100%
+
+#### 1. Domain Class Diagram:
+- **ไฟล์ส่งมอบ:** `docs/academic/class-diagram.drawio` และ `docs/academic/class-diagram.png`
+- **เอกสารประกอบ:** `docs/academic/04-Domain-Class-Diagram.md`
+- **สาระสำคัญ:** ออกแบบครอบคลุม 6 คลาสหลักที่ตรงกับ Mongoose Models จริง (`User`, `Team`, `Content`, `Task`, `Idea`, `TeamActivity`) พร้อมฟิลด์, ฟังก์ชัน (Methods), และ Multiplicity ไม่มีการนำคลาสจำลองที่ไม่ได้ใช้งานมาใส่
+
+#### 2. Entity-Relationship Diagram (ERD):
+- **ไฟล์ส่งมอบ:** `docs/academic/er-diagram.drawio` และ `docs/academic/er-diagram.png`
+- **เอกสารประกอบ:** `docs/academic/06-Entity-Relationship-Diagram.md`
+- **สาระสำคัญ:** ใช้สัญลักษณ์ Crow's Foot Notation โดยมี 6 เอนทิตีตรงกับ Class Diagram 100% (`TEAMS`, `USERS`, `IDEAS`, `TEAM_ACTIVITIES`, `TASKS`, `CONTENTS`) ระบุคีย์หลัก (PK) และคีย์นอก (FK) อย่างแม่นยำ พร้อมความสัมพันธ์ 1:N และ 1:1
+
+#### 3. Sequence Diagram (ลำดับขั้นการทำงาน):
+- **ไฟล์ส่งมอบ:** `docs/academic/sequence-diagram.drawio` และ `docs/academic/sequence-diagram.png`
+- **เอกสารประกอบ:** `docs/academic/05-Sequence-Diagrams.md`
+- **สาระสำคัญ:** แสดงลำดับข้อความผ่าน 6 ผู้ร่วมงาน (Member, Manager, Mobile App, Backend API, Workflow Service, Database) ครอบคลุม 5 ช่วงสำคัญ: การสร้าง Content & Tasks, การส่งผลงาน Deliverable, วงจรตรวจงานและสั่งแก้ไข (Revision Notes & Reply Notes), การอนุมัติ 1-Tap Approval, และการเผยแพร่ผลงาน (Publish Now)
+
+#### 4. Workflow State Diagram (วงจรสถานะการทำงาน):
+- **ไฟล์ส่งมอบ:** `docs/academic/workflow-diagram.drawio` และ `docs/academic/workflow-diagram.png`
+- **เอกสารประกอบ:** `docs/academic/10-Workflow-Diagram.md`
+- **สาระสำคัญ:** อ้างอิงจากโค้ดจริงใน `master/backend/src/services/workflow.service.js` แบ่งเป็น 2 ส่วน: Content Lifecycle (IDEA $\rightarrow$ PLANNING $\rightarrow$ IN_PROGRESS $\rightarrow$ REVIEW $\rightarrow$ REVISION/APPROVED $\rightarrow$ SCHEDULED/PUBLISHED) และ Task Execution (TODO $\rightarrow$ IN_PROGRESS $\rightarrow$ REVIEW $\rightarrow$ REVISION/DONE) พร้อมเส้นประแสดง State Coordination และเงื่อนไขสิทธิ์ Guard
+
+#### 5. Deployment Diagram (สถาปัตยกรรมการติดตั้งระบบ):
+- **ไฟล์ส่งมอบ:** `docs/academic/deployment-diagram.drawio` และ `docs/academic/deployment-diagram.png`
+- **เอกสารประกอบ:** `docs/academic/09-Deployment-Diagram.md`
+- **สาระสำคัญ:** แสดงโหนดกายภาพ 4 ชั้น: Client Tier (Xiaomi 13 Pro React Native App & Administrator PC Web), Application Server Tier (Node.js/Express :5000 & Socket.io), Database Tier (MongoDB :27017), และ External Cloud Tier พร้อมรายละเอียดโพรโทคอล ADB Reverse Port Mapping, TCP/IP, WebSocket, และ HTTPS REST APIs
+

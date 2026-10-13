@@ -461,6 +461,7 @@
       <li class="nav-item"><a href="#phase-40" class="nav-link"><span class="nav-tag">P40</span>Permanent Legal Purge</a></li>
       <li class="nav-item"><a href="#phase-41" class="nav-link"><span class="nav-tag">P41</span>Use Case Diagram Update</a></li>
       <li class="nav-item"><a href="#phase-42" class="nav-link"><span class="nav-tag">P42</span>Activity Diagram (Draw.io)</a></li>
+      <li class="nav-item"><a href="#phase-43" class="nav-link"><span class="nav-tag">P43</span>Academic Diagrams Suite</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -1647,6 +1648,43 @@
           </ul>
         </li>
         <li><strong>Academic Monochrome Theme:</strong> ปรับโทนสีสู่สไตล์ขาว-ดำล้วน (White Fills, Black Strokes & Text) เพื่อให้ตรงตามมาตรฐานภาพเอกสารวิชาการเดิม 100%</li>
+      </ul>
+    </section>
+
+    <!-- Phase 43 -->
+    <section class="section-card" id="phase-43">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 43: จัดทำชุดแผนภาพสถาปัตยกรรมระบบวิชาการครบสมบูรณ์ (Sequence, Class, ER, Workflow, Deployment) (.drawio & .png)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 13 ตุลาคม 2026 (22:30 น.)</span>
+        <span>•</span>
+        <span>📁 <code>docs/academic/</code> (Class, ER, Sequence, Workflow, Deployment)</span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>ความสอดคล้องตามมาตรฐานวิชาการ 100% (Strict Academic & Ground-Truth Alignment):</strong><br>
+        จัดทำแผนภาพโครงสร้างและกระบวนการทำงานวิชาการครบทุกมิติ โดยกำหนดให้ <strong>Class Diagram และ ER Diagram มีเอนทิตี คุณลักษณะ และตัวเชื่อมตรงกัน 100%</strong> พร้อมคุมโทนสีแบบ <strong>Academic Monochrome (ขาว-ดำ ลายเส้นคมชัด)</strong> ปราศจากสีลูกกวาดหรือสไตล์ AI เพื่อความสมจริงและถูกต้องตามมาตรฐานวิศวกรรมซอฟต์แวร์
+      </div>
+
+      <h3>สิ่งที่จัดทำและส่งมอบครบถ้วน:</h3>
+      <ul>
+        <li><strong>Domain Class Diagram (<code>docs/academic/class-diagram.*</code>):</strong>
+          ครอบคลุม 6 คลาสตาม Mongoose Model จริง (<code>User</code>, <code>Team</code>, <code>Content</code>, <code>Task</code>, <code>Idea</code>, <code>TeamActivity</code>) พร้อมแอตทริบิวต์ เมธอด และความสัมพันธ์ Multiplicity ครบถ้วน
+        </li>
+        <li><strong>Entity-Relationship Diagram (<code>docs/academic/er-diagram.*</code>):</strong>
+          มาตรฐาน Crow's Foot Notation มี 6 เอนทิตีตรงกับ Class Diagram 100% พร้อมระบุ PK, FK, และ Cardinality ของความสัมพันธ์
+        </li>
+        <li><strong>Sequence Diagram (<code>docs/academic/sequence-diagram.*</code>):</strong>
+          แผนภาพลำดับขั้นข้อความ 5 ช่วงการทำงานหลัก: สร้างงาน &rarr; ส่งมอบผลงาน &rarr; ลูปตรวจงานและสั่งแก้ไข (Revision Notes & Reply Notes) &rarr; อนุมัติ 1-Tap &rarr; เผยแพร่ผลงาน (Publish Now)
+        </li>
+        <li><strong>Workflow State Diagram (<code>docs/academic/workflow-diagram.*</code>):</strong>
+          แผนภาพ State Machine ตาม <code>workflow.service.js</code> แสดงวงจรชีวิต Content และ Tasks พร้อมเงื่อนไขสิทธิ์ (Guard Rules) และการซิงค์สถานะ
+        </li>
+        <li><strong>Deployment Diagram (<code>docs/academic/deployment-diagram.*</code>):</strong>
+          แผนภาพสถาปัตยกรรมกายภาพ 4 ชั้น: Client Tier (Xiaomi 13 Pro & Web Browser), Application Server Tier (Node.js/Express :5000), Database Tier (MongoDB :27017), และ External Cloud Services พร้อมเครือข่าย ADB Reverse, TCP/IP, WebSocket, และ HTTPS
+        </li>
       </ul>
     </section>
 

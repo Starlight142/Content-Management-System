@@ -1,254 +1,161 @@
-# 4. Domain Class Diagram — Content Production Management System
+# 4. Domain Class Diagram - ระบบบริหารกระบวนการผลิตสื่อ (Content Production Management System)
 
-เอกสารนี้ระบุแผนภาพคลาสเชิงโดเมน (Domain Class Diagram) ในมาตรฐาน UML 2.5 ครอบคลุม **11 โดเมนเอนทิตี (Domain Entities)** ที่สะท้อนการทำงานของระบบจัดการการผลิตสื่อขนาดใหญ่ พร้อมระบุสมาชิก (Attributes), ระดับการเข้าถึง (Visibility: `+` Public, `-` Private, `#` Protected), ชนิดข้อมูล (Data Types), ความสัมพันธ์ (Multiplicity), และฟังก์ชันการทำงาน (Methods/Operations)
-
----
-
-## 🏛️ Domain Class Diagram (Mermaid UML)
-
-```mermaid
-classDiagram
-    direction TB
-
-    %% 1. User & Access Control
-    class Role {
-        <<Entity>>
-        -id: String / Integer
-        -name: String
-        -description: String
-        -permissions: List~String~
-        +getPermissions(): List~String~
-    }
-
-    class User {
-        <<Entity>>
-        -id: String
-        -username: String
-        -email: String
-        -passwordHash: String
-        -firstName: String
-        -lastName: String
-        -roleId: String
-        -teamId: String
-        -workingStatus: WorkingStatusEnum
-        -isOnline: Boolean
-        -lastActiveAt: DateTime
-        -isActive: Boolean
-        -createdAt: DateTime
-        -updatedAt: DateTime
-        +verifyPassword(plainText: String): Boolean
-        +hasPermission(permission: String): Boolean
-        +getFullName(): String
-    }
-
-    class Team {
-        <<Entity>>
-        -id: String
-        -name: String
-        -description: String
-        -createdAt: DateTime
-        +addMember(user: User, roleInTeam: String): Void
-        +removeMember(userId: String): Void
-        +calculateTeamProgress(): Integer
-    }
-
-    class TeamMember {
-        <<Association>>
-        -teamId: String
-        -userId: String
-        -roleInTeam: String
-        -joinedAt: DateTime
-    }
-
-    %% 2. Ideation & Content Core
-    class Idea {
-        <<Entity>>
-        -id: String
-        -title: String
-        -description: String
-        -platform: PlatformEnum
-        -category: String
-        -proposedById: String
-        -status: IdeaStatusEnum
-        -votesCount: Integer
-        -createdAt: DateTime
-        +approve(managerId: String): Void
-        +reject(managerId: String, reason: String): Void
-        +upvote(userId: String): Void
-    }
-
-    class Content {
-        <<Entity>>
-        -id: String
-        -teamId: String
-        -title: String
-        -description: String
-        -category: String
-        -platform: PlatformEnum
-        -status: ContentStatusEnum
-        -progress: Integer
-        -createdById: String
-        -ideaId: String
-        -dueDate: DateTime
-        -publishedAt: DateTime
-        -createdAt: DateTime
-        -updatedAt: DateTime
-        +transitionTo(nextStatus: ContentStatusEnum): Boolean
-        +addVersion(fileUrl: String, notes: String): ContentVersion
-        +submitReview(reviewerId: String, decision: String, notes: String): Review
-    }
-
-    class ContentVersion {
-        <<Entity>>
-        -id: String
-        -contentId: String
-        -versionNumber: Integer
-        -fileUrl: String
-        -changelog: String
-        -submittedById: String
-        -submittedAt: DateTime
-        +getFileDetails(): String
-    }
-
-    class ContentFile {
-        <<Entity>>
-        -id: String
-        -contentId: String
-        -fileUrl: String
-        -fileType: FileTypeEnum
-        -fileSizeBytes: Integer
-        -uploadedById: String
-        -uploadedAt: DateTime
-    }
-
-    %% 3. Task Management
-    class Task {
-        <<Entity>>
-        -id: String
-        -teamId: String
-        -contentId: String
-        -title: String
-        -taskType: TaskTypeEnum
-        -assignedToId: String
-        -status: TaskStatusEnum
-        -progress: Integer
-        -dueDate: DateTime
-        -submissionUrl: String
-        -notes: String
-        -revisionNotes: String
-        -replyNotes: String
-        -createdAt: DateTime
-        -updatedAt: DateTime
-        +startTask(): Void
-        +submitDeliverable(url: String, progress: Integer, replyNotes: String): Void
-        +approveTask(): Void
-    }
-
-    %% 4. Quality & Review
-    class Review {
-        <<Entity>>
-        -id: String
-        -contentId: String
-        -reviewerId: String
-        -decision: ReviewDecisionEnum
-        -revisionNotes: String
-        -reviewedAt: DateTime
-        +isApproved(): Boolean
-    }
-
-    %% 5. Audit & Governance
-    class ActivityLog {
-        <<Entity>>
-        -id: String
-        -entityName: String
-        -entityId: String
-        -action: String
-        -performedById: String
-        -details: Map~String, Any~
-        -ipAddress: String
-        -createdAt: DateTime
-        +formatLog(): String
-    }
-
-    class TeamActivity {
-        <<Entity>>
-        -id: String
-        -teamId: String
-        -actorId: String
-        -actionType: String
-        -title: String
-        -details: String
-        -entityId: String
-        -entityModel: String
-        -createdAt: DateTime
-        +logEvent(): Void
-    }
-
-    %% Enums
-    class ContentStatusEnum {
-        <<Enumeration>>
-        PLANNING
-        PRODUCTION
-        REVIEW
-        REVISION
-        APPROVED
-        SCHEDULED
-        PUBLISHED
-    }
-
-    class TaskStatusEnum {
-        <<Enumeration>>
-        TODO
-        IN_PROGRESS
-        REVIEW
-        REVISION
-        DONE
-    }
-
-    class PlatformEnum {
-        <<Enumeration>>
-        YouTube
-        TikTok
-        Instagram
-        Facebook
-    }
-
-    %% Relationships and Multiplicities
-    Role "1" -- "0..*" User : defines access of >
-    User "1" -- "0..*" TeamMember : participates as >
-    Team "1" -- "0..*" TeamMember : consists of >
-    Team "1" -- "0..*" Content : owns pipeline >
-    Team "1" -- "0..*" Task : groups execution >
-    Team "1" -- "0..*" TeamActivity : records live events >
-    
-    User "1" -- "0..*" Idea : proposes >
-    Idea "0..1" -- "0..1" Content : converted into >
-    User "1" -- "0..*" Content : creates >
-    
-    Content "1" *-- "0..*" ContentVersion : maintains history >
-    Content "1" *-- "0..*" ContentFile : contains assets >
-    Content "1" *-- "1..*" Task : divided into >
-    
-    User "1" -- "0..*" Task : assigned to <
-    
-    Content "1" *-- "0..*" Review : receives feedback >
-    User "1" -- "0..*" Review : reviews <
-    
-    User "1" -- "0..*" ActivityLog : triggers >
-    User "1" -- "0..*" TeamActivity : initiates >
-```
+เอกสารนี้ระบุโครงสร้างเชิงโครงสร้าง (Structural Modeling) ด้วยแผนภาพ Domain Class Diagram ตามมาตรฐาน UML 2.5 สำหรับสถาปัตยกรรมระบบบริหารการผลิตคอนเทนต์ โดยอ้างอิงจากโครงสร้างข้อมูลจริงของระบบ (6 โดเมนโมเดลหลักใน MongoDB) ซึ่งมีความสอดคล้องแบบหนึ่งต่อหนึ่งกับ Entity-Relationship Diagram (ERD) ทั้งในด้านเอนทิตี คุณลักษณะ (Attributes) และความสัมพันธ์ (Multiplicity)
 
 ---
 
-## 🔍 คำอธิบายความสัมพันธ์เชิงสถาปัตยกรรม (Architecture Associations)
+## แผนภาพ Domain Class Diagram
 
-1. **`Content` *-- `ContentVersion` (Composition 1 to 0..\*)**:
-   - ความสัมพันธ์แบบ Composition หมายความว่าประวัติ Version ของ Content จะผูกพันกับตัว Content หาก Content ถูกลบ ประวัติเวอร์ชันจะสิ้นสภาพไปด้วย
-   - ใช้สำหรับเก็บประวัติไฟล์งานแต่ละรอบที่ส่งตรวจ (เช่น v1, v2 หลังสั่งแก้)
+![Domain Class Diagram](./class-diagram.png)
 
-2. **`Task` Revision & Reply Flow (Tracking Invariant)**:
-   - แต่ละ Task รองรับวงจรส่งกลับแก้ไขผ่านฟิลด์ `revisionNotes` (คำแนะนำจาก Manager) และ `replyNotes` (ข้อความตอบกลับชี้แจงการแก้ไขจาก Member)
+ไฟล์ต้นฉบับสำหรับการแก้ไข: [`class-diagram.drawio`](./class-diagram.drawio)
 
-3. **`Content` *-- `1..* Task` (Composition 1 to 1..\*)**:
-   - Content ชิ้นหนึ่งต้องมีงานย่อยอย่างน้อย 1 งาน (เช่น การตัดต่อ Editing) จึงจะสามารถขยับสถานะจาก `PLANNING` ไปสู่ `PRODUCTION` ได้
+---
 
+## รายละเอียดคลาสในระบบ (System Classes)
+
+### 1. คลาส Team (ทีมงานฝ่ายผลิต)
+ทำหน้าที่เก็บข้อมูลของทีมงานผลิตสื่อ และการกำหนดหัวหน้าทีม
+- **Attributes:**
+  - `-_id: ObjectId` (รหัสทีม)
+  - `-name: String` (ชื่อทีมงาน เช่น Content Team A)
+  - `-code: String` (รหัสอ้างอิงทีม เช่น TEAM-A)
+  - `-joinCode: String` (รหัสเข้าร่วมทีมสำหรับสมาชิก)
+  - `-leader: ObjectId` (รหัสผู้ใช้ที่เป็นหัวหน้าทีม / Manager)
+  - `-status: String` (สถานะของทีม: active, suspended)
+  - `-description: String` (คำอธิบายรายละเอียดทีม)
+  - `-createdAt: Date` (วันเวลาที่สร้าง)
+  - `-updatedAt: Date` (วันเวลาที่แก้ไขล่าสุด)
+- **Methods:**
+  - `+addMember(userId: ObjectId, role: String): Promise<User>`
+  - `+regenerateJoinCode(): String`
+  - `+getMembers(): Promise<User[]>`
+
+---
+
+### 2. คลาส User (ผู้ใช้งานระบบ)
+ทำหน้าที่เก็บข้อมูลบัญชีผู้ใช้ สิทธิการเข้าถึง และสถานะการปฏิบัติงาน
+- **Attributes:**
+  - `-_id: ObjectId` (รหัสผู้ใช้)
+  - `-username: String` (ชื่อบัญชีผู้ใช้)
+  - `-email: String` (อีเมลเข้าใช้งาน)
+  - `-passwordHash: String` (รหัสผ่านที่เข้ารหัสด้วย bcrypt)
+  - `-firstName: String` (ชื่อจริง)
+  - `-lastName: String` (นามสกุล)
+  - `-position: PositionEnum` (ตำแหน่งวิชาชีพ: GRAPHIC, VIDEO_EDITOR, CONTENT_WRITER, SOUND_ENGINEER, GENERAL)
+  - `-role: RoleEnum` (บทบาทสิทธิ์: ADMIN, MANAGER, MEMBER)
+  - `-status: UserStatusEnum` (สถานะบัญชี: active, pending, inactive)
+  - `-teamId: ObjectId` (รหัสทีมต้นสังกัดที่ผู้ใช้สังกัดอยู่)
+  - `-workingStatus: WorkStatusEnum` (สถานะการทำงานปัจจุบัน: AVAILABLE, WORKING, REVIEWING, OFFLINE)
+  - `-isOnline: Boolean` (สถานะการเชื่อมต่อเครือข่าย)
+  - `-lastActiveAt: Date` (วันเวลาที่มีการเคลื่อนไหวล่าสุด)
+  - `-createdAt: Date` (วันเวลาที่ลงทะเบียน)
+  - `-updatedAt: Date` (วันเวลาที่แก้ไขข้อมูล)
+- **Methods:**
+  - `+verifyPassword(plainText: String): Boolean`
+  - `+updateProfile(data: Object): Promise<User>`
+  - `+updatePosition(position: String): Promise<User>`
+  - `+isManager(): Boolean`
+
+---
+
+### 3. คลาส Idea (คลังแนวคิดคอนเทนต์)
+ทำหน้าที่บันทึกไอเดียคอนเทนต์ที่สมาชิกในทีมร่วมกันเสนอ ก่อนนำไปพัฒนาเป็นชิ้นงานจริง
+- **Attributes:**
+  - `-_id: ObjectId` (รหัสไอเดีย)
+  - `-title: String` (หัวข้อแนวคิด)
+  - `-description: String` (รายละเอียดของแนวคิด)
+  - `-category: String` (หมวดหมู่คอนเทนต์)
+  - `-proposedBy: ObjectId` (รหัสสมาชิกผู้เสนอไอเดีย)
+  - `-status: IdeaStatusEnum` (สถานะไอเดีย: PROPOSED, APPROVED, REJECTED, CONVERTED)
+  - `-createdAt: Date` (วันเวลาที่เสนอไอเดีย)
+  - `-updatedAt: Date` (วันเวลาที่แก้ไข)
+- **Methods:**
+  - `+createIdea(data: Object): Promise<Idea>`
+  - `+getIdeasByTeam(teamId: ObjectId): Promise<Idea[]>`
+
+---
+
+### 4. คลาส Content (ชิ้นงานคอนเทนต์หลัก)
+ทำหน้าที่เป็นศูนย์กลางของไปป์ไลน์การผลิตสื่อ ควบคุมสถานะความคืบหน้า ไฟล์งาน และประวัติการตรวจรับงาน
+- **Attributes:**
+  - `-_id: ObjectId` (รหัสชิ้นงาน)
+  - `-title: String` (ชื่อชิ้นงานคอนเทนต์)
+  - `-description: String` (บรีฟและรายละเอียดเนื้องาน)
+  - `-platform: PlatformEnum` (แพลตฟอร์มปลายทาง: YOUTUBE, TIKTOK, FACEBOOK, INSTAGRAM, TWITTER)
+  - `-status: ContentStatusEnum` (สถานะไปป์ไลน์: IDEA, PLANNING, IN_PROGRESS, REVIEW, REVISION, APPROVED, PUBLISHED)
+  - `-category: String` (หมวดหมู่ของชิ้นงาน)
+  - `-createdBy: ObjectId` (รหัสผู้สร้างชิ้นงาน / Manager)
+  - `-teamId: ObjectId` (รหัสทีมเจ้าของชิ้นงาน)
+  - `-progress: Number` (เปอร์เซ็นต์ความคืบหน้ารวม 0-100%)
+  - `-dueDate: Date` (กำหนดส่งมอบงาน)
+  - `-publishedAt: Date` (วันเวลาที่เผยแพร่ผลงานจริง)
+  - `-ideaId: ObjectId` (รหัสไอเดียต้นทาง กรณีต่อยอดมาจาก Idea)
+  - `-files: FileSchema[]` (รายการไฟล์แนบและ Asset)
+  - `-versions: VersionSchema[]` (ประวัติเวอร์ชันของชิ้นงาน)
+  - `-reviewHistory: ReviewSchema[]` (ประวัติการตรวจรับและสั่งแก้ไขงาน)
+  - `-createdAt: Date` (วันเวลาที่สร้างชิ้นงาน)
+  - `-updatedAt: Date` (วันเวลาที่อัปเดตสถานะ)
+- **Methods:**
+  - `+createContent(data: Object): Promise<Content>`
+  - `+submitReview(decision: String, notes: String): Promise<Content>`
+  - `+publishNow(): Promise<Content>`
+  - `+addVersion(fileUrl: String, changeLog: String): Promise<Content>`
+
+---
+
+### 5. คลาส Task (ภารกิจย่อยในกระบวนการผลิต)
+ทำหน้าที่แบ่งย่อยขั้นตอนการผลิตจาก Content ออกเป็นงานเฉพาะทางและมอบหมายให้สมาชิกรับผิดชอบ
+- **Attributes:**
+  - `-_id: ObjectId` (รหัสงานย่อย)
+  - `-title: String` (ชื่องานย่อย เช่น ตัดต่อคลิปวิดีโอ, ออกแบบ Thumbnail)
+  - `-contentId: ObjectId` (รหัสชิ้นงาน Content หลักที่งานนี้สังกัดอยู่)
+  - `-taskType: TaskTypeEnum` (ประเภทงาน: VIDEO_EDITING, GRAPHIC_DESIGN, SCRIPTWRITING, AUDIO_MIXING, GENERAL)
+  - `-assignedTo: ObjectId` (รหัสสมาชิกผู้รับผิดชอบงาน)
+  - `-teamId: ObjectId` (รหัสทีมต้นสังกัด)
+  - `-progress: Number` (ความคืบหน้ารายงาน 0-100%)
+  - `-status: TaskStatusEnum` (สถานะงาน: TODO, IN_PROGRESS, REVIEW, REVISION, DONE)
+  - `-dueDate: Date` (กำหนดส่งมอบงานย่อย)
+  - `-submissionUrl: String` (ลิงก์ส่งมอบผลงาน เช่น Google Drive หรือ Cloud URL)
+  - `-notes: String` (บันทึกรายละเอียดเพิ่มเติมจากผู้มอบหมาย)
+  - `-revisionNotes: String` (ข้อความสั่งแก้ไขงานจาก Manager)
+  - `-replyNotes: String` (ข้อความชี้แจงรอบแก้ไขจากสมาชิกผู้รับผิดชอบ)
+  - `-createdAt: Date` (วันเวลาที่สร้างภารกิจ)
+  - `-updatedAt: Date` (วันเวลาที่อัปเดต)
+- **Methods:**
+  - `+updateStatus(status: String, progress: Number): Promise<Task>`
+  - `+submitDeliverable(url: String, notes: String): Promise<Task>`
+  - `+assignToUser(userId: ObjectId): Promise<Task>`
+
+---
+
+### 6. คลาส TeamActivity (บันทึกกิจกรรมและความเคลื่อนไหวของทีม)
+ทำหน้าที่บันทึกเหตุการณ์การเปลี่ยนแปลงสถานะงาน (Event Logging) เพื่อแสดงผลใน Activity Feed แบบเรียลไทม์
+- **Attributes:**
+  - `-_id: ObjectId` (รหัสบันทึกกิจกรรม)
+  - `-teamId: ObjectId` (รหัสทีมที่เกิดกิจกรรม)
+  - `-actor: ObjectId` (รหัสผู้ใช้ผู้กระทำกิจกรรม)
+  - `-actionType: ActionTypeEnum` (ประเภทกิจกรรม เช่น CONTENT_CREATED, TASK_SUBMITTED, CONTENT_REVISION, CONTENT_APPROVED, CONTENT_PUBLISHED)
+  - `-title: String` (หัวข้อสรุปกิจกรรม)
+  - `-details: String` (รายละเอียดเพิ่มเติมของกิจกรรม)
+  - `-entityId: ObjectId` (รหัสเอกสารเป้าหมาย เช่น Content ID หรือ Task ID)
+  - `-entityModel: String` (ชื่อโมเดลเป้าหมาย: Content, Task, Idea)
+  - `-createdAt: Date` (วันเวลาที่เกิดเหตุการณ์)
+  - `-updatedAt: Date` (วันเวลาที่บันทึกข้อมูล)
+- **Methods:**
+  - `+record(actionData: Object): Promise<TeamActivity>`
+  - `+getFeedByTeam(teamId: ObjectId): Promise<TeamActivity[]>`
+
+---
+
+## ความสัมพันธ์ระหว่างคลาส (Class Relationships & Multiplicity)
+
+1. **Team (1) — has members — User (0..\*)**: ทีมหนึ่งทีมมีสมาชิกสังกัดได้หลายคน โดยผู้ใช้แต่ละคนสังกัดได้หนึ่งทีมผ่านแอตทริบิวต์ `User.teamId`
+2. **Team (1) — records — TeamActivity (0..\*)**: ทีมหนึ่งทีมมีประวัติกิจกรรมบันทึกไว้ได้หลายรายการผ่าน `TeamActivity.teamId`
+3. **Team (1) — owns — Content (0..\*)**: ทีมหนึ่งทีมเป็นเจ้าของชิ้นงานคอนเทนต์ได้หลายชิ้นงานผ่าน `Content.teamId`
+4. **User (1) — assigned to — Task (0..\*)**: ผู้ใช้หนึ่งคนสามารถได้รับมอบหมายงานย่อยได้หลายงานผ่าน `Task.assignedTo`
+5. **Content (1) — divided into — Task (0..\*)**: ชิ้นงานคอนเทนต์หนึ่งชิ้นถูกแบ่งขั้นตอนออกเป็นงานย่อยได้หลายงานผ่าน `Task.contentId`
+6. **User (1) — proposes — Idea (0..\*)**: ผู้ใช้หนึ่งคนสามารถนำเสนอแนวคิดคอนเทนต์ได้หลายแนวคิดผ่าน `Idea.proposedBy`
+7. **Idea (1) — originates — Content (0..1)**: แนวคิดหนึ่งแนวคิดสามารถนำไปต่อยอดสร้างเป็นคอนเทนต์ได้สูงสุดหนึ่งชิ้นงานผ่าน `Content.ideaId`
+8. **User (1) — initiates — TeamActivity (0..\*)**: ผู้ใช้หนึ่งคนเป็นผู้กระทำกิจกรรมได้หลายครั้งผ่าน `TeamActivity.actor`
+9. **User (1) — creates — Content (0..\*)**: ผู้ใช้ตำแหน่ง Manager หนึ่งคนสามารถสร้างชิ้นงานคอนเทนต์ได้หลายชิ้นงานผ่าน `Content.createdBy`
