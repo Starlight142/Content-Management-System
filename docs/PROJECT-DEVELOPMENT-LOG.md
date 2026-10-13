@@ -51,6 +51,7 @@
 | **8 ต.ค. 2026 (03:00 น.)** | [Phase 39: การปรับสิทธิ์การกำหนดตำแหน่งงาน (Position) ให้เป็นอำนาจของ Manager และ Admin เท่านั้น](#phase-39-การปรับสิทธิ์การกำหนดตำแหน่งงาน-position-ให้เป็นอำนาจของ-manager-และ-admin-เท่านั้น-manager--admin-exclusive-position-assignment) | สำเร็จ ✅ |
 | **8 ต.ค. 2026 (03:15 น.)** | [Phase 40: การล้างคอลเลกชันกฎหมาย (legalarticles) ออกจาก MongoDB อย่างถาวร และการกำจัดโค้ดตกค้าง](#phase-40-การล้างคอลเลกชันกฎหมาย-legalarticles-ออกจาก-mongodb-อย่างถาวร-และการกำจัดโค้ดตกค้าง-permanent-legal-collection-purge--controller-residual-cleanup) | สำเร็จ ✅ |
 | **13 ต.ค. 2026 (20:55 น.)** | [Phase 41: ปรับปรุง Use Case Diagram ให้ตรงกับโปรแกรมจริง (User / Member / Manager / Admin)](#phase-41-use-case-diagram-update) | สำเร็จ ✅ |
+| **13 ต.ค. 2026 (21:25 น.)** | [Phase 42: จัดทำ Activity Diagram (Swimlane Process Flow) ฉบับตรงตามโค้ดจริง (.drawio & .png)](#phase-42-activity-diagram-update) | สำเร็จ ✅ |
 
 ---
 
@@ -1871,3 +1872,23 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 3. ตั้งเวลาเผยแพร่ (สถานะ `SCHEDULED` ไม่มีหน้าจอและไม่มีฟิลด์วันที่)
 4. หน้ารายการแจ้งเตือนในแอปมือถือ
 5. บันทึก Settings ของ Admin ลงฐานข้อมูล (ปัจจุบันใช้ `localStorage`)
+
+---
+
+## <a id="phase-42-activity-diagram-update"></a>42. จัดทำ Activity Diagram (Swimlane Process Flow) ฉบับตรงตามโค้ดจริง (.drawio & .png)
+> 🕒 **บันทึกเมื่อ:** 13 ตุลาคม 2026 (21:25 น.)
+
+### 42.1 ที่มาและการวิเคราะห์
+จากภาพ Activity Diagram เดิมที่ผู้ใช้ส่งมา ซึ่งแสดงแผนภาพกิจกรรมแยกตาม Use Case ย่อย โดยใช้เลน "ผู้ใช้" เพียงเลนเดียว พบว่าขัดแย้งกับสถาปัตยกรรม Team-Based Workspace และ Role-Based Access Control (RBAC) ของระบบจริง เนื่องจากสิทธิ์การผลิตและการตรวจงานถูกแยกขาดระหว่าง Member และ Manager จึงได้จัดทำ Master Swimlane Activity Diagram ครบวงจรตั้งแต่ต้นน้ำถึงปลายน้ำ
+
+### 42.2 สิ่งที่จัดทำและส่งมอบ
+1. **ไฟล์ไดอะแกรมและภาพประกอบ:**
+   - `docs/academic/activity-diagram.drawio`: ไฟล์ XML กราฟิกมาตรฐาน รองรับการเปิดแก้ไขและลากวางใน draw.io / diagrams.net
+   - `docs/academic/activity-diagram.png`: ภาพเรนเดอร์ความละเอียดสูง 1440x1960px สเกลคมชัด 100% สำหรับใส่เล่มรายงาน
+2. **โครงสร้าง 4 Swimlanes:**
+   - **Member:** เข้าสู่ระบบด้วยรหัสทีม $\rightarrow$ เสนอไอเดีย $\rightarrow$ รับงาน My Tasks $\rightarrow$ ผลิตงานและอัปโหลดขึ้น Cloud $\rightarrow$ ส่งตรวจด้วย Submission URL $\rightarrow$ รับการแจ้งเตือนและส่งงานรอบแก้ไขพร้อม Reply Notes
+   - **Manager:** ตรวจดู Idea Board $\rightarrow$ สร้าง Content Pipeline $\rightarrow$ มอบหมาย Tasks ให้ลูกทีมตาม Position $\rightarrow$ ตรวจสอบงาน $\rightarrow$ Decision Node (ไม่ผ่าน: ส่งกลับแก้พร้อม Revision Notes / ผ่าน: อนุมัติชิ้นงาน 1-Tap) $\rightarrow$ เผยแพร่ผลงาน (Publish Now) $\rightarrow$ ติดตาม Team Dashboard
+   - **System:** ตรวจสอบ JWT Auth $\rightarrow$ บันทึกข้อมูลและกระจาย WebSocket Event แบบ Real-time $\rightarrow$ State Machine Transition $\rightarrow$ ปิด Tasks เป็น DONE (100%) อัตโนมัติเมื่อชิ้นงานผ่านอนุมัติ
+   - **Admin:** ตรวจสอบ System Health $\rightarrow$ บริหารจัดการผู้ใช้และทีม (Role/Position) $\rightarrow$ ตรวจสอบและจัดการ Audit Logs
+3. **การอัปเดตเอกสารวิชาการ:**
+   - อัปเดต `docs/academic/03-Activity-Diagram.md` ให้เชื่อมโยงไฟล์ `activity-diagram.drawio` และภาพ `activity-diagram.png`

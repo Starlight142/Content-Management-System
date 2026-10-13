@@ -460,6 +460,7 @@
       <li class="nav-item"><a href="#phase-39" class="nav-link"><span class="nav-tag">P39</span>Position Assignment RBAC</a></li>
       <li class="nav-item"><a href="#phase-40" class="nav-link"><span class="nav-tag">P40</span>Permanent Legal Purge</a></li>
       <li class="nav-item"><a href="#phase-41" class="nav-link"><span class="nav-tag">P41</span>Use Case Diagram Update</a></li>
+      <li class="nav-item"><a href="#phase-42" class="nav-link"><span class="nav-tag">P42</span>Activity Diagram (Draw.io)</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -1613,6 +1614,38 @@
         <li>ตั้งเวลาเผยแพร่ (สถานะ <code>SCHEDULED</code> ไม่มีหน้าจอและไม่มีฟิลด์วันที่)</li>
         <li>หน้ารายการแจ้งเตือนในแอปมือถือ</li>
         <li>บันทึก Settings ของ Admin ลงฐานข้อมูล (ปัจจุบันใช้ <code>localStorage</code>)</li>
+      </ul>
+    </section>
+
+    <!-- Phase 42 -->
+    <section class="section-card" id="phase-42">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 42: จัดทำ Activity Diagram (Swimlane Process Flow) ฉบับตรงตามโค้ดจริง (.drawio & .png)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 13 ตุลาคม 2026 (21:20 - 21:25 น.)</span>
+        <span>•</span>
+        <span>📁 <code>docs/academic/activity-diagram.drawio</code> & <code>docs/academic/activity-diagram.png</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>การออกแบบตามสถาปัตยกรรมจริง (Architecture & RBAC Alignment):</strong><br>
+        จัดทำแผนภาพกิจกรรม (Activity Diagram) แบบ 4 Swimlanes ครบวงจรตั้งแต่การคิดไอเดียจนถึงเผยแพร่ผลงาน โดยแยกเลนชัดเจนตามบทบาท Member, Manager, System, และ Admin พร้อม Decision Nodes ตรวจสอบงาน, ลูปส่งงานแก้ไข (Revision Loop), และเส้นทาง WebSocket Real-time Sync
+      </div>
+
+      <h3>สาระสำคัญและการส่งมอบ:</h3>
+      <ul>
+        <li><strong>Editable draw.io File:</strong> บันทึกไฟล์ <code>docs/academic/activity-diagram.drawio</code> สามารถเปิดและแก้ไขผ่านเว็บ app.diagrams.net หรือส่วนขยายใน VS Code ได้ทันที</li>
+        <li><strong>High-Resolution PNG:</strong> เรนเดอร์ไฟล์ภาพ <code>docs/academic/activity-diagram.png</code> (1440x1960px) สำหรับใส่ในเล่มรายงานโครงงานวิชาการ</li>
+        <li><strong>4 Swimlanes Breakdown:</strong>
+          <ul>
+            <li><strong>Member:</strong> เข้าสู่ระบบ &rarr; เสนอไอเดีย &rarr; รับงาน &rarr; ส่งผลงานด้วย Submission URL &rarr; ตอบกลับคำชี้แจง Reply Notes และส่งงานรอบแก้ไข</li>
+            <li><strong>Manager:</strong> ดูไอเดีย &rarr; สร้าง Content &rarr; แตกงานย่อย Tasks ตาม Position &rarr; ตรวจงาน &rarr; สั่งแก้ไข (Revision Notes) หรืออนุมัติ (1-Tap Approval) &rarr; เผยแพร่ทันที (Publish Now)</li>
+            <li><strong>System:</strong> ตรวจสิทธิ์ JWT &rarr; จัดการ State Transitions &rarr; Broadcast WebSocket Events &rarr; ปิด Tasks เป็น DONE (100%) อัตโนมัติเมื่ออนุมัติ</li>
+            <li><strong>Admin:</strong> ตรวจสอบ System Health &rarr; จัดการผู้ใช้/ทีม (Role/Position) &rarr; มอนิเตอร์และล้าง Audit Logs</li>
+          </ul>
+        </li>
       </ul>
     </section>
 
