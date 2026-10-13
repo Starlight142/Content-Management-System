@@ -459,6 +459,7 @@
       <li class="nav-item"><a href="#phase-38" class="nav-link"><span class="nav-tag">P38</span>Team Workspace & RBAC</a></li>
       <li class="nav-item"><a href="#phase-39" class="nav-link"><span class="nav-tag">P39</span>Position Assignment RBAC</a></li>
       <li class="nav-item"><a href="#phase-40" class="nav-link"><span class="nav-tag">P40</span>Permanent Legal Purge</a></li>
+      <li class="nav-item"><a href="#phase-41" class="nav-link"><span class="nav-tag">P41</span>Use Case Diagram Update</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -1576,6 +1577,42 @@
         <li><strong>Automatic Drop on Seed:</strong> เพิ่มคำสั่งตรวจสอบและลบคอลเลกชัน <code>legalarticles</code> ใน <code>seed.js</code> โดยอัตโนมัติ เพื่อป้องกันไม่ให้คอลเลกชันนี้กลับมาปรากฏขึ้นอีกในการ Seed ครั้งต่อไป</li>
         <li><strong>Residual Code Cleanup:</strong> นำบล็อกลูป <code>content.legalChecklist</code> ใน <code>contents.controller.js</code> (ฟังก์ชัน <code>submitReview</code>) ออกโดยสมบูรณ์ และยืนยันว่าเอกสาร Content ทั้งหมดไม่มีฟิลด์ดังกล่าว</li>
         <li><strong>Compass Cache Notice:</strong> MongoDB Compass ทำงานโดยการแคชรายชื่อคอลเลกชันไว้ แนะนำให้คลิกปุ่ม <strong>Refresh (<code>⟳</code>)</strong> บน MongoDB Compass เพื่ออัปเดตมุมมองล่าสุด</li>
+      </ul>
+    </section>
+
+    <!-- Phase 41 -->
+    <section class="section-card" id="phase-41">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 41: ปรับปรุง Use Case Diagram ให้ตรงกับโปรแกรมจริง (User / Member / Manager / Admin)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 13 ตุลาคม 2026 (20:45 - 20:55 น.)</span>
+        <span>•</span>
+        <span>📁 <code>docs/academic/use-case-diagram.drawio</code> & <code>docs/academic/use-case-diagram.png</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>ที่มา:</strong><br>
+        ไดอะแกรมฉบับรายงานมี Actor ผู้ใช้เพียงตัวเดียว แต่โปรแกรมแบ่งเป็น MEMBER และ MANAGER ที่มีสิทธิ์ต่างกัน และบาง Use Case ยังทำได้ไม่ครบ จึงปรับไดอะแกรมให้ตรงกับ Backend Route, Admin Web และ Mobile App
+      </div>
+
+      <h3>สิ่งที่เปลี่ยน:</h3>
+      <ul>
+        <li>แยก Actor เป็น ผู้ใช้ (User) โดยมี สมาชิก (Member) และ หัวหน้าทีม (Manager) สืบทอดแบบ Generalization</li>
+        <li>ยกเลิก extend ระหว่าง ลงทะเบียน กับ เข้าสู่ระบบ</li>
+        <li>เพิ่ม: เข้าร่วมทีมด้วยรหัสทีม, ดู Dashboard ทีม, จัดการ Content และ Task ของทุกทีม (Admin)</li>
+        <li>เปลี่ยนชื่อให้ตรงกับที่ทำได้จริง: เสนอและดูรายการ Idea, เผยแพร่ Content, รับการอัปเดตงานแบบ Real-time</li>
+        <li>ตรวจสอบ Content มี «extend» อนุมัติ Content และ ส่งกลับแก้ไข</li>
+      </ul>
+
+      <h3>ฟีเจอร์ที่โปรแกรมยังไม่ครบ (ไม่ได้แก้ในรอบนี้):</h3>
+      <ul>
+        <li>แก้ไข ลบ อนุมัติ และปฏิเสธ Idea</li>
+        <li>ลบสมาชิกออกจากทีม</li>
+        <li>ตั้งเวลาเผยแพร่ (สถานะ <code>SCHEDULED</code> ไม่มีหน้าจอและไม่มีฟิลด์วันที่)</li>
+        <li>หน้ารายการแจ้งเตือนในแอปมือถือ</li>
+        <li>บันทึก Settings ของ Admin ลงฐานข้อมูล (ปัจจุบันใช้ <code>localStorage</code>)</li>
       </ul>
     </section>
 

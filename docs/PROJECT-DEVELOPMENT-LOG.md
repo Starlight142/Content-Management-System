@@ -50,6 +50,7 @@
 | **8 ต.ค. 2026 (02:45 น.)** | [Phase 38: การยกระดับสถาปัตยกรรมสู่ Team-Based Workspace, การแยก Role/Position/Team, การรักษาความปลอดภัย RBAC, รหัสเข้าร่วมทีม Join Code และการล้างระบบกฎหมาย](#phase-38-การยกระดับสถาปัตยกรรมสู่-team-based-workspace-การแยก-rolepositionteam-การรักษาความปลอดภัย-rbac-รหัสเข้าร่วมทีม-join-code-และการล้างระบบกฎหมาย-corporate-team-based-workspace-architecture--full-rbac-enforcement) | สำเร็จ ✅ |
 | **8 ต.ค. 2026 (03:00 น.)** | [Phase 39: การปรับสิทธิ์การกำหนดตำแหน่งงาน (Position) ให้เป็นอำนาจของ Manager และ Admin เท่านั้น](#phase-39-การปรับสิทธิ์การกำหนดตำแหน่งงาน-position-ให้เป็นอำนาจของ-manager-และ-admin-เท่านั้น-manager--admin-exclusive-position-assignment) | สำเร็จ ✅ |
 | **8 ต.ค. 2026 (03:15 น.)** | [Phase 40: การล้างคอลเลกชันกฎหมาย (legalarticles) ออกจาก MongoDB อย่างถาวร และการกำจัดโค้ดตกค้าง](#phase-40-การล้างคอลเลกชันกฎหมาย-legalarticles-ออกจาก-mongodb-อย่างถาวร-และการกำจัดโค้ดตกค้าง-permanent-legal-collection-purge--controller-residual-cleanup) | สำเร็จ ✅ |
+| **13 ต.ค. 2026 (20:55 น.)** | [Phase 41: ปรับปรุง Use Case Diagram ให้ตรงกับโปรแกรมจริง (User / Member / Manager / Admin)](#phase-41-use-case-diagram-update) | สำเร็จ ✅ |
 
 ---
 
@@ -1848,3 +1849,25 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - แนะนำให้คลิกปุ่ม **Refresh (`⟳`)** บริเวณรายชื่อฐานข้อมูล หรือกดปุ่ม Refresh บนแท็บ เพื่อล้างแคชคอลเลกชันที่เคยเปิดค้างไว้
 
 
+---
+
+## <a id="phase-41-use-case-diagram-update"></a>41. ปรับปรุง Use Case Diagram ให้ตรงกับโปรแกรมจริง (User / Member / Manager / Admin)
+> 🕒 **บันทึกเมื่อ:** 13 ตุลาคม 2026 (20:55 น.)
+
+### 41.1 ที่มา
+เปรียบเทียบ Use Case Diagram ฉบับรายงาน (Actor ผู้ใช้ 1 ตัว + ผู้ดูแลระบบ) กับ Route ของ Backend หน้าจอ Admin Web และหน้าจอ Mobile App พบว่าโปรแกรมแบ่งผู้ใช้เป็น MEMBER และ MANAGER ที่มีสิทธิ์ต่างกัน และมีบาง Use Case ที่ยังทำได้ไม่ครบ
+
+### 41.2 สิ่งที่เปลี่ยน
+- เพิ่ม `docs/academic/use-case-diagram.drawio` (แก้ไขต่อใน draw.io ได้) และ `docs/academic/use-case-diagram.png`
+- แยก Actor เป็น ผู้ใช้ (User) โดยมี สมาชิก (Member) และ หัวหน้าทีม (Manager) สืบทอดแบบ Generalization
+- ยกเลิกความสัมพันธ์ extend ระหว่าง ลงทะเบียน กับ เข้าสู่ระบบ
+- เพิ่ม: เข้าร่วมทีมด้วยรหัสทีม, ดู Dashboard ทีม, จัดการ Content และ Task ของทุกทีม (Admin)
+- เปลี่ยนชื่อให้ตรงกับที่ทำได้จริง: เสนอและดูรายการ Idea, เผยแพร่ Content, รับการอัปเดตงานแบบ Real-time
+- ตรวจสอบ Content มี «extend» อนุมัติ Content และ ส่งกลับแก้ไข
+
+### 41.3 ฟีเจอร์ที่โปรแกรมยังไม่ครบ (ไม่ได้แก้ในรอบนี้)
+1. แก้ไข ลบ อนุมัติ และปฏิเสธ Idea
+2. ลบสมาชิกออกจากทีม
+3. ตั้งเวลาเผยแพร่ (สถานะ `SCHEDULED` ไม่มีหน้าจอและไม่มีฟิลด์วันที่)
+4. หน้ารายการแจ้งเตือนในแอปมือถือ
+5. บันทึก Settings ของ Admin ลงฐานข้อมูล (ปัจจุบันใช้ `localStorage`)
