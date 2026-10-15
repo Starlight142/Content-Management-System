@@ -463,6 +463,7 @@
       <li class="nav-item"><a href="#phase-42" class="nav-link"><span class="nav-tag">P42</span>Activity Diagram (Draw.io)</a></li>
       <li class="nav-item"><a href="#phase-43" class="nav-link"><span class="nav-tag">P43</span>Academic Diagrams Suite</a></li>
       <li class="nav-item"><a href="#phase-44" class="nav-link"><span class="nav-tag">P44</span>Use Case Consolidation (3 Actors)</a></li>
+      <li class="nav-item"><a href="#phase-45" class="nav-link"><span class="nav-tag">P45</span>Testing Suite (Manual & Robot)</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -1718,6 +1719,43 @@
           </ul>
         </li>
         <li><strong>สิ่งที่ส่งมอบ:</strong> <code>docs/academic/use-case-diagram.drawio</code>, <code>docs/academic/use-case-diagram.png</code>, <code>docs/academic/01-Use-Case-Diagram.md</code>, และ <code>docs/academic/02-Use-Case-Descriptions.md</code> (ครบทั้ง 12 Use Cases ในฟอร์แมต Cockburn / IEEE)</li>
+      </ul>
+    </section>
+
+    <!-- Phase 45 -->
+    <section class="section-card" id="phase-45">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 45: การจัดทำชุดการทดสอบระบบแบบครบวงจร ทั้ง Manual Testing และ Automated Testing ด้วย Robot Framework</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 15 ตุลาคม 2026 (18:35 น.)</span>
+        <span>•</span>
+        <span>📁 <code>tests/robot/</code> & <code>docs/academic/11-*, 12-*</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>การทดสอบคุณภาพซอฟต์แวร์แบบสองประสาน (Dual Verification: IEEE 829 & Keyword-Driven Automation):</strong><br>
+        จัดทำชุดการทดสอบระบบครบถ้วนทั้ง <strong>Manual Test Cases (IEEE 829 Standard) 15 รายการ</strong> สำหรับเอกสารเล่มรายงาน และ <strong>Automated Acceptance Testing ด้วย Robot Framework 7.5 (26 รายการ ใน 5 Test Suites)</strong> ทดสอบตรงกับ Express Backend และ MongoDB จริง โดยผ่านการทดสอบ 100% ครบทั้ง 26/26 กรณีทดสอบ พร้อมออกรายงานผลอัตโนมัติในรูปแบบ HTML
+      </div>
+
+      <h3>สาระสำคัญและการจัดส่งมอบ:</h3>
+      <ul>
+        <li><strong>Manual Testing Specification (<code>docs/academic/11-Test-Plan-And-Manual-Test-Cases.md</code>):</strong>
+          ตารางกรณีทดสอบมาตรฐาน IEEE 829 ครอบคลุม 15 Test Cases (Positive, Negative, State Machine Lifecycle, และ Security Isolation) พร้อมข้อมูล Preconditions, Steps, Test Data, Expected, และ Actual Results (Pass Rate 100%)
+        </li>
+        <li><strong>Automated Testing Suite (<code>tests/robot/</code>):</strong>
+          โครงสร้างแบบ Modular แบ่งเป็น <code>resources/</code> (Keywords & Variables) และ <code>testcases/</code> 5 ชุด:
+          <ul>
+            <li><code>01_authentication_tests.robot</code> (6 Tests): Health Check, Login 3 บทบาท, Negative Password, Bearer JWT</li>
+            <li><code>02_team_workspace_tests.robot</code> (5 Tests): Team Metadata, Join Team Valid/Invalid Code, Dashboard Aggregates, Activity Feed</li>
+            <li><code>03_content_production_workflow_tests.robot</code> (7 Tests): วงจรผลิตสื่อครบวงจร (สร้างงาน &rarr; มอบหมายงาน &rarr; ส่งมอบ URL Google Drive &rarr; สั่งแก้ไขพร้อม Notes &rarr; ตอบกลับคำชี้แจง &rarr; อนุมัติ 1-Tap &rarr; เผยแพร่งาน)</li>
+            <li><code>04_ideas_brainstorming_tests.robot</code> (3 Tests): เสนอไอเดียใหม่, แสดงรายการบนบอร์ด, อนุมัติไอเดีย</li>
+            <li><code>05_admin_and_security_tests.robot</code> (5 Tests): User Management, Global CMS, Audit Logs, และ Security Isolation (Team Isolation Guard & Member Access Denied 403)</li>
+          </ul>
+        </li>
+        <li><strong>ผลการรันจริง (Test Execution Results):</strong> ผ่าน 26/26 การทดสอบ (100% Pass Rate) รายงานผลบันทึกใน <code>tests/robot/results/report.html</code> และ <code>log.html</code></li>
+        <li><strong>เอกสารคู่มือการทดสอบ (<code>docs/academic/12-Automated-Testing-Robot-Framework.md</code>):</strong> รายละเอียดสถาปัตยกรรม คำสั่งรัน และตารางสรุปผล</li>
       </ul>
     </section>
 

@@ -8,6 +8,7 @@ router.use(verifyToken);
 // Anyone can view and propose ideas
 router.get('/', ideasController.getAllIdeas);
 router.post('/', ideasController.createIdea);
+router.patch('/:id/status', ideasController.updateIdeaStatus);
 
 module.exports = router;
 

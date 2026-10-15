@@ -1974,3 +1974,44 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 2. **เอกสารข้อกำหนดวิชาการ:**
    - `docs/academic/01-Use-Case-Diagram.md`: ปรับปรุงบทนำ นิยาม 3 Actors ตารางแจกแจง 12 Use Cases และแผนภาพ Mermaid ซิงค์ตรง 1:1
    - `docs/academic/02-Use-Case-Descriptions.md`: ปรับปรุงข้อกำหนด Fully Dressed Use Case Specification (Cockburn / IEEE Format) ครบทั้ง 12 รายการ
+
+
+---
+
+## <a id="phase-45-testing-suite"></a>45. การจัดทำชุดการทดสอบระบบแบบครบวงจร ทั้ง Manual Testing และ Automated Testing ด้วย Robot Framework
+> 🕒 **บันทึกเมื่อ:** 15 ตุลาคม 2026 (18:35 น.)
+
+### 45.1 ที่มาและวัตถุประสงค์
+ผู้ใช้มีความต้องการจัดทำระบบการทดสอบที่สมบูรณ์ทั้งสองรูปแบบ ได้แก่:
+1. **Manual Testing:** ตารางกรณีทดสอบแบบดำเนินการด้วยตนเองตามมาตรฐานวิศวกรรมซอฟต์แวร์ (IEEE 829 Standard) เพื่อใช้ประกอบเอกสารรายงานบทที่ 4-5 สำหรับส่งอาจารย์
+2. **Automated Testing:** การทดสอบอัตโนมัติด้วย **Robot Framework** (Keyword-Driven Test Automation) เพื่อยืนยันความถูกต้องของ Business Logic, วงจรสถานะงานผลิต (Workflow State Machine), สิทธิ์การเข้าถึง (RBAC), และการป้องกันการละเมิดข้อมูลข้ามทีม (Team Isolation Guard) พร้อมออกรายงานผลการทดสอบมาตรฐานในรูปแบบ HTML
+
+### 45.2 การจัดทำชุดทดสอบแบบ Manual Testing (IEEE 829 Standard)
+- จัดทำเอกสารข้อกำหนด `docs/academic/11-Test-Plan-And-Manual-Test-Cases.md` ครอบคลุม 15 กรณีทดสอบหลัก:
+  - **หมวดที่ 1 (Authentication & Profile):** `TC-AUTH-01` ถึง `TC-AUTH-03` (Positive/Negative Login & Profile Fetch)
+  - **หมวดที่ 2 (Team Operations):** `TC-TEAM-01` ถึง `TC-TEAM-03` (Join Team Valid/Invalid Code & Position Assignment)
+  - **หมวดที่ 3 (Production Workflow):** `TC-PROD-01` ถึง `TC-PROD-06` (Create Content, Task In Progress, Submit Deliverable URL, Request Revision Notes, Reply Notes, 1-Tap Approval, และ Publish Content)
+  - **หมวดที่ 4 (Ideas & Activity Feed):** `TC-IDEA-01`, `TC-TRK-01` (Pitch Ideas & Real-time Chronological Feed)
+  - **หมวดที่ 5 (Admin Governance & Security):** `TC-ADM-01` ถึง `TC-ADM-03`, `TC-SEC-01` (User Roster, Global CMS, Audit Logs, และ Team Isolation Guard)
+- ผลการทดสอบ: ผ่านครบถ้วน 15/15 รายการ (Pass Rate 100%)
+
+### 45.3 การจัดทำชุดทดสอบอัตโนมัติด้วย Robot Framework (26 Automated Test Cases)
+- **การติดตั้งสภาพแวดล้อม:** ติดตั้ง Robot Framework 7.5 และ `robotframework-requests` 0.9.7 ภายใน Python Virtual Environment (`.venv`) ตามข้อกำหนดมาตรฐาน
+- **การจัดโครงสร้างแบบ Modular Architecture:**
+  - `tests/robot/resources/`: แยกไฟล์ Reusable Keywords และ Variables ชัดเจน (`variables.resource`, `auth_keywords.resource`, `team_keywords.resource`, `workflow_keywords.resource`, `admin_keywords.resource`)
+  - `tests/robot/testcases/`: แบ่ง 5 Test Suites ครอบคลุมระบบครบทุกมิติ:
+    1. `01_authentication_tests.robot` (6 Tests): ตรวจสอบ Health API, Login 3 บทบาท, Negative Password, และ Bearer JWT
+    2. `02_team_workspace_tests.robot` (5 Tests): ข้อมูลทีม, การ Join Team สำเร็จ/ปฏิเสธ, Dashboard Aggregates, และ Activity Feed
+    3. `03_content_production_workflow_tests.robot` (7 Tests): วงจรผลิตสื่อครบวงจรตั้งแต่สร้างงาน, มอบหมายงาน, ส่งมอบลิงก์ Google Drive, ส่งกลับแก้ไขพร้อมเหตุผล, ตอบกลับคำสั่งแก้, อนุมัติแบบ 1-Tap, และเผยแพร่งาน
+    4. `04_ideas_brainstorming_tests.robot` (3 Tests): การเสนอไอเดียใหม่, เรียกดูบอร์ดไอเดีย, และการอนุมัติไอเดียโดย Manager
+    5. `05_admin_and_security_tests.robot` (5 Tests): การสืบค้นผู้ใช้, คอนเทนต์ภาพรวม, Audit Logs, การป้องกัน Member เข้าถึง API แอดมิน (403), และการป้องกันสมาชิกเข้าดูข้อมูลข้ามทีม (Team Isolation 403)
+- **ผลการรันจริงกับ Express Backend:** ผ่านครบทั้ง 26/26 กรณีทดสอบ (Pass Rate 100%)
+- **รายงานผลการทดสอบ HTML:** สร้างไฟล์ `tests/robot/results/report.html` และ `log.html` พร้อมใช้งาน
+
+### 45.4 สิ่งที่ส่งมอบครบถ้วน 100%
+1. **เอกสารวิชาการประกอบรายงาน:**
+   - `docs/academic/11-Test-Plan-And-Manual-Test-Cases.md`: แผนการทดสอบและตาราง Manual Test Cases (IEEE 829 Format)
+   - `docs/academic/12-Automated-Testing-Robot-Framework.md`: สถาปัตยกรรม คำสั่งรัน และตารางสรุปผล Robot Framework
+2. **โค้ดและชุดทดสอบอัตโนมัติ:**
+   - โฟลเดอร์ `tests/robot/` ครบทั้ง `resources/` และ 5 ไฟล์ใน `testcases/`
+   - ไฟล์สรุป Dependency `requirements.txt`
