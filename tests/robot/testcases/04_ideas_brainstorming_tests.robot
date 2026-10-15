@@ -36,3 +36,4 @@ TC_IDEA_03: Manager Approves Content Idea
     ${payload}=        Create Dictionary     status=APPROVED
     ${response}=       PATCH On Session      cms_session    /api/ideas/${NEW_IDEA_ID}/status    json=${payload}    headers=${headers}    expected_status=200
     Should Be Equal As Strings               ${response.json()}[idea][status]    APPROVED
+

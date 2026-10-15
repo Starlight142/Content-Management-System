@@ -7,3 +7,4 @@ ${OUTSIDER_EMAIL}       outsider@studio.com
 ${DEFAULT_PASSWORD}     123456
 ${TEAM_CODE_A}          TEAM-A
 ${TEAM_CODE_B}          TEAM-B
+

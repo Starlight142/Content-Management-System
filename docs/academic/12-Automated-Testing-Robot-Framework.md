@@ -10,15 +10,15 @@
 
 ```mermaid
 flowchart TD
-    RF["🤖 Robot Framework Engine\n(Python 3.14 / venv)"]
-    REQ["📡 RequestsLibrary\n(HTTP / REST Client)"]
-    API["⚙️ Express Backend Server\n(Port :5000)"]
-    DB[("🍃 MongoDB Database\ncontent_management")]
+    RF["Robot Framework Engine\n(Python 3.14 / venv)"]
+    REQ["RequestsLibrary\n(HTTP / REST Client)"]
+    API["Express Backend Server\n(Port :5000)"]
+    DB[("MongoDB Database\ncontent_management")]
 
     RF --> REQ
     REQ -->|REST API Requests| API
     API -->|Mongoose ODM| DB
-    RF -->|Generate Results| HTML["📊 Test Reports\n(report.html & log.html)"]
+    RF -->|Generate Results| HTML["Test Reports\n(report.html & log.html)"]
 ```
 
 ### สภาพแวดล้อมและไลบรารีที่ใช้ (Environment & Libraries)
@@ -128,3 +128,7 @@ tests/
 > **รายงานผลการทดสอบ HTML (เปิดดูผ่านเบราว์เซอร์):**
 > - สรุปผลภาพรวม: `tests/robot/results/report.html`
 > - บันทึกขั้นตอนและ Payload ละเอียด: `tests/robot/results/log.html`
+
+> **ตารางกรณีทดสอบและผลลัพธ์รูปแบบสเปรดชีต (Excel Spreadsheet):**  
+> สามารถเปิดดูตารางรายละเอียด 26 Automated Test Cases พร้อม Traceability Matrix ได้ที่: [Draftly-System-Test-Cases.xlsx](./Draftly-System-Test-Cases.xlsx)
+

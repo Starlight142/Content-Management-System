@@ -35,3 +35,4 @@ Get System Audit Logs
     ${headers}=        Create Auth Header    ${token}
     ${response}=       GET On Session        cms_session    /api/logs    headers=${headers}    expected_status=200
     RETURN             ${response.json()}
+

@@ -91,3 +91,7 @@
 - **ผลการทดสอบผ่าน (PASS):** 15 / 15 (คิดเป็น **100%**)
 - **ข้อผิดพลาดตกค้าง (Defects / Bugs):** 0 รายการ
 - **สรุปภาพรวม:** ระบบมีความพร้อมในการใช้งานตามข้อกำหนดเชิงวิศวกรรมซอฟต์แวร์ และมีความสอดคล้องกับ [01-Use-Case-Diagram.md](./01-Use-Case-Diagram.md) และ [10-Workflow-Diagram.md](./10-Workflow-Diagram.md) อย่างสมบูรณ์
+
+> **ตารางกรณีทดสอบรูปแบบสเปรดชีต (Excel Spreadsheet):**  
+> เอกสารฉบับทางการรวมตารางกรณีทดสอบทั้ง Manual และ Automated พร้อม Requirements Traceability Matrix (RTM) จัดเก็บอยู่ที่: [Draftly-System-Test-Cases.xlsx](./Draftly-System-Test-Cases.xlsx)
+

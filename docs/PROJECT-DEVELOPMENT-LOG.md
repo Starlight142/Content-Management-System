@@ -2015,3 +2015,15 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 2. **โค้ดและชุดทดสอบอัตโนมัติ:**
    - โฟลเดอร์ `tests/robot/` ครบทั้ง `resources/` และ 5 ไฟล์ใน `testcases/`
    - ไฟล์สรุป Dependency `requirements.txt`
+
+### 45.5 การจัดทำตารางสรุปผลและรายงานกรณีทดสอบรวมในรูปแบบ Excel Spreadsheet
+- **ที่มาและความต้องการ:** ผู้ใช้ต้องการตารางสรุปผลและบันทึกกรณีทดสอบทั้งระบบในรูปแบบ Excel เพื่อนำไปแนบประกอบรายงานโครงงาน ปริ้นท์ หรือเปิดตรวจทานได้สะดวก
+- **เครื่องมือและการพัฒนา:** พัฒนาสคริปต์ `tools/generate_excel_tests.py` ด้วย Python และไลบรารี `openpyxl` 3.1.5 เพื่อสร้างสเปรดชีตแบบมืออาชีพ
+- **โครงสร้าง 4 แผ่นงาน (Worksheets):**
+  1. `Summary & Dashboard`: สรุปตัวชี้วัดหลัก 41 รายการทดสอบ (Manual 15 + Automated 26, ผ่าน 100%), ข้อมูลสภาพแวดล้อม และบัญชีทดสอบมาตรฐาน 4 บทบาท
+  2. `Manual Test Cases`: 15 กรณีทดสอบตามมาตรฐาน IEEE 829 ระบุ Preconditions, Test Steps, Test Data, Expected/Actual Results และ Status PASS
+  3. `Robot Automated Tests`: 26 กรณีทดสอบอัตโนมัติจาก 5 Test Suites ระบุ API Method/Endpoint, Assertion Keys, Execution Time และ Status PASS
+  4. `Traceability Matrix (RTM)`: ตารางสอบกลับความต้องการ (Requirements Traceability Matrix) เชื่อมโยง Use Case (UC-01 ถึง UC-12) กับ Test Cases ทั้งสองรูปแบบครบ 100%
+- **การออกแบบฟอร์แมต:** ใช้ฟอนต์ `Tahoma`, หัวตารางโทนสี Slate (`#1E293B`), ป้ายกำกับสถานะสีเขียว Emerald (`#DCFCE7` / `#15803D`), กำหนดความกว้างคอลัมน์อัตโนมัติ และตรึงแถวหัวตาราง (Freeze Panes) ทุก Sheet
+- **ไฟล์ผลลัพธ์:** จัดเก็บไว้ที่ `docs/academic/Draftly-System-Test-Cases.xlsx` พร้อมทำลิงก์เชื่อมโยงในเอกสารวิชาการ
+

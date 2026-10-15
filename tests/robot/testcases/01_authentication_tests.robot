@@ -49,3 +49,4 @@ TC_AUTH_06: Verify Protected Route With Bearer JWT
     ${headers}=        Create Auth Header    ${token}
     ${response}=       GET On Session    cms_session    /api/auth/me    headers=${headers}    expected_status=200
     Should Contain     ${response.json()}[message]    protected route
+
