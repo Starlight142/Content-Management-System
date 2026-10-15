@@ -50,3 +50,11 @@ TC_AUTH_06: Verify Protected Route With Bearer JWT
     ${response}=       GET On Session    cms_session    /api/auth/me    headers=${headers}    expected_status=200
     Should Contain     ${response.json()}[message]    protected route
 
+TC_AUTH_07: Verify User Registration And Prevent Duplicate Email
+    [Documentation]    Tests user registration endpoint and asserts HTTP 201 Created.
+    [Tags]             auth    register
+    ${unique_int}=     Evaluate    random.randint(10000, 99999)    random
+    ${payload}=        Create Dictionary    firstName=Robot    lastName=Tester    email=robot_${unique_int}@studio.com    password=123456
+    ${response}=       POST On Session      cms_session    /api/auth/register    json=${payload}    expected_status=201
+    Should Contain     ${response.json()}[message]    registered
+

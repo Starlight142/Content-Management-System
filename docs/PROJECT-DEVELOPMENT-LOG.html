@@ -1762,20 +1762,24 @@
         <li><strong>ตารางกรณีทดสอบชุดใหม่ตามโมเดลผัง 14 Use Cases (<code>docs/academic/Draftly-System-Test-Cases-14-UseCases.xlsx</code>):</strong>
           สร้างสคริปต์ <code>tools/generate_excel_tests_14uc.py</code> เพื่อจัดทำตารางกรณีทดสอบชุดใหม่แยกต่างหากโดยไม่กระทบไฟล์เดิม อิงตามผังสถาปัตยกรรม 14 Use Cases (แยก ลงทะเบียน, เข้าสู่ระบบ, จัดการบัญชีส่วนตัว) ครอบคลุมการทดสอบรวม 47 รายการ (Manual 20 + Automated 27 รายการ ผ่าน 100%) พร้อม RTM 100% ครบทั้ง 14 Use Cases
         </li>
+        <li><strong>สเปรดชีตมาตรฐานกระบวนการทดสอบซอฟต์แวร์ 4 ขั้นตอน (<code>docs/academic/Draftly-Software-Testing-Specification.xlsx</code>):</strong>
+          สร้างสคริปต์ <code>tools/generate_excel_stlc_specification.py</code> ออกแบบสเปรดชีตมาตรฐาน 5 แผ่นงาน (Overview & References, 1. Test Planning, 2. Test Case Summary, 3. Test Case, 4. Test Report) บรรจุตารางแสดงหัวข้อ แหล่งอ้างอิง และส่วนที่นำมาอ้างอิงอย่างชัดเจน พร้อมบันทึกผลการทดสอบจริงเชิงประจักษ์ 49 รายการ และ Defect Incident Report (0 Defects)
+        </li>
       </ul>
     </section>
 
     <!-- Section Catalog -->
     <section class="section-card" id="catalog">
       <h2 class="section-title">แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)</h2>
-      <div class="phase-meta"><span>🕒 ปัจจุบัน 15 ตุลาคม 2026</span></div>
+      <div class="phase-meta"><span>🕒 ปัจจุบัน 16 ตุลาคม 2026</span></div>
       <p>เอกสารทั้งหมดในระบบจัดเก็บเป็นสัดส่วนพร้อมเรียกใช้งาน:</p>
       <ul>
         <li><strong><code>AI-MEMORY.md</code>:</strong> ไฟล์ความจำและบริบทระบบเชิงลึกสำหรับ AI และการย้ายเครื่องทำงาน</li>
         <li><strong><code>AGENTS.md</code>:</strong> ข้อกำหนดและคู่มือปฏิบัติการมาตรฐานสำหรับ Coding Agent</li>
         <li><strong><code>docs/academic/</code>:</strong> 12 เอกสารวิชาการ, ตารางกรณีทดสอบ Excel, และพิมพ์เขียวสถาปัตยกรรมพร้อมส่งอาจารย์</li>
-        <li><strong><code>docs/academic/Draftly-System-Test-Cases.xlsx</code>:</strong> ตารางกรณีทดสอบรวมระบบโมเดลเดิม (Manual + Robot) และ Requirements Traceability Matrix (RTM)</li>
+        <li><strong><code>docs/academic/Draftly-Software-Testing-Specification.xlsx</code>:</strong> เอกสารกระบวนการทดสอบซอฟต์แวร์มาตรฐาน 4 ขั้นตอน (STLC Framework) พร้อมตารางแสดงการอ้างอิงและบันทึกผลจริง</li>
         <li><strong><code>docs/academic/Draftly-System-Test-Cases-14-UseCases.xlsx</code>:</strong> ตารางกรณีทดสอบรวมระบบโมเดลใหม่ 14 Use Cases (47 รายการทดสอบ) พร้อม RTM 14 Use Cases ครบ 100%</li>
+        <li><strong><code>docs/academic/Draftly-System-Test-Cases.xlsx</code>:</strong> ตารางกรณีทดสอบรวมระบบโมเดลเดิม (Manual + Robot) และ Requirements Traceability Matrix (RTM)</li>
         <li><strong><code>docs/learning/</code>:</strong> บทเรียนการเขียนโค้ด Backend ด้วยมือตนเอง (Lesson 1-3)</li>
         <li><strong><code>docs/year-4-capstone/</code>:</strong> 6 พิมพ์เขียวสถาปัตยกรรมสำหรับต่อยอดปี 4 (แยกไว้ใน Branch <code>feature/year4-capstone</code>)</li>
         <li><strong><code>docs/PROJECT-DEVELOPMENT-LOG.md</code>:</strong> ไฟล์ประวัติการพัฒนาดั้งเดิมในรูปแบบ Markdown</li>

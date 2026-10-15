@@ -92,6 +92,8 @@
 - **ข้อผิดพลาดตกค้าง (Defects / Bugs):** 0 รายการ
 - **สรุปภาพรวม:** ระบบมีความพร้อมในการใช้งานตามข้อกำหนดเชิงวิศวกรรมซอฟต์แวร์ และมีความสอดคล้องกับ [01-Use-Case-Diagram.md](./01-Use-Case-Diagram.md) และ [10-Workflow-Diagram.md](./10-Workflow-Diagram.md) อย่างสมบูรณ์
 
-> **ตารางกรณีทดสอบรูปแบบสเปรดชีต (Excel Spreadsheet):**  
-> เอกสารฉบับทางการรวมตารางกรณีทดสอบทั้ง Manual และ Automated พร้อม Requirements Traceability Matrix (RTM) จัดเก็บอยู่ที่: [Draftly-System-Test-Cases.xlsx](./Draftly-System-Test-Cases.xlsx)
+> **ไฟล์สเปรดชีตการทดสอบระบบรูปแบบ Excel (Excel Spreadsheets):**  
+> 1. [Draftly-Software-Testing-Specification.xlsx](./Draftly-Software-Testing-Specification.xlsx): เอกสารกระบวนการทดสอบครบวงจร 4 ขั้นตอน (1. Test Planning, 2. Test Case Summary, 3. Test Case, 4. Test Report) พร้อมตารางแสดงการอ้างอิง
+> 2. [Draftly-System-Test-Cases-14-UseCases.xlsx](./Draftly-System-Test-Cases-14-UseCases.xlsx): ตารางกรณีทดสอบฉบับปรับปรุงตามผัง 14 Use Cases (47 รายการทดสอบ ผ่าน 100%)
+> 3. [Draftly-System-Test-Cases.xlsx](./Draftly-System-Test-Cases.xlsx): ตารางกรณีทดสอบฉบับสถาปัตยกรรม 12 Use Cases เดิม
 

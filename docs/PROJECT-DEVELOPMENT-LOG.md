@@ -2052,3 +2052,19 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
   4. `Traceability Matrix (RTM)`: ตารางสอบกลับความต้องการ (Requirements Traceability Matrix) เชื่อมโยงขอบเขต UC-01 ถึง UC-14 เข้ากับ Test Cases ทั้งสองรูปแบบครบ 100%
 - **ไฟล์ผลลัพธ์ใหม่:** จัดเก็บอย่างเป็นอิสระไว้ที่ `docs/academic/Draftly-System-Test-Cases-14-UseCases.xlsx` โดยยังคงรักษาไฟล์เดิม `Draftly-System-Test-Cases.xlsx` ไว้อย่างสมบูรณ์ตามความต้องการของผู้ใช้
 
+### 45.7 การจัดทำสเปรดชีตมาตรฐานกระบวนการทดสอบซอฟต์แวร์ 4 ขั้นตอน (Draftly-Software-Testing-Specification.xlsx)
+- **ที่มาและความต้องการ:** ผู้ใช้ได้กำหนดกรอบโครงสร้างกระบวนการทดสอบซอฟต์แวร์มาตรฐานออกเป็น 4 ขั้นตอน พร้อมระบุแหล่งอ้างอิงและองค์ประกอบที่นำมาอ้างอิงอย่างชัดเจน เพื่อนำไปจัดทำเอกสารและสเปรดชีตส่งอาจารย์:
+  1. **Test Planning (วางแผนการทดสอบ):** อ้างอิงจาก Requirement Specification (SRS), Scope ของระบบ, Use Case Diagram (นำขอบเขตระบบ, ฟังก์ชันที่จะทดสอบ, วัตถุประสงค์, ทรัพยากร และแผนการทดสอบมาอ้างอิง)
+  2. **Test Case Summary (สรุปกรณีทดสอบ):** อ้างอิงจาก Test Planning และรายการ Test Case (รวบรวม Scenario, สรุปจำนวน Test Case แยกตาม Scenario หรือฟังก์ชัน และสรุปสถานะผลการทดสอบ)
+  3. **Test Case (รายละเอียดการทดสอบ):** อ้างอิงจาก Use Case Specification, Activity Diagram, Sequence Diagram, UI Design และ Requirement (นำฟังก์ชันจาก Use Case มาแตกเป็นกรณีทดสอบ: ข้อมูลถูกต้อง, ข้อมูลไม่ครบ, และข้อมูลผิดรูปแบบ พร้อมขั้นตอนทดสอบ, ข้อมูลนำเข้า, ผลลัพธ์ที่คาดหวัง และเงื่อนไขที่ต้องตรวจสอบ)
+  4. **Test Report (รายงานผลการทดสอบ):** อ้างอิงจากผลการรัน Test Case จริง และ Test Case Summary (ผลผ่าน/ไม่ผ่าน, จำนวนที่ทดสอบจริง, ปัญหาที่พบ, Execution Duration และข้อสรุปการทดสอบ)
+- **การพัฒนาสคริปต์ตัวสร้าง:** พัฒนาสคริปต์ `tools/generate_excel_stlc_specification.py` ผ่านไลบรารี `openpyxl`
+- **โครงสร้างภายในไฟล์สเปรดชีต (5 Worksheets):**
+  - `Overview & References`: ตารางสรุปภาพรวม 4 ขั้นตอน แสดงการจับคู่หัวข้อ แหล่งอ้างอิง ส่วนที่นำมาอ้างอิง และวัตถุประสงค์อย่างชัดเจน
+  - `1. Test Planning`: การ์ดอ้างอิงด้านบน, วัตถุประสงค์การทดสอบ (OBJ-01 ถึง 05), ขอบเขต 14 Use Cases (In-Scope), สภาพแวดล้อมระบบ 6 ด้าน, และบัญชีทดสอบ 4 บทบาท
+  - `2. Test Case Summary`: การ์ดตัวชี้วัดหลัก (Total 47, Passed 47, Failed 0, Defects 0), ตารางสรุปแยกตาม 14 Scenarios พร้อม Pass Rate 100%
+  - `3. Test Case`: ตารางรายละเอียด 22 กรณีทดสอบตามมาตรฐาน IEEE 829 ระบุ Diagram Ref, Scenario Type (ข้อมูลถูกต้อง, ไม่ครบ, ผิดรูปแบบ, Lifecycle, Security), Preconditions, Steps, Test Data, Expected Result, และ Verification Assertions
+  - `4. Test Report`: ตารางบันทึกผลการทดสอบจริงเชิงประจักษ์ 49 รายการ (Manual 22 + Automated 27), ตาราง Defect Incident Report (0 Defects), และบทสรุปการประเมินความพร้อมใช้งานจริง
+- **การซิงโครไนซ์ Robot Framework Suite:** เพิ่มกรณีทดสอบ `TC_AUTH_07` (Verify User Registration) ใน `tests/robot/testcases/01_authentication_tests.robot` ส่งผลให้ชุดทดสอบอัตโนมัติรันผ่านครบทั้ง 27 รายการ (100% Pass Rate) สอดคล้องกับตารางใน Excel 100%
+- **ไฟล์ผลลัพธ์:** จัดเก็บไว้ที่ `docs/academic/Draftly-Software-Testing-Specification.xlsx`
+

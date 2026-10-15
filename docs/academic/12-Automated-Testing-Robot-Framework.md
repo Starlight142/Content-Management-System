@@ -118,17 +118,19 @@ tests/
 
 | ชุดการทดสอบ (Test Suite) | จำนวนการทดสอบ (Tests) | ผ่าน (Passed) | ไม่ผ่าน (Failed) | อัตราความสำเร็จ (Pass Rate) |
 | :--- | :---: | :---: | :---: | :---: |
-| **01 Authentication Tests** | 6 | 6 | 0 | **100%** |
+| **01 Authentication Tests** | 7 | 7 | 0 | **100%** |
 | **02 Team Workspace Tests** | 5 | 5 | 0 | **100%** |
 | **03 Content Production Workflow Tests** | 7 | 7 | 0 | **100%** |
 | **04 Ideas Brainstorming Tests** | 3 | 3 | 0 | **100%** |
 | **05 Admin And Security Tests** | 5 | 5 | 0 | **100%** |
-| **รวมทั้งหมด (Total)** | **26** | **26** | **0** | **100%** |
+| **รวมทั้งหมด (Total)** | **27** | **27** | **0** | **100%** |
 
 > **รายงานผลการทดสอบ HTML (เปิดดูผ่านเบราว์เซอร์):**
 > - สรุปผลภาพรวม: `tests/robot/results/report.html`
 > - บันทึกขั้นตอนและ Payload ละเอียด: `tests/robot/results/log.html`
 
-> **ตารางกรณีทดสอบและผลลัพธ์รูปแบบสเปรดชีต (Excel Spreadsheet):**  
-> สามารถเปิดดูตารางรายละเอียด 26 Automated Test Cases พร้อม Traceability Matrix ได้ที่: [Draftly-System-Test-Cases.xlsx](./Draftly-System-Test-Cases.xlsx)
+> **ไฟล์สเปรดชีตการทดสอบระบบรูปแบบ Excel (Excel Spreadsheets):**  
+> 1. [Draftly-Software-Testing-Specification.xlsx](./Draftly-Software-Testing-Specification.xlsx): เอกสารกระบวนการทดสอบครบวงจร 4 ขั้นตอน (1. Test Planning, 2. Test Case Summary, 3. Test Case, 4. Test Report) พร้อมตารางแสดงการอ้างอิง
+> 2. [Draftly-System-Test-Cases-14-UseCases.xlsx](./Draftly-System-Test-Cases-14-UseCases.xlsx): ตารางกรณีทดสอบฉบับปรับปรุงตามผัง 14 Use Cases (27 Robot Tests, ผ่าน 100%)
+> 3. [Draftly-System-Test-Cases.xlsx](./Draftly-System-Test-Cases.xlsx): ตารางกรณีทดสอบฉบับสถาปัตยกรรม 12 Use Cases เดิม
 
