@@ -1759,6 +1759,9 @@
         <li><strong>ตารางกรณีทดสอบและ RTM รวมในรูปแบบ Excel (<code>docs/academic/Draftly-System-Test-Cases.xlsx</code>):</strong>
           พัฒนาสคริปต์ <code>tools/generate_excel_tests.py</code> ผ่านไลบรารี <code>openpyxl</code> ออกแบบสเปรดชีตมาตรฐาน 4 แผ่นงาน (Summary & Dashboard, Manual Test Cases, Robot Automated Tests, Traceability Matrix RTM) รวม 41 รายการทดสอบ (ผ่าน 100%) ตกแต่งด้วยธีม Slate / Emerald Green พร้อม Auto-fit Width และ Freeze Panes
         </li>
+        <li><strong>ตารางกรณีทดสอบชุดใหม่ตามโมเดลผัง 14 Use Cases (<code>docs/academic/Draftly-System-Test-Cases-14-UseCases.xlsx</code>):</strong>
+          สร้างสคริปต์ <code>tools/generate_excel_tests_14uc.py</code> เพื่อจัดทำตารางกรณีทดสอบชุดใหม่แยกต่างหากโดยไม่กระทบไฟล์เดิม อิงตามผังสถาปัตยกรรม 14 Use Cases (แยก ลงทะเบียน, เข้าสู่ระบบ, จัดการบัญชีส่วนตัว) ครอบคลุมการทดสอบรวม 47 รายการ (Manual 20 + Automated 27 รายการ ผ่าน 100%) พร้อม RTM 100% ครบทั้ง 14 Use Cases
+        </li>
       </ul>
     </section>
 
@@ -1771,7 +1774,8 @@
         <li><strong><code>AI-MEMORY.md</code>:</strong> ไฟล์ความจำและบริบทระบบเชิงลึกสำหรับ AI และการย้ายเครื่องทำงาน</li>
         <li><strong><code>AGENTS.md</code>:</strong> ข้อกำหนดและคู่มือปฏิบัติการมาตรฐานสำหรับ Coding Agent</li>
         <li><strong><code>docs/academic/</code>:</strong> 12 เอกสารวิชาการ, ตารางกรณีทดสอบ Excel, และพิมพ์เขียวสถาปัตยกรรมพร้อมส่งอาจารย์</li>
-        <li><strong><code>docs/academic/Draftly-System-Test-Cases.xlsx</code>:</strong> ตารางกรณีทดสอบรวมทั้งระบบ (Manual + Robot) และ Requirements Traceability Matrix (RTM)</li>
+        <li><strong><code>docs/academic/Draftly-System-Test-Cases.xlsx</code>:</strong> ตารางกรณีทดสอบรวมระบบโมเดลเดิม (Manual + Robot) และ Requirements Traceability Matrix (RTM)</li>
+        <li><strong><code>docs/academic/Draftly-System-Test-Cases-14-UseCases.xlsx</code>:</strong> ตารางกรณีทดสอบรวมระบบโมเดลใหม่ 14 Use Cases (47 รายการทดสอบ) พร้อม RTM 14 Use Cases ครบ 100%</li>
         <li><strong><code>docs/learning/</code>:</strong> บทเรียนการเขียนโค้ด Backend ด้วยมือตนเอง (Lesson 1-3)</li>
         <li><strong><code>docs/year-4-capstone/</code>:</strong> 6 พิมพ์เขียวสถาปัตยกรรมสำหรับต่อยอดปี 4 (แยกไว้ใน Branch <code>feature/year4-capstone</code>)</li>
         <li><strong><code>docs/PROJECT-DEVELOPMENT-LOG.md</code>:</strong> ไฟล์ประวัติการพัฒนาดั้งเดิมในรูปแบบ Markdown</li>

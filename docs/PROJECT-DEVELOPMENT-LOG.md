@@ -2027,3 +2027,28 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 - **การออกแบบฟอร์แมต:** ใช้ฟอนต์ `Tahoma`, หัวตารางโทนสี Slate (`#1E293B`), ป้ายกำกับสถานะสีเขียว Emerald (`#DCFCE7` / `#15803D`), กำหนดความกว้างคอลัมน์อัตโนมัติ และตรึงแถวหัวตาราง (Freeze Panes) ทุก Sheet
 - **ไฟล์ผลลัพธ์:** จัดเก็บไว้ที่ `docs/academic/Draftly-System-Test-Cases.xlsx` พร้อมทำลิงก์เชื่อมโยงในเอกสารวิชาการ
 
+### 45.6 การจัดทำตารางกรณีทดสอบชุดใหม่ตามโมเดลผัง 14 Use Cases (Draftly-System-Test-Cases-14-UseCases.xlsx)
+- **ที่มาและความต้องการ:** ผู้ใช้ได้อัปโหลดภาพ Use Case Diagram สถาปัตยกรรม 14 Use Cases (แยกฟังก์ชันลงทะเบียน, เข้าสู่ระบบ, และจัดการบัญชีส่วนตัว ออกจากกันอย่างเป็นอิสระ พร้อม 3 บทบาท Member, Manager, Admin) และมีคำสั่งเฉพาะเจาะจงให้จัดทำตารางกรณีทดสอบในรูปแบบ Excel ใหม่แยกต่างหากโดยไม่แก้ไขหรือเขียนทับไฟล์เดิม ("อิงตามนี้ แล้วสร้าง excel ใหม่เลยนะไม่ต้องแก้ของเก่า")
+- **การจัดโครงสร้าง Use Cases ทั้ง 14 รายการ:**
+  - `UC-01:` ลงทะเบียน (Member)
+  - `UC-02:` เข้าสู่ระบบ (Member, Manager, Admin)
+  - `UC-03:` จัดการบัญชีส่วนตัว (Member, Manager, Admin)
+  - `UC-04:` เข้าร่วมทีมด้วยรหัสทีม (Member / Manager สืบทอด)
+  - `UC-05:` จัดการและส่งมอบงานย่อย (Member)
+  - `UC-06:` เสนอและแลกเปลี่ยนแนวคิดคอนเทนต์ (Member / Manager สืบทอด)
+  - `UC-07:` ติดตามความคืบหน้าและกิจกรรมทีมแบบเรียลไทม์ (Member / Manager สืบทอด)
+  - `UC-08:` บริหารจัดการทีมและกำหนดตำแหน่งงาน (Manager)
+  - `UC-09:` สร้างชิ้นงานและมอบหมายงานผลิต (Manager)
+  - `UC-10:` ตรวจรับ สั่งแก้ไข และอนุมัติชิ้นงาน (Manager)
+  - `UC-11:` เผยแพร่ผลงานสู่สาธารณะ (Manager)
+  - `UC-12:` บริหารจัดการผู้ใช้งาน ทีมงาน และสิทธิ์ระบบ (Admin)
+  - `UC-13:` กำกับดูแลชิ้นงานและภารกิจทั้งหมดในระบบ (Admin)
+  - `UC-14:` ตรวจสอบสถานะระบบและประวัติการดำเนินงาน (Admin)
+- **เครื่องมือและการพัฒนา:** พัฒนาสคริปต์สร้างตารางอัตโนมัติ `tools/generate_excel_tests_14uc.py`
+- **การออกแบบ 4 แผ่นงาน (Worksheets):**
+  1. `Summary & Dashboard`: สรุปตัวชี้วัดหลัก 47 รายการทดสอบ (Manual 20 + Automated 27, ผ่าน 100%), ตารางแจกแจงขอบเขต 14 Use Cases พร้อมเปรียบเทียบบทบาท และข้อมูลสภาพแวดล้อมระบบ
+  2. `Manual Test Cases`: 20 กรณีทดสอบตามมาตรฐาน IEEE 829 (ครอบคลุมทั้ง Registration Positive/Negative, Login, Profile Edit, Task Management, Submission, Revisions, 1-Tap Approval, Global CMS, และ Team Isolation Guard)
+  3. `Robot Automated Tests`: 27 กรณีทดสอบอัตโนมัติจาก 5 Test Suites ครอบคลุม API Endpoints และ Assertions
+  4. `Traceability Matrix (RTM)`: ตารางสอบกลับความต้องการ (Requirements Traceability Matrix) เชื่อมโยงขอบเขต UC-01 ถึง UC-14 เข้ากับ Test Cases ทั้งสองรูปแบบครบ 100%
+- **ไฟล์ผลลัพธ์ใหม่:** จัดเก็บอย่างเป็นอิสระไว้ที่ `docs/academic/Draftly-System-Test-Cases-14-UseCases.xlsx` โดยยังคงรักษาไฟล์เดิม `Draftly-System-Test-Cases.xlsx` ไว้อย่างสมบูรณ์ตามความต้องการของผู้ใช้
+

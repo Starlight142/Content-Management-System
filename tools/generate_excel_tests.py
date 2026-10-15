@@ -438,3 +438,4 @@ def build_test_excel(output_path):
 if __name__ == '__main__':
     target = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'docs', 'academic', 'Draftly-System-Test-Cases.xlsx'))
     build_test_excel(target)
+
