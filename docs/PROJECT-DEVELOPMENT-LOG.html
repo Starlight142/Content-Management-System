@@ -1765,6 +1765,9 @@
         <li><strong>สเปรดชีตมาตรฐานกระบวนการทดสอบซอฟต์แวร์ 4 ขั้นตอน (<code>docs/academic/Draftly-Software-Testing-Specification.xlsx</code>):</strong>
           สร้างสคริปต์ <code>tools/generate_excel_stlc_specification.py</code> ออกแบบสเปรดชีตมาตรฐาน 5 แผ่นงาน (Overview & References, 1. Test Planning, 2. Test Case Summary, 3. Test Case, 4. Test Report) บรรจุตารางแสดงหัวข้อ แหล่งอ้างอิง และส่วนที่นำมาอ้างอิงอย่างชัดเจน พร้อมบันทึกผลการทดสอบจริงเชิงประจักษ์ 49 รายการ และ Defect Incident Report (0 Defects)
         </li>
+        <li><strong>การส่งออกข้อมูลฐานข้อมูลระบบทั้งหมด (<code>master/backend/dump/</code> & <code>docs/academic/Draftly-Database-Export.xlsx</code>):</strong>
+          พัฒนาสคริปต์ <code>master/backend/src/database/export_db.js</code> ส่งออกข้อมูล MongoDB ครบทั้ง 6 Collections (212 เรคคอร์ด) เป็นไฟล์ JSON และสคริปต์ <code>tools/export_database_to_excel.py</code> แปลงข้อมูลเป็นสเปรดชีต Excel 6 แผ่นงานสำหรับเปิดอ่านและตรวจสอบ
+        </li>
       </ul>
     </section>
 
@@ -1777,6 +1780,8 @@
         <li><strong><code>AI-MEMORY.md</code>:</strong> ไฟล์ความจำและบริบทระบบเชิงลึกสำหรับ AI และการย้ายเครื่องทำงาน</li>
         <li><strong><code>AGENTS.md</code>:</strong> ข้อกำหนดและคู่มือปฏิบัติการมาตรฐานสำหรับ Coding Agent</li>
         <li><strong><code>docs/academic/</code>:</strong> 12 เอกสารวิชาการ, ตารางกรณีทดสอบ Excel, และพิมพ์เขียวสถาปัตยกรรมพร้อมส่งอาจารย์</li>
+        <li><strong><code>docs/academic/Draftly-Database-Export.xlsx</code>:</strong> ไฟล์สเปรดชีตส่งออกข้อมูลสดจากฐานข้อมูล MongoDB ครบทั้ง 6 Collections (Users, Teams, Contents, Tasks, Ideas, TeamActivities)</li>
+        <li><strong><code>master/backend/dump/content_management/</code>:</strong> โฟลเดอร์จัดเก็บไฟล์ JSON Dump ทั้งหมดของฐานข้อมูลระบบ</li>
         <li><strong><code>docs/academic/Draftly-Software-Testing-Specification.xlsx</code>:</strong> เอกสารกระบวนการทดสอบซอฟต์แวร์มาตรฐาน 4 ขั้นตอน (STLC Framework) พร้อมตารางแสดงการอ้างอิงและบันทึกผลจริง</li>
         <li><strong><code>docs/academic/Draftly-System-Test-Cases-14-UseCases.xlsx</code>:</strong> ตารางกรณีทดสอบรวมระบบโมเดลใหม่ 14 Use Cases (47 รายการทดสอบ) พร้อม RTM 14 Use Cases ครบ 100%</li>
         <li><strong><code>docs/academic/Draftly-System-Test-Cases.xlsx</code>:</strong> ตารางกรณีทดสอบรวมระบบโมเดลเดิม (Manual + Robot) และ Requirements Traceability Matrix (RTM)</li>

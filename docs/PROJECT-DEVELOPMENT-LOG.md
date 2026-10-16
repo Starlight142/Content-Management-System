@@ -2068,3 +2068,20 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 - **การซิงโครไนซ์ Robot Framework Suite:** เพิ่มกรณีทดสอบ `TC_AUTH_07` (Verify User Registration) ใน `tests/robot/testcases/01_authentication_tests.robot` ส่งผลให้ชุดทดสอบอัตโนมัติรันผ่านครบทั้ง 27 รายการ (100% Pass Rate) สอดคล้องกับตารางใน Excel 100%
 - **ไฟล์ผลลัพธ์:** จัดเก็บไว้ที่ `docs/academic/Draftly-Software-Testing-Specification.xlsx`
 
+### 45.8 การส่งออกข้อมูลฐานข้อมูลระบบทั้งหมด (MongoDB Database Export & Dump)
+- **ที่มาและความต้องการ:** ผู้ใช้มีความต้องการดึงข้อมูลทั้งหมดในฐานข้อมูล MongoDB (`content_management`) ออกมาเพื่อนำไปตรวจสอบ สำรองข้อมูล หรือเปิดดูในรูปแบบสเปรดชีต
+- **การดึงข้อมูลและสร้างชุด JSON Dump:**
+  - พัฒนาสคริปต์ `master/backend/src/database/export_db.js` เชื่อมต่อฐานข้อมูล MongoDB จริง
+  - ส่งออกข้อมูลครบทั้ง 6 Collections รวม 212 เรคคอร์ด จัดเก็บใน `master/backend/dump/content_management/`:
+    - `users.json` (9 เรคคอร์ด): บัญชีผู้ใช้ทุกบทบาท (Admin, Manager, Member, Outsider และ Test Users)
+    - `teams.json` (2 เรคคอร์ด): ข้อมูลทีม Content Team A (TEAM-A) และ Content Team B (TEAM-B)
+    - `contents.json` (11 เรคคอร์ด): รายการชิ้นงานคอนเทนต์ทุกแพลตฟอร์มและสถานะการผลิต
+    - `tasks.json` (14 เรคคอร์ด): รายการงานย่อยที่มอบหมายให้สมาชิก พร้อมสถานะและ Deliverable URLs
+    - `ideas.json` (6 เรคคอร์ด): แนวคิดคอนเทนต์บนกระดานระดมสมองของทีม
+    - `teamactivities.json` (170 เรคคอร์ด): บันทึกประวัติและฟีดกิจกรรมแบบเรียลไทม์
+    - `full_database_dump.json`: ไฟล์รวมข้อมูลทั้งฐานข้อมูลในรูปแบบก้อนเดียว
+    - `export_summary.json`: ข้อมูลสรุปจำนวนและเวลาส่งออก
+- **การจัดทำไฟล์สเปรดชีตฐานข้อมูลในรูปแบบ Excel:**
+  - พัฒนาสคริปต์ `tools/export_database_to_excel.py` แปลงข้อมูล JSON สู่ Excel
+  - สร้างไฟล์ `docs/academic/Draftly-Database-Export.xlsx` ประกอบด้วย 6 แผ่นงาน (Users, Teams, Contents, Tasks, Ideas, TeamActivities) ตกแต่งหัวตาราง Slate Theme และตรึงแถวหัวตารางทุกแผ่นงาน
+
