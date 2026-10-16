@@ -2085,3 +2085,13 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
   - พัฒนาสคริปต์ `tools/export_database_to_excel.py` แปลงข้อมูล JSON สู่ Excel
   - สร้างไฟล์ `docs/academic/Draftly-Database-Export.xlsx` ประกอบด้วย 6 แผ่นงาน (Users, Teams, Contents, Tasks, Ideas, TeamActivities) ตกแต่งหัวตาราง Slate Theme และตรึงแถวหัวตารางทุกแผ่นงาน
 
+### 45.9 การจัดทำสคริปต์และคำสั่งนำเข้าฐานข้อมูลอัตโนมัติ (MongoDB Import Automation)
+- **ที่มาและความต้องการ:** อำนวยความสะดวกในการนำข้อมูล JSON Dump ที่ดึงออกมา กู้คืนกลับเข้าสู่ฐานข้อมูล MongoDB (`content_management`) ได้อย่างสมบูรณ์โดยไม่ต้องพึ่งพาเครื่องมือเสริมภายนอก
+- **การพัฒนาระบบ Import อัจฉริยะ (`import_db.js`):**
+  - พัฒนาสคริปต์ `master/backend/src/database/import_db.js`
+  - มีระบบตรวจสอบและแปลงชนิดข้อมูลอัตโนมัติ (BSON Type Reviver): คืนค่ารหัสระบุเอกสาร (Hex 24 ตัวอักษร) สู่ `mongoose.Types.ObjectId` สำหรับคีย์ความสัมพันธ์ (`_id`, `leader`, `teamId`, `creatorId`, `assignedTo`, `contentId` ฯลฯ) และแปลง ISO Timestamp คืนสู่ `Date Object` อย่างสมบูรณ์ เพื่อป้องกันปัญหาโครงสร้างข้อมูลผิดเพี้ยน
+- **การเพิ่มคำสั่งรันอัตโนมัติใน `master/backend/package.json`:**
+  - `npm run db:import` : คำสั่งนำเข้าข้อมูลทั้งหมดจากโฟลเดอร์ dump คืนสู่ MongoDB
+  - `npm run db:export` : คำสั่งดึงข้อมูลล่าสุดจาก MongoDB บันทึกเป็นไฟล์ JSON Dump
+- **การทดสอบยืนยันผล:** ดำเนินการทดสอบกู้คืนข้อมูลจริง และตรวจสอบผ่าน API `/api/health` พบสถานะ Healthy พร้อมตัวชี้วัดครบถ้วน 100% (Users: 9, Contents: 11, Tasks: 14, Logs: 170)
+

@@ -1768,6 +1768,9 @@
         <li><strong>การส่งออกข้อมูลฐานข้อมูลระบบทั้งหมด (<code>master/backend/dump/</code> & <code>docs/academic/Draftly-Database-Export.xlsx</code>):</strong>
           พัฒนาสคริปต์ <code>master/backend/src/database/export_db.js</code> ส่งออกข้อมูล MongoDB ครบทั้ง 6 Collections (212 เรคคอร์ด) เป็นไฟล์ JSON และสคริปต์ <code>tools/export_database_to_excel.py</code> แปลงข้อมูลเป็นสเปรดชีต Excel 6 แผ่นงานสำหรับเปิดอ่านและตรวจสอบ
         </li>
+        <li><strong>การนำเข้าและกู้คืนฐานข้อมูลอัตโนมัติ (<code>npm run db:import</code> & <code>master/backend/src/database/import_db.js</code>):</strong>
+          พัฒนาสคริปต์ <code>master/backend/src/database/import_db.js</code> พร้อมระบบ BSON Type Reviver ตรวจสอบและแปลงสตริง Hex 24 ตัวอักษรและเวลา ISO คืนสู่ <code>ObjectId</code> และ <code>Date</code> อัตโนมัติ เพื่อกู้คืนข้อมูลครบทั้ง 6 คอลเลกชันจากโฟลเดอร์ dump เข้าสู่ MongoDB (<code>content_management</code>) อย่างปลอดภัยและคงความสัมพันธ์ระหว่างโมเดล 100% พร้อมลงทะเบียนคำสั่งลัด <code>npm run db:import</code> และ <code>npm run db:export</code> ใน <code>package.json</code>
+        </li>
       </ul>
     </section>
 
