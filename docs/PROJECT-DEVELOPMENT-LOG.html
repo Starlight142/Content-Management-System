@@ -1771,18 +1771,22 @@
         <li><strong>การนำเข้าและกู้คืนฐานข้อมูลอัตโนมัติ (<code>npm run db:import</code> & <code>master/backend/src/database/import_db.js</code>):</strong>
           พัฒนาสคริปต์ <code>master/backend/src/database/import_db.js</code> พร้อมระบบ BSON Type Reviver ตรวจสอบและแปลงสตริง Hex 24 ตัวอักษรและเวลา ISO คืนสู่ <code>ObjectId</code> และ <code>Date</code> อัตโนมัติ เพื่อกู้คืนข้อมูลครบทั้ง 6 คอลเลกชันจากโฟลเดอร์ dump เข้าสู่ MongoDB (<code>content_management</code>) อย่างปลอดภัยและคงความสัมพันธ์ระหว่างโมเดล 100% พร้อมลงทะเบียนคำสั่งลัด <code>npm run db:import</code> และ <code>npm run db:export</code> ใน <code>package.json</code>
         </li>
+        <li><strong>การจับภาพหน้าจอเว็บแอดมินทั้ง 12 หน้าจอและบรรจุลงในเอกสาร Word หัวข้อ 3.2 (<code>docs/screenshots/admin-web/</code> & <code>docs/academic/SRS-ผลิตสื่อ-สมบูรณ์.docx</code>):</strong>
+          พัฒนาสคริปต์ <code>tools/capture_admin_web_screenshots.py</code> บันทึกภาพหน้าจอการใช้งานจริงของ Admin Web ทั้ง 12 หน้าจอ/Modal ความละเอียดสูง และพัฒนาสคริปต์ <code>tools/update_word_admin_screenshots.py</code> แทรกหัวข้อย่อย <code>3.2.1</code> ถึง <code>3.2.12</code> พร้อมคำอธิบายภาษาไทยและฟิลด์ลำดับภาพ <code>ภาพที่ 46</code> ถึง <code>ภาพที่ 57</code> ลงในเอกสาร Word โดยปรับลำดับภาพถัดไปเป็น <code>ภาพที่ 58</code> และ <code>ภาพที่ 59</code> อย่างต่อเนื่อง
+        </li>
       </ul>
     </section>
 
     <!-- Section Catalog -->
     <section class="section-card" id="catalog">
       <h2 class="section-title">แผนที่ไฟล์และดัชนีเอกสารทั้งหมด (Documentation Catalog)</h2>
-      <div class="phase-meta"><span>🕒 ปัจจุบัน 16 ตุลาคม 2026</span></div>
+      <div class="phase-meta"><span>🕒 ปัจจุบัน 17 ตุลาคม 2026</span></div>
       <p>เอกสารทั้งหมดในระบบจัดเก็บเป็นสัดส่วนพร้อมเรียกใช้งาน:</p>
       <ul>
         <li><strong><code>AI-MEMORY.md</code>:</strong> ไฟล์ความจำและบริบทระบบเชิงลึกสำหรับ AI และการย้ายเครื่องทำงาน</li>
         <li><strong><code>AGENTS.md</code>:</strong> ข้อกำหนดและคู่มือปฏิบัติการมาตรฐานสำหรับ Coding Agent</li>
-        <li><strong><code>docs/academic/</code>:</strong> 12 เอกสารวิชาการ, ตารางกรณีทดสอบ Excel, และพิมพ์เขียวสถาปัตยกรรมพร้อมส่งอาจารย์</li>
+        <li><strong><code>docs/academic/</code>:</strong> 12 เอกสารวิชาการ, เอกสาร Word รายงานโครงงานฉบับสมบูรณ์ (<code>SRS-ผลิตสื่อ-สมบูรณ์.docx</code>), ตารางกรณีทดสอบ Excel, และพิมพ์เขียวสถาปัตยกรรมพร้อมส่งอาจารย์</li>
+        <li><strong><code>docs/screenshots/admin-web/</code>:</strong> ภาพหน้าจอการใช้งานจริงของระบบ Admin Web ทั้ง 12 หน้าจอ (<code>01_admin_login.png</code> ถึง <code>12_admin_settings_health.png</code>)</li>
         <li><strong><code>docs/academic/Draftly-Database-Export.xlsx</code>:</strong> ไฟล์สเปรดชีตส่งออกข้อมูลสดจากฐานข้อมูล MongoDB ครบทั้ง 6 Collections (Users, Teams, Contents, Tasks, Ideas, TeamActivities)</li>
         <li><strong><code>master/backend/dump/content_management/</code>:</strong> โฟลเดอร์จัดเก็บไฟล์ JSON Dump ทั้งหมดของฐานข้อมูลระบบ</li>
         <li><strong><code>docs/academic/Draftly-Software-Testing-Specification.xlsx</code>:</strong> เอกสารกระบวนการทดสอบซอฟต์แวร์มาตรฐาน 4 ขั้นตอน (STLC Framework) พร้อมตารางแสดงการอ้างอิงและบันทึกผลจริง</li>
