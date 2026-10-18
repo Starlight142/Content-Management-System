@@ -58,6 +58,8 @@ compass-connections.json
 *.exe
 .venv/
 tests/robot/results/
+master/database/backups/
 
 # Local private documents
 PROJECT-HANDOVER.md
+

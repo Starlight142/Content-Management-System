@@ -1,102 +1,149 @@
 const mongoose = require('mongoose');
-const fs = require('fs');
-const path = require('path');
+const readline = require('readline');
 require('dotenv').config();
+const {
+  inspectAndCompareDatabase,
+  printComparisonReport,
+  importAllCollections,
+  DUMP_DIR,
+} = require('../services/dbSync.service');
 
-const OBJECT_ID_KEYS = new Set([
-  '_id',
-  'leader',
-  'user',
-  'teamId',
-  'creatorId',
-  'assignedTo',
-  'contentId',
-  'createdBy',
-  'entityId'
-]);
-
-const isObjectIdHex = (str) => typeof str === 'string' && /^[0-9a-fA-F]{24}$/.test(str);
-const isIsoDate = (str) => typeof str === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(str);
-
-const reviveDocument = (data) => {
-  if (Array.isArray(data)) {
-    return data.map(reviveDocument);
+const askPrompt = (question) => {
+  if (!process.stdin.isTTY) {
+    return Promise.resolve('');
   }
-  if (data !== null && typeof data === 'object') {
-    const res = {};
-    for (const [key, val] of Object.entries(data)) {
-      if (OBJECT_ID_KEYS.has(key) && isObjectIdHex(val)) {
-        res[key] = new mongoose.Types.ObjectId(val);
-      } else if (isIsoDate(val)) {
-        res[key] = new Date(val);
-      } else if (typeof val === 'object') {
-        res[key] = reviveDocument(val);
-      } else {
-        res[key] = val;
-      }
-    }
-    return res;
-  }
-  return data;
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve((answer || '').trim());
+    });
+  });
 };
 
-const importDatabase = async () => {
+const runImport = async () => {
   const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/content_management';
-  const dumpDir = path.join(__dirname, '..', '..', 'dump', 'content_management');
-
-  if (!fs.existsSync(dumpDir)) {
-    console.error(`Dump directory not found at: ${dumpDir}`);
-    process.exit(1);
-  }
-
-  const collections = [
-    'users',
-    'teams',
-    'contents',
-    'tasks',
-    'ideas',
-    'teamactivities'
-  ];
+  const args = new Set(process.argv.slice(2));
+  const isCheckOnly = args.has('--check-only');
+  const isAuto = args.has('--auto');
+  const isForce = args.has('--force');
 
   try {
-    console.log(`Connecting to MongoDB at: ${mongoUri}`);
+    console.log(`[Import-DB] Connecting to MongoDB at: ${mongoUri}`);
     await mongoose.connect(mongoUri);
-    console.log('Connected successfully.\nStarting restore...');
+    console.log('[Import-DB] Connected successfully.\n');
 
-    const db = mongoose.connection.db;
+    const report = await inspectAndCompareDatabase();
+    printComparisonReport(report);
 
-    for (const collName of collections) {
-      const filePath = path.join(dumpDir, `${collName}.json`);
-      if (!fs.existsSync(filePath)) {
-        console.warn(`File not found: ${filePath}, skipping...`);
-        continue;
-      }
-
-      const raw = fs.readFileSync(filePath, 'utf-8');
-      const docs = JSON.parse(raw);
-
-      if (!Array.isArray(docs) || docs.length === 0) {
-        console.log(`[${collName}] No documents to import.`);
-        continue;
-      }
-
-      const coll = db.collection(collName);
-      // Clean existing collection first
-      await coll.deleteMany({});
-
-      // Revive ObjectIds and Dates
-      const revivedDocs = docs.map(reviveDocument);
-      await coll.insertMany(revivedDocs);
-      console.log(`Restored collection [${collName}]: ${revivedDocs.length} documents.`);
+    if (isCheckOnly) {
+      await mongoose.disconnect();
+      process.exit(0);
     }
 
-    console.log('\nDatabase restore completed successfully.');
+    if (report.status === 'NO_DUMP' || report.status === 'BOTH_EMPTY') {
+      console.error(`[Import-DB] No portable database files found in: ${DUMP_DIR}`);
+      await mongoose.disconnect();
+      process.exit(1);
+    }
+
+    // Case 1: Local database is empty -> Auto-Import immediately
+    if (report.status === 'EMPTY_DB') {
+      console.log('\n[Import-DB] ไม่พบข้อมูลในฐานข้อมูลของเครื่องนี้ (EMPTY_DB)');
+      console.log('[Import-DB] กำลังนำเข้าข้อมูลทั้ง 6 ตารางและสร้าง Index อัตโนมัติ...');
+      const res = await importAllCollections({
+        createBackupBeforeImport: false,
+        reason: 'cli-import-empty-db',
+      });
+      console.log(`\n[Import-DB] นำเข้าฐานข้อมูลสำเร็จ (${res.totalImported} รายการ)`);
+      await mongoose.disconnect();
+      process.exit(0);
+    }
+
+    // Case 2: Local database has 100% identical internal records
+    if (report.status === 'IDENTICAL') {
+      console.log('\n[Import-DB] ตรวจพบฐานข้อมูล "content_management" ในเครื่องนี้ และข้อมูลภายในทุกตารางตรงกับไฟล์ 100% แล้ว');
+      if (isForce) {
+        console.log('[Import-DB] (--force) กำลังนำเข้าข้อมูลทับอีกครั้ง...');
+        const res = await importAllCollections({
+          createBackupBeforeImport: false,
+          reason: 'cli-import-force-identical',
+        });
+        console.log(`[Import-DB] นำเข้าฐานข้อมูลสำเร็จ (${res.totalImported} รายการ)`);
+      } else if (!isAuto && process.stdin.isTTY) {
+        const ans = await askPrompt(
+          '\nต้องการนำเข้าข้อมูลทับซ้ำอีกครั้งหรือไม่? (พิมพ์ Y เพื่อลงทับ / กด Enter หรือ N เพื่อข้าม): '
+        );
+        if (ans.toUpperCase() === 'Y') {
+          const res = await importAllCollections({
+            createBackupBeforeImport: false,
+            reason: 'cli-import-manual-reimport',
+          });
+          console.log(`\n[Import-DB] นำเข้าฐานข้อมูลทับสำเร็จ (${res.totalImported} รายการ)`);
+        } else {
+          console.log('[Import-DB] ข้ามการนำเข้าซ้ำ (ฐานข้อมูลในเครื่องพร้อมใช้งานอยู่แล้ว)');
+        }
+      } else {
+        console.log('[Import-DB] ข้ามการนำเข้าซ้ำอัตโนมัติ (ข้อมูลตรงกัน 100% อยู่แล้ว)');
+      }
+      await mongoose.disconnect();
+      process.exit(0);
+    }
+
+    // Case 3: Local database exists, but internal records differ
+    if (report.status === 'DIFFERENT') {
+      console.log('\n[Import-DB] ตรวจพบฐานข้อมูล "content_management" ในเครื่องนี้ แต่ข้อมูลภายในแตกต่างจากไฟล์พกพา:');
+      console.log(`  - เวลาอัปเดตล่าสุดในเครื่อง : ${report.latestDbTimestamp || '-'}`);
+      console.log(`  - เวลาอัปเดตล่าสุดในไฟล์   : ${report.latestDumpTimestamp || '-'}`);
+
+      if (isForce) {
+        const res = await importAllCollections({
+          createBackupBeforeImport: true,
+          reason: 'cli-import-force-different',
+        });
+        console.log(`\n[Import-DB] สำรองข้อมูลเดิมไว้ที่: ${res.backupFolder}`);
+        console.log(`[Import-DB] นำเข้าฐานข้อมูลชุดใหม่สำเร็จ (${res.totalImported} รายการ)`);
+      } else if (isAuto || !process.stdin.isTTY) {
+        const res = await importAllCollections({
+          createBackupBeforeImport: true,
+          reason: 'cli-import-auto-backup-and-import',
+        });
+        console.log(`\n[Import-DB] สำรองข้อมูลเดิมไว้ที่: ${res.backupFolder}`);
+        console.log(`[Import-DB] นำเข้าฐานข้อมูลชุดใหม่สำเร็จ (${res.totalImported} รายการ)`);
+      } else {
+        console.log('\nตัวเลือกการจัดการฐานข้อมูลที่มีอยู่:');
+        console.log('  [B] สำรองฐานข้อมูลเดิมในเครื่องไว้ที่ master/database/backups/ แล้วนำเข้าไฟล์ใหม่ (แนะนำ)');
+        console.log('  [Y] นำเข้าไฟล์ใหม่ทับทันทีโดยไม่สำรอง');
+        console.log('  [N] ยกเลิกการนำเข้า (คงข้อมูลเดิมในเครื่องไว้)');
+        const choice = (
+          await askPrompt('\nกรุณาเลือก [B/Y/N] (กด Enter เพื่อเลือก B): ')
+        ).toUpperCase() || 'B';
+
+        if (choice === 'N') {
+          console.log('[Import-DB] ยกเลิกการนำเข้า (คงข้อมูลเดิมในเครื่องไว้)');
+        } else {
+          const shouldBackup = choice !== 'Y';
+          const res = await importAllCollections({
+            createBackupBeforeImport: shouldBackup,
+            reason: 'cli-import-interactive-different',
+          });
+          if (res.backupFolder) {
+            console.log(`\n[Import-DB] สำรองข้อมูลเดิมไว้ที่: ${res.backupFolder}`);
+          }
+          console.log(`[Import-DB] นำเข้าฐานข้อมูลชุดใหม่สำเร็จ (${res.totalImported} รายการ)`);
+        }
+      }
+    }
+
     await mongoose.disconnect();
     process.exit(0);
   } catch (error) {
-    console.error('Error importing database:', error);
+    console.error('[Import-DB] Error importing database:', error.message);
     process.exit(1);
   }
 };
 
-importDatabase();
+runImport();

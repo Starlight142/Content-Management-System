@@ -1,0 +1,322 @@
+[
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531c0"
+    },
+    "title": "ตัดต่อแก้ไขคลิปและปรับแต่งเสียง (Tech News Recap)",
+    "contentId": {
+      "$oid": "6ad3971e5afbfde3ae8531bd"
+    },
+    "taskType": "Editing",
+    "assignedTo": {
+      "$oid": "6ad3971e5afbfde3ae8531b1"
+    },
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    },
+    "progress": 60,
+    "status": "REVISION",
+    "dueDate": {
+      "$date": "2026-09-24T00:00:00.000Z"
+    },
+    "submissionUrl": "https://drive.google.com/file/d/tech_news_recap_v1_draft",
+    "notes": "นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ",
+    "revisionNotes": "นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ",
+    "replyNotes": "",
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.847Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.847Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531c1"
+    },
+    "title": "ตัดต่อวิดีโอ (Highlight & Sound FX)",
+    "contentId": {
+      "$oid": "6ad3971e5afbfde3ae8531ba"
+    },
+    "taskType": "Editing",
+    "assignedTo": {
+      "$oid": "6ad3971e5afbfde3ae8531b1"
+    },
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    },
+    "progress": 70,
+    "status": "IN_PROGRESS",
+    "dueDate": {
+      "$date": "2026-09-26T00:00:00.000Z"
+    },
+    "submissionUrl": "",
+    "notes": "กำลังใส่ Sound FX และ Subtitle ส่วนท้ายคลิป",
+    "revisionNotes": "",
+    "replyNotes": "",
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.848Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.848Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531c2"
+    },
+    "title": "Export วิดีโอ Master 4K Color Graded",
+    "contentId": {
+      "$oid": "6ad3971e5afbfde3ae8531bb"
+    },
+    "taskType": "Editing",
+    "assignedTo": {
+      "$oid": "6ad3971e5afbfde3ae8531b1"
+    },
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    },
+    "progress": 85,
+    "status": "REVIEW",
+    "dueDate": {
+      "$date": "2026-09-25T00:00:00.000Z"
+    },
+    "submissionUrl": "https://frame.io/player/product_review_master_4k",
+    "notes": "ปรับ Color Grading และ Render 4K เสร็จแล้ว ส่งให้ Manager ตรวจสอบ",
+    "revisionNotes": "",
+    "replyNotes": "",
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.848Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.848Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531c3"
+    },
+    "title": "คัดเลือกฟุตเทจ B-Roll สำหรับคลิปเสียงพากย์ AI",
+    "contentId": {
+      "$oid": "6ad3971e5afbfde3ae8531bf"
+    },
+    "taskType": "Editing",
+    "assignedTo": {
+      "$oid": "6ad3971e5afbfde3ae8531b1"
+    },
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    },
+    "progress": 0,
+    "status": "TODO",
+    "dueDate": {
+      "$date": "2026-09-29T00:00:00.000Z"
+    },
+    "submissionUrl": "",
+    "notes": "รอดำเนินการหลังจากสคริปต์เสร็จสมบูรณ์",
+    "revisionNotes": "",
+    "replyNotes": "",
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.849Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.849Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531c4"
+    },
+    "title": "Export Teaser สรุปอุปกรณ์จัดโต๊ะ 30 วินาที",
+    "contentId": {
+      "$oid": "6ad3971e5afbfde3ae8531be"
+    },
+    "taskType": "Editing",
+    "assignedTo": {
+      "$oid": "6ad3971e5afbfde3ae8531b1"
+    },
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    },
+    "progress": 100,
+    "status": "DONE",
+    "dueDate": {
+      "$date": "2026-09-22T00:00:00.000Z"
+    },
+    "submissionUrl": "https://drive.google.com/file/d/desk_setup_teaser_final",
+    "notes": "ผ่านการอนุมัติเรียบร้อย",
+    "revisionNotes": "",
+    "replyNotes": "",
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.850Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.850Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531c5"
+    },
+    "title": "เขียนบทและตรวจทานสคริปต์ (Script Product Review v2)",
+    "contentId": {
+      "$oid": "6ad3971e5afbfde3ae8531bb"
+    },
+    "taskType": "Scripting",
+    "assignedTo": {
+      "$oid": "6ad3971e5afbfde3ae8531b2"
+    },
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    },
+    "progress": 85,
+    "status": "REVIEW",
+    "dueDate": {
+      "$date": "2026-09-24T00:00:00.000Z"
+    },
+    "submissionUrl": "https://docs.google.com/document/d/script_product_review_v2",
+    "notes": "ปรับแก้บทสนทนาและจุดเน้นสปอนเซอร์เรียบร้อยแล้ว ส่งให้ Manager ตรวจสอบ",
+    "revisionNotes": "",
+    "replyNotes": "",
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.851Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.851Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531c6"
+    },
+    "title": "ร่างสคริปต์สัมภาษณ์ AI Tutorial EP.02",
+    "contentId": {
+      "$oid": "6ad3971e5afbfde3ae8531ba"
+    },
+    "taskType": "Scripting",
+    "assignedTo": {
+      "$oid": "6ad3971e5afbfde3ae8531b2"
+    },
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    },
+    "progress": 40,
+    "status": "IN_PROGRESS",
+    "dueDate": {
+      "$date": "2026-09-27T00:00:00.000Z"
+    },
+    "submissionUrl": "",
+    "notes": "กำลังสรุปประเด็นคำถามหลัก 5 ข้อ",
+    "revisionNotes": "",
+    "replyNotes": "",
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.852Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.852Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531c7"
+    },
+    "title": "ออกแบบภาพปกและแบนเนอร์ (Thumbnail Campaign)",
+    "contentId": {
+      "$oid": "6ad3971e5afbfde3ae8531bc"
+    },
+    "taskType": "Graphic Design",
+    "assignedTo": {
+      "$oid": "6ad3971e5afbfde3ae8531b3"
+    },
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    },
+    "progress": 30,
+    "status": "IN_PROGRESS",
+    "dueDate": {
+      "$date": "2026-09-28T00:00:00.000Z"
+    },
+    "submissionUrl": "",
+    "notes": "กำลังขึ้นโครงร่าง Layout มินิมอล 3 รูปแบบ",
+    "revisionNotes": "",
+    "replyNotes": "",
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.852Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.852Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531c8"
+    },
+    "title": "จัดทำ Infographic กราฟิกสถิติ Tech News Recap",
+    "contentId": {
+      "$oid": "6ad3971e5afbfde3ae8531bd"
+    },
+    "taskType": "Graphic Design",
+    "assignedTo": {
+      "$oid": "6ad3971e5afbfde3ae8531b3"
+    },
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    },
+    "progress": 0,
+    "status": "TODO",
+    "dueDate": {
+      "$date": "2026-09-25T00:00:00.000Z"
+    },
+    "submissionUrl": "",
+    "notes": "เตรียมแผนภูมิเปรียบเทียบ AI Models",
+    "revisionNotes": "",
+    "replyNotes": "",
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.853Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.853Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531c9"
+    },
+    "title": "ออกแบบ Cover Art Desk Setup Minimalist",
+    "contentId": {
+      "$oid": "6ad3971e5afbfde3ae8531be"
+    },
+    "taskType": "Graphic Design",
+    "assignedTo": {
+      "$oid": "6ad3971e5afbfde3ae8531b3"
+    },
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    },
+    "progress": 100,
+    "status": "DONE",
+    "dueDate": {
+      "$date": "2026-09-22T00:00:00.000Z"
+    },
+    "submissionUrl": "https://drive.google.com/file/d/cover_desk_setup_final",
+    "notes": "อัปโหลดภาพขนาด 1920x1080 ผ่านเกณฑ์",
+    "revisionNotes": "",
+    "replyNotes": "",
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.854Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.854Z"
+    },
+    "__v": 0
+  }
+]

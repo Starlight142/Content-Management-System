@@ -1,0 +1,46 @@
+{
+  "database": "content_management",
+  "exportedAt": "2026-10-18T10:11:03.745Z",
+  "exportReason": "cli-clean-and-export",
+  "overallSha256": "d3b402b74ab060759700be3ca8b69f4cd89e59409c1dcd7979c6426c205b212f",
+  "latestRecordUpdatedAt": "2026-10-17T15:43:01.374Z",
+  "totalDocuments": 33,
+  "collections": [
+    {
+      "name": "users",
+      "count": 6,
+      "sha256": "caa4f711b798e9f063cdcf8fc6cbad938d591c42d7f54cd02141ca766296c27a",
+      "latestUpdatedAt": "2026-10-17T15:43:01.374Z"
+    },
+    {
+      "name": "teams",
+      "count": 2,
+      "sha256": "587f9000b9a475b91ccc2aa7c8caa4503f37f503e824de71fe0c3c38c1934236",
+      "latestUpdatedAt": "2026-10-17T15:41:18.828Z"
+    },
+    {
+      "name": "contents",
+      "count": 6,
+      "sha256": "e8113992788226a760d0d4db522c7ea49a864aa40311e27a5329ac80d348ffca",
+      "latestUpdatedAt": "2026-10-17T15:41:18.846Z"
+    },
+    {
+      "name": "tasks",
+      "count": 10,
+      "sha256": "65ee15e22692439a4f2498d4b71125cf2c69a27e418d2abdb89c81d0a26c1edb",
+      "latestUpdatedAt": "2026-10-17T15:41:18.854Z"
+    },
+    {
+      "name": "ideas",
+      "count": 3,
+      "sha256": "2dc360811d246ef45295065564777964750982db68f1215841f991da030690d9",
+      "latestUpdatedAt": "2026-10-17T15:41:18.837Z"
+    },
+    {
+      "name": "teamactivities",
+      "count": 6,
+      "sha256": "6c60183e63fb8802583c67786a46b71cc548f4028d1fe6296f14705819fc1842",
+      "latestUpdatedAt": "2026-10-17T15:26:18.855Z"
+    }
+  ]
+}

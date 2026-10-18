@@ -1,0 +1,155 @@
+[
+  {
+    "_id": "6ad3971e5afbfde3ae8531ba",
+    "title": "AI Tutorial EP.01",
+    "description": "เจาะลึกการใช้ AI ช่วย Generate Prompt และสร้าง Storyboard ฉบับสมบูรณ์",
+    "platform": "TikTok",
+    "status": "IN_PROGRESS",
+    "category": "Education",
+    "createdBy": "6ad3971e5afbfde3ae8531b1",
+    "teamId": "6ad3971e5afbfde3ae8531b5",
+    "progress": 70,
+    "dueDate": "2026-09-26T00:00:00.000Z",
+    "ideaId": "6ad3971e5afbfde3ae8531b7",
+    "metrics": [
+      {
+        "views": 45200,
+        "likes": 6200,
+        "comments": 480,
+        "shares": 1250,
+        "watchTimeSeconds": 0,
+        "averageViewDuration": 0,
+        "engagementRate": 17.5,
+        "followersGained": 0,
+        "collectedAt": "2026-10-17T15:41:18.838Z"
+      }
+    ],
+    "files": [],
+    "versions": [],
+    "reviewHistory": [],
+    "createdAt": "2026-10-17T15:41:18.839Z",
+    "updatedAt": "2026-10-17T15:41:18.839Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ad3971e5afbfde3ae8531bb",
+    "title": "Product Review 8K Camera",
+    "description": "รีวิวอุปกรณ์สตูดิโอ 8K ไมโครโฟนและไฟสตูดิโอแบบพกพา",
+    "platform": "YouTube",
+    "status": "REVIEW",
+    "category": "Tech Review",
+    "createdBy": "6ad3971e5afbfde3ae8531b2",
+    "teamId": "6ad3971e5afbfde3ae8531b5",
+    "progress": 85,
+    "dueDate": "2026-09-24T00:00:00.000Z",
+    "metrics": [
+      {
+        "views": 18400,
+        "likes": 2100,
+        "comments": 195,
+        "shares": 320,
+        "watchTimeSeconds": 0,
+        "averageViewDuration": 0,
+        "engagementRate": 14.2,
+        "followersGained": 0,
+        "collectedAt": "2026-10-17T15:41:18.841Z"
+      }
+    ],
+    "files": [],
+    "versions": [],
+    "reviewHistory": [],
+    "createdAt": "2026-10-17T15:41:18.841Z",
+    "updatedAt": "2026-10-17T15:41:18.841Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ad3971e5afbfde3ae8531bc",
+    "title": "Thumbnail Campaign",
+    "description": "ชุดภาพปกและแคมเปญโปรโมตสื่อประจำสัปดาห์บน Instagram",
+    "platform": "Instagram",
+    "status": "IN_PROGRESS",
+    "category": "Design",
+    "createdBy": "6ad3971e5afbfde3ae8531b3",
+    "teamId": "6ad3971e5afbfde3ae8531b5",
+    "progress": 30,
+    "dueDate": "2026-09-28T00:00:00.000Z",
+    "files": [],
+    "versions": [],
+    "reviewHistory": [],
+    "metrics": [],
+    "createdAt": "2026-10-17T15:41:18.842Z",
+    "updatedAt": "2026-10-17T15:41:18.842Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ad3971e5afbfde3ae8531bd",
+    "title": "Tech News Daily Recap",
+    "description": "คลิปสรุปข่าว AI ประจำวันใน 60 วินาที เน้นความกระชับและเสียงพากย์คมชัด",
+    "platform": "TikTok",
+    "status": "REVISION",
+    "category": "News & Tech",
+    "createdBy": "6ad3971e5afbfde3ae8531b1",
+    "teamId": "6ad3971e5afbfde3ae8531b5",
+    "progress": 60,
+    "dueDate": "2026-09-24T00:00:00.000Z",
+    "reviewHistory": [
+      {
+        "reviewerId": "6ad3971e5afbfde3ae8531b0",
+        "decision": "REVISION",
+        "notes": "นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ",
+        "reviewedAt": "2026-10-17T15:01:18.843Z"
+      }
+    ],
+    "files": [],
+    "versions": [],
+    "metrics": [],
+    "createdAt": "2026-10-17T15:41:18.843Z",
+    "updatedAt": "2026-10-17T15:41:18.843Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ad3971e5afbfde3ae8531be",
+    "title": "Desk Setup Minimalist Guide",
+    "description": "วิดีโอแนะนำอุปกรณ์จัดโต๊ะทำงานสไตล์ Minimalist แสงธรรมชาติ",
+    "platform": "YouTube",
+    "status": "APPROVED",
+    "category": "Lifestyle",
+    "createdBy": "6ad3971e5afbfde3ae8531b3",
+    "teamId": "6ad3971e5afbfde3ae8531b5",
+    "progress": 100,
+    "dueDate": "2026-09-22T00:00:00.000Z",
+    "reviewHistory": [
+      {
+        "reviewerId": "6ad3971e5afbfde3ae8531b0",
+        "decision": "APPROVED",
+        "notes": "งานตัดต่อและเกรดสีผ่านเกณฑ์เรียบร้อย พร้อมสำหรับขั้นตอนการเผยแพร่",
+        "reviewedAt": "2026-10-17T13:41:18.844Z"
+      }
+    ],
+    "files": [],
+    "versions": [],
+    "metrics": [],
+    "createdAt": "2026-10-17T15:41:18.845Z",
+    "updatedAt": "2026-10-17T15:41:18.845Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ad3971e5afbfde3ae8531bf",
+    "title": "AI Voice Cloning Behind-The-Scenes",
+    "description": "เบื้องหลังการพากย์เสียงจำลองสำหรับวิดีโอสตูดิโอ",
+    "platform": "YouTube",
+    "status": "PLANNING",
+    "category": "Technology",
+    "createdBy": "6ad3971e5afbfde3ae8531b2",
+    "teamId": "6ad3971e5afbfde3ae8531b5",
+    "progress": 10,
+    "dueDate": "2026-09-30T00:00:00.000Z",
+    "files": [],
+    "versions": [],
+    "reviewHistory": [],
+    "metrics": [],
+    "createdAt": "2026-10-17T15:41:18.846Z",
+    "updatedAt": "2026-10-17T15:41:18.846Z",
+    "__v": 0
+  }
+]

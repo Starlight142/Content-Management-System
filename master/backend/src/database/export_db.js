@@ -1,61 +1,49 @@
 const mongoose = require('mongoose');
-const fs = require('fs');
-const path = require('path');
 require('dotenv').config();
+const {
+  cleanJunkDataFromDatabase,
+  exportAllCollections,
+  inspectAndCompareDatabase,
+  printComparisonReport,
+  DUMP_DIR,
+  COMPASS_DIR,
+} = require('../services/dbSync.service');
 
-const exportDatabase = async () => {
+const runExport = async () => {
   const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/content_management';
-  const outputDir = path.join(__dirname, '..', '..', 'dump', 'content_management');
-
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
+  const shouldCleanJunk = process.argv.includes('--clean-junk');
 
   try {
-    console.log(`Connecting to MongoDB at: ${mongoUri}`);
+    console.log(`[Export-DB] Connecting to MongoDB at: ${mongoUri}`);
     await mongoose.connect(mongoUri);
-    console.log('Connected successfully.');
+    console.log('[Export-DB] Connected successfully.\n');
 
-    const collections = await mongoose.connection.db.listCollections().toArray();
-    const fullDump = {};
-
-    for (const collInfo of collections) {
-      const collName = collInfo.name;
-      // Skip system collections if any
-      if (collName.startsWith('system.')) continue;
-
-      const coll = mongoose.connection.db.collection(collName);
-      const docs = await coll.find({}).toArray();
-      fullDump[collName] = docs;
-
-      const filePath = path.join(outputDir, `${collName}.json`);
-      fs.writeFileSync(filePath, JSON.stringify(docs, null, 2), 'utf-8');
-      console.log(`Exported collection [${collName}]: ${docs.length} documents -> ${filePath}`);
+    if (shouldCleanJunk) {
+      console.log('[Export-DB] Cleaning automated test junk records before export...');
+      const cleanResult = await cleanJunkDataFromDatabase();
+      console.log('[Export-DB] Cleanup summary:', JSON.stringify(cleanResult.details));
     }
 
-    const fullDumpPath = path.join(outputDir, 'full_database_dump.json');
-    fs.writeFileSync(fullDumpPath, JSON.stringify(fullDump, null, 2), 'utf-8');
-    console.log(`Full database dump saved -> ${fullDumpPath}`);
+    const summary = await exportAllCollections({
+      reason: shouldCleanJunk ? 'cli-clean-and-export' : 'cli-manual-export',
+      silent: false,
+    });
 
-    // Summary file
-    const summary = {
-      database: 'content_management',
-      exportedAt: new Date().toISOString(),
-      collections: Object.keys(fullDump).map(name => ({
-        name,
-        count: fullDump[name].length
-      }))
-    };
-    const summaryPath = path.join(outputDir, 'export_summary.json');
-    fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2), 'utf-8');
+    const report = await inspectAndCompareDatabase();
+    printComparisonReport(report);
 
-    console.log('Database export completed successfully.');
+    console.log('\n[Export-DB] Portable database files updated:');
+    console.log(`  1. Standard Dump  : ${DUMP_DIR}`);
+    console.log(`  2. Compass Import : ${COMPASS_DIR}`);
+    console.log(`  3. Total Records  : ${summary ? summary.totalDocuments : 0}`);
+    console.log(`  4. SHA-256 Digest : ${summary ? summary.overallSha256 : '-'}`);
+
     await mongoose.disconnect();
     process.exit(0);
   } catch (error) {
-    console.error('Error exporting database:', error);
+    console.error('[Export-DB] Error exporting database:', error.message);
     process.exit(1);
   }
 };
 
-exportDatabase();
+runExport();

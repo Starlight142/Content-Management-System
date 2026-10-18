@@ -11,16 +11,29 @@ const logsRoutes = require('./modules/logs/logs.routes');
 
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
+const { scheduleAutoExport, exportAllCollections } = require('./services/dbSync.service');
 
 const app = express();
 
-// Connect to MongoDB
+// Connect to MongoDB (includes automatic database inspection & sync on boot)
 connectDB();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Automatic Portable Database Export Middleware on Data Mutation
+app.use((req, res, next) => {
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+    res.on('finish', () => {
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        scheduleAutoExport(`${req.method} ${req.originalUrl}`);
+      }
+    });
+  }
+  next();
+});
 
 // Detailed Health & System Status Route (Admin Req 5)
 app.get('/api/health', async (req, res) => {
@@ -96,5 +109,23 @@ server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT} (HTTP & WebSocket)`);
 });
 
+// Flush latest database snapshot on graceful shutdown
+const handleGracefulShutdown = async (signal) => {
+  try {
+    if (mongoose.connection.readyState === 1) {
+      await exportAllCollections({ reason: `shutdown-${signal}`, silent: false });
+      await mongoose.disconnect();
+    }
+  } catch {
+    // Ignore errors during shutdown
+  } finally {
+    process.exit(0);
+  }
+};
+
+process.on('SIGINT', () => handleGracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => handleGracefulShutdown('SIGTERM'));
+
 module.exports = { app, server };
+
 

@@ -9,7 +9,9 @@
     "dev": "nodemon src/app.js",
     "seed": "node src/database/seed.js",
     "db:export": "node src/database/export_db.js",
-    "db:import": "node src/database/import_db.js"
+    "db:clean": "node src/database/export_db.js --clean-junk",
+    "db:import": "node src/database/import_db.js",
+    "db:check": "node src/database/import_db.js --check-only"
   },
   "keywords": [],
   "type": "commonjs",

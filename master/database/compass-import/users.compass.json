@@ -1,0 +1,167 @@
+[
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531af"
+    },
+    "username": "somchai_admin",
+    "email": "admin@studio.com",
+    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "firstName": "สมชาย",
+    "lastName": "ดูแลระบบ",
+    "position": "Other",
+    "role": "ADMIN",
+    "status": "ACTIVE",
+    "workingStatus": "WORKING",
+    "isOnline": true,
+    "lastActiveAt": {
+      "$date": "2026-10-17T15:43:01.374Z"
+    },
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.816Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:43:01.374Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531b0"
+    },
+    "username": "somsri_manager",
+    "email": "manager@studio.com",
+    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "firstName": "สมศรี",
+    "lastName": "จัดการทีม",
+    "position": "Production Manager",
+    "role": "MANAGER",
+    "status": "ACTIVE",
+    "workingStatus": "WORKING",
+    "isOnline": false,
+    "lastActiveAt": {
+      "$date": "2026-10-17T15:41:18.818Z"
+    },
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.818Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.829Z"
+    },
+    "__v": 0,
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531b1"
+    },
+    "username": "john_creator",
+    "email": "member@studio.com",
+    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "firstName": "John",
+    "lastName": "Editor",
+    "position": "Video Editor",
+    "role": "MEMBER",
+    "status": "ACTIVE",
+    "workingStatus": "WORKING",
+    "isOnline": false,
+    "lastActiveAt": {
+      "$date": "2026-10-17T15:41:18.819Z"
+    },
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.819Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.829Z"
+    },
+    "__v": 0,
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531b2"
+    },
+    "username": "jane_script",
+    "email": "jane@studio.com",
+    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "firstName": "Jane",
+    "lastName": "Script",
+    "position": "Script Writer",
+    "role": "MEMBER",
+    "status": "ACTIVE",
+    "workingStatus": "REVIEWING",
+    "isOnline": false,
+    "lastActiveAt": {
+      "$date": "2026-10-17T15:41:18.820Z"
+    },
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.820Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.829Z"
+    },
+    "__v": 0,
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531b3"
+    },
+    "username": "mike_graphic",
+    "email": "mike@studio.com",
+    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "firstName": "Mike",
+    "lastName": "Graphic",
+    "position": "Graphic Designer",
+    "role": "MEMBER",
+    "status": "ACTIVE",
+    "workingStatus": "WORKING",
+    "isOnline": false,
+    "lastActiveAt": {
+      "$date": "2026-10-17T15:41:18.821Z"
+    },
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.821Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.829Z"
+    },
+    "__v": 0,
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b5"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6ad3971e5afbfde3ae8531b4"
+    },
+    "username": "outsider_user",
+    "email": "outsider@studio.com",
+    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "firstName": "Bob",
+    "lastName": "Outsider",
+    "position": "Content Creator",
+    "role": "MEMBER",
+    "status": "ACTIVE",
+    "workingStatus": "IDLE",
+    "isOnline": false,
+    "lastActiveAt": {
+      "$date": "2026-10-17T15:41:18.822Z"
+    },
+    "createdAt": {
+      "$date": "2026-10-17T15:41:18.822Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-17T15:41:18.835Z"
+    },
+    "__v": 0,
+    "teamId": {
+      "$oid": "6ad3971e5afbfde3ae8531b6"
+    }
+  }
+]

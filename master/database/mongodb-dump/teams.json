@@ -1,0 +1,60 @@
+[
+  {
+    "_id": "6ad3971e5afbfde3ae8531b5",
+    "name": "Content Team A",
+    "code": "TEAM-A",
+    "joinCode": "TEAM01",
+    "leader": "6ad3971e5afbfde3ae8531b0",
+    "status": "ACTIVE",
+    "description": "ทีมผลิต Content หลักประจำปี 2026 สำหรับ TikTok & YouTube",
+    "members": [
+      {
+        "user": "6ad3971e5afbfde3ae8531b0",
+        "roleInTeam": "LEAD",
+        "joinedAt": "2026-10-17T15:41:18.824Z"
+      },
+      {
+        "user": "6ad3971e5afbfde3ae8531b1",
+        "roleInTeam": "EDITOR",
+        "joinedAt": "2026-10-17T15:41:18.824Z"
+      },
+      {
+        "user": "6ad3971e5afbfde3ae8531b2",
+        "roleInTeam": "CREATOR",
+        "joinedAt": "2026-10-17T15:41:18.825Z"
+      },
+      {
+        "user": "6ad3971e5afbfde3ae8531b3",
+        "roleInTeam": "DESIGNER",
+        "joinedAt": "2026-10-17T15:41:18.825Z"
+      }
+    ],
+    "createdAt": "2026-10-17T15:41:18.826Z",
+    "updatedAt": "2026-10-17T15:41:18.826Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ad3971e5afbfde3ae8531b6",
+    "name": "Content Team B (Beta Studio)",
+    "code": "TEAM-B",
+    "joinCode": "TEAM02",
+    "leader": "6ad3971e5afbfde3ae8531af",
+    "status": "ACTIVE",
+    "description": "ทีมสำรองสำหรับทดสอบการกั้นสิทธิ์ความปลอดภัยข้ามทีม",
+    "members": [
+      {
+        "user": "6ad3971e5afbfde3ae8531af",
+        "roleInTeam": "LEAD",
+        "joinedAt": "2026-10-17T15:41:18.827Z"
+      },
+      {
+        "user": "6ad3971e5afbfde3ae8531b4",
+        "roleInTeam": "MEMBER",
+        "joinedAt": "2026-10-17T15:41:18.827Z"
+      }
+    ],
+    "createdAt": "2026-10-17T15:41:18.828Z",
+    "updatedAt": "2026-10-17T15:41:18.828Z",
+    "__v": 0
+  }
+]

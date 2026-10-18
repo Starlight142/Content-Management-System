@@ -2149,6 +2149,15 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
   - อัปเดตลิงก์รูปภาพและตารางภายใน `docs/academic/01` ถึง `12` ให้ชี้ไปยัง `./diagrams/` และ `./spreadsheets/`
   - อัปเดตพาธไฟล์ภายในสคริปต์ Python ทั้งหมดและอัปเดตแผนผังโครงสร้างโปรเจกต์ใน `README.md` และ `.gitignore`
 
-
-
-
+### 45.13 การพัฒนาระบบฐานข้อมูลพกพาสำหรับย้ายเครื่องแบบอัตโนมัติ (Portable Database Package, Deep Internal Data Check, Auto-Import & Real-Time Auto-Export)
+- **ที่มาและความต้องการ:** จัดทำชุดไฟล์ฐานข้อมูลที่สามารถพกพาไปรันบนเครื่องอื่นได้ทันที พร้อมระบบตรวจสอบฐานข้อมูลและข้อมูลภายในทุกเรคคอร์ดอัตโนมัติทั้งตอนรัน Backend (`npm run dev` / `npm start`) และในสคริปต์ `import-database.bat` รวมถึงการส่งออกข้อมูลอัตโนมัติ (Real-Time Auto-Export) ทุกครั้งที่มีการใช้งานและแก้ไขข้อมูล และล้างข้อมูลขยะจากการรัน Robot Automated Test ออกให้เหลือเฉพาะข้อมูลจริงที่สะอาด
+- **การพัฒนาเซอร์วิสจัดการซิงค์และตรวจสอบข้อมูลภายใน (`master/backend/src/services/dbSync.service.js`):**
+  - `inspectAndCompareDatabase()`: ตรวจสอบฐานข้อมูล `content_management` ในเครื่องและอ่านข้อมูลภายในทุก Document ของทั้ง 6 ตาราง (`users`, `teams`, `contents`, `tasks`, `ideas`, `teamactivities`) คำนวณ SHA-256 Content Hash รายตารางและรายเรคคอร์ด (`_id`) เพื่อตรวจจับความเปลี่ยนแปลงระดับฟิลด์ย่อย (`added`, `removed`, `modified`) และเปรียบเทียบเวลาอัปเดตล่าสุด (`updatedAt`)
+  - `autoCheckAndSyncOnBoot()`: เชื่อมต่อกับ `master/backend/src/config/db.js` เพื่อตรวจสอบฐานข้อมูลอัตโนมัติทุกครั้งที่สตาร์ท Backend:
+    - กรณีเครื่องใหม่ยังไม่มีฐานข้อมูล (`EMPTY_DB`): นำเข้าข้อมูลทั้ง 6 ตาราง แปลง `ObjectId` และ `Date` ครบทุกฟิลด์รวมถึงอาร์เรย์ย่อย (`members[]`, `versions[]`, `reviewHistory[]`, `files[]`) และสร้าง Index (`syncIndexes()`) อัตโนมัติทันที
+    - กรณีข้อมูลภายในตรงกัน 100% (`IDENTICAL`): แจ้งผลตารางเปรียบเทียบใน Console และข้ามการนำเข้าซ้ำ
+    - กรณีข้อมูลภายในต่างกัน (`DIFFERENT`): เปรียบเทียบเวลาอัปเดตล่าสุดเพื่อสำรองข้อมูลเดิมไว้ที่ `master/database/backups/` และซิงค์ข้อมูลชุดที่ใหม่กว่าให้อัตโนมัติ
+  - `scheduleAutoExport()`: เชื่อมต่อกับ Middleware ใน `master/backend/src/app.js` ดักจับการเปลี่ยนแปลงข้อมูลผ่าน API (`POST`, `PUT`, `PATCH`, `DELETE`) และเมื่อปิดเซิร์ฟเวอร์ (`SIGINT`/`SIGTERM`) เพื่อส่งออกข้อมูลล่าสุดลง `master/database/mongodb-dump/` และ `master/database/compass-import/` (Extended JSON `$oid`, `$date`) อัตโนมัติ
+  - `cleanJunkDataFromDatabase()`: ล้างข้อมูลทดสอบที่ตกค้างจาก Robot Framework (`robot_*@studio.com`, `Robot Automated Showcase EP01`, งานย่อยและล็อกทดสอบซ้ำ) เหลือข้อมูลจริงที่สะอาดรวม 33 เรคคอร์ด (Users 6, Teams 2, Contents 6, Tasks 10, Ideas 3, TeamActivities 6)
+- **การจัดทำสคริปต์ `.bat` และคู่มือใน `master/database/`:**
+  - สร้าง `master/database/import-database.bat`, `master/database/export-database.bat`, และคู่มือ `master/database/README-DATABASE.md` พร้อมลบโฟลเดอร์เก่า `master/backend/dump/` และอัปเดต `tools/excel/export_database_to_excel.py` ให้ส่งออกไฟล์ Excel (`Draftly-Database-Export.xlsx`) จากฐานข้อมูลชุดสะอาด
