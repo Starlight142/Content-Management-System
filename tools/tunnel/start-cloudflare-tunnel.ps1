@@ -3,11 +3,11 @@ Write-Host "==========================================================" -Foregro
 Write-Host "      Starting Cloudflare Tunnel for Draftly CMS          " -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-$cloudflaredPath = "$PSScriptRoot\tools\cloudflared.exe"
+$cloudflaredPath = "$PSScriptRoot\cloudflared.exe"
 
 if (-not (Test-Path $cloudflaredPath)) {
     Write-Host "Downloading cloudflared.exe..." -ForegroundColor Yellow
-    New-Item -ItemType Directory -Force -Path "$PSScriptRoot\tools" | Out-Null
+    New-Item -ItemType Directory -Force -Path "$PSScriptRoot" | Out-Null
     curl.exe -L -o $cloudflaredPath https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
 }
 

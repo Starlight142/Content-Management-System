@@ -6,9 +6,9 @@
 
 ## แผนภาพ Entity-Relationship Diagram (Crow's Foot Notation)
 
-![Entity-Relationship Diagram](./er-diagram.png)
+![Entity-Relationship Diagram](./diagrams/er-diagram.png)
 
-ไฟล์ต้นฉบับสำหรับการแก้ไข: [`er-diagram.drawio`](./er-diagram.drawio)
+ไฟล์ต้นฉบับสำหรับการแก้ไข: [`er-diagram.drawio`](./diagrams/er-diagram.drawio)
 
 ---
 

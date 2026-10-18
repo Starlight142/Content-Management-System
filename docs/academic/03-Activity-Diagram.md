@@ -2,10 +2,10 @@
 
 เอกสารนี้แสดงแผนภาพกิจกรรม (Activity Diagram) ในรูปแบบ **Swimlane (เลนแบ่งบทบาทหน้าที่ 4 เลน: Member, Manager, System, Admin)** เพื่ออธิบายการไหลของกระบวนการทำงานตั้งแต่ต้นน้ำ (การคิดไอเดีย) จนถึงปลายน้ำ (การเผยแพร่และเก็บสถิติ) พร้อมระบุ Decision Nodes, Real-time Push, และลูปการวนกลับแก้ไขงาน (Revision Loop) อย่างเป็นทางการ ตรงตามการทำงานของโปรแกรมจริง 100%
 
-- **ไฟล์ draw.io (แก้ไขต่อได้):** [activity-diagram.drawio](file:///d:/VsCode/Project/Content-Management-System/docs/academic/activity-diagram.drawio)
-- **ภาพประกอบความละเอียดสูง:** [activity-diagram.png](file:///d:/VsCode/Project/Content-Management-System/docs/academic/activity-diagram.png)
+- **ไฟล์ draw.io (แก้ไขต่อได้):** [activity-diagram.drawio](file:///d:/VsCode/Project/Content-Management-System/docs/academic/diagrams/activity-diagram.drawio)
+- **ภาพประกอบความละเอียดสูง:** [activity-diagram.png](file:///d:/VsCode/Project/Content-Management-System/docs/academic/diagrams/activity-diagram.png)
 
-![Activity Diagram](activity-diagram.png)
+![Activity Diagram](./diagrams/activity-diagram.png)
 
 ---
 

@@ -20,7 +20,7 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
 OUTPUT_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "docs", "academic", "Draftly-System-Test-Cases-14-UseCases.xlsx")
+    os.path.join(os.path.dirname(__file__), "..", "..", "docs", "academic", "spreadsheets", "Draftly-System-Test-Cases-14-UseCases.xlsx")
 )
 
 def create_workbook():

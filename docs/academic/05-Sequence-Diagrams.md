@@ -6,9 +6,9 @@
 
 ## แผนภาพ Sequence Diagram รวม (End-to-End Workflow)
 
-![Sequence Diagram](./sequence-diagram.png)
+![Sequence Diagram](./diagrams/sequence-diagram.png)
 
-ไฟล์ต้นฉบับสำหรับการแก้ไข: [`sequence-diagram.drawio`](./sequence-diagram.drawio)
+ไฟล์ต้นฉบับสำหรับการแก้ไข: [`sequence-diagram.drawio`](./diagrams/sequence-diagram.drawio)
 
 ---
 

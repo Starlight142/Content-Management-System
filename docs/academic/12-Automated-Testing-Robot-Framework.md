@@ -130,7 +130,7 @@ tests/
 > - บันทึกขั้นตอนและ Payload ละเอียด: `tests/robot/results/log.html`
 
 > **ไฟล์สเปรดชีตการทดสอบระบบรูปแบบ Excel (Excel Spreadsheets):**  
-> 1. [Draftly-Software-Testing-Specification.xlsx](./Draftly-Software-Testing-Specification.xlsx): เอกสารกระบวนการทดสอบครบวงจร 4 ขั้นตอน (1. Test Planning, 2. Test Case Summary, 3. Test Case, 4. Test Report) พร้อมตารางแสดงการอ้างอิง
-> 2. [Draftly-System-Test-Cases-14-UseCases.xlsx](./Draftly-System-Test-Cases-14-UseCases.xlsx): ตารางกรณีทดสอบฉบับปรับปรุงตามผัง 14 Use Cases (27 Robot Tests, ผ่าน 100%)
-> 3. [Draftly-System-Test-Cases.xlsx](./Draftly-System-Test-Cases.xlsx): ตารางกรณีทดสอบฉบับสถาปัตยกรรม 12 Use Cases เดิม
+> 1. [Draftly-Software-Testing-Specification.xlsx](./spreadsheets/Draftly-Software-Testing-Specification.xlsx): เอกสารกระบวนการทดสอบครบวงจร 4 ขั้นตอน (1. Test Planning, 2. Test Case Summary, 3. Test Case, 4. Test Report) พร้อมตารางแสดงการอ้างอิง
+> 2. [Draftly-System-Test-Cases-14-UseCases.xlsx](./spreadsheets/Draftly-System-Test-Cases-14-UseCases.xlsx): ตารางกรณีทดสอบฉบับปรับปรุงตามผัง 14 Use Cases (27 Robot Tests, ผ่าน 100%)
+> 3. [Draftly-System-Test-Cases.xlsx](./spreadsheets/Draftly-System-Test-Cases.xlsx): ตารางกรณีทดสอบฉบับสถาปัตยกรรม 12 Use Cases เดิม
 

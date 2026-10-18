@@ -1774,8 +1774,11 @@
         <li><strong>การจับภาพหน้าจอเว็บแอดมินทั้ง 12 หน้าจอและบรรจุลงในเอกสาร Word หัวข้อ 3.2 (<code>docs/screenshots/admin-web/</code> & <code>docs/academic/SRS-ผลิตสื่อ-สมบูรณ์.docx</code>):</strong>
           พัฒนาสคริปต์ <code>tools/capture_admin_web_screenshots.py</code> บันทึกภาพหน้าจอการใช้งานจริงของ Admin Web ทั้ง 12 หน้าจอ/Modal ความละเอียดสูง และพัฒนาสคริปต์ <code>tools/update_word_admin_screenshots.py</code> แทรกหัวข้อย่อย <code>3.2.1</code> ถึง <code>3.2.12</code> พร้อมคำอธิบายภาษาไทยและฟิลด์ลำดับภาพ <code>ภาพที่ 46</code> ถึง <code>ภาพที่ 57</code> ลงในเอกสาร Word โดยปรับลำดับภาพถัดไปเป็น <code>ภาพที่ 58</code> และ <code>ภาพที่ 59</code> อย่างต่อเนื่อง
         </li>
-        <li><strong>การบรรจุเอกสารการทดสอบระบบแบบแมนนวล (Manual System Testing) ลงในภาคผนวก B ของเอกสาร Word (<code>tools/append_manual_testing_appendix.py</code>):</strong>
+        <li><strong>การบรรจุเอกสารการทดสอบระบบแบบแมนนวล (Manual System Testing) ลงในภาคผนวก B ของเอกสาร Word (<code>tools/word/append_manual_testing_appendix.py</code>):</strong>
           สร้างหัวข้อ <code>ภาคผนวก B – เอกสารการทดสอบระบบ (Manual System Testing)</code> ต่อท้ายเอกสาร Word ครบทั้ง 4 ส่วนหลัก ได้แก่ <code>B.1 Test Plan</code> (ตารางที่ 20–22), <code>B.2 Test Scenario Summary</code> (ตารางที่ 23: <code>TS_001</code>–<code>TS_014</code>), <code>B.3 Test Case Specification</code> (ตารางที่ 24: <code>TC_001</code>–<code>TC_028</code> ทั้งกรณี Valid และ Invalid), และ <code>B.4 Test Report</code> (ตารางที่ 25: สรุปผลแยกตามโมดูล ผ่าน 100%)
+        </li>
+        <li><strong>การจัดระเบียบโครงสร้างไฟล์และโฟลเดอร์ทั้งโปรเจกต์ (Project Directory & File Organization):</strong>
+          แยกหมวดหมู่ไฟล์ใน <code>docs/academic/</code> ออกเป็นโฟลเดอร์ย่อย <code>diagrams/</code> (ไฟล์ <code>.drawio</code> และ <code>.png</code> 14 ไฟล์), <code>spreadsheets/</code> (ไฟล์ <code>.xlsx</code> 4 ไฟล์), และ <code>reports/</code> (ไฟล์ <code>SRS-ผลิตสื่อ-สมบูรณ์.docx</code>) พร้อมจัดหมวดหมู่สคริปต์ใน <code>tools/</code> ออกเป็น <code>tools/word/</code>, <code>tools/excel/</code>, <code>tools/screenshots/</code>, และ <code>tools/tunnel/</code> และอัปเดตพาธอ้างอิงทั้งหมดให้ตรงกัน 100%
         </li>
       </ul>
     </section>
@@ -1788,13 +1791,13 @@
       <ul>
         <li><strong><code>AI-MEMORY.md</code>:</strong> ไฟล์ความจำและบริบทระบบเชิงลึกสำหรับ AI และการย้ายเครื่องทำงาน</li>
         <li><strong><code>AGENTS.md</code>:</strong> ข้อกำหนดและคู่มือปฏิบัติการมาตรฐานสำหรับ Coding Agent</li>
-        <li><strong><code>docs/academic/</code>:</strong> 12 เอกสารวิชาการ, เอกสาร Word รายงานโครงงานฉบับสมบูรณ์ (<code>SRS-ผลิตสื่อ-สมบูรณ์.docx</code>), ตารางกรณีทดสอบ Excel, และพิมพ์เขียวสถาปัตยกรรมพร้อมส่งอาจารย์</li>
-        <li><strong><code>docs/screenshots/admin-web/</code>:</strong> ภาพหน้าจอการใช้งานจริงของระบบ Admin Web ทั้ง 12 หน้าจอ (<code>01_admin_login.png</code> ถึง <code>12_admin_settings_health.png</code>)</li>
-        <li><strong><code>docs/academic/Draftly-Database-Export.xlsx</code>:</strong> ไฟล์สเปรดชีตส่งออกข้อมูลสดจากฐานข้อมูล MongoDB ครบทั้ง 6 Collections (Users, Teams, Contents, Tasks, Ideas, TeamActivities)</li>
+        <li><strong><code>docs/academic/</code>:</strong> 12 เอกสารวิชาการหลัก (<code>01</code> ถึง <code>12</code>)</li>
+        <li><strong><code>docs/academic/diagrams/</code>:</strong> แผนภาพต้นฉบับ (<code>.drawio</code>) และรูปภาพ (<code>.png</code>) ทั้ง 14 ไฟล์</li>
+        <li><strong><code>docs/academic/reports/SRS-ผลิตสื่อ-สมบูรณ์.docx</code>:</strong> เอกสาร Word รายงานโครงงานฉบับสมบูรณ์</li>
+        <li><strong><code>docs/academic/spreadsheets/</code>:</strong> ตารางกรณีทดสอบและส่งออกฐานข้อมูล Excel ทั้ง 4 ไฟล์ (<code>Draftly-Software-Testing-Specification.xlsx</code>, <code>Draftly-System-Test-Cases-14-UseCases.xlsx</code>, <code>Draftly-System-Test-Cases.xlsx</code>, <code>Draftly-Database-Export.xlsx</code>)</li>
+        <li><strong><code>docs/screenshots/admin-web/</code> & <code>docs/screenshots/mobile/</code>:</strong> ภาพหน้าจอการใช้งานจริงของระบบ Admin Web (12 หน้าจอ) และ Mobile App (17 หน้าจอ)</li>
         <li><strong><code>master/backend/dump/content_management/</code>:</strong> โฟลเดอร์จัดเก็บไฟล์ JSON Dump ทั้งหมดของฐานข้อมูลระบบ</li>
-        <li><strong><code>docs/academic/Draftly-Software-Testing-Specification.xlsx</code>:</strong> เอกสารกระบวนการทดสอบซอฟต์แวร์มาตรฐาน 4 ขั้นตอน (STLC Framework) พร้อมตารางแสดงการอ้างอิงและบันทึกผลจริง</li>
-        <li><strong><code>docs/academic/Draftly-System-Test-Cases-14-UseCases.xlsx</code>:</strong> ตารางกรณีทดสอบรวมระบบโมเดลใหม่ 14 Use Cases (47 รายการทดสอบ) พร้อม RTM 14 Use Cases ครบ 100%</li>
-        <li><strong><code>docs/academic/Draftly-System-Test-Cases.xlsx</code>:</strong> ตารางกรณีทดสอบรวมระบบโมเดลเดิม (Manual + Robot) และ Requirements Traceability Matrix (RTM)</li>
+        <li><strong><code>tools/</code>:</strong> สคริปต์อัตโนมัติแยกตามหมวดหมู่ (<code>tools/word/</code>, <code>tools/excel/</code>, <code>tools/screenshots/</code>, <code>tools/tunnel/</code>)</li>
         <li><strong><code>docs/learning/</code>:</strong> บทเรียนการเขียนโค้ด Backend ด้วยมือตนเอง (Lesson 1-3)</li>
         <li><strong><code>docs/year-4-capstone/</code>:</strong> 6 พิมพ์เขียวสถาปัตยกรรมสำหรับต่อยอดปี 4 (แยกไว้ใน Branch <code>feature/year4-capstone</code>)</li>
         <li><strong><code>docs/PROJECT-DEVELOPMENT-LOG.md</code>:</strong> ไฟล์ประวัติการพัฒนาดั้งเดิมในรูปแบบ Markdown</li>

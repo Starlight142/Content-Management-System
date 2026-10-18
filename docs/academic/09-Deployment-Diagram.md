@@ -6,9 +6,9 @@
 
 ## แผนภาพ Deployment Diagram
 
-![Deployment Diagram](./deployment-diagram.png)
+![Deployment Diagram](./diagrams/deployment-diagram.png)
 
-ไฟล์ต้นฉบับสำหรับการแก้ไข: [`deployment-diagram.drawio`](./deployment-diagram.drawio)
+ไฟล์ต้นฉบับสำหรับการแก้ไข: [`deployment-diagram.drawio`](./diagrams/deployment-diagram.drawio)
 
 ---
 

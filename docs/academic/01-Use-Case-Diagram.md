@@ -9,9 +9,9 @@
 
 ## แผนภาพ Use Case Diagram (Academic Monochrome)
 
-![Use Case Diagram](./use-case-diagram.png)
+![Use Case Diagram](./diagrams/use-case-diagram.png)
 
-> **ไฟล์ต้นฉบับสำหรับการแก้ไข:** [use-case-diagram.drawio](./use-case-diagram.drawio)  
+> **ไฟล์ต้นฉบับสำหรับการแก้ไข:** [use-case-diagram.drawio](./diagrams/use-case-diagram.drawio)  
 > รูปแบบการวาดเป็นไปตามมาตรฐาน UML 2.5 สไตล์ Academic Monochrome (ขาว-ดำ ไม่ใช้เอฟเฟกต์หรือสีสันตกแต่งเกินจำเป็น)
 
 ---

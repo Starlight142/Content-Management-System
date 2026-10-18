@@ -9,7 +9,7 @@ from docx.oxml.ns import qn
 DESKTOP_DOCX = r"C:\Users\itzmo\Desktop\ผลิตสื่อ.docx"
 BACKUP_DOCX = r"C:\Users\itzmo\Desktop\ผลิตสื่อ.backup.docx"
 FALLBACK_DOCX = r"C:\Users\itzmo\Desktop\ผลิตสื่อ_อัปเดตหน้าจอเว็บ.docx"
-REPO_DOCX = r"d:\VsCode\Project\Content-Management-System\docs\academic\SRS-ผลิตสื่อ-สมบูรณ์.docx"
+REPO_DOCX = r"d:\VsCode\Project\Content-Management-System\docs\academic\reports\SRS-ผลิตสื่อ-สมบูรณ์.docx"
 SCREENSHOT_DIR = r"d:\VsCode\Project\Content-Management-System\docs\screenshots\admin-web"
 
 ADMIN_SCREENS = [

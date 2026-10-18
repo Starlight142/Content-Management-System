@@ -2131,5 +2131,24 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
     4. **`B.4 รายงานสรุปผลการทดสอบระบบ (Test Report)`:**
        - `ตารางที่ 25`: รายงานสรุปผลการทดสอบระบบแยกตาม 4 โมดูลหลัก (รวม 28 กรณีทดสอบ, ผ่าน 28, ไม่ผ่าน 0, คิดเป็น 100%)
 
+### 45.12 การจัดระเบียบโครงสร้างไฟล์และโฟลเดอร์ทั้งโปรเจกต์ (Project Directory & File Organization)
+- **ที่มาและความต้องการ:** จัดหมวดหมู่ไฟล์เอกสาร แผนภาพ ตารางสเปรดชีต รายงาน Word และสคริปต์เครื่องมือต่างๆ ไม่ให้ปะปนกันในโฟลเดอร์เดียว เพื่อให้ค้นหาและดูแลรักษาง่าย
+- **การจัดหมวดหมู่ภายใน `docs/academic/`:**
+  - ระดับบนสุด (`docs/academic/`): เก็บเฉพาะเอกสาร Markdown หลักทั้ง 12 รายการ (`01-Use-Case-Diagram.md` ถึง `12-Automated-Testing-Robot-Framework.md`)
+  - `docs/academic/diagrams/`: จัดเก็บไฟล์แผนภาพต้นฉบับ (`.drawio`) และไฟล์รูปภาพแผนภาพ (`.png`) ทั้ง 14 ไฟล์
+  - `docs/academic/spreadsheets/`: จัดเก็บไฟล์ตาราง Excel ทั้ง 4 ไฟล์ (`Draftly-Software-Testing-Specification.xlsx`, `Draftly-System-Test-Cases-14-UseCases.xlsx`, `Draftly-System-Test-Cases.xlsx`, `Draftly-Database-Export.xlsx`)
+  - `docs/academic/reports/`: จัดเก็บไฟล์เอกสารรายงานโครงงานฉบับสมบูรณ์ (`SRS-ผลิตสื่อ-สมบูรณ์.docx`)
+- **การจัดหมวดหมู่ภายใน `docs/master/`:**
+  - ย้าย `TEAM-BASED-WORKSPACE-ARCHITECTURE-PLAN.md` จาก `docs/` เข้าสู่ `docs/master/Team-Based-Workspace-Architecture-Plan.md` เพื่อให้ระดับบนสุดของ `docs/` เหลือเพียงไฟล์บันทึกประวัติการพัฒนา (`PROJECT-DEVELOPMENT-LOG.md` และ `.html`)
+- **การจัดหมวดหมู่ภายใน `tools/`:**
+  - `tools/word/`: สคริปต์จัดการเอกสาร Word (`update_word_admin_screenshots.py`, `append_manual_testing_appendix.py`)
+  - `tools/excel/`: สคริปต์สร้างตารางทดสอบและส่งออกฐานข้อมูลเป็น Excel (`generate_excel_stlc_specification.py`, `generate_excel_tests_14uc.py`, `generate_excel_tests.py`, `export_database_to_excel.py`)
+  - `tools/screenshots/`: สคริปต์แคปหน้าจอ Admin Web อัตโนมัติ (`capture_admin_web_screenshots.py`)
+  - `tools/tunnel/`: ย้าย `start-cloudflare-tunnel.ps1` จาก Root มารวมกับ `cloudflared.exe` ในโฟลเดอร์เฉพาะทาง
+- **การอัปเดตพาธอ้างอิงและเอกสารหลัก:**
+  - อัปเดตลิงก์รูปภาพและตารางภายใน `docs/academic/01` ถึง `12` ให้ชี้ไปยัง `./diagrams/` และ `./spreadsheets/`
+  - อัปเดตพาธไฟล์ภายในสคริปต์ Python ทั้งหมดและอัปเดตแผนผังโครงสร้างโปรเจกต์ใน `README.md` และ `.gitignore`
+
+
 
 

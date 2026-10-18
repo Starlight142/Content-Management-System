@@ -17,7 +17,7 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
 OUTPUT_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "docs", "academic", "Draftly-Software-Testing-Specification.xlsx")
+    os.path.join(os.path.dirname(__file__), "..", "..", "docs", "academic", "spreadsheets", "Draftly-Software-Testing-Specification.xlsx")
 )
 
 def create_stlc_workbook():

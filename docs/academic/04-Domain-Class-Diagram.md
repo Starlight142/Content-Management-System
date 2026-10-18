@@ -6,9 +6,9 @@
 
 ## แผนภาพ Domain Class Diagram
 
-![Domain Class Diagram](./class-diagram.png)
+![Domain Class Diagram](./diagrams/class-diagram.png)
 
-ไฟล์ต้นฉบับสำหรับการแก้ไข: [`class-diagram.drawio`](./class-diagram.drawio)
+ไฟล์ต้นฉบับสำหรับการแก้ไข: [`class-diagram.drawio`](./diagrams/class-diagram.drawio)
 
 ---
 

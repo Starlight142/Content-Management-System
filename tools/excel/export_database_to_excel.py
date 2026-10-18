@@ -19,8 +19,8 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-DUMP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "master", "backend", "dump", "content_management"))
-OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "docs", "academic", "Draftly-Database-Export.xlsx"))
+DUMP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "master", "backend", "dump", "content_management"))
+OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "docs", "academic", "spreadsheets", "Draftly-Database-Export.xlsx"))
 
 def build_excel_export():
     wb = openpyxl.Workbook()

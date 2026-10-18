@@ -16,7 +16,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 OUTPUT_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "docs", "screenshots", "admin-web")
+    os.path.join(os.path.dirname(__file__), "..", "..", "docs", "screenshots", "admin-web")
 )
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 

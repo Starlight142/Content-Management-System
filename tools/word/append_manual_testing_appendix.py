@@ -9,7 +9,7 @@ from docx.oxml.ns import qn
 
 DESKTOP_DOCX = r"C:\Users\itzmo\Desktop\ผลิตสื่อ.docx"
 FALLBACK_DOCX = r"C:\Users\itzmo\Desktop\ผลิตสื่อ_อัปเดตภาคผนวก.docx"
-REPO_DOCX = r"d:\VsCode\Project\Content-Management-System\docs\academic\SRS-ผลิตสื่อ-สมบูรณ์.docx"
+REPO_DOCX = r"d:\VsCode\Project\Content-Management-System\docs\academic\reports\SRS-ผลิตสื่อ-สมบูรณ์.docx"
 
 
 def set_thai_font(run, size_pt=16, bold=False):
@@ -397,3 +397,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -436,6 +436,6 @@ def build_test_excel(output_path):
     print(f"Excel workbook created successfully at: {output_path}")
 
 if __name__ == '__main__':
-    target = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'docs', 'academic', 'Draftly-System-Test-Cases.xlsx'))
+    target = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'docs', 'academic', 'spreadsheets', 'Draftly-System-Test-Cases.xlsx'))
     build_test_excel(target)
 

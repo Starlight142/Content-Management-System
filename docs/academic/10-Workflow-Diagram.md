@@ -6,9 +6,9 @@
 
 ## แผนภาพ Workflow State Diagram
 
-![Workflow State Diagram](./workflow-diagram.png)
+![Workflow State Diagram](./diagrams/workflow-diagram.png)
 
-ไฟล์ต้นฉบับสำหรับการแก้ไข: [`workflow-diagram.drawio`](./workflow-diagram.drawio)
+ไฟล์ต้นฉบับสำหรับการแก้ไข: [`workflow-diagram.drawio`](./diagrams/workflow-diagram.drawio)
 
 ---
 
