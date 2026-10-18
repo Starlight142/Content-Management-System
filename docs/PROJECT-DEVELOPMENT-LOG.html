@@ -1783,6 +1783,9 @@
         <li><strong>การพัฒนาระบบฐานข้อมูลพกพาสำหรับย้ายเครื่องแบบอัตโนมัติ (<code>master/database/</code> & <code>dbSync.service.js</code>):</strong>
           พัฒนาเซอร์วิส <code>master/backend/src/services/dbSync.service.js</code> ตรวจสอบฐานข้อมูล <code>content_management</code> และข้อมูลภายในทุก Document ด้วย SHA-256 Hash รายตารางทั้งตอนเริ่มรัน Backend (<code>db.js</code>) และผ่านสคริปต์ <code>master/database/import-database.bat</code> รองรับ Auto-Import เมื่อย้ายไปเครื่องใหม่, สำรองข้อมูลอัตโนมัติก่อนซิงค์ (<code>backups/</code>), และ Real-Time Auto-Export ลง <code>master/database/mongodb-dump/</code> และ <code>compass-import/</code> ทุกครั้งที่มีการเพิ่ม/ลบ/แก้ไขข้อมูลผ่าน API พร้อมล้างข้อมูลขยะจาก Robot Test เหลือข้อมูลจริงที่สะอาด 33 เรคคอร์ด
         </li>
+        <li><strong>การจัดทำชุดการทดสอบอัตโนมัติ (Automated Testing) ตามผัง 14 Use Cases (28 กรณีทดสอบ) และไฟล์ Excel:</strong>
+          อัปเกรดชุดการทดสอบ Robot Framework ทั้ง 5 ชุด (<code>tests/robot/testcases/01..05_*.robot</code>) ให้ครอบคลุมครบทั้ง 14 Use Cases (<code>UC-01</code> ถึง <code>UC-14</code> / <code>TS_001</code> ถึง <code>TS_014</code>) แบ่งเป็น Valid 14 ข้อ และ Invalid 14 ข้อ รวม 28 กรณีทดสอบ (<code>TC_AUTO_001</code> ถึง <code>TC_AUTO_028</code>) รันผ่าน 100% (28/28 Passed) พร้อมสร้างไฟล์ Excel <code>docs/academic/spreadsheets/Draftly-Automated-Tests-By-UseCase.xlsx</code> และอัปเดตรายงาน <code>docs/academic/12-Automated-Testing-Robot-Framework.md</code> ครบทั้ง 4 ส่วนหลัก
+        </li>
       </ul>
     </section>
 
@@ -1797,7 +1800,7 @@
         <li><strong><code>docs/academic/</code>:</strong> 12 เอกสารวิชาการหลัก (<code>01</code> ถึง <code>12</code>)</li>
         <li><strong><code>docs/academic/diagrams/</code>:</strong> แผนภาพต้นฉบับ (<code>.drawio</code>) และรูปภาพ (<code>.png</code>) ทั้ง 14 ไฟล์</li>
         <li><strong><code>docs/academic/reports/SRS-ผลิตสื่อ-สมบูรณ์.docx</code>:</strong> เอกสาร Word รายงานโครงงานฉบับสมบูรณ์</li>
-        <li><strong><code>docs/academic/spreadsheets/</code>:</strong> ตารางกรณีทดสอบและส่งออกฐานข้อมูล Excel ทั้ง 4 ไฟล์ (<code>Draftly-Software-Testing-Specification.xlsx</code>, <code>Draftly-System-Test-Cases-14-UseCases.xlsx</code>, <code>Draftly-System-Test-Cases.xlsx</code>, <code>Draftly-Database-Export.xlsx</code>)</li>
+        <li><strong><code>docs/academic/spreadsheets/</code>:</strong> ตารางกรณีทดสอบและส่งออกฐานข้อมูล Excel ทั้ง 5 ไฟล์ (<code>Draftly-Automated-Tests-By-UseCase.xlsx</code>, <code>Draftly-Software-Testing-Specification.xlsx</code>, <code>Draftly-System-Test-Cases-14-UseCases.xlsx</code>, <code>Draftly-System-Test-Cases.xlsx</code>, <code>Draftly-Database-Export.xlsx</code>)</li>
         <li><strong><code>docs/screenshots/admin-web/</code> & <code>docs/screenshots/mobile/</code>:</strong> ภาพหน้าจอการใช้งานจริงของระบบ Admin Web (12 หน้าจอ) และ Mobile App (17 หน้าจอ)</li>
         <li><strong><code>master/database/</code>:</strong> โฟลเดอร์ฐานข้อมูลพกพาสำหรับย้ายเครื่อง (<code>mongodb-dump/</code>, <code>compass-import/</code>, <code>import-database.bat</code>, <code>export-database.bat</code>, <code>README-DATABASE.md</code>)</li>
         <li><strong><code>tools/</code>:</strong> สคริปต์อัตโนมัติแยกตามหมวดหมู่ (<code>tools/word/</code>, <code>tools/excel/</code>, <code>tools/screenshots/</code>, <code>tools/tunnel/</code>)</li>

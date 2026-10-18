@@ -2161,3 +2161,20 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
   - `cleanJunkDataFromDatabase()`: ล้างข้อมูลทดสอบที่ตกค้างจาก Robot Framework (`robot_*@studio.com`, `Robot Automated Showcase EP01`, งานย่อยและล็อกทดสอบซ้ำ) เหลือข้อมูลจริงที่สะอาดรวม 33 เรคคอร์ด (Users 6, Teams 2, Contents 6, Tasks 10, Ideas 3, TeamActivities 6)
 - **การจัดทำสคริปต์ `.bat` และคู่มือใน `master/database/`:**
   - สร้าง `master/database/import-database.bat`, `master/database/export-database.bat`, และคู่มือ `master/database/README-DATABASE.md` พร้อมลบโฟลเดอร์เก่า `master/backend/dump/` และอัปเดต `tools/excel/export_database_to_excel.py` ให้ส่งออกไฟล์ Excel (`Draftly-Database-Export.xlsx`) จากฐานข้อมูลชุดสะอาด
+
+### 45.14 การจัดทำชุดการทดสอบอัตโนมัติ (Automated Testing) ตามผัง 14 Use Cases (28 กรณีทดสอบ), รายงานผล และไฟล์ Excel พร้อมจัดแยกไฟล์สำหรับ GitHub
+- **ที่มาและความต้องการ:** ยกระดับชุดการทดสอบอัตโนมัติด้วย Robot Framework ให้ครอบคลุมตรงตามผัง Use Case ทั้ง 14 Use Cases (`UC-01` ถึง `UC-14` / `TS_001` ถึง `TS_014`) โดยแต่ละ Use Case มีทั้งกรณีข้อมูลถูกต้อง (Valid) และข้อมูลผิดพลาด/ไม่มีสิทธิ์ (Invalid) รวม 28 กรณีทดสอบ (`TC_AUTO_001` ถึง `TC_AUTO_028`) พร้อมออกรายงานผลการทดสอบและไฟล์ Excel ครบ 4 ส่วน และแยกแยะรายการไฟล์ที่จำเป็นต้องอัปโหลดขึ้น GitHub กับไฟล์ที่ไม่จำเป็นต้องอัปโหลด
+- **การเพิ่มการตรวจสอบความถูกต้องของข้อมูลฝั่ง Backend API (Input & Security Validation):**
+  - `users.controller.js`, `contents.controller.js`, `tasks.controller.js`, `ideas.controller.js`, `team.service.js`: เพิ่มการตรวจสอบฟิลด์บังคับ (เช่น ห้ามส่งชื่อโปรไฟล์ว่าง, ห้ามสร้าง Content/Task/Idea ที่ชื่อเรื่องว่าง, ห้ามส่งงานเข้า `REVIEW` โดยไม่แนบลิงก์ผลงานหรือคำชี้แจง, ห้ามสั่งแก้ไข `REVISION` โดยไม่ระบุหมายเหตุ, และห้ามสร้างทีมด้วยรหัสซ้ำ)
+  - `dbSync.service.js`: เพิ่มการเช็คตัวแปรสภาพแวดล้อม `DISABLE_DB_AUTO_EXPORT=true` เพื่อป้องกันไม่ให้ข้อมูลจำลองระหว่างรัน Automated Test เขียนทับไฟล์ฐานข้อมูลพกพาชุดสะอาด
+- **การอัปเกรดชุดการทดสอบ Robot Framework ทั้ง 5 ชุด (`tests/robot/testcases/`):**
+  - `01_authentication_tests.robot`: `TC_AUTO_001` – `TC_AUTO_006` (`UC-01`, `UC-02`, `UC-03`)
+  - `02_team_workspace_tests.robot`: `TC_AUTO_007` – `TC_AUTO_008`, `TC_AUTO_013` – `TC_AUTO_016` (`UC-04`, `UC-07`, `UC-08`)
+  - `03_content_production_workflow_tests.robot`: `TC_AUTO_009` – `TC_AUTO_010`, `TC_AUTO_017` – `TC_AUTO_022` (`UC-05`, `UC-09`, `UC-10`, `UC-11`) พร้อม `Suite Teardown` ลบข้อมูลทดสอบ
+  - `04_ideas_brainstorming_tests.robot`: `TC_AUTO_011` – `TC_AUTO_012` (`UC-06`) พร้อม `Suite Teardown` ลบไอเดียทดสอบ
+  - `05_admin_and_security_tests.robot`: `TC_AUTO_023` – `TC_AUTO_028` (`UC-12`, `UC-13`, `UC-14`)
+  - ผลการรันทดสอบจริง: **28 Tests, 28 Passed, 0 Failed (100% Pass Rate)** และคืนค่าฐานข้อมูลสะอาด 33 เรคคอร์ดหลังจบการทดสอบ
+- **การจัดทำรายงานและไฟล์ Excel (`docs/academic/`):**
+  - สร้างสคริปต์ `tools/excel/generate_excel_automated_tests_by_uc.py` อ่านเวลาการรันจริงจาก `output.xml` และสร้างไฟล์ `docs/academic/spreadsheets/Draftly-Automated-Tests-By-UseCase.xlsx` ครบ 4 แผ่นงาน (`1. Test Plan`, `2. Test Scenario Summary`, `3. Automated Test Cases`, `4. Test Report`)
+  - อัปเดต `docs/academic/spreadsheets/Draftly-System-Test-Cases-14-UseCases.xlsx` และเอกสารรายงาน `docs/academic/12-Automated-Testing-Robot-Framework.md` ให้สอดคล้องกับ 28 กรณีทดสอบอัตโนมัติ
+

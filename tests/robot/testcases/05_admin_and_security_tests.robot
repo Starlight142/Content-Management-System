@@ -1,55 +1,97 @@
 *** Settings ***
-Documentation     Automated Acceptance Tests for Admin Governance & Security Guards (UC-10, UC-11, UC-12, Security)
+Documentation     Automated Acceptance Tests for Admin Governance, Global CMS & Audit Logs (UC-12, UC-13, UC-14 / TS_012, TS_013, TS_014)
 Library           Collections
 Resource          ../resources/variables.resource
 Resource          ../resources/auth_keywords.resource
 Resource          ../resources/admin_keywords.resource
 Resource          ../resources/team_keywords.resource
 
+*** Variables ***
+${TEMP_TEAM_ID}    ${EMPTY}
+
 *** Test Cases ***
-TC_ADMIN_01: Admin Retrieves Complete Users Roster
-    [Documentation]    Admin accesses /api/users to supervise all user accounts and roles.
-    [Tags]             admin    users
+TC_AUTO_023: [UC-12 / TS_012 Valid] Admin Retrieves Users Roster And Creates New Team Structure
+    [Documentation]    ตรวจสอบผู้ดูแลระบบเรียกดูรายชื่อผู้ใช้งานทั้งหมดและสร้างโครงสร้างทีมใหม่สำเร็จ (HTTP 200 & 201)
+    [Tags]             UC-12    TS_012    valid    admin    users    teams
     ${token}    ${user}=    Login User And Get Token    ${ADMIN_EMAIL}    ${DEFAULT_PASSWORD}
     ${users}=          Get All Users As Admin    ${token}
     ${count}=          Get Length                ${users}
-    Should Be True     ${count} >= 3
+    Should Be True     ${count} >= 6
 
-TC_ADMIN_02: Admin Retrieves Global Content List Across Teams
-    [Documentation]    Admin inspects global content pipeline without team scoping limits.
-    [Tags]             admin    cms
+    Ensure API Session
+    ${headers}=        Create Auth Header    ${token}
+    ${team_payload}=   Create Dictionary     name=Studio C Automated    code=TEAM-C    description=Temporary team for automated testing
+    ${team_resp}=      POST On Session       cms_session    /api/teams    json=${team_payload}    headers=${headers}    expected_status=201
+    Should Be Equal As Strings               ${team_resp.json()}[team][code]    TEAM-C
+    Set Suite Variable                       ${TEMP_TEAM_ID}                    ${team_resp.json()}[team][_id]
+
+    # Cleanup temporary team immediately
+    DELETE On Session    cms_session    /api/teams/${TEMP_TEAM_ID}    headers=${headers}    expected_status=200
+
+TC_AUTO_024: [UC-12 / TS_012 Invalid] Reject Duplicate Team Code And Block Member From Admin Users API
+    [Documentation]    ตรวจสอบการป้องกันรหัสทีมซ้ำ (TEAM-A) และการบล็อกสมาชิกทั่วไปไม่ให้เข้าถึง API จัดการผู้ใช้ของแอดมิน (HTTP 400 & 403)
+    [Tags]             UC-12    TS_012    invalid    admin    security    rbac
+    ${admin_token}    ${admin}=    Login User And Get Token    ${ADMIN_EMAIL}    ${DEFAULT_PASSWORD}
+    Ensure API Session
+    ${admin_headers}=  Create Auth Header    ${admin_token}
+    ${dup_team}=       Create Dictionary     name=Duplicate Studio A    code=${TEAM_CODE_A}
+    ${dup_resp}=       POST On Session       cms_session    /api/teams    json=${dup_team}    headers=${admin_headers}    expected_status=400
+    Dictionary Should Contain Key            ${dup_resp.json()}    message
+
+    ${mem_token}    ${mem}=    Login User And Get Token    ${MEMBER_EMAIL}    ${DEFAULT_PASSWORD}
+    ${mem_headers}=    Create Auth Header    ${mem_token}
+    ${rbac_resp}=      GET On Session        cms_session    /api/users    headers=${mem_headers}    expected_status=403
+    Should Contain     ${rbac_resp.json()}[message]    permission
+
+TC_AUTO_025: [UC-13 / TS_013 Valid] Admin Supervises Global Contents And Tasks Across All Teams
+    [Documentation]    ตรวจสอบผู้ดูแลระบบกำกับดูแลชิ้นงานและงานย่อยทั้งหมดจากทุกทีมในมุมมองส่วนกลาง (HTTP 200)
+    [Tags]             UC-13    TS_013    valid    admin    cms
     ${token}    ${user}=    Login User And Get Token    ${ADMIN_EMAIL}    ${DEFAULT_PASSWORD}
     ${contents}=       Get Global CMS Contents    ${token}
-    ${count}=          Get Length                 ${contents}
-    Should Be True     ${count} >= 1
+    ${c_count}=        Get Length                 ${contents}
+    Should Be True     ${c_count} >= 6
 
-TC_ADMIN_03: Admin Retrieves System Audit Logs
-    [Documentation]    Admin inspects security and operational audit logs via /api/logs.
-    [Tags]             admin    logs
+    Ensure API Session
+    ${headers}=        Create Auth Header    ${token}
+    ${tasks_resp}=     GET On Session        cms_session    /api/tasks    headers=${headers}    expected_status=200
+    ${t_count}=        Get Length            ${tasks_resp.json()}
+    Should Be True     ${t_count} >= 10
+
+TC_AUTO_026: [UC-13 / TS_013 Invalid] Reject Global Task Or Content Creation With Empty Title
+    [Documentation]    ตรวจสอบการป้องกันผู้ดูแลระบบสร้างชิ้นงานหรืองานย่อยโดยเว้นว่างชื่อรายการ (HTTP 400 Bad Request)
+    [Tags]             UC-13    TS_013    invalid    admin    cms
+    ${token}    ${user}=    Login User And Get Token    ${ADMIN_EMAIL}    ${DEFAULT_PASSWORD}
+    Ensure API Session
+    ${headers}=        Create Auth Header    ${token}
+    ${empty_task}=     Create Dictionary     title=${EMPTY}    taskType=Editing
+    ${response}=       POST On Session       cms_session    /api/tasks    json=${empty_task}    headers=${headers}    expected_status=400
+    Dictionary Should Contain Key            ${response.json()}    message
+
+TC_AUTO_027: [UC-14 / TS_014 Valid] Admin Verifies System Health Status And Retrieves Audit Logs
+    [Documentation]    ตรวจสอบสถานะความพร้อมของเซิร์ฟเวอร์และฐานข้อมูล (/api/health) และการดึงข้อมูล Audit Logs สำเร็จ (HTTP 200)
+    [Tags]             UC-14    TS_014    valid    admin    health    logs
+    ${health}=         Check System Health
+    Should Be Equal As Strings    ${health}[services][api]         online
+    Should Be Equal As Strings    ${health}[services][database]    connected
+
     ${token}    ${user}=    Login User And Get Token    ${ADMIN_EMAIL}    ${DEFAULT_PASSWORD}
     ${logs}=           Get System Audit Logs    ${token}
     ${count}=          Get Length               ${logs}
     Should Be True     ${count} >= 1
 
-TC_ADMIN_04: Reject Member Access To Admin Users Management Endpoint
-    [Documentation]    Security RBAC Guard: Asserts 403 Forbidden when MEMBER tries to access /api/users.
-    [Tags]             security    rbac
-    ${token}    ${user}=    Login User And Get Token    ${MEMBER_EMAIL}    ${DEFAULT_PASSWORD}
+TC_AUTO_028: [UC-14 / TS_014 Invalid] Block Unauthenticated Or Unauthorized Access To System Audit Logs
+    [Documentation]    ตรวจสอบการบล็อกผู้ใช้ที่ไม่ได้แนบ Token (HTTP 403), Token ไม่ถูกต้อง (HTTP 401) หรือใช้สิทธิ์ MEMBER (HTTP 403) ไม่ให้เข้าถึง Audit Logs
+    [Tags]             UC-14    TS_014    invalid    security    logs
     Ensure API Session
-    ${headers}=        Create Auth Header    ${token}
-    ${response}=       GET On Session        cms_session    /api/users    headers=${headers}    expected_status=403
-    Should Contain     ${response.json()}[message]    permission
+    ${no_auth_resp}=   GET On Session    cms_session    /api/logs    expected_status=403
+    Dictionary Should Contain Key        ${no_auth_resp.json()}    message
 
-TC_ADMIN_05: Enforce Cross-Team Isolation Security Guard
-    [Documentation]    Security Isolation: Asserts 403 Forbidden when Team B Member attempts to access Team A dashboard.
-    [Tags]             security    isolation
-    # Get Team A ID as Manager
-    ${mgr_token}    ${mgr_user}=    Login User And Get Token    ${MANAGER_EMAIL}    ${DEFAULT_PASSWORD}
-    ${team_a}=         Get User Team Info    ${mgr_token}
+    ${bad_headers}=    Create Auth Header    invalid_jwt_token_value
+    ${bad_jwt_resp}=   GET On Session    cms_session    /api/logs    headers=${bad_headers}    expected_status=401
+    Dictionary Should Contain Key        ${bad_jwt_resp.json()}    message
 
-    # Outsider from Team B tries to access Team A's dashboard
-    ${outsider_token}    ${outsider_user}=    Login User And Get Token    ${OUTSIDER_EMAIL}    ${DEFAULT_PASSWORD}
-    Ensure API Session
-    ${headers}=        Create Auth Header    ${outsider_token}
-    ${response}=       GET On Session        cms_session    /api/teams/${team_a}[_id]/dashboard    headers=${headers}    expected_status=403
-    Should Contain     ${response.json()}[message]    ไม่มีสิทธิ์เข้าถึงข้อมูลของทีมอื่น
+    ${mem_token}    ${mem}=    Login User And Get Token    ${MEMBER_EMAIL}    ${DEFAULT_PASSWORD}
+    ${mem_headers}=    Create Auth Header    ${mem_token}
+    ${forbidden_resp}=    GET On Session    cms_session    /api/logs    headers=${mem_headers}    expected_status=403
+    Should Contain     ${forbidden_resp.json()}[message]    permission
+

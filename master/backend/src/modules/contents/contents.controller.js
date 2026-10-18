@@ -12,6 +12,9 @@ const workflowService = require('../../services/workflow.service');
 const createContent = async (req, res) => {
   try {
     const { ideaId, title, description, category, platform, dueDate, teamId } = req.body;
+    if (!title || String(title).trim() === '') {
+      return res.status(400).json({ message: 'กรุณาระบุชื่อชิ้นงาน (Content title is required)' });
+    }
     let createdBy = req.user?.userId;
 
     if (!createdBy || !mongoose.Types.ObjectId.isValid(createdBy)) {
@@ -187,7 +190,12 @@ const submitReview = async (req, res) => {
     }
 
     if (decision === 'REVISION') {
-      const revNote = (notes && notes.trim() !== '') ? notes.trim() : 'ส่งกลับแก้ไขตามข้อคิดเห็นของผู้จัดการ';
+      if (!notes || String(notes).trim() === '') {
+        return res.status(400).json({
+          message: 'กรุณาระบุรายละเอียดสิ่งที่ต้องแก้ไขก่อนส่งกลับ (Revision notes are required)',
+        });
+      }
+      const revNote = notes.trim();
       content.status = 'REVISION';
       content.reviewHistory.push({
         reviewerId,

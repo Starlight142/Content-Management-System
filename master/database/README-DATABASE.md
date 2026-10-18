@@ -87,3 +87,4 @@ npm run db:clean
 | **MEMBER** | `mike@studio.com` | `mike_designer` | Graphic Designer | Content Team A (`TEAM-A`) |
 | **MEMBER** | `uto@cms.com` | `uto` | Content Creator | Content Team A (`TEAM-A`) |
 | **MEMBER** | `outsider@studio.com` | `bob_outsider` | Content Creator | Content Team B (`TEAM-B`) |
+

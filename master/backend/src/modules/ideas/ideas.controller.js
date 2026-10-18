@@ -20,6 +20,9 @@ const getAllIdeas = async (req, res) => {
 const createIdea = async (req, res) => {
   try {
     const { title, description, category } = req.body;
+    if (!title || String(title).trim() === '') {
+      return res.status(400).json({ message: 'กรุณาระบุหัวข้อไอเดีย (Idea title is required)' });
+    }
     const proposedBy = req.user.userId;
 
     const newIdea = await Idea.create({

@@ -49,6 +49,13 @@ const createTeam = async ({ name, description, leaderId, code }) => {
     ? code.trim().toUpperCase()
     : `TEAM-${joinCode.substring(0, 4)}`;
 
+  const existingTeam = await Team.findOne({
+    $or: [{ code: cleanCode }, { joinCode: cleanCode }],
+  });
+  if (existingTeam) {
+    throw new Error(`รหัสทีม "${cleanCode}" ถูกใช้งานแล้ว กรุณาใช้รหัสอื่น`);
+  }
+
   const teamData = {
     name: name.trim(),
     code: cleanCode,
@@ -59,19 +66,26 @@ const createTeam = async ({ name, description, leaderId, code }) => {
   };
 
   if (leaderId) {
+    const leaderUser = await User.findById(leaderId);
     teamData.leader = leaderId;
-    teamData.members.push({
-      user: leaderId,
-      roleInTeam: 'LEAD',
-      joinedAt: new Date(),
-    });
+    if (leaderUser && leaderUser.role !== 'ADMIN') {
+      teamData.members.push({
+        user: leaderId,
+        roleInTeam: 'LEAD',
+        joinedAt: new Date(),
+      });
+      await User.findByIdAndUpdate(leaderId, { teamId: null });
+    }
   }
 
   const team = await Team.create(teamData);
 
-  // If leader provided, set primary teamId on user
+  // If non-admin leader provided, set primary teamId on user
   if (leaderId) {
-    await User.findByIdAndUpdate(leaderId, { teamId: team._id });
+    const leader = await User.findById(leaderId);
+    if (leader && leader.role !== 'ADMIN') {
+      await User.findByIdAndUpdate(leaderId, { teamId: team._id });
+    }
 
     // Log Activity
     try {

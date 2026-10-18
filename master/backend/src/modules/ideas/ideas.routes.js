@@ -9,6 +9,8 @@ router.use(verifyToken);
 router.get('/', ideasController.getAllIdeas);
 router.post('/', ideasController.createIdea);
 router.patch('/:id/status', ideasController.updateIdeaStatus);
+router.delete('/:id', ideasController.deleteIdea);
 
 module.exports = router;
+
 

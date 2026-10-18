@@ -735,6 +735,9 @@ const autoCheckAndSyncOnBoot = async () => {
  * Schedule a debounced background Auto-Export whenever internal data changes via API
  */
 const scheduleAutoExport = (reason = 'api-mutation') => {
+  if (process.env.DISABLE_DB_AUTO_EXPORT === 'true') {
+    return;
+  }
   if (autoExportTimer) {
     clearTimeout(autoExportTimer);
   }
@@ -765,3 +768,4 @@ module.exports = {
   autoCheckAndSyncOnBoot,
   scheduleAutoExport,
 };
+

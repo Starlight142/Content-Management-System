@@ -32,6 +32,9 @@ const getAllTasks = async (req, res) => {
 const createTask = async (req, res) => {
   try {
     const { title, contentId, taskType, assignedTo, dueDate, notes, teamId, progress } = req.body;
+    if (!title || String(title).trim() === '') {
+      return res.status(400).json({ message: 'กรุณาระบุชื่องานย่อย (Task title is required)' });
+    }
 
     // If teamId not explicitly passed, inherit from content
     let resolvedTeamId = teamId;
@@ -96,6 +99,17 @@ const updateTaskStatus = async (req, res) => {
     const existingTask = await Task.findById(id).populate('assignedTo');
     if (!existingTask) {
       return res.status(404).json({ message: 'Task not found' });
+    }
+
+    if (
+      status === 'REVIEW' &&
+      (!submissionUrl || String(submissionUrl).trim() === '') &&
+      (!replyNotes || String(replyNotes).trim() === '') &&
+      (!existingTask.submissionUrl || String(existingTask.submissionUrl).trim() === '')
+    ) {
+      return res.status(400).json({
+        message: 'กรุณาระบุลิงก์ผลงาน (submissionUrl) หรือข้อความตอบกลับก่อนส่งตรวจสอบ',
+      });
     }
 
     // Role-based protection & Workflow transition validation

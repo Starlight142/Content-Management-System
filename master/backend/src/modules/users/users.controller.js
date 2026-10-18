@@ -308,9 +308,16 @@ const updateProfile = async (req, res) => {
     const userId = req.user.userId || req.user.id;
     const { firstName, lastName, name } = req.body;
 
+    if (
+      (firstName !== undefined && String(firstName).trim() === '') ||
+      (name !== undefined && firstName === undefined && String(name).trim() === '')
+    ) {
+      return res.status(400).json({ message: 'กรุณาระบุชื่อโปรไฟล์ ห้ามเว้นว่าง (First name cannot be empty)' });
+    }
+
     const updateFields = {};
-    if (firstName !== undefined) updateFields.firstName = firstName;
-    if (lastName !== undefined) updateFields.lastName = lastName;
+    if (firstName !== undefined) updateFields.firstName = String(firstName).trim();
+    if (lastName !== undefined) updateFields.lastName = String(lastName).trim();
     if (name && !firstName) {
       const parts = name.trim().split(' ');
       updateFields.firstName = parts[0];

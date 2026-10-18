@@ -52,14 +52,16 @@ Thumbs.db
 *.swp
 *.swo
 
-# Local tooling
+# Local tooling & Python Virtual Environment
 powershell.cmd
 compass-connections.json
 *.exe
 .venv/
+__pycache__/
+*.pyc
 tests/robot/results/
 master/database/backups/
 
-# Local private documents
+# Local private documents (Never push)
 PROJECT-HANDOVER.md
 

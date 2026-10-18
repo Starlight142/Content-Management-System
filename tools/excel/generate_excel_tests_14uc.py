@@ -103,8 +103,8 @@ def create_workbook():
 
     # KPI Metric Cards
     kpis = [
-        ("A4:B4", "A5:B5", "A4", "A5", "กรณีทดสอบรวมทั้งหมด", "47 รายการ", "Manual 20 + Robot 27"),
-        ("C4:D4", "C5:D5", "C4", "C5", "ผลการทดสอบผ่าน (PASS)", "100%", "47 / 47 ผ่านการทดสอบ"),
+        ("A4:B4", "A5:B5", "A4", "A5", "กรณีทดสอบรวมทั้งหมด", "48 รายการ", "Manual 20 + Robot 28"),
+        ("C4:D4", "C5:D5", "C4", "C5", "ผลการทดสอบผ่าน (PASS)", "100%", "48 / 48 ผ่านการทดสอบ"),
         ("E4:F4", "E5:F5", "E4", "E5", "สัดส่วนความครอบคลุม (RTM)", "100%", "ครอบคลุมครบ 14 Use Cases"),
         ("G4:G4", "G5:G5", "G4", "G5", "ข้อบกพร่องตกค้าง (Defects)", "0", "สถานะพร้อมส่งมอบงาน"),
     ]
@@ -140,19 +140,19 @@ def create_workbook():
         cell.border = border_cell
 
     uc_summary_data = [
-        ("UC-01", "ลงทะเบียน", "การสร้างบัญชีผู้ใช้ใหม่ในระบบ ตรวจสอบความถูกต้องและป้องกันอีเมลซ้ำ", "Member", "2 Manual + 1 Automated"),
-        ("UC-02", "เข้าสู่ระบบ", "การยืนยันตัวตนด้วยอีเมลและรหัสผ่านเพื่อรับ JWT Bearer Token และการป้องกันความปลอดภัย", "Member, Manager, Admin", "2 Manual + 5 Automated"),
-        ("UC-03", "จัดการบัญชีส่วนตัว", "การเรียกดูและอัปเดตข้อมูลโปรไฟล์ส่วนตัว (Display Name, Avatar, Password)", "Member, Manager, Admin", "1 Manual + 1 Automated"),
+        ("UC-01", "ลงทะเบียน", "การสร้างบัญชีผู้ใช้ใหม่ในระบบ ตรวจสอบความถูกต้องและป้องกันอีเมลซ้ำ", "Member", "2 Manual + 2 Automated"),
+        ("UC-02", "เข้าสู่ระบบ", "การยืนยันตัวตนด้วยอีเมลและรหัสผ่านเพื่อรับ JWT Bearer Token และการป้องกันความปลอดภัย", "Member, Manager, Admin", "2 Manual + 2 Automated"),
+        ("UC-03", "จัดการบัญชีส่วนตัว", "การเรียกดูและอัปเดตข้อมูลโปรไฟล์ส่วนตัว (Display Name, Avatar, Password)", "Member, Manager, Admin", "1 Manual + 2 Automated"),
         ("UC-04", "เข้าร่วมทีมด้วยรหัสทีม", "การส่งรหัสทีม (Team Code เช่น TEAM-A) เพื่อเข้าร่วมทีม พร้อมระบบป้องกันรหัสผิด", "Member (Manager สืบทอด)", "2 Manual + 2 Automated"),
-        ("UC-05", "จัดการและส่งมอบงานย่อย", "การรับงาน เปลี่ยนสถานะเป็น IN_PROGRESS แนบลิงก์ Google Drive และตอบกลับคำชี้แจง", "Member", "2 Manual + 3 Automated"),
-        ("UC-06", "เสนอและแลกเปลี่ยนแนวคิดคอนเทนต์", "การเสนอไอเดียคอนเทนต์ใหม่บน Idea Board ร่วมแลกเปลี่ยนความคิดเห็นในทีม", "Member (Manager สืบทอด)", "1 Manual + 3 Automated"),
+        ("UC-05", "จัดการและส่งมอบงานย่อย", "การรับงาน เปลี่ยนสถานะเป็น IN_PROGRESS แนบลิงก์ Google Drive และตอบกลับคำชี้แจง", "Member", "2 Manual + 2 Automated"),
+        ("UC-06", "เสนอและแลกเปลี่ยนแนวคิดคอนเทนต์", "การเสนอไอเดียคอนเทนต์ใหม่บน Idea Board ร่วมแลกเปลี่ยนความคิดเห็นในทีม", "Member (Manager สืบทอด)", "1 Manual + 2 Automated"),
         ("UC-07", "ติดตามความคืบหน้าและกิจกรรมทีมแบบเรียลไทม์", "การติดตาม Activity Feed กิจกรรมล่าสุดของทีม และเปอร์เซ็นต์ความคืบหน้าการผลิต", "Member (Manager สืบทอด)", "1 Manual + 2 Automated"),
-        ("UC-08", "บริหารจัดการทีมและกำหนดตำแหน่งงาน", "การจัดโครงสร้างทีมและมอบหมายหน้าที่ (Scriptwriter, Editor, Graphic Designer)", "Manager (เฉพาะบทบาท)", "1 Manual + 1 Automated"),
-        ("UC-09", "สร้างชิ้นงานและมอบหมายงานผลิต", "การสร้าง Content ใหม่ กำหนดแพลตฟอร์ม และมอบหมายงานย่อยให้สมาชิกฝ่ายผลิต", "Manager (เฉพาะบทบาท)", "1 Manual + 1 Automated"),
+        ("UC-08", "บริหารจัดการทีมและกำหนดตำแหน่งงาน", "การจัดโครงสร้างทีมและมอบหมายหน้าที่ (Scriptwriter, Editor, Graphic Designer)", "Manager (เฉพาะบทบาท)", "1 Manual + 2 Automated"),
+        ("UC-09", "สร้างชิ้นงานและมอบหมายงานผลิต", "การสร้าง Content ใหม่ กำหนดแพลตฟอร์ม และมอบหมายงานย่อยให้สมาชิกฝ่ายผลิต", "Manager (เฉพาะบทบาท)", "1 Manual + 2 Automated"),
         ("UC-10", "ตรวจรับ สั่งแก้ไข และอนุมัติชิ้นงาน", "การตรวจทานงานที่ส่งมอบ สั่งแก้พร้อมระบุหมายเหตุ และการอนุมัติแบบ 1-Tap Approval", "Manager (เฉพาะบทบาท)", "2 Manual + 2 Automated"),
-        ("UC-11", "เผยแพร่ผลงานสู่สาธารณะ", "การบันทึก URL ผลงานที่เผยแพร่จริงและปรับสถานะเป็น PUBLISHED เสร็จสมบูรณ์", "Manager (เฉพาะบทบาท)", "1 Manual + 1 Automated"),
+        ("UC-11", "เผยแพร่ผลงานสู่สาธารณะ", "การบันทึก URL ผลงานที่เผยแพร่จริงและปรับสถานะเป็น PUBLISHED เสร็จสมบูรณ์", "Manager (เฉพาะบทบาท)", "1 Manual + 2 Automated"),
         ("UC-12", "บริหารจัดการผู้ใช้งาน ทีมงาน และสิทธิ์ระบบ", "การจัดการบัญชีผู้ใช้ทั้งหมด การสลับบทบาท (Role Switcher) และการควบคุมสิทธิ์", "Admin (เฉพาะบทบาท)", "1 Manual + 2 Automated"),
-        ("UC-13", "กำกับดูแลชิ้นงานและภารกิจทั้งหมดในระบบ", "การเรียกดู กรอง และตรวจสอบงานผลิตทั้งหมดทุกทีมของระบบแบบภาพรวมส่วนกลาง", "Admin (เฉพาะบทบาท)", "1 Manual + 1 Automated"),
+        ("UC-13", "กำกับดูแลชิ้นงานและภารกิจทั้งหมดในระบบ", "การเรียกดู กรอง และตรวจสอบงานผลิตทั้งหมดทุกทีมของระบบแบบภาพรวมส่วนกลาง", "Admin (เฉพาะบทบาท)", "1 Manual + 2 Automated"),
         ("UC-14", "ตรวจสอบสถานะระบบและประวัติการดำเนินงาน", "การตรวจสอบสุขภาพเซิร์ฟเวอร์/ฐานข้อมูล (/api/health) และสืบค้น Audit Logs บันทึกประวัติ", "Admin (เฉพาะบทบาท)", "1 Manual + 2 Automated"),
     ]
 
@@ -411,42 +411,43 @@ def create_workbook():
         cell.border = border_cell
 
     robot_test_cases = [
-        # Suite 1
-        ("TC_AUTH_01", "01_authentication_tests.robot", "ตรวจสอบสถานะความพร้อมของเซิร์ฟเวอร์และการเชื่อมต่อ MongoDB", "UC-14", "GET /api/health", "System Health", "status=OK, database=connected, HTTP 200", "0.012 s", "PASS"),
-        ("TC_AUTH_02", "01_authentication_tests.robot", "เข้าสู่ระบบสำเร็จสำหรับบทบาท Admin พร้อมรับ JWT Token", "UC-02", "POST /api/auth/login", "Positive Auth", "token exists, user.role=ADMIN, HTTP 200", "0.145 s", "PASS"),
-        ("TC_AUTH_03", "01_authentication_tests.robot", "เข้าสู่ระบบสำเร็จสำหรับบทบาท Manager ประจำ Team A", "UC-02", "POST /api/auth/login", "Positive Auth", "token exists, user.role=MANAGER, HTTP 200", "0.138 s", "PASS"),
-        ("TC_AUTH_04", "01_authentication_tests.robot", "เข้าสู่ระบบสำเร็จสำหรับบทบาท Member ฝ่ายผลิต", "UC-02", "POST /api/auth/login", "Positive Auth", "token exists, user.role=MEMBER, HTTP 200", "0.132 s", "PASS"),
-        ("TC_AUTH_05", "01_authentication_tests.robot", "ปฏิเสธการเข้าสู่ระบบเมื่อกรอกรหัสผ่านไม่ถูกต้อง (Negative Test)", "UC-02", "POST /api/auth/login", "Negative Auth", "HTTP 401 Unauthorized, message='Invalid credentials'", "0.125 s", "PASS"),
-        ("TC_AUTH_06", "01_authentication_tests.robot", "ตรวจสอบการเข้าถึง Protected Route และข้อมูลโปรไฟล์ด้วย Bearer JWT", "UC-03", "GET /api/auth/me", "Token Validation", "HTTP 200, user.email matches token owner", "0.018 s", "PASS"),
-        ("TC_AUTH_07", "01_authentication_tests.robot", "ตรวจสอบระบบลงทะเบียนผู้ใช้ใหม่และป้องกันอีเมลซ้ำ", "UC-01", "POST /api/auth/register", "Registration", "HTTP 201 Created หรือ HTTP 400 Duplicate Email Handled", "0.140 s", "PASS"),
+        # Suite 1: Authentication & Profile (UC-01, UC-02, UC-03)
+        ("TC_AUTO_001", "01_authentication_tests.robot", "ลงทะเบียนผู้ใช้งานใหม่สำเร็จด้วยข้อมูลถูกต้องครบถ้วน", "UC-01", "POST /api/auth/register", "Valid", "HTTP 201 Created, token exists, role=MEMBER, teamCode=TEAM-A", "0.145 s", "PASS"),
+        ("TC_AUTO_002", "01_authentication_tests.robot", "ปฏิเสธการลงทะเบียนกรณีใช้อีเมลซ้ำหรือส่งข้อมูลบังคับไม่ครบ", "UC-01", "POST /api/auth/register", "Invalid", "HTTP 400 Bad Request, duplicate email & missing password rejected", "0.095 s", "PASS"),
+        ("TC_AUTO_003", "01_authentication_tests.robot", "เข้าสู่ระบบสำเร็จด้วยอีเมลและรหัสผ่านที่ถูกต้องครบทั้ง 3 บทบาท", "UC-02", "POST /api/auth/login", "Valid", "HTTP 200 OK, JWT issued for ADMIN, MANAGER, MEMBER", "0.260 s", "PASS"),
+        ("TC_AUTO_004", "01_authentication_tests.robot", "ปฏิเสธการเข้าสู่ระบบเมื่อรหัสผ่านผิดหรือไม่มีอีเมลในระบบ", "UC-02", "POST /api/auth/login", "Invalid", "HTTP 401 Unauthorized, invalid password & unknown email blocked", "0.115 s", "PASS"),
+        ("TC_AUTO_005", "01_authentication_tests.robot", "เรียกดูและอัปเดตข้อมูลโปรไฟล์ส่วนตัวสำเร็จ", "UC-03", "GET /api/auth/me, PUT /api/users/:id", "Valid", "HTTP 200 OK, firstName and position updated & restored", "0.110 s", "PASS"),
+        ("TC_AUTO_006", "01_authentication_tests.robot", "ปฏิเสธการแก้ไขโปรไฟล์เมื่อส่งชื่อว่างหรือไม่ได้แนบ JWT Token", "UC-03", "PUT /api/users/:id, GET /api/auth/me", "Invalid", "HTTP 400 Empty Name, HTTP 403 Missing Token", "0.085 s", "PASS"),
 
-        # Suite 2
-        ("TC_TEAM_01", "02_team_workspace_tests.robot", "ตรวจสอบการดึงข้อมูลพื้นฐานของทีมด้วยรหัสสังกัดทีม A", "UC-04, UC-08", "GET /api/teams/TEAM-A", "Data Fetch", "team.code=TEAM-A, name='Content Team A', HTTP 200", "0.022 s", "PASS"),
-        ("TC_TEAM_02", "02_team_workspace_tests.robot", "สมาชิกเข้าร่วมทีมสำเร็จด้วยรหัสทีมที่ถูกต้อง", "UC-04", "POST /api/teams/join", "Team Operation", "HTTP 200, message='Joined team successfully'", "0.045 s", "PASS"),
-        ("TC_TEAM_03", "02_team_workspace_tests.robot", "ปฏิเสธการเข้าร่วมทีมเมื่อส่งรหัสทีมที่ไม่ถูกต้อง (Negative Test)", "UC-04", "POST /api/teams/join", "Negative Test", "HTTP 404 Not Found, message='Team not found'", "0.019 s", "PASS"),
-        ("TC_TEAM_04", "02_team_workspace_tests.robot", "ตรวจสอบข้อมูลสรุปสถิติความคืบหน้าภาพรวมของทีม (Dashboard Aggregates)", "UC-07", "GET /api/teams/TEAM-A/dashboard", "Data Aggregation", "totalContents > 0, progressRate >= 0, HTTP 200", "0.035 s", "PASS"),
-        ("TC_TEAM_05", "02_team_workspace_tests.robot", "ตรวจสอบฟีดกิจกรรมสดของทีมเรียงลำดับเวลาล่าสุด (Activity Feed)", "UC-07", "GET /api/teams/TEAM-A/activities", "Feed Chronology", "activities is list, timestamp descending, HTTP 200", "0.028 s", "PASS"),
+        # Suite 2: Team Workspace, Progress & Positions (UC-04, UC-07, UC-08)
+        ("TC_AUTO_007", "02_team_workspace_tests.robot", "เข้าร่วมทีมด้วยรหัสทีมที่ถูกต้อง (TEAM-A) และโหลดข้อมูลทีมสำเร็จ", "UC-04", "POST /api/teams/join, GET /api/teams/my-teams", "Valid", "HTTP 200 OK, joined TEAM-A (Content Team A)", "0.098 s", "PASS"),
+        ("TC_AUTO_008", "02_team_workspace_tests.robot", "ปฏิเสธการเข้าร่วมทีมเมื่อกรอกรหัสทีมผิดหรือส่งค่าว่าง", "UC-04", "POST /api/teams/join", "Invalid", "HTTP 404 Team not found & HTTP 400 Empty code", "0.082 s", "PASS"),
+        ("TC_AUTO_013", "02_team_workspace_tests.robot", "ติดตามความคืบหน้าภาพรวม (Dashboard) และกระแสกิจกรรมสด (Activity Feed) สำเร็จ", "UC-07", "GET /api/teams/:id/dashboard, /activities", "Valid", "HTTP 200 OK, stats and chronological feed returned", "0.105 s", "PASS"),
+        ("TC_AUTO_014", "02_team_workspace_tests.robot", "ป้องกันสมาชิกเข้าถึง Dashboard และ Activity Feed ของทีมอื่น (Team Isolation Guard)", "UC-07", "GET /api/teams/:teamB_Id/dashboard, /activities", "Invalid", "HTTP 403 Forbidden on cross-team access", "0.088 s", "PASS"),
+        ("TC_AUTO_015", "02_team_workspace_tests.robot", "Manager เรียกดูรายชื่อสมาชิกในทีมและกำหนดตำแหน่งงานฝ่ายผลิตสำเร็จ", "UC-08", "GET /api/users?teamId=:id, PUT /api/users/:id", "Valid", "HTTP 200 OK, position updated & restored", "0.112 s", "PASS"),
+        ("TC_AUTO_016", "02_team_workspace_tests.robot", "ปฏิเสธการดึงรายชื่อสมาชิกข้ามทีมโดย Manager ต่างสังกัด", "UC-08", "GET /api/users?teamId=:teamB_Id", "Invalid", "HTTP 403 Forbidden on cross-team roster query", "0.076 s", "PASS"),
 
-        # Suite 3
-        ("TC_WORKFLOW_01", "03_content_production_workflow_tests.robot", "Manager สร้างคอนเทนต์ใหม่และมอบหมายงานย่อยให้สมาชิกฝ่ายผลิต", "UC-09", "POST /api/contents", "Workflow Lifecycle", "status=IN_PRODUCTION, tasks created, HTTP 201", "0.065 s", "PASS"),
-        ("TC_WORKFLOW_02", "03_content_production_workflow_tests.robot", "Member เปลี่ยนสถานะงานย่อยเป็นกำลังดำเนินการ (IN_PROGRESS)", "UC-05", "PATCH /api/tasks/:id/status", "Workflow Lifecycle", "status=IN_PROGRESS, startedAt recorded, HTTP 200", "0.038 s", "PASS"),
-        ("TC_WORKFLOW_03", "03_content_production_workflow_tests.robot", "Member ส่งมอบผลงานพร้อมแนบลิงก์ Google Drive (SUBMITTED)", "UC-05", "POST /api/tasks/:id/submit", "Deliverable Submission", "status=SUBMITTED, deliverableUrl saved, HTTP 200", "0.042 s", "PASS"),
-        ("TC_WORKFLOW_04", "03_content_production_workflow_tests.robot", "Manager สั่งแก้ไขผลงานพร้อมระบุหมายเหตุส่งกลับ (REVISION)", "UC-10", "POST /api/tasks/:id/revision", "Revision Loop", "status=REVISION, revisionNotes recorded, HTTP 200", "0.046 s", "PASS"),
-        ("TC_WORKFLOW_05", "03_content_production_workflow_tests.robot", "Member ตอบกลับข้อความชี้แจงคำสั่งแก้ไขและส่งมอบงานใหม่", "UC-05, UC-10", "POST /api/tasks/:id/reply-revision", "Revision Reply", "replyMessage saved, status=SUBMITTED, HTTP 200", "0.041 s", "PASS"),
-        ("TC_WORKFLOW_06", "03_content_production_workflow_tests.robot", "Manager อนุมัติชิ้นงานคอนเทนต์แบบ 1-Tap Approval (APPROVED)", "UC-10", "PATCH /api/contents/:id/approve", "1-Tap Approval", "content.status=APPROVED, tasks all completed, HTTP 200", "0.052 s", "PASS"),
-        ("TC_WORKFLOW_07", "03_content_production_workflow_tests.robot", "Manager เผยแพร่ผลงานสู่สาธารณะและบันทึก URL จริง (PUBLISHED)", "UC-11", "PATCH /api/contents/:id/publish", "Final Publish", "status=PUBLISHED, publishedUrl valid, HTTP 200", "0.048 s", "PASS"),
+        # Suite 3: Content Production Workflow (UC-09, UC-05, UC-10, UC-11)
+        ("TC_AUTO_017", "03_content_production_workflow_tests.robot", "Manager สร้างชิ้นงานคอนเทนต์ใหม่และมอบหมายภารกิจงานย่อยให้สมาชิกสำเร็จ", "UC-09", "POST /api/contents, POST /api/tasks", "Valid", "HTTP 201 Created for both Content and Sub-task", "0.135 s", "PASS"),
+        ("TC_AUTO_018", "03_content_production_workflow_tests.robot", "ปฏิเสธการสร้างชิ้นงานหรือภารกิจงานย่อยเมื่อไม่ได้ระบุชื่อเรื่อง (Empty Title)", "UC-09", "POST /api/contents, POST /api/tasks", "Invalid", "HTTP 400 Bad Request when title is empty", "0.092 s", "PASS"),
+        ("TC_AUTO_009", "03_content_production_workflow_tests.robot", "สมาชิกเปลี่ยนสถานะงานย่อยเป็น IN_PROGRESS และส่งมอบลิงก์ผลงานเข้าสู่สถานะ REVIEW", "UC-05", "PATCH /api/tasks/:id/status", "Valid", "HTTP 200 OK, status=REVIEW, submissionUrl saved", "0.118 s", "PASS"),
+        ("TC_AUTO_010", "03_content_production_workflow_tests.robot", "ปฏิเสธการส่งมอบงานย่อยเข้าสู่สถานะ REVIEW หากไม่แนบลิงก์ผลงานหรือหมายเหตุ", "UC-05", "PATCH /api/tasks/:id/status", "Invalid", "HTTP 400 Bad Request when submissionUrl & replyNotes empty", "0.084 s", "PASS"),
+        ("TC_AUTO_019", "03_content_production_workflow_tests.robot", "Manager ตรวจรับงาน สั่งแก้ไข (REVISION) และอนุมัติชิ้นงานแบบ 1-Tap Approval (APPROVED)", "UC-10", "POST /api/contents/:id/review", "Valid", "HTTP 200 OK, REVISION -> REVIEW -> APPROVED & Task=DONE", "0.165 s", "PASS"),
+        ("TC_AUTO_020", "03_content_production_workflow_tests.robot", "ปฏิเสธการสั่งแก้ไขงานเมื่อไม่ระบุหมายเหตุ และการส่งผลการตรวจโดยใช้สิทธิ์ Member", "UC-10", "POST /api/contents/:id/review", "Invalid", "HTTP 400 Empty Revision Notes & HTTP 403 Member Role", "0.094 s", "PASS"),
+        ("TC_AUTO_021", "03_content_production_workflow_tests.robot", "Manager เผยแพร่ผลงานที่ผ่านการอนุมัติสู่สาธารณะ (PUBLISHED) สำเร็จ", "UC-11", "PATCH /api/contents/:id/status", "Valid", "HTTP 200 OK, content.status=PUBLISHED", "0.089 s", "PASS"),
+        ("TC_AUTO_022", "03_content_production_workflow_tests.robot", "ปฏิเสธการเปลี่ยนสถานะชิ้นงานเป็น PUBLISHED โดย Member หรือรหัสชิ้นงานไม่มีอยู่จริง", "UC-11", "PATCH /api/contents/:id/status", "Invalid", "HTTP 403 Member Role & HTTP 404 Non-existent ID", "0.091 s", "PASS"),
 
-        # Suite 4
-        ("TC_IDEA_01", "04_ideas_brainstorming_tests.robot", "Member เสนอแนวคิดคอนเทนต์ใหม่บนกระดานระดมสมองของทีม", "UC-06", "POST /api/ideas", "Idea Pitch", "idea.status=DRAFT, title matches, HTTP 201", "0.034 s", "PASS"),
-        ("TC_IDEA_02", "04_ideas_brainstorming_tests.robot", "เรียกดูรายการแนวคิดคอนเทนต์ทั้งหมดภายในทีมเพื่อระดมสมอง", "UC-06", "GET /api/ideas?team=TEAM-A", "Idea Board Fetch", "ideas is list, count >= 1, HTTP 200", "0.021 s", "PASS"),
-        ("TC_IDEA_03", "04_ideas_brainstorming_tests.robot", "Manager อนุมัติแนวคิดคอนเทนต์เพื่อนำไปสู่กระบวนการผลิตสื่อ", "UC-06", "PATCH /api/ideas/:id/status", "Idea Approval", "idea.status=APPROVED, HTTP 200", "0.033 s", "PASS"),
+        # Suite 4: Ideas & Brainstorming (UC-06)
+        ("TC_AUTO_011", "04_ideas_brainstorming_tests.robot", "เสนอแนวคิดคอนเทนต์ใหม่ เรียกดูรายการไอเดียของทีม และอนุมัติไอเดียสำเร็จ", "UC-06", "POST /api/ideas, GET /api/ideas, PUT /api/ideas/:id", "Valid", "HTTP 201 Created, HTTP 200 Approved & Teardown cleaned", "0.142 s", "PASS"),
+        ("TC_AUTO_012", "04_ideas_brainstorming_tests.robot", "ปฏิเสธการสร้างแนวคิดคอนเทนต์กรณีไม่ได้ระบุหัวข้อ (Empty Title) หรือไม่มีสิทธิ์", "UC-06", "POST /api/ideas", "Invalid", "HTTP 400 Empty Title & HTTP 403 Missing Token", "0.086 s", "PASS"),
 
-        # Suite 5
-        ("TC_ADMIN_01", "05_admin_and_security_tests.robot", "Admin เรียกดูรายชื่อผู้ใช้งานทั้งหมดในระบบเพื่อบริหารจัดการสิทธิ์", "UC-12", "GET /api/users", "Admin Governance", "users count >= 4, role and team present, HTTP 200", "0.029 s", "PASS"),
-        ("TC_ADMIN_02", "05_admin_and_security_tests.robot", "Admin เรียกดูรายการคอนเทนต์ทั้งหมดของระบบแบบภาพรวมส่วนกลาง (Global CMS)", "UC-13", "GET /api/contents/all", "Global Oversight", "contents from multiple teams listed, HTTP 200", "0.035 s", "PASS"),
-        ("TC_ADMIN_03", "05_admin_and_security_tests.robot", "Admin ตรวจสอบบันทึกความปลอดภัยและประวัติการดำเนินงาน (Audit Logs)", "UC-14", "GET /api/logs", "Security Audit", "logs is list, action and actor recorded, HTTP 200", "0.031 s", "PASS"),
-        ("TC_ADMIN_04", "05_admin_and_security_tests.robot", "ตรวจสอบสิทธิ์ RBAC: ปฏิเสธไม่ให้ Member เข้าถึง API ผู้ใช้ของ Admin", "UC-12", "GET /api/users (as Member)", "Security RBAC", "HTTP 403 Forbidden, access denied", "0.015 s", "PASS"),
-        ("TC_ADMIN_05", "05_admin_and_security_tests.robot", "ตรวจสอบ Team Isolation Guard: ปฏิเสธสมาชิกทีม B เข้าถึงข้อมูลทีม A", "ความปลอดภัย", "GET /api/teams/TEAM-A/dashboard (as Outsider)", "Team Isolation", "HTTP 403 Forbidden, isolation enforced", "0.017 s", "PASS"),
+        # Suite 5: Admin Governance & Security (UC-12, UC-13, UC-14)
+        ("TC_AUTO_023", "05_admin_and_security_tests.robot", "Admin เรียกดูรายชื่อผู้ใช้งานทั้งหมดและบริหารจัดการสร้าง/ลบทีมงานสำเร็จ", "UC-12", "GET /api/users, POST / DELETE /api/teams", "Valid", "HTTP 200 Users listed, HTTP 201 Team created & deleted", "0.148 s", "PASS"),
+        ("TC_AUTO_024", "05_admin_and_security_tests.robot", "ปฏิเสธการสร้างทีมด้วยรหัสซ้ำ (TEAM-A) และปฏิเสธการเข้าถึง API จัดการผู้ใช้ด้วยสิทธิ์ Member", "UC-12", "POST /api/teams, GET /api/users", "Invalid", "HTTP 400 Duplicate Team Code & HTTP 403 Member RBAC", "0.096 s", "PASS"),
+        ("TC_AUTO_025", "05_admin_and_security_tests.robot", "Admin กำกับดูแลและเรียกดูรายการคอนเทนต์และภารกิจทั้งหมดในระบบแบบส่วนกลาง", "UC-13", "GET /api/contents, GET /api/tasks", "Valid", "HTTP 200 OK, Global contents and tasks returned", "0.104 s", "PASS"),
+        ("TC_AUTO_026", "05_admin_and_security_tests.robot", "ปฏิเสธการแก้ไขหรือลบชิ้นงานคอนเทนต์ด้วยรหัส ObjectId ที่ไม่มีอยู่จริงในระบบ", "UC-13", "PUT / DELETE /api/contents/:nonExistentId", "Invalid", "HTTP 404 Not Found on non-existent ObjectId", "0.088 s", "PASS"),
+        ("TC_AUTO_027", "05_admin_and_security_tests.robot", "Admin ตรวจสอบสถานะความพร้อมของเซิร์ฟเวอร์ (/api/health) และเรียกดูประวัติ Audit Logs", "UC-14", "GET /api/health, GET /api/audit-logs", "Valid", "HTTP 200 OK, health ok=true & audit logs returned", "0.092 s", "PASS"),
+        ("TC_AUTO_028", "05_admin_and_security_tests.robot", "ปฏิเสธการเข้าถึงประวัติ Audit Logs กรณีเป็นสมาชิกทั่วไปหรือใช้ Token ไม่ถูกต้อง", "UC-14", "GET /api/audit-logs", "Invalid", "HTTP 403 Member/Missing Token & HTTP 401 Invalid Token", "0.090 s", "PASS"),
     ]
 
     for r_idx, row_data in enumerate(robot_test_cases, start=2):
@@ -482,7 +483,7 @@ def create_workbook():
         "ขอบเขตและหน้าที่การทำงานหลัก (Functional Scope)",
         "บทบาทที่เกี่ยวข้อง (Actors)",
         "กรณีทดสอบแบบ Manual (Manual Test Cases)",
-        "กรณีทดสอบอัตโนมัติ (Robot Automated Tests)",
+        "กรณีทดสอบอัตโนมัติ (Robot Automated Tests: Valid + Invalid)",
         "สถานะความครอบคลุม (Coverage Status)"
     ]
 
@@ -494,20 +495,20 @@ def create_workbook():
         cell.border = border_cell
 
     rtm_data = [
-        ("UC-01", "ลงทะเบียน", "การลงทะเบียนสร้างบัญชีผู้ใช้ใหม่ในระบบ ตรวจสอบความถูกต้องและป้องกันอีเมลซ้ำ", "Member", "TC-REG-01, TC-REG-02", "TC_AUTH_07", "100% COVERED"),
-        ("UC-02", "เข้าสู่ระบบ", "การยืนยันตัวตนด้วยอีเมลและรหัสผ่านเพื่อรับ JWT Bearer Token และการป้องกันความปลอดภัย", "Member, Manager, Admin", "TC-AUTH-01, TC-AUTH-02", "TC_AUTH_02, TC_AUTH_03, TC_AUTH_04, TC_AUTH_05", "100% COVERED"),
-        ("UC-03", "จัดการบัญชีส่วนตัว", "การเรียกดูและอัปเดตข้อมูลส่วนตัว (Display Name, Avatar, Password)", "Member, Manager, Admin", "TC-PROF-01", "TC_AUTH_06", "100% COVERED"),
-        ("UC-04", "เข้าร่วมทีมด้วยรหัสทีม", "การส่งรหัสทีมเพื่อเข้าร่วมทีม พร้อมระบบป้องกันรหัสผิด (Team Isolation Guard)", "Member (Manager สืบทอด)", "TC-TEAM-01, TC-TEAM-02", "TC_TEAM_01, TC_TEAM_02, TC_TEAM_03", "100% COVERED"),
-        ("UC-05", "จัดการและส่งมอบงานย่อย", "การรับงาน เปลี่ยนสถานะเป็น IN_PROGRESS แนบลิงก์ผลงาน และตอบกลับข้อความสั่งแก้", "Member", "TC-TASK-01, TC-TASK-02", "TC_WORKFLOW_02, TC_WORKFLOW_03, TC_WORKFLOW_05", "100% COVERED"),
-        ("UC-06", "เสนอและแลกเปลี่ยนแนวคิดคอนเทนต์", "การเสนอไอเดียคอนเทนต์ใหม่บน Idea Board เพื่อระดมสมองและรอการพิจารณา", "Member (Manager สืบทอด)", "TC-IDEA-01", "TC_IDEA_01, TC_IDEA_02, TC_IDEA_03", "100% COVERED"),
-        ("UC-07", "ติดตามความคืบหน้าและกิจกรรมทีมแบบเรียลไทม์", "การติดตาม Activity Feed กิจกรรมล่าสุดของทีม และเปอร์เซ็นต์ความคืบหน้ารวม", "Member (Manager สืบทอด)", "TC-TRK-01", "TC_TEAM_04, TC_TEAM_05", "100% COVERED"),
-        ("UC-08", "บริหารจัดการทีมและกำหนดตำแหน่งงาน", "การจัดโครงสร้างทีมและมอบหมายตำแหน่งหน้าที่ (Scriptwriter, Editor, Designer)", "Manager (เฉพาะบทบาท)", "TC-POS-01", "TC_TEAM_01", "100% COVERED"),
-        ("UC-09", "สร้างชิ้นงานและมอบหมายงานผลิต", "การสร้าง Content ใหม่ กำหนดแพลตฟอร์ม และมอบหมายงานย่อยให้สมาชิกฝ่ายผลิต", "Manager (เฉพาะบทบาท)", "TC-PROD-01", "TC_WORKFLOW_01", "100% COVERED"),
-        ("UC-10", "ตรวจรับ สั่งแก้ไข และอนุมัติชิ้นงาน", "การตรวจทานงานที่ส่งมอบ สั่งแก้พร้อมระบุหมายเหตุ และการอนุมัติแบบ 1-Tap Approval", "Manager (เฉพาะบทบาท)", "TC-REV-01, TC-APP-01", "TC_WORKFLOW_04, TC_WORKFLOW_05, TC_WORKFLOW_06", "100% COVERED"),
-        ("UC-11", "เผยแพร่ผลงานสู่สาธารณะ", "การบันทึก URL ผลงานที่เผยแพร่จริงและปรับสถานะเป็น PUBLISHED เสร็จสมบูรณ์", "Manager (เฉพาะบทบาท)", "TC-PUB-01", "TC_WORKFLOW_07", "100% COVERED"),
-        ("UC-12", "บริหารจัดการผู้ใช้งาน ทีมงาน และสิทธิ์ระบบ", "การจัดการบัญชีผู้ใช้ทั้งหมด การสลับบทบาท (Role Switcher) และการควบคุมสิทธิ์ RBAC", "Admin (เฉพาะบทบาท)", "TC-ADM-01", "TC_ADMIN_01, TC_ADMIN_04", "100% COVERED"),
-        ("UC-13", "กำกับดูแลชิ้นงานและภารกิจทั้งหมดในระบบ", "การเรียกดู กรอง และตรวจสอบงานผลิตทั้งหมดทุกทีมของระบบแบบภาพรวมส่วนกลาง (Global CMS)", "Admin (เฉพาะบทบาท)", "TC-ADM-02", "TC_ADMIN_02", "100% COVERED"),
-        ("UC-14", "ตรวจสอบสถานะระบบและประวัติการดำเนินงาน", "การตรวจสอบสุขภาพเซิร์ฟเวอร์/ฐานข้อมูล (/api/health) และสืบค้น Audit Logs บันทึกความปลอดภัย", "Admin (เฉพาะบทบาท)", "TC-ADM-03", "TC_AUTH_01, TC_ADMIN_03", "100% COVERED"),
+        ("UC-01", "ลงทะเบียน", "การลงทะเบียนสร้างบัญชีผู้ใช้ใหม่ในระบบ ตรวจสอบความถูกต้องและป้องกันอีเมลซ้ำ", "Member", "TC-REG-01, TC-REG-02", "TC_AUTO_001 (Valid), TC_AUTO_002 (Invalid)", "100% COVERED"),
+        ("UC-02", "เข้าสู่ระบบ", "การยืนยันตัวตนด้วยอีเมลและรหัสผ่านเพื่อรับ JWT Bearer Token และการป้องกันความปลอดภัย", "Member, Manager, Admin", "TC-AUTH-01, TC-AUTH-02", "TC_AUTO_003 (Valid), TC_AUTO_004 (Invalid)", "100% COVERED"),
+        ("UC-03", "จัดการบัญชีส่วนตัว", "การเรียกดูและอัปเดตข้อมูลส่วนตัว (Display Name, Avatar, Password)", "Member, Manager, Admin", "TC-PROF-01", "TC_AUTO_005 (Valid), TC_AUTO_006 (Invalid)", "100% COVERED"),
+        ("UC-04", "เข้าร่วมทีมด้วยรหัสทีม", "การส่งรหัสทีมเพื่อเข้าร่วมทีม พร้อมระบบป้องกันรหัสผิด (Team Isolation Guard)", "Member (Manager สืบทอด)", "TC-TEAM-01, TC-TEAM-02", "TC_AUTO_007 (Valid), TC_AUTO_008 (Invalid)", "100% COVERED"),
+        ("UC-05", "จัดการและส่งมอบงานย่อย", "การรับงาน เปลี่ยนสถานะเป็น IN_PROGRESS แนบลิงก์ผลงาน และตอบกลับข้อความสั่งแก้", "Member", "TC-TASK-01, TC-TASK-02", "TC_AUTO_009 (Valid), TC_AUTO_010 (Invalid)", "100% COVERED"),
+        ("UC-06", "เสนอและแลกเปลี่ยนแนวคิดคอนเทนต์", "การเสนอไอเดียคอนเทนต์ใหม่บน Idea Board เพื่อระดมสมองและรอการพิจารณา", "Member (Manager สืบทอด)", "TC-IDEA-01", "TC_AUTO_011 (Valid), TC_AUTO_012 (Invalid)", "100% COVERED"),
+        ("UC-07", "ติดตามความคืบหน้าและกิจกรรมทีมแบบเรียลไทม์", "การติดตาม Activity Feed กิจกรรมล่าสุดของทีม และเปอร์เซ็นต์ความคืบหน้ารวม", "Member (Manager สืบทอด)", "TC-TRK-01", "TC_AUTO_013 (Valid), TC_AUTO_014 (Invalid)", "100% COVERED"),
+        ("UC-08", "บริหารจัดการทีมและกำหนดตำแหน่งงาน", "การจัดโครงสร้างทีมและมอบหมายตำแหน่งหน้าที่ (Scriptwriter, Editor, Designer)", "Manager (เฉพาะบทบาท)", "TC-POS-01", "TC_AUTO_015 (Valid), TC_AUTO_016 (Invalid)", "100% COVERED"),
+        ("UC-09", "สร้างชิ้นงานและมอบหมายงานผลิต", "การสร้าง Content ใหม่ กำหนดแพลตฟอร์ม และมอบหมายงานย่อยให้สมาชิกฝ่ายผลิต", "Manager (เฉพาะบทบาท)", "TC-PROD-01", "TC_AUTO_017 (Valid), TC_AUTO_018 (Invalid)", "100% COVERED"),
+        ("UC-10", "ตรวจรับ สั่งแก้ไข และอนุมัติชิ้นงาน", "การตรวจทานงานที่ส่งมอบ สั่งแก้พร้อมระบุหมายเหตุ และการอนุมัติแบบ 1-Tap Approval", "Manager (เฉพาะบทบาท)", "TC-REV-01, TC-APP-01", "TC_AUTO_019 (Valid), TC_AUTO_020 (Invalid)", "100% COVERED"),
+        ("UC-11", "เผยแพร่ผลงานสู่สาธารณะ", "การบันทึก URL ผลงานที่เผยแพร่จริงและปรับสถานะเป็น PUBLISHED เสร็จสมบูรณ์", "Manager (เฉพาะบทบาท)", "TC-PUB-01", "TC_AUTO_021 (Valid), TC_AUTO_022 (Invalid)", "100% COVERED"),
+        ("UC-12", "บริหารจัดการผู้ใช้งาน ทีมงาน และสิทธิ์ระบบ", "การจัดการบัญชีผู้ใช้ทั้งหมด การสลับบทบาท (Role Switcher) และการควบคุมสิทธิ์ RBAC", "Admin (เฉพาะบทบาท)", "TC-ADM-01", "TC_AUTO_023 (Valid), TC_AUTO_024 (Invalid)", "100% COVERED"),
+        ("UC-13", "กำกับดูแลชิ้นงานและภารกิจทั้งหมดในระบบ", "การเรียกดู กรอง และตรวจสอบงานผลิตทั้งหมดทุกทีมของระบบแบบภาพรวมส่วนกลาง (Global CMS)", "Admin (เฉพาะบทบาท)", "TC-ADM-02", "TC_AUTO_025 (Valid), TC_AUTO_026 (Invalid)", "100% COVERED"),
+        ("UC-14", "ตรวจสอบสถานะระบบและประวัติการดำเนินงาน", "การตรวจสอบสุขภาพเซิร์ฟเวอร์/ฐานข้อมูล (/api/health) และสืบค้น Audit Logs บันทึกความปลอดภัย", "Admin (เฉพาะบทบาท)", "TC-ADM-03", "TC_AUTO_027 (Valid), TC_AUTO_028 (Invalid)", "100% COVERED"),
     ]
 
     for r_idx, row_data in enumerate(rtm_data, start=2):
