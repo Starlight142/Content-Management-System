@@ -10,12 +10,12 @@ import {
   Platform,
   TextInput,
   Alert,
-  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { teamApi, userApi } from '../../services/api';
 import { presenceService } from '../../services/presenceService';
 import { useTheme } from '../../theme/ThemeContext';
+import SmoothModal from '../../components/SmoothModal';
 
 const AVAILABLE_POSITIONS = [
   'Video Editor',
@@ -617,21 +617,12 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
       </ScrollView>
 
       {/* Position Assignment Modal for Manager / Admin */}
-      <Modal
+      <SmoothModal
         visible={!!editingMember}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setEditingMember(null)}
+        onClose={() => setEditingMember(null)}
+        title="กำหนดตำแหน่งงาน"
+        subtitle={`เลือกตำแหน่งสำหรับ ${editingMember?.firstName ? `${editingMember.firstName} ${editingMember.lastName || ""}`.trim() : (editingMember?.username || "")}`}
       >
-        <View style={styles.modalOverlay}>
-          <View style={[styles.positionModalCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-            <Text style={[styles.positionModalTitle, { color: colors.textPrimary }]}>
-              กำหนดตำแหน่งงาน
-            </Text>
-            <Text style={[styles.positionModalSub, { color: colors.textSecondary }]}>
-              เลือกตำแหน่งสำหรับ {editingMember?.firstName ? `${editingMember.firstName} ${editingMember.lastName || ''}`.trim() : editingMember?.username}
-            </Text>
-
             <View style={styles.positionOptionList}>
               {AVAILABLE_POSITIONS.map((pos) => {
                 const isCurrent = editingMember?.position === pos;
@@ -680,9 +671,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
             >
               <Text style={[styles.modalCancelText, { color: colors.textPrimary }]}>ยกเลิก</Text>
             </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      </SmoothModal>
     </SafeAreaView>
   );
 }

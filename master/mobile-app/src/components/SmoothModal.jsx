@@ -30,25 +30,29 @@ export default function SmoothModal({
   const slideAnim = useRef(new Animated.Value(24)).current;
 
   useEffect(() => {
+    fadeAnim.stopAnimation();
+    scaleAnim.stopAnimation();
+    slideAnim.stopAnimation();
+
     if (visible) {
       setShowModal(true);
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 200,
+          duration: 180,
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }),
         Animated.spring(scaleAnim, {
           toValue: 1,
           friction: 9,
-          tension: 65,
+          tension: 70,
           useNativeDriver: true,
         }),
         Animated.spring(slideAnim, {
           toValue: 0,
           friction: 9,
-          tension: 65,
+          tension: 70,
           useNativeDriver: true,
         }),
       ]).start();
@@ -56,22 +60,24 @@ export default function SmoothModal({
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 0,
-          duration: 150,
+          duration: 140,
           easing: Easing.in(Easing.cubic),
           useNativeDriver: true,
         }),
         Animated.timing(scaleAnim, {
           toValue: 0.94,
-          duration: 150,
+          duration: 140,
           useNativeDriver: true,
         }),
         Animated.timing(slideAnim, {
           toValue: 14,
-          duration: 150,
+          duration: 140,
           useNativeDriver: true,
         }),
-      ]).start(() => {
-        setShowModal(false);
+      ]).start(({ finished }) => {
+        if (finished) {
+          setShowModal(false);
+        }
       });
     }
   }, [visible, fadeAnim, scaleAnim, slideAnim]);
@@ -89,6 +95,8 @@ export default function SmoothModal({
       <View style={styles.container}>
         {/* Animated backdrop with layered frosted diffusion */}
         <Animated.View
+          renderToHardwareTextureAndroid
+          shouldRasterizeIOS
           style={[
             styles.backdrop,
             {
@@ -127,6 +135,8 @@ export default function SmoothModal({
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <View style={styles.scrollInner}>
                 <Animated.View
+                  renderToHardwareTextureAndroid
+                  shouldRasterizeIOS
                   style={[
                     styles.card,
                     {

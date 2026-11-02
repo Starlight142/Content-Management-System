@@ -1,9 +1,9 @@
 import { Platform } from 'react-native';
 
-// Support Wi-Fi LAN (192.168.0.104) first for wireless phone access, with USB adb reverse (127.0.0.1) & Cloudflare tunnel
+// Prioritize localhost / adb reverse (127.0.0.1) & Android emulator (10.0.2.2) first for instant connection on any PC, followed by Wi-Fi LAN & Cloudflare tunnel
 const CANDIDATE_BASE_URLS = Platform.OS === 'android'
-  ? ['http://192.168.0.104:5000/api', 'http://127.0.0.1:5000/api', 'http://localhost:5000/api', 'https://limits-claims-herself-folks.trycloudflare.com/api', 'http://10.0.2.2:5000/api']
-  : ['http://192.168.0.104:5000/api', 'http://localhost:5000/api', 'http://127.0.0.1:5000/api', 'https://limits-claims-herself-folks.trycloudflare.com/api'];
+  ? ['http://127.0.0.1:5000/api', 'http://10.0.2.2:5000/api', 'http://localhost:5000/api', 'http://192.168.0.104:5000/api', 'https://limits-claims-herself-folks.trycloudflare.com/api']
+  : ['http://localhost:5000/api', 'http://127.0.0.1:5000/api', 'http://192.168.0.104:5000/api', 'https://limits-claims-herself-folks.trycloudflare.com/api'];
 
 let activeBaseUrl = CANDIDATE_BASE_URLS[0];
 
@@ -69,7 +69,7 @@ export const setAuthToken = (token) => {
 
 export const getAuthToken = () => authToken;
 
-const request = async (endpoint, options = {}, timeoutMs = 3500) => {
+const request = async (endpoint, options = {}, timeoutMs = 2500) => {
   const headers = {
     'Content-Type': 'application/json',
     ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
@@ -232,4 +232,3 @@ export default {
   team: teamApi,
   user: userApi,
 };
-

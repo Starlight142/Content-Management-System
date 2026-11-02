@@ -1,9 +1,8 @@
-
 import { Platform } from 'react-native';
 
 const CANDIDATE_WS_URLS = Platform.OS === 'android'
-  ? ['ws://127.0.0.1:5000', 'ws://localhost:5000', 'ws://192.168.0.104:5000', 'wss://limits-claims-herself-folks.trycloudflare.com', 'http://10.0.2.2:5000']
-  : ['ws://localhost:5000', 'ws://127.0.0.1:5000', 'wss://limits-claims-herself-folks.trycloudflare.com'];
+  ? ['ws://127.0.0.1:5000', 'ws://10.0.2.2:5000', 'ws://localhost:5000', 'ws://192.168.0.104:5000', 'wss://limits-claims-herself-folks.trycloudflare.com']
+  : ['ws://localhost:5000', 'ws://127.0.0.1:5000', 'ws://192.168.0.104:5000', 'wss://limits-claims-herself-folks.trycloudflare.com'];
 
 let activeWsIndex = 0;
 
@@ -190,4 +189,3 @@ class MobilePresenceService {
 }
 
 export const presenceService = new MobilePresenceService();
-

@@ -2178,3 +2178,14 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
   - สร้างสคริปต์ `tools/excel/generate_excel_automated_tests_by_uc.py` อ่านเวลาการรันจริงจาก `output.xml` และสร้างไฟล์ `docs/academic/spreadsheets/Draftly-Automated-Tests-By-UseCase.xlsx` ครบ 4 แผ่นงาน (`1. Test Plan`, `2. Test Scenario Summary`, `3. Automated Test Cases`, `4. Test Report`)
   - อัปเดต `docs/academic/spreadsheets/Draftly-System-Test-Cases-14-UseCases.xlsx` และเอกสารรายงาน `docs/academic/12-Automated-Testing-Robot-Framework.md` ให้สอดคล้องกับ 28 กรณีทดสอบอัตโนมัติ
 
+### 45.15 การปรับปรุงแอนิเมชันและประสิทธิภาพ (Animation & Performance Optimization) ของ Mobile App และ Admin Web พร้อมแพ็กไฟล์ส่งมอบด้วย 7-Zip
+- **การปรับปรุงประสิทธิภาพและแอนิเมชันฝั่ง Mobile App (`master/mobile-app/`):**
+  - `SmoothModal.jsx`: เพิ่ม `renderToHardwareTextureAndroid` และ `shouldRasterizeIOS` เพื่อประมวลผลแอนิเมชันระดับ GPU พร้อมเพิ่ม `stopAnimation()` และตรวจสอบสถานะ `{ finished }` ป้องกันปัญหา Modal ค้างเมื่อเปิด-ปิดอย่างรวดเร็ว
+  - `ManagerNavigator.jsx` & `MemberNavigator.jsx`: เพิ่มแอนิเมชันเปลี่ยนหน้าจอ (`Animated.parallel` ด้วย `opacity` และ `translateY` บน `useNativeDriver: true`) และเก็บสถานะหน้าจอที่เคยเปิดแล้ว (`visitedScreens`) เพื่อให้สลับแท็บกลับมาได้ทันทีโดยไม่ต้องโหลดข้อมูลใหม่ซ้ำ
+  - `TeamOverviewScreen.jsx`: เปลี่ยนหน้าต่างกำหนดตำแหน่งงานจาก `Modal` พื้นฐานให้ใช้ `SmoothModal` แบบเดียวกันทั้งแอปพลิเคชัน
+  - `api.js` & `presenceService.js`: จัดลำดับ `http://127.0.0.1:5000/api` และ `http://10.0.2.2:5000/api` ขึ้นก่อน IP เฉพาะเครื่องเพื่อตัดปัญหาดีเลย์ 3.5 วินาทีเมื่อรันบนเครื่องใหม่ และแก้ไขโปรโตคอล WebSocket ของ Emulator จาก `http://10.0.2.2:5000` เป็น `ws://10.0.2.2:5000`
+- **การปรับปรุงประสิทธิภาพและแอนิเมชันฝั่ง Admin Web (`master/admin-web/`):**
+  - `globals.css`: เพิ่มแอนิเมชันเปลี่ยนหน้าและเปิด Modal ด้วย `@starting-style` และ `transition-behavior: allow-discrete` บน Compositor Thread (`opacity` และ `translate`) พร้อมรองรับ `@media (prefers-reduced-motion: reduce)` และเพิ่ม `content-visibility: auto` คู่กับ `contain-intrinsic-size` สำหรับตารางข้อมูลขนาดใหญ่และแผงควบคุมที่ซับซ้อน
+  - `AdminShell.jsx`, `page.jsx`, `logs/page.jsx`: เพิ่มแอนิเมชันเปลี่ยนหน้าตามเส้นทาง (`pathname`) และใช้ `useMemo` แคชผลการกรองรายการ Logs และค่าสถิติแดชบอร์ด
+- **การตรวจสอบคุณภาพและบีบอัดไฟล์ส่งมอบด้วย 7-Zip:**
+  - ตรวจสอบ `npm run lint` และ `npm run build` ของ Admin Web ผ่าน 100% และรันชุดการทดสอบอัตโนมัติ Robot Framework ครบ 28 ข้อ ผ่าน 100% (`28 passed, 0 failed`) พร้อมบีบอัดโปรเจกต์ด้วย 7-Zip สำหรับส่งมอบอาจารย์

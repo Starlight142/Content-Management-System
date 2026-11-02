@@ -68,7 +68,9 @@ export default function AdminShell({ children }) {
       <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-100">
         <Topbar />
         <main className="flex-1 overflow-y-auto p-8 bg-slate-100">
-          {children}
+          <div key={pathname} className="admin-page-enter">
+            {children}
+          </div>
         </main>
       </div>
     </div>

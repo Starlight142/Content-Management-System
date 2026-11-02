@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   Search, 
   X, 
@@ -133,23 +133,25 @@ export default function LogsPage() {
     );
   };
 
-  const filteredLogs = logs.filter((log) => {
+  const filteredLogs = useMemo(() => {
     const s = searchTerm.toLowerCase();
-    const matchesSearch = 
-      (log.user || '').toLowerCase().includes(s) ||
-      (log.action || '').toLowerCase().includes(s) ||
-      (log.title || '').toLowerCase().includes(s) ||
-      (log.details || '').toLowerCase().includes(s) ||
-      (log.userEmail || '').toLowerCase().includes(s);
+    return logs.filter((log) => {
+      const matchesSearch = 
+        (log.user || '').toLowerCase().includes(s) ||
+        (log.action || '').toLowerCase().includes(s) ||
+        (log.title || '').toLowerCase().includes(s) ||
+        (log.details || '').toLowerCase().includes(s) ||
+        (log.userEmail || '').toLowerCase().includes(s);
 
-    if (actionFilter === 'ALL') return matchesSearch;
-    if (actionFilter === 'CONTENT') return matchesSearch && (log.action || '').includes('CONTENT');
-    if (actionFilter === 'TASK') return matchesSearch && (log.action || '').includes('TASK');
-    if (actionFilter === 'USER') return matchesSearch && ((log.action || '').includes('USER') || (log.action || '').includes('LOGIN'));
-    if (actionFilter === 'SYSTEM') return matchesSearch && !(log.action || '').includes('CONTENT') && !(log.action || '').includes('TASK') && !(log.action || '').includes('USER');
-    
-    return matchesSearch;
-  });
+      if (actionFilter === 'ALL') return matchesSearch;
+      if (actionFilter === 'CONTENT') return matchesSearch && (log.action || '').includes('CONTENT');
+      if (actionFilter === 'TASK') return matchesSearch && (log.action || '').includes('TASK');
+      if (actionFilter === 'USER') return matchesSearch && ((log.action || '').includes('USER') || (log.action || '').includes('LOGIN'));
+      if (actionFilter === 'SYSTEM') return matchesSearch && !(log.action || '').includes('CONTENT') && !(log.action || '').includes('TASK') && !(log.action || '').includes('USER');
+      
+      return matchesSearch;
+    });
+  }, [logs, searchTerm, actionFilter]);
 
   const handleExportCSV = () => {
     if (filteredLogs.length === 0) {
@@ -190,17 +192,19 @@ export default function LogsPage() {
     }
   };
 
-  // Stats calculation
-  const totalCount = logs.length;
-  const contentEventsCount = logs.filter(l => (l.action || '').includes('CONTENT')).length;
-  const taskEventsCount = logs.filter(l => (l.action || '').includes('TASK')).length;
-  const userEventsCount = logs.filter(l => (l.action || '').includes('USER') || (l.action || '').includes('LOGIN')).length;
+  // Memoized stats calculation
+  const { totalCount, contentEventsCount, taskEventsCount, userEventsCount } = useMemo(() => ({
+    totalCount: logs.length,
+    contentEventsCount: logs.filter(l => (l.action || '').includes('CONTENT')).length,
+    taskEventsCount: logs.filter(l => (l.action || '').includes('TASK')).length,
+    userEventsCount: logs.filter(l => (l.action || '').includes('USER') || (l.action || '').includes('LOGIN')).length,
+  }), [logs]);
 
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 right-6 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-sm z-50 animate-in fade-in slide-in-from-top-4">
+        <div className="fixed top-6 right-6 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-sm z-50 modal-card-enter">
           <CheckCircle2 size={18} className="text-emerald-400" />
           <span>{toastMessage}</span>
         </div>
@@ -331,7 +335,7 @@ export default function LogsPage() {
       </div>
 
       {/* Table Card */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden deferred-table-section">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

@@ -1786,6 +1786,9 @@
         <li><strong>การจัดทำชุดการทดสอบอัตโนมัติ (Automated Testing) ตามผัง 14 Use Cases (28 กรณีทดสอบ) และไฟล์ Excel:</strong>
           อัปเกรดชุดการทดสอบ Robot Framework ทั้ง 5 ชุด (<code>tests/robot/testcases/01..05_*.robot</code>) ให้ครอบคลุมครบทั้ง 14 Use Cases (<code>UC-01</code> ถึง <code>UC-14</code> / <code>TS_001</code> ถึง <code>TS_014</code>) แบ่งเป็น Valid 14 ข้อ และ Invalid 14 ข้อ รวม 28 กรณีทดสอบ (<code>TC_AUTO_001</code> ถึง <code>TC_AUTO_028</code>) รันผ่าน 100% (28/28 Passed) พร้อมสร้างไฟล์ Excel <code>docs/academic/spreadsheets/Draftly-Automated-Tests-By-UseCase.xlsx</code> และอัปเดตรายงาน <code>docs/academic/12-Automated-Testing-Robot-Framework.md</code> ครบทั้ง 4 ส่วนหลัก
         </li>
+        <li><strong>Animation & Performance Optimization (Mobile App & Admin Web) + 7-Zip Packaging:</strong>
+          ยกระดับแอนิเมชันและประสิทธิภาพทั้งฝั่ง Mobile App (<code>SmoothModal</code> GPU Hardware Texture, <code>ManagerNavigator</code> & <code>MemberNavigator</code> Native-Driver Screen Transition และ Persistent Tab Cache, แก้ไขลำดับ URL และ WebSocket <code>ws://10.0.2.2:5000</code>) และฝั่ง Admin Web (<code>@starting-style</code>, <code>transition-behavior: allow-discrete</code>, <code>content-visibility: auto</code> คู่กับ <code>contain-intrinsic-size</code> และ <code>useMemo</code>) พร้อมตรวจสอบ ESLint, Build และ Robot Automated Tests (28/28 Passed) ก่อนแพ็กไฟล์ส่งมอบด้วย 7-Zip
+        </li>
       </ul>
     </section>
 
