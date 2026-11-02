@@ -2189,3 +2189,13 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
   - `AdminShell.jsx`, `page.jsx`, `logs/page.jsx`: เพิ่มแอนิเมชันเปลี่ยนหน้าตามเส้นทาง (`pathname`) และใช้ `useMemo` แคชผลการกรองรายการ Logs และค่าสถิติแดชบอร์ด
 - **การตรวจสอบคุณภาพและบีบอัดไฟล์ส่งมอบด้วย 7-Zip:**
   - ตรวจสอบ `npm run lint` และ `npm run build` ของ Admin Web ผ่าน 100% และรันชุดการทดสอบอัตโนมัติ Robot Framework ครบ 28 ข้อ ผ่าน 100% (`28 passed, 0 failed`) พร้อมบีบอัดโปรเจกต์ด้วย 7-Zip สำหรับส่งมอบอาจารย์
+
+### 45.16 การบันทึกวิดีโอผลการทดสอบระบบแบบอัตโนมัติ (Automated E2E Test Video Recording: Admin Web & Mobile App)
+- **การพัฒนาสคริปต์บันทึกวิดีโอทดสอบอัตโนมัติ (`tools/screenshots/`):**
+  - `record_admin_web_demo.py`: บันทึกวิดีโอการทดสอบฝั่ง Admin Web Portal (`1280x800`, H.264 `.mp4` และ `.webp`) พร้อมแถบ QA Test Telemetry HUD ครอบคลุมการเข้าสู่ระบบ, Executive Dashboard, Users & Role Management, Teams Structure, Contents Pipeline, Tasks & Master Task Types, System Audit Logs Live Search, และ System Health Monitor
+  - `record_mobile_app_demo.py`: บันทึกวิดีโอการทดสอบฝั่ง Mobile Application บน Android 14 Emulator (`Pixel 8 - 1080x2400`) ครบทั้งบทบาท Manager (`manager@studio.com`) และ Member (`member@studio.com`), แอนิเมชัน `SmoothModal`, การสลับโหมดมืด (`Dark Mode`), และการสลับแท็บด้วย Persistent Tab Cache พร้อมสร้างไฟล์วิดีโอรวมทั้งระบบ (`03_Full_System_Web_And_App_Test_Demo.mp4`)
+- **ไฟล์วิดีโอที่จัดเก็บ (`docs/videos/` และ `docs/teacher-submission/5-Test-Videos/`):**
+  - `01_Admin_Web_Test_Demo.mp4` (`237 เฟรม`)
+  - `02_Mobile_App_Test_Demo.mp4` (`329 เฟรม`)
+  - `03_Full_System_Web_And_App_Test_Demo.mp4` (`566 เฟรม`)
+
