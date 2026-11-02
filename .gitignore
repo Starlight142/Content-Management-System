@@ -65,3 +65,6 @@ master/database/backups/
 # Local private documents (Never push)
 PROJECT-HANDOVER.md
 
+*.7z
+*.zip
+docs/teacher-submission/
