@@ -63,6 +63,7 @@ When transferring or cloning this repository onto a new machine:
 - **Node.js**: v20.x or v22.x LTS installed
 - **MongoDB**: MongoDB Community Server running locally on `localhost:27017`
 - **Git**: Installed and configured
+- **Java Development Kit (JDK)**: **JDK 17** (Eclipse Adoptium Temurin 17 or Microsoft OpenJDK 17) with `JAVA_HOME` configured. *Crucial: Java 27 causes "Unsupported class file major version 71" error during React Native Android builds.*
 - **Android Studio** (for Mobile App):
   - Android SDK Platform 34 or 35 installed
   - Android SDK Build-Tools, Platform-Tools (adb), and Emulator installed
@@ -194,7 +195,9 @@ npm run dev
 ```text
 Content-Management-System/
 ├── AI-MEMORY.md                      # THIS FILE: Primary AI memory and system context
+├── AI-PORTABLE-PROMPT.md             # Ready-to-copy master prompt for any AI assistant on another machine
 ├── AGENTS.md                         # Standard agent instructions for AI coding assistants
+├── tools/ai-skills/                  # Portable AI skills bundle (Ponytail, Diagram-Design) & installers (.bat/.ps1)
 ├── PROJECT-HANDOVER.md               # Local-only reference document (excluded from Git via .gitignore)
 ├── README.md                         # Human-facing project overview
 ├── start-cloudflare-tunnel.ps1       # Automated script to expose port 5000 via cloudflared

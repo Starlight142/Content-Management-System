@@ -57,6 +57,8 @@
 | **15 ต.ค. 2026 (18:35 น.)** | [Phase 45: การยกระดับระบบการทดสอบครบวงจร ทั้ง Manual Testing และ Automated Testing ด้วย Robot Framework](#phase-45-testing-suite) | สำเร็จ ✅ |
 | **3 พ.ย. 2026 (17:45 น.)** | [Phase 46: การติดตั้งและเปิดใช้งานทักษะและกฎการเขียนโค้ด Ponytail สำหรับ Antigravity](#phase-46-ponytail-antigravity-integration) | สำเร็จ ✅ |
 | **3 พ.ย. 2026 (17:58 น.)** | [Phase 47: การติดตั้งทักษะการออกแบบแผนภาพระบบ Diagram Design สำหรับ Antigravity](#phase-47-diagram-design-skill-integration) | สำเร็จ ✅ |
+| **3 พ.ย. 2026 (19:00 น.)** | [Phase 48: ระบบเวิร์กโฟลว์ลำดับขั้นการผลิต, วันที่แบบไดนามิก, ล็อคสิทธิ์ตามตำแหน่ง และคิวงานตรวจ](#phase-48-production-workflow-stage-approval) | สำเร็จ ✅ |
+| **3 พ.ย. 2026 (20:40 น.)** | [Phase 49: การจัดทำชุดพร้อมใช้สำหรับ AI บนเครื่องอื่น และแพ็กเกจทักษะพกพา](#phase-49-cross-pc-ai-setup-and-skills-package) | สำเร็จ ✅ |
 
 ---
 
@@ -2320,7 +2322,31 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 3. **การจัดทำเอกสารความพร้อมในการทดสอบ (`TEST_READY.md`):**
    - จัดทำเอกสารสรุปสถาปัตยกรรมการทดสอบ, ตาราง Feature Coverage Checklist ครบ 5 หัวข้อ, และแผนผังการทำงานระหว่างระบบ
 
-### 48.6 การบีบอัดไฟล์แพ็กเกจระบบส่งมอบด้วย 7-Zip (Standalone Deliverable Packaging with 7-Zip)
-- ทำการบีบอัดโครงสร้างโปรเจกต์ทั้งหมดเป็นไฟล์ `Draftly-Content-Management-System.7z` ขนาด 37 MB (38,280,863 bytes) ด้วย 7-Zip (อัตราการบีบอัดระดับ 5)
-- ยกเว้นโฟลเดอร์ชั่วคราวและไฟล์ขนาดใหญ่ (`node_modules`, `.next`, `.gradle`, `build`, `.git`, `.venv`, `__pycache__`, `*.zip`, `*.7z`)
-- ตรวจสอบและรักษาความปลอดภัยของไฟล์ `PROJECT-HANDOVER.md` ไม่ให้รั่วไหลหรือถูกบีบอัดรวมเข้าไปในแพ็กเกจ 100% ตามกฎ Prime Directives
+---
+
+## <a id="phase-49-cross-pc-ai-setup-and-skills-package"></a>49. การจัดทำชุดพร้อมใช้สำหรับ AI บนเครื่องอื่น และแพ็กเกจทักษะพกพา (Cross-PC AI Onboarding Prompt & Portable Skills Package)
+> 🕒 **บันทึกเมื่อ:** 3 พฤศจิกายน 2026 (20:40 น.)
+
+### 49.1 ที่มาและความต้องการ
+เมื่อย้ายโปรเจกต์หรือนำโค้ดไปเปิดบนคอมพิวเตอร์เครื่องใหม่ การเริ่มต้นใช้งานร่วมกับ AI Coding Assistant ต่างๆ (เช่น Antigravity, Claude Code, Cursor, Windsurf, GitHub Copilot, ChatGPT) มักพบปัญหา AI ขาดบริบทของระบบ, ไม่ทราบบัญชีทดสอบ, ไม่ทราบพอร์ตการทำงาน, ละเมิดกฎเหล็ก Prime Directives (เช่น พยายามแตะต้อง `PROJECT-HANDOVER.md`), หรือไม่มีทักษะเฉพาะทางที่โปรเจกต์ใช้งาน เช่น `ponytail` (เขียนโค้ดกระชับแบบ YAGNI) และ `diagram-design` (สร้างแผนภาพสถาปัตยกรรมระบบ 45 รูปแบบ)
+
+ผู้พัฒนาจึงต้องการจัดทำชุดไฟล์บริบทแม่แบบที่พร้อมคัดลอกไปวางได้ทันที พร้อมแพ็กเกจทักษะพกพาที่มีสคริปต์ติดตั้งแบบคลิกเดียวบนเครื่องใหม่
+
+### 49.2 การดำเนินงานทางเทคนิค
+1. **การสร้าง Master AI Prompt (`AI-PORTABLE-PROMPT.md`):**
+   - จัดทำไฟล์ข้อกำหนดที่ Root Directory บรรจุข้อมูลสถาปัตยกรรมทั้ง 4 ระบบ (Backend 5000, DB 27017, Admin Web 3000, Mobile App 8081)
+   - บรรจุกฎเหล็ก Prime Directives 5 ข้อ (ห้ามแตะต้อง `PROJECT-HANDOVER.md`, ปราศจากอีโมจิฟุ่มเฟือย, บันทึก Log คู่เสมอ, และหลักการ Ponytail)
+   - สรุปตรรกะเวิร์กโฟลว์ Phase 48 (Dynamic Dates, Position Locking, Sequential Pipeline 1-5, Collapsible Review Queue)
+   - ระบุบัญชีผู้ใช้ทดสอบทั้ง 6 บัญชีและรหัสผ่าน (`123456`) พร้อมคำสั่งรันระบบและคำสั่งทดสอบครบถ้วน
+2. **การจัดทำชุดแพ็กเกจทักษะพกพา (`tools/ai-skills/`):**
+   - รวบรวมไฟล์ทักษะและกฎไว้ในโฟลเดอร์พกพา:
+     - `tools/ai-skills/skills/ponytail/SKILL.md`
+     - `tools/ai-skills/skills/diagram-design/SKILL.md`
+     - `tools/ai-skills/rules/ponytail.md`
+   - พัฒนาสคริปต์ติดตั้งอัตโนมัติ 1-Click สำหรับเครื่องใหม่:
+     - `install-skills-to-machine.bat`: คัดลอกทักษะเข้าสู่ Global Antigravity Config (`%USERPROFILE%\.gemini\config\skills\`) และ Global Agents (`%USERPROFILE%\.agents\`) อัตโนมัติ
+     - `install-skills-to-machine.ps1`: สคริปต์ PowerShell สำหรับสภาพแวดล้อมที่รองรับ PowerShell
+   - จัดทำคู่มือแนะนำการใช้งานร่วมกับ AI เครื่องมือต่างๆ ใน `tools/ai-skills/README-SKILLS.md`
+3. **การปรับปรุงฐานความรู้ของระบบ (`AI-MEMORY.md`):**
+   - เพิ่มข้อกำหนด **JDK 17** ภายใต้หัวข้อ Prerequisites เพื่อเตือนไม่ให้ใช้ Java 27 ป้องกันข้อผิดพลาด `Unsupported class file major version 71` ในการคอมไพล์ Android
+   - เพิ่มแผนผังการเชื่อมโยงไปยัง `AI-PORTABLE-PROMPT.md` และ `tools/ai-skills/`
