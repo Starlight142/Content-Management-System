@@ -1,46 +1,46 @@
 {
   "database": "content_management",
-  "exportedAt": "2026-10-18T10:11:03.745Z",
-  "exportReason": "cli-clean-and-export",
-  "overallSha256": "d3b402b74ab060759700be3ca8b69f4cd89e59409c1dcd7979c6426c205b212f",
-  "latestRecordUpdatedAt": "2026-10-17T15:43:01.374Z",
+  "exportedAt": "2026-11-03T12:09:43.575Z",
+  "exportReason": "boot-auto-export-newer-local",
+  "overallSha256": "62abe34c12cfe8fccd3e24112e12a53e33003df87f37f314b2f513be9a59bd6b",
+  "latestRecordUpdatedAt": "2026-11-03T12:09:43.488Z",
   "totalDocuments": 33,
   "collections": [
     {
       "name": "users",
       "count": 6,
-      "sha256": "caa4f711b798e9f063cdcf8fc6cbad938d591c42d7f54cd02141ca766296c27a",
-      "latestUpdatedAt": "2026-10-17T15:43:01.374Z"
+      "sha256": "836864e1c456677bf1a2d927b5985a5096171a27610922c26da36cb468079d53",
+      "latestUpdatedAt": "2026-11-03T12:09:43.488Z"
     },
     {
       "name": "teams",
       "count": 2,
-      "sha256": "587f9000b9a475b91ccc2aa7c8caa4503f37f503e824de71fe0c3c38c1934236",
-      "latestUpdatedAt": "2026-10-17T15:41:18.828Z"
+      "sha256": "3cf2715b0823ddbf26331d4dd489334cf1035b6fbb6b742e2099f2cb8b6f0bbe",
+      "latestUpdatedAt": "2026-11-03T11:46:30.573Z"
     },
     {
       "name": "contents",
       "count": 6,
-      "sha256": "e8113992788226a760d0d4db522c7ea49a864aa40311e27a5329ac80d348ffca",
-      "latestUpdatedAt": "2026-10-17T15:41:18.846Z"
+      "sha256": "39d0a76642b60ba141ccefbc7e91f517a30ab8910c98111f7b678700d97464dc",
+      "latestUpdatedAt": "2026-11-03T11:46:30.592Z"
     },
     {
       "name": "tasks",
       "count": 10,
-      "sha256": "65ee15e22692439a4f2498d4b71125cf2c69a27e418d2abdb89c81d0a26c1edb",
-      "latestUpdatedAt": "2026-10-17T15:41:18.854Z"
+      "sha256": "7a2f00e5370628923507a2a403a67c23e601112d48a5cf16c80d27ec4b5846c1",
+      "latestUpdatedAt": "2026-11-03T11:46:30.602Z"
     },
     {
       "name": "ideas",
       "count": 3,
-      "sha256": "2dc360811d246ef45295065564777964750982db68f1215841f991da030690d9",
-      "latestUpdatedAt": "2026-10-17T15:41:18.837Z"
+      "sha256": "0981d2f5d4721df72ee076d86758a0f3bac168db63f9b47ba5971109b2592c0c",
+      "latestUpdatedAt": "2026-11-03T11:46:30.582Z"
     },
     {
       "name": "teamactivities",
       "count": 6,
-      "sha256": "6c60183e63fb8802583c67786a46b71cc548f4028d1fe6296f14705819fc1842",
-      "latestUpdatedAt": "2026-10-17T15:26:18.855Z"
+      "sha256": "143efa7316e0b80d309e081c3b7ef0fd85fe8ff0c8d497da4d54e1d17778e3b6",
+      "latestUpdatedAt": "2026-11-03T11:31:30.602Z"
     }
   ]
 }

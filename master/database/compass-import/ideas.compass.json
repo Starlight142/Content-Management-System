@@ -1,58 +1,58 @@
 [
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531b7"
+      "$oid": "6ae9c9965acca0c43752e456"
     },
     "title": "รีวิวเปรียบเทียบ AI Video Generator 2026",
     "description": "ทดสอบตัดต่อคลิปด้วย AI 5 ตัวเทียบความคมชัด ความเร็ว และการพากย์เสียงภาษาไทย",
     "category": "Tech Review",
     "proposedBy": {
-      "$oid": "6ad3971e5afbfde3ae8531b1"
+      "$oid": "6ae9c9965acca0c43752e450"
     },
     "status": "APPROVED",
     "createdAt": {
-      "$date": "2026-10-17T15:41:18.836Z"
+      "$date": "2026-11-03T11:46:30.579Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T15:41:18.836Z"
+      "$date": "2026-11-03T11:46:30.579Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531b8"
+      "$oid": "6ae9c9965acca0c43752e457"
     },
     "title": "สรุปข่าวเทคโนโลยีประจำวันใน 1 นาที",
     "description": "คลิปสั้นเจาะลึกฟีเจอร์ AI ใหม่ล่าสุดประจำวันสำหรับคนไม่มีเวลาอ่านข่าว",
     "category": "News & Tech",
     "proposedBy": {
-      "$oid": "6ad3971e5afbfde3ae8531b2"
+      "$oid": "6ae9c9965acca0c43752e451"
     },
     "status": "APPROVED",
     "createdAt": {
-      "$date": "2026-10-17T15:41:18.837Z"
+      "$date": "2026-11-03T11:46:30.580Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T15:41:18.837Z"
+      "$date": "2026-11-03T11:46:30.580Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531b9"
+      "$oid": "6ae9c9965acca0c43752e458"
     },
     "title": "แจกพิกัดอุปกรณ์จัดโต๊ะคอม Minimal สำหรับ Live",
     "description": "Content สไตล์ Minimal แนะนำการจัดแสงและไมโครโฟนไร้สาย",
     "category": "Lifestyle",
     "proposedBy": {
-      "$oid": "6ad3971e5afbfde3ae8531b3"
+      "$oid": "6ae9c9965acca0c43752e452"
     },
     "status": "DRAFT",
     "createdAt": {
-      "$date": "2026-10-17T15:41:18.837Z"
+      "$date": "2026-11-03T11:46:30.582Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T15:41:18.837Z"
+      "$date": "2026-11-03T11:46:30.582Z"
     },
     "__v": 0
   }

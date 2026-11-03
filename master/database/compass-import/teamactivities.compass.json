@@ -1,151 +1,151 @@
 [
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531ca"
+      "$oid": "6ae9c9965acca0c43752e46a"
     },
     "teamId": {
-      "$oid": "6ad3971e5afbfde3ae8531b5"
+      "$oid": "6ae9c9965acca0c43752e454"
     },
     "actor": {
-      "$oid": "6ad3971e5afbfde3ae8531b0"
-    },
-    "actionType": "CONTENT_REVISED",
-    "title": "Manager ส่ง Tech News Daily Recap กลับไปแก้ไข",
-    "details": "นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป",
-    "entityId": {
-      "$oid": "6ad3971e5afbfde3ae8531bd"
-    },
-    "entityModel": "Content",
-    "createdAt": {
-      "$date": "2026-10-17T15:26:18.855Z"
-    },
-    "updatedAt": {
-      "$date": "2026-10-17T15:26:18.855Z"
-    },
-    "__v": 0
-  },
-  {
-    "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531cb"
-    },
-    "teamId": {
-      "$oid": "6ad3971e5afbfde3ae8531b5"
-    },
-    "actor": {
-      "$oid": "6ad3971e5afbfde3ae8531b1"
+      "$oid": "6ae9c9965acca0c43752e450"
     },
     "actionType": "TASK_SUBMITTED",
     "title": "John ส่ง Master 4K ของ Product Review ให้ตรวจ",
     "details": "ลิงก์: https://frame.io/player/product_review_master_4k",
     "entityId": {
-      "$oid": "6ad3971e5afbfde3ae8531c2"
+      "$oid": "6ae9c9965acca0c43752e461"
     },
     "entityModel": "Task",
     "createdAt": {
-      "$date": "2026-10-17T15:06:18.855Z"
+      "$date": "2026-11-03T11:11:30.602Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T15:06:18.855Z"
+      "$date": "2026-11-03T11:11:30.602Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531cd"
+      "$oid": "6ae9c9965acca0c43752e469"
     },
     "teamId": {
-      "$oid": "6ad3971e5afbfde3ae8531b5"
+      "$oid": "6ae9c9965acca0c43752e454"
     },
     "actor": {
-      "$oid": "6ad3971e5afbfde3ae8531b0"
+      "$oid": "6ae9c9965acca0c43752e44f"
     },
-    "actionType": "CONTENT_APPROVED",
-    "title": "Manager อนุมัติคอนเทนต์ \"Desk Setup Minimalist Guide\" เรียบร้อยแล้ว",
-    "details": "งานตัดต่อและเกรดสีผ่านเกณฑ์สมบูรณ์",
+    "actionType": "CONTENT_REVISED",
+    "title": "Manager ส่ง Tech News Daily Recap กลับไปแก้ไข",
+    "details": "นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป",
     "entityId": {
-      "$oid": "6ad3971e5afbfde3ae8531be"
+      "$oid": "6ae9c9965acca0c43752e45c"
     },
     "entityModel": "Content",
     "createdAt": {
-      "$date": "2026-10-17T14:21:18.855Z"
+      "$date": "2026-11-03T11:31:30.602Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T14:21:18.855Z"
+      "$date": "2026-11-03T11:31:30.602Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531cc"
+      "$oid": "6ae9c9965acca0c43752e46b"
     },
     "teamId": {
-      "$oid": "6ad3971e5afbfde3ae8531b5"
+      "$oid": "6ae9c9965acca0c43752e454"
     },
     "actor": {
-      "$oid": "6ad3971e5afbfde3ae8531b2"
+      "$oid": "6ae9c9965acca0c43752e451"
     },
     "actionType": "TASK_SUBMITTED",
     "title": "Jane อัปโหลด Script v2 ของ Product Review",
     "details": "แนบลิงก์ Google Docs สคริปต์ฉบับปรับแก้",
     "entityId": {
-      "$oid": "6ad3971e5afbfde3ae8531c5"
+      "$oid": "6ae9c9965acca0c43752e464"
     },
     "entityModel": "Task",
     "createdAt": {
-      "$date": "2026-10-17T14:46:18.855Z"
+      "$date": "2026-11-03T10:51:30.602Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T14:46:18.855Z"
+      "$date": "2026-11-03T10:51:30.602Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531ce"
+      "$oid": "6ae9c9965acca0c43752e46c"
     },
     "teamId": {
-      "$oid": "6ad3971e5afbfde3ae8531b5"
+      "$oid": "6ae9c9965acca0c43752e454"
     },
     "actor": {
-      "$oid": "6ad3971e5afbfde3ae8531b0"
+      "$oid": "6ae9c9965acca0c43752e44f"
+    },
+    "actionType": "CONTENT_APPROVED",
+    "title": "Manager อนุมัติคอนเทนต์ \"Desk Setup Minimalist Guide\" เรียบร้อยแล้ว",
+    "details": "งานตัดต่อและเกรดสีผ่านเกณฑ์สมบูรณ์",
+    "entityId": {
+      "$oid": "6ae9c9965acca0c43752e45d"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-03T10:26:30.602Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T10:26:30.602Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ae9c9965acca0c43752e46d"
+    },
+    "teamId": {
+      "$oid": "6ae9c9965acca0c43752e454"
+    },
+    "actor": {
+      "$oid": "6ae9c9965acca0c43752e44f"
     },
     "actionType": "TASK_ASSIGNED",
     "title": "Manager มอบหมาย Thumbnail ให้ Mike",
-    "details": "กำหนดส่งวันที่ 28 ก.ย. สไตล์ Minimal Clean",
+    "details": "กำหนดส่งงานสไตล์ Minimal Clean",
     "entityId": {
-      "$oid": "6ad3971e5afbfde3ae8531c7"
+      "$oid": "6ae9c9965acca0c43752e466"
     },
     "entityModel": "Task",
     "createdAt": {
-      "$date": "2026-10-17T13:41:18.855Z"
+      "$date": "2026-11-03T09:46:30.602Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T13:41:18.855Z"
+      "$date": "2026-11-03T09:46:30.602Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531cf"
+      "$oid": "6ae9c9965acca0c43752e46e"
     },
     "teamId": {
-      "$oid": "6ad3971e5afbfde3ae8531b5"
+      "$oid": "6ae9c9965acca0c43752e454"
     },
     "actor": {
-      "$oid": "6ad3971e5afbfde3ae8531b3"
+      "$oid": "6ae9c9965acca0c43752e452"
     },
     "actionType": "TASK_STATUS_CHANGED",
     "title": "Mike เริ่มทำงาน Thumbnail Campaign",
     "details": "ความคืบหน้า 30%",
     "entityId": {
-      "$oid": "6ad3971e5afbfde3ae8531c7"
+      "$oid": "6ae9c9965acca0c43752e466"
     },
     "entityModel": "Task",
     "createdAt": {
-      "$date": "2026-10-17T13:21:18.855Z"
+      "$date": "2026-11-03T09:26:30.602Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T13:21:18.855Z"
+      "$date": "2026-11-03T09:26:30.602Z"
     },
     "__v": 0
   }

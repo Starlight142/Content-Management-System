@@ -76,6 +76,7 @@ const contentSchema = new mongoose.Schema({
   },
   dueDate: {
     type: Date,
+    default: () => new Date(Date.now() + 7 * 86400000),
   },
   publishedAt: {
     type: Date,

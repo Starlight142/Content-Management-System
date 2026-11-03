@@ -1,60 +1,60 @@
 [
   {
-    "_id": "6ad3971e5afbfde3ae8531b5",
+    "_id": "6ae9c9965acca0c43752e454",
     "name": "Content Team A",
     "code": "TEAM-A",
     "joinCode": "TEAM01",
-    "leader": "6ad3971e5afbfde3ae8531b0",
+    "leader": "6ae9c9965acca0c43752e44f",
     "status": "ACTIVE",
     "description": "ทีมผลิต Content หลักประจำปี 2026 สำหรับ TikTok & YouTube",
     "members": [
       {
-        "user": "6ad3971e5afbfde3ae8531b0",
+        "user": "6ae9c9965acca0c43752e44f",
         "roleInTeam": "LEAD",
-        "joinedAt": "2026-10-17T15:41:18.824Z"
+        "joinedAt": "2026-11-03T11:46:30.569Z"
       },
       {
-        "user": "6ad3971e5afbfde3ae8531b1",
+        "user": "6ae9c9965acca0c43752e450",
         "roleInTeam": "EDITOR",
-        "joinedAt": "2026-10-17T15:41:18.824Z"
+        "joinedAt": "2026-11-03T11:46:30.569Z"
       },
       {
-        "user": "6ad3971e5afbfde3ae8531b2",
+        "user": "6ae9c9965acca0c43752e451",
         "roleInTeam": "CREATOR",
-        "joinedAt": "2026-10-17T15:41:18.825Z"
+        "joinedAt": "2026-11-03T11:46:30.569Z"
       },
       {
-        "user": "6ad3971e5afbfde3ae8531b3",
+        "user": "6ae9c9965acca0c43752e452",
         "roleInTeam": "DESIGNER",
-        "joinedAt": "2026-10-17T15:41:18.825Z"
+        "joinedAt": "2026-11-03T11:46:30.569Z"
       }
     ],
-    "createdAt": "2026-10-17T15:41:18.826Z",
-    "updatedAt": "2026-10-17T15:41:18.826Z",
+    "createdAt": "2026-11-03T11:46:30.570Z",
+    "updatedAt": "2026-11-03T11:46:30.570Z",
     "__v": 0
   },
   {
-    "_id": "6ad3971e5afbfde3ae8531b6",
+    "_id": "6ae9c9965acca0c43752e455",
     "name": "Content Team B (Beta Studio)",
     "code": "TEAM-B",
     "joinCode": "TEAM02",
-    "leader": "6ad3971e5afbfde3ae8531af",
+    "leader": "6ae9c9965acca0c43752e44e",
     "status": "ACTIVE",
     "description": "ทีมสำรองสำหรับทดสอบการกั้นสิทธิ์ความปลอดภัยข้ามทีม",
     "members": [
       {
-        "user": "6ad3971e5afbfde3ae8531af",
+        "user": "6ae9c9965acca0c43752e44e",
         "roleInTeam": "LEAD",
-        "joinedAt": "2026-10-17T15:41:18.827Z"
+        "joinedAt": "2026-11-03T11:46:30.572Z"
       },
       {
-        "user": "6ad3971e5afbfde3ae8531b4",
+        "user": "6ae9c9965acca0c43752e453",
         "roleInTeam": "MEMBER",
-        "joinedAt": "2026-10-17T15:41:18.827Z"
+        "joinedAt": "2026-11-03T11:46:30.572Z"
       }
     ],
-    "createdAt": "2026-10-17T15:41:18.828Z",
-    "updatedAt": "2026-10-17T15:41:18.828Z",
+    "createdAt": "2026-11-03T11:46:30.573Z",
+    "updatedAt": "2026-11-03T11:46:30.573Z",
     "__v": 0
   }
 ]

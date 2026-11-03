@@ -33,6 +33,9 @@ const seedDatabase = async () => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash('123456', salt);
 
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+
     // 1. Seed Users
     const adminUser = await User.create({
       username: 'somchai_admin',
@@ -187,7 +190,7 @@ const seedDatabase = async () => {
       teamId: teamA._id,
       createdBy: johnMember._id,
       ideaId: idea1._id,
-      dueDate: new Date('2026-09-26'),
+      dueDate: new Date(now + 3 * DAY_MS),
       metrics: [
         { views: 45200, likes: 6200, comments: 480, shares: 1250, engagementRate: 17.5 },
       ],
@@ -202,7 +205,7 @@ const seedDatabase = async () => {
       progress: 85,
       teamId: teamA._id,
       createdBy: janeMember._id,
-      dueDate: new Date('2026-09-24'),
+      dueDate: new Date(now + 1 * DAY_MS),
       metrics: [
         { views: 18400, likes: 2100, comments: 195, shares: 320, engagementRate: 14.2 },
       ],
@@ -217,7 +220,7 @@ const seedDatabase = async () => {
       progress: 30,
       teamId: teamA._id,
       createdBy: mikeMember._id,
-      dueDate: new Date('2026-09-28'),
+      dueDate: new Date(now + 5 * DAY_MS),
     });
 
     const content4 = await Content.create({
@@ -229,7 +232,7 @@ const seedDatabase = async () => {
       progress: 60,
       teamId: teamA._id,
       createdBy: johnMember._id,
-      dueDate: new Date('2026-09-24'),
+      dueDate: new Date(now + 1 * DAY_MS),
       reviewHistory: [
         {
           reviewerId: managerUser._id,
@@ -249,7 +252,7 @@ const seedDatabase = async () => {
       progress: 100,
       teamId: teamA._id,
       createdBy: mikeMember._id,
-      dueDate: new Date('2026-09-22'),
+      dueDate: new Date(now - 2 * DAY_MS),
       reviewHistory: [
         {
           reviewerId: managerUser._id,
@@ -269,7 +272,7 @@ const seedDatabase = async () => {
       progress: 10,
       teamId: teamA._id,
       createdBy: janeMember._id,
-      dueDate: new Date('2026-09-30'),
+      dueDate: new Date(now + 7 * DAY_MS),
     });
 
     console.log('✅ Created 6 Contents for Content Team A (Production, Review, Revision, Approved, Planning)');
@@ -283,7 +286,7 @@ const seedDatabase = async () => {
       assignedTo: johnMember._id,
       status: 'REVISION',
       progress: 60,
-      dueDate: new Date('2026-09-24'),
+      dueDate: new Date(now + 1 * DAY_MS),
       submissionUrl: 'https://drive.google.com/file/d/tech_news_recap_v1_draft',
       notes: 'นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ',
       revisionNotes: 'นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ',
@@ -297,7 +300,7 @@ const seedDatabase = async () => {
       assignedTo: johnMember._id,
       status: 'IN_PROGRESS',
       progress: 70,
-      dueDate: new Date('2026-09-26'),
+      dueDate: new Date(now + 3 * DAY_MS),
       submissionUrl: '',
       notes: 'กำลังใส่ Sound FX และ Subtitle ส่วนท้ายคลิป',
     });
@@ -310,7 +313,7 @@ const seedDatabase = async () => {
       assignedTo: johnMember._id,
       status: 'REVIEW',
       progress: 85,
-      dueDate: new Date('2026-09-25'),
+      dueDate: new Date(now + 2 * DAY_MS),
       submissionUrl: 'https://frame.io/player/product_review_master_4k',
       notes: 'ปรับ Color Grading และ Render 4K เสร็จแล้ว ส่งให้ Manager ตรวจสอบ',
     });
@@ -323,7 +326,7 @@ const seedDatabase = async () => {
       assignedTo: johnMember._id,
       status: 'TODO',
       progress: 0,
-      dueDate: new Date('2026-09-29'),
+      dueDate: new Date(now + 6 * DAY_MS),
       submissionUrl: '',
       notes: 'รอดำเนินการหลังจากสคริปต์เสร็จสมบูรณ์',
     });
@@ -336,7 +339,7 @@ const seedDatabase = async () => {
       assignedTo: johnMember._id,
       status: 'DONE',
       progress: 100,
-      dueDate: new Date('2026-09-22'),
+      dueDate: new Date(now - 2 * DAY_MS),
       submissionUrl: 'https://drive.google.com/file/d/desk_setup_teaser_final',
       notes: 'ผ่านการอนุมัติเรียบร้อย',
     });
@@ -349,7 +352,7 @@ const seedDatabase = async () => {
       assignedTo: janeMember._id,
       status: 'REVIEW',
       progress: 85,
-      dueDate: new Date('2026-09-24'),
+      dueDate: new Date(now + 1 * DAY_MS),
       submissionUrl: 'https://docs.google.com/document/d/script_product_review_v2',
       notes: 'ปรับแก้บทสนทนาและจุดเน้นสปอนเซอร์เรียบร้อยแล้ว ส่งให้ Manager ตรวจสอบ',
     });
@@ -362,7 +365,7 @@ const seedDatabase = async () => {
       assignedTo: janeMember._id,
       status: 'IN_PROGRESS',
       progress: 40,
-      dueDate: new Date('2026-09-27'),
+      dueDate: new Date(now + 4 * DAY_MS),
       submissionUrl: '',
       notes: 'กำลังสรุปประเด็นคำถามหลัก 5 ข้อ',
     });
@@ -375,7 +378,7 @@ const seedDatabase = async () => {
       assignedTo: mikeMember._id,
       status: 'IN_PROGRESS',
       progress: 30,
-      dueDate: new Date('2026-09-28'),
+      dueDate: new Date(now + 5 * DAY_MS),
       submissionUrl: '',
       notes: 'กำลังขึ้นโครงร่าง Layout มินิมอล 3 รูปแบบ',
     });
@@ -388,7 +391,7 @@ const seedDatabase = async () => {
       assignedTo: mikeMember._id,
       status: 'TODO',
       progress: 0,
-      dueDate: new Date('2026-09-25'),
+      dueDate: new Date(now + 2 * DAY_MS),
       submissionUrl: '',
       notes: 'เตรียมแผนภูมิเปรียบเทียบ AI Models',
     });
@@ -401,7 +404,7 @@ const seedDatabase = async () => {
       assignedTo: mikeMember._id,
       status: 'DONE',
       progress: 100,
-      dueDate: new Date('2026-09-22'),
+      dueDate: new Date(now - 2 * DAY_MS),
       submissionUrl: 'https://drive.google.com/file/d/cover_desk_setup_final',
       notes: 'อัปโหลดภาพขนาด 1920x1080 ผ่านเกณฑ์',
     });
@@ -455,7 +458,7 @@ const seedDatabase = async () => {
         actor: managerUser._id,
         actionType: 'TASK_ASSIGNED',
         title: 'Manager มอบหมาย Thumbnail ให้ Mike',
-        details: 'กำหนดส่งวันที่ 28 ก.ย. สไตล์ Minimal Clean',
+        details: 'กำหนดส่งงานสไตล์ Minimal Clean',
         entityId: task8._id,
         entityModel: 'Task',
         createdAt: new Date(Date.now() - 120 * 60 * 1000), // 2 ชั่วโมงที่แล้ว

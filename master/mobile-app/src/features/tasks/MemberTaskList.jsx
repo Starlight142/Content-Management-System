@@ -16,6 +16,42 @@ import { taskApi } from '../../services/api';
 import { presenceService } from '../../services/presenceService';
 import { useTheme } from '../../theme/ThemeContext';
 
+const POSITION_TASK_MAP = {
+  'Script Writer': ['Scripting'],
+  'Video Editor': ['Editing', 'Filming', 'Sound Design'],
+  'Graphic Designer': ['Graphic Design'],
+  'Content Creator': ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'],
+  'Production Manager': ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'],
+};
+
+const STAGE_ORDER = {
+  Scripting: 1,
+  Filming: 2,
+  Editing: 3,
+  'Graphic Design': 4,
+  'Sound Design': 5,
+  Other: 5,
+};
+
+const checkStageUnlocked = (currentTask, allTasks) => {
+  const currentStageNum = STAGE_ORDER[currentTask.type] || 5;
+  if (currentStageNum <= 1) return true;
+
+  const currentContentId = currentTask.contentId;
+  if (!currentContentId) return true;
+
+  const peerTasks = allTasks.filter(
+    (t) => t.contentId && t.contentId.toString() === currentContentId.toString() && t.id !== currentTask.id
+  );
+
+  const uncompletedPreceding = peerTasks.filter((t) => {
+    const stageNum = STAGE_ORDER[t.type] || 5;
+    return stageNum < currentStageNum && t.status !== 'DONE';
+  });
+
+  return uncompletedPreceding.length === 0;
+};
+
 export default function MemberTaskList({ user, onNavigate }) {
   const { colors, isDark } = useTheme();
   const [tasks, setTasks] = useState([]);
@@ -57,6 +93,7 @@ export default function MemberTaskList({ user, onNavigate }) {
           return {
             id: t._id || String(Date.now()),
             title: t.title,
+            contentId: t.contentId?._id || t.contentId || '',
             contentTitle: t.contentId?.title || 'ชิ้นงานคอนเทนต์หลัก',
             platform: t.contentId?.platform || 'YouTube',
             status: t.status || 'TODO',
@@ -64,6 +101,8 @@ export default function MemberTaskList({ user, onNavigate }) {
             isOverdue: dl.isOverdue,
             isUrgent: dl.isUrgent,
             notes: t.notes || t.revisionNotes || '',
+            revisionNotes: t.revisionNotes || '',
+            replyNotes: t.replyNotes || '',
             type: t.taskType || 'Production',
             submissionUrl: t.submissionUrl || '',
             assignedToId: assignedId,
@@ -235,6 +274,12 @@ export default function MemberTaskList({ user, onNavigate }) {
 
   const renderTaskCard = (item, isActionRequiredSection = false) => {
     const st = getStatusColor(item.status, item.isOverdue);
+    const userRole = (user?.role || 'MEMBER').toUpperCase();
+    const userPosition = user?.position || 'Content Creator';
+    const isManager = userRole === 'MANAGER' || userRole === 'ADMIN';
+    const allowedTypes = POSITION_TASK_MAP[userPosition] || ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'];
+    const isPositionAuthorized = isManager || allowedTypes.includes(item.type);
+    const isStageUnlocked = checkStageUnlocked(item, tasks);
 
     return (
       <View
@@ -350,104 +395,6 @@ export default function MemberTaskList({ user, onNavigate }) {
           </View>
         ) : (
           <>
-            {item.status === 'TODO' && (
-              <TouchableOpacity
-                style={[styles.startBtn, { backgroundColor: colors.primary }]}
-                onPress={() => handleStartTask(item.id)}
-              >
-                <Text style={styles.startBtnText}>เริ่มทำงาน</Text>
-              </TouchableOpacity>
-            )}
-
-            {item.status === 'REVISION' && (
-              <View style={[styles.submitSection, { borderTopColor: colors.border }]}>
-                <View style={styles.replyBoxWrapper}>
-                  <Text style={[styles.inputPrompt, { color: colors.statusRevisionText, fontWeight: '700' }]}>
-                    ข้อความตอบกลับสำหรับการแก้ไขงาน:
-                  </Text>
-                  <TextInput
-                    style={[
-                      styles.replyInput,
-                      {
-                        backgroundColor: colors.inputBg,
-                        borderColor: colors.statusRevisionBorder,
-                        color: colors.textPrimary,
-                      },
-                    ]}
-                    placeholder="ระบุสิ่งที่ได้ปรับปรุงแก้ไขตามคำแนะนำ เช่น ปรับระดับเสียงแล้ว..."
-                    placeholderTextColor={colors.textMuted}
-                    value={replyInputs[item.id] || ''}
-                    onChangeText={(val) =>
-                      setReplyInputs({ ...replyInputs, [item.id]: val })
-                    }
-                    multiline
-                    numberOfLines={3}
-                  />
-                </View>
-
-                <Text style={[styles.inputPrompt, { color: colors.textSecondary, marginTop: 8 }]}>
-                  แนบลิงก์ไฟล์ผลงานใหม่ (ถ้ามี):
-                </Text>
-                <TextInput
-                  style={[
-                    styles.urlInput,
-                    {
-                      backgroundColor: colors.inputBg,
-                      borderColor: colors.inputBorder,
-                      color: colors.textPrimary,
-                    },
-                  ]}
-                  placeholder="วางลิงก์ไฟล์ผลงานที่แก้ไขแล้ว..."
-                  value={submissionInputs[item.id] !== undefined ? submissionInputs[item.id] : (item.submissionUrl || '')}
-                  onChangeText={(val) =>
-                    setSubmissionInputs({ ...submissionInputs, [item.id]: val })
-                  }
-                  autoCapitalize="none"
-                  placeholderTextColor={colors.textMuted}
-                />
-
-                <TouchableOpacity
-                  style={[styles.submitBtn, { backgroundColor: colors.primary }]}
-                  onPress={() => handleSubmitTask(item.id, true)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.submitBtnText}>ส่งงานที่แก้ไขแล้ว</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-
-            {item.status === 'IN_PROGRESS' && (
-              <View style={[styles.submitSection, { borderTopColor: colors.border }]}>
-                <Text style={[styles.inputPrompt, { color: colors.textSecondary }]}>
-                  แนบลิงก์ไฟล์ผลงาน (Drive / Cloud Storage):
-                </Text>
-                <TextInput
-                  style={[
-                    styles.urlInput,
-                    {
-                      backgroundColor: colors.inputBg,
-                      borderColor: colors.inputBorder,
-                      color: colors.textPrimary,
-                    },
-                  ]}
-                  placeholder="วางลิงก์ไฟล์ผลงานที่นี่..."
-                  value={submissionInputs[item.id] || ''}
-                  onChangeText={(val) =>
-                    setSubmissionInputs({ ...submissionInputs, [item.id]: val })
-                  }
-                  autoCapitalize="none"
-                  placeholderTextColor={colors.textMuted}
-                />
-                <TouchableOpacity
-                  style={[styles.submitBtn, { backgroundColor: colors.primary }]}
-                  onPress={() => handleSubmitTask(item.id, false)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.submitBtnText}>ส่งมอบงานให้ตรวจสอบ</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-
             {item.status === 'REVIEW' && (
               <View style={[styles.submittedBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
                 <Text style={[styles.submittedText, { color: colors.statusReviewText }]}>
@@ -464,7 +411,144 @@ export default function MemberTaskList({ user, onNavigate }) {
                     </Text>
                   </TouchableOpacity>
                 ) : null}
+                {item.replyNotes ? (
+                  <Text style={[styles.submittedReplyNotes, { color: colors.textSecondary }]}>
+                    ข้อความตอบกลับ: {item.replyNotes}
+                  </Text>
+                ) : null}
               </View>
+            )}
+
+            {(item.status === 'TODO' || item.status === 'IN_PROGRESS' || item.status === 'REVISION') && (
+              !isPositionAuthorized ? (
+                <View style={[styles.lockedContainer, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+                  <Text style={[styles.lockedNoticeText, { color: colors.textSecondary }]}>
+                    ล็อคการดำเนินงาน: ตำแหน่งของคุณ ({userPosition}) ไม่สามารถรับผิดชอบงานประเภท {item.type} ได้
+                  </Text>
+                  <TouchableOpacity
+                    style={[styles.disabledBtn, { backgroundColor: colors.border }]}
+                    disabled={true}
+                  >
+                    <Text style={[styles.disabledBtnText, { color: colors.textMuted }]}>
+                      ปุ่มถูกปิดตามตำแหน่งงาน
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ) : !isStageUnlocked ? (
+                <View style={[styles.lockedContainer, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+                  <Text style={[styles.lockedNoticeText, { color: colors.statusRevisionText }]}>
+                    รอดำเนินการ: ต้องรอให้ขั้นตอนก่อนหน้าได้รับการอนุมัติจากหัวหน้าทีมก่อน
+                  </Text>
+                  <TouchableOpacity
+                    style={[styles.disabledBtn, { backgroundColor: colors.border }]}
+                    disabled={true}
+                  >
+                    <Text style={[styles.disabledBtnText, { color: colors.textMuted }]}>
+                      รอขั้นตอนก่อนหน้าอนุมัติ
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <>
+                  {item.status === 'TODO' && (
+                    <TouchableOpacity
+                      style={[styles.startBtn, { backgroundColor: colors.primary }]}
+                      onPress={() => handleStartTask(item.id)}
+                    >
+                      <Text style={styles.startBtnText}>เริ่มทำงาน</Text>
+                    </TouchableOpacity>
+                  )}
+
+                  {item.status === 'REVISION' && (
+                    <View style={[styles.submitSection, { borderTopColor: colors.border }]}>
+                      <View style={styles.replyBoxWrapper}>
+                        <Text style={[styles.inputPrompt, { color: colors.statusRevisionText, fontWeight: '700' }]}>
+                          ข้อความตอบกลับสำหรับการแก้ไขงาน:
+                        </Text>
+                        <TextInput
+                          style={[
+                            styles.replyInput,
+                            {
+                              backgroundColor: colors.inputBg,
+                              borderColor: colors.statusRevisionBorder,
+                              color: colors.textPrimary,
+                            },
+                          ]}
+                          placeholder="ระบุสิ่งที่ได้ปรับปรุงแก้ไขตามคำแนะนำ เช่น ปรับระดับเสียงแล้ว..."
+                          placeholderTextColor={colors.textMuted}
+                          value={replyInputs[item.id] || ''}
+                          onChangeText={(val) =>
+                            setReplyInputs({ ...replyInputs, [item.id]: val })
+                          }
+                          multiline
+                          numberOfLines={3}
+                        />
+                      </View>
+
+                      <Text style={[styles.inputPrompt, { color: colors.textSecondary, marginTop: 8 }]}>
+                        แนบลิงก์ไฟล์ผลงานใหม่ (ถ้ามี):
+                      </Text>
+                      <TextInput
+                        style={[
+                          styles.urlInput,
+                          {
+                            backgroundColor: colors.inputBg,
+                            borderColor: colors.inputBorder,
+                            color: colors.textPrimary,
+                          },
+                        ]}
+                        placeholder="วางลิงก์ไฟล์ผลงานที่แก้ไขแล้ว..."
+                        value={submissionInputs[item.id] !== undefined ? submissionInputs[item.id] : (item.submissionUrl || '')}
+                        onChangeText={(val) =>
+                          setSubmissionInputs({ ...submissionInputs, [item.id]: val })
+                        }
+                        autoCapitalize="none"
+                        placeholderTextColor={colors.textMuted}
+                      />
+
+                      <TouchableOpacity
+                        style={[styles.submitBtn, { backgroundColor: colors.primary }]}
+                        onPress={() => handleSubmitTask(item.id, true)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.submitBtnText}>ส่งงานที่แก้ไขแล้ว</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+
+                  {item.status === 'IN_PROGRESS' && (
+                    <View style={[styles.submitSection, { borderTopColor: colors.border }]}>
+                      <Text style={[styles.inputPrompt, { color: colors.textSecondary }]}>
+                        แนบลิงก์ไฟล์ผลงาน (Drive / Cloud Storage):
+                      </Text>
+                      <TextInput
+                        style={[
+                          styles.urlInput,
+                          {
+                            backgroundColor: colors.inputBg,
+                            borderColor: colors.inputBorder,
+                            color: colors.textPrimary,
+                          },
+                        ]}
+                        placeholder="วางลิงก์ไฟล์ผลงานที่นี่..."
+                        value={submissionInputs[item.id] || ''}
+                        onChangeText={(val) =>
+                          setSubmissionInputs({ ...submissionInputs, [item.id]: val })
+                        }
+                        autoCapitalize="none"
+                        placeholderTextColor={colors.textMuted}
+                      />
+                      <TouchableOpacity
+                        style={[styles.submitBtn, { backgroundColor: colors.primary }]}
+                        onPress={() => handleSubmitTask(item.id, false)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.submitBtnText}>ส่งมอบงานให้ตรวจสอบ</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </>
+              )
             )}
           </>
         )}
@@ -944,6 +1028,33 @@ const styles = StyleSheet.create({
   submittedUrl: {
     fontSize: 11,
     marginTop: 3,
+  },
+  submittedReplyNotes: {
+    fontSize: 11,
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
+  lockedContainer: {
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    marginTop: 8,
+  },
+  lockedNoticeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 18,
+    marginBottom: 8,
+  },
+  disabledBtn: {
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  disabledBtnText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
   centerLoading: {
     padding: 32,

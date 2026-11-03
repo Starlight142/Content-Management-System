@@ -45,7 +45,7 @@ const createContent = async (req, res) => {
       status: 'PLANNING',
       createdBy,
       teamId: resolvedTeamId || null,
-      dueDate,
+      dueDate: dueDate || new Date(Date.now() + 7 * 86400000),
       ideaId: ideaId || null,
     });
 
@@ -204,25 +204,61 @@ const submitReview = async (req, res) => {
         reviewedAt: new Date(),
       });
 
-      // Synchronize associated tasks to REVISION
-      await Task.updateMany(
-        { contentId: content._id },
-        { status: 'REVISION', notes: revNote, revisionNotes: revNote }
-      );
+      // Synchronize currently reviewed task to REVISION
+      let targetTask = null;
+      if (req.body.taskId) {
+        targetTask = await Task.findOne({ _id: req.body.taskId, contentId: content._id });
+      }
+      if (!targetTask) {
+        targetTask = await Task.findOne({ contentId: content._id, status: 'REVIEW' });
+      }
+      if (!targetTask) {
+        targetTask = await Task.findOne({ contentId: content._id, status: { $ne: 'DONE' } });
+      }
+
+      if (targetTask) {
+        targetTask.status = 'REVISION';
+        targetTask.notes = revNote;
+        targetTask.revisionNotes = revNote;
+        await targetTask.save();
+      } else {
+        await Task.updateMany(
+          { contentId: content._id, status: { $ne: 'DONE' } },
+          { status: 'REVISION', notes: revNote, revisionNotes: revNote }
+        );
+      }
     } else if (decision === 'APPROVED') {
-      content.status = 'APPROVED';
+      // Complete only the specific task currently in REVIEW or current stage
+      let targetTask = null;
+      if (req.body.taskId) {
+        targetTask = await Task.findOne({ _id: req.body.taskId, contentId: content._id });
+      }
+      if (!targetTask) {
+        targetTask = await Task.findOne({ contentId: content._id, status: 'REVIEW' });
+      }
+      if (!targetTask) {
+        targetTask = await Task.findOne({ contentId: content._id, status: { $ne: 'DONE' } });
+      }
+
+      if (targetTask) {
+        targetTask.status = 'DONE';
+        targetTask.progress = 100;
+        await targetTask.save();
+      }
+
+      // Check if any unfinished tasks remain for this content
+      const remainingTasks = await Task.countDocuments({
+        contentId: content._id,
+        status: { $ne: 'DONE' },
+      });
+
+      content.status = remainingTasks === 0 ? 'APPROVED' : 'IN_PROGRESS';
       content.reviewHistory.push({
         reviewerId,
         decision: 'APPROVED',
-        notes: notes || 'ผ่านการตรวจสอบคุณภาพเรียบร้อย',
+        notes: notes || (targetTask ? `อนุมัติขั้นตอน ${targetTask.taskType} เรียบร้อย` : 'ผ่านการตรวจสอบคุณภาพเรียบร้อย'),
         reviewedAt: new Date(),
       });
-
-      // Mark tasks under this content as completed
-      await Task.updateMany(
-        { contentId: content._id, status: { $ne: 'DONE' } },
-        { status: 'DONE', progress: 100 }
-      );
     } else {
       return res.status(400).json({ message: 'Invalid decision. Must be APPROVED or REVISION.' });
     }

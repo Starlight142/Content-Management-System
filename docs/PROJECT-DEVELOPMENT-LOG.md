@@ -2,7 +2,7 @@
 > **โครงการ:** Draftly — Content Production Management System (ระบบจัดการกระบวนการผลิตสื่อครบวงจร)  
 > **เส้นทางโปรเจกต์:** `d:\Content-Management-System`  
 > **ผู้พัฒนา:** คุณ (Developer) & Antigravity (Senior AI Mentor / Pair Programmer)  
-> **อัปเดตล่าสุด:** 29 กันยายน 2026 เวลา 15:00 น.  
+> **อัปเดตล่าสุด:** 3 พฤศจิกายน 2026 เวลา 17:45 น.  
 
 ---
 
@@ -53,6 +53,10 @@
 | **13 ต.ค. 2026 (20:55 น.)** | [Phase 41: ปรับปรุง Use Case Diagram ให้ตรงกับโปรแกรมจริง (User / Member / Manager / Admin)](#phase-41-use-case-diagram-update) | สำเร็จ ✅ |
 | **13 ต.ค. 2026 (21:25 น.)** | [Phase 42: จัดทำ Activity Diagram (Swimlane Process Flow) ฉบับตรงตามโค้ดจริง (.drawio & .png)](#phase-42-activity-diagram-update) | สำเร็จ ✅ |
 | **13 ต.ค. 2026 (22:30 น.)** | [Phase 43: จัดทำชุดแผนภาพสถาปัตยกรรมระบบวิชาการครบสมบูรณ์ (Sequence, Class, ER, Workflow, Deployment) (.drawio & .png)](#phase-43-academic-diagrams-suite) | สำเร็จ ✅ |
+| **13 ต.ค. 2026 (23:10 น.)** | [Phase 44: ปรับปรุง Use Case Diagram ฉบับบูรณาการ 3 Actors สอดคล้องกับโปรแกรมจริง](#phase-44-use-case-consolidation) | สำเร็จ ✅ |
+| **15 ต.ค. 2026 (18:35 น.)** | [Phase 45: การยกระดับระบบการทดสอบครบวงจร ทั้ง Manual Testing และ Automated Testing ด้วย Robot Framework](#phase-45-testing-suite) | สำเร็จ ✅ |
+| **3 พ.ย. 2026 (17:45 น.)** | [Phase 46: การติดตั้งและเปิดใช้งานทักษะและกฎการเขียนโค้ด Ponytail สำหรับ Antigravity](#phase-46-ponytail-antigravity-integration) | สำเร็จ ✅ |
+| **3 พ.ย. 2026 (17:58 น.)** | [Phase 47: การติดตั้งทักษะการออกแบบแผนภาพระบบ Diagram Design สำหรับ Antigravity](#phase-47-diagram-design-skill-integration) | สำเร็จ ✅ |
 
 ---
 
@@ -2199,3 +2203,119 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
   - `02_Mobile_App_Test_Demo.mp4` (`329 เฟรม`)
   - `03_Full_System_Web_And_App_Test_Demo.mp4` (`566 เฟรม`)
 
+
+---
+
+## <a id="phase-46-ponytail-antigravity-integration"></a>46. การติดตั้งและเปิดใช้งานทักษะและกฎการเขียนโค้ด Ponytail สำหรับ Antigravity (Ponytail Minimalist Coding Skill & Rules Integration)
+> 🕒 **บันทึกเมื่อ:** 3 พฤศจิกายน 2026 (17:45 น.)
+
+### 46.1 ที่มาและความต้องการ
+ผู้พัฒนาต้องการนำปรัชญาและชุดทักษะ **Ponytail** (`DietrichGebert/ponytail`) ซึ่งเป็น AI Coding Assistant Persona ระดับ Senior ที่เน้นการออกแบบและเขียนโค้ดแบบกระชับ เรียบง่าย ไม่เขียนโค้ดเกินความจำเป็น (Motto: *"The best code is the code you never wrote"*) มาผสานรวมเข้ากับระบบ **Antigravity** (Google DeepMind) สำหรับโปรเจกต์ Draftly เพื่อควบคุมคุณภาพโค้ด ยึดหลัก YAGNI และลดความซับซ้อนเกินจำเป็น
+
+### 46.2 การพัฒนาระบบทักษะและกฎภายใน Antigravity
+1. **การสร้าง Antigravity Workspace Skill (`.agents/skills/ponytail/SKILL.md`):**
+   - กำหนด Metadata ตามมาตรฐาน Antigravity (`name: ponytail`, `description`)
+   - กำหนดขั้นตอนการตัดสินใจ **The Ladder (7 Rungs)**:
+     1. `YAGNI`: ละเว้นฟีเจอร์หรือออปชันที่ไม่ได้ร้องขอ
+     2. `Reuse`: ตรวจสอบและนำโค้ด/คอมโพเนนต์/Helper ในโปรเจกต์เดิมมาใช้ซ้ำ
+     3. `Standard Library`: ใช้คำสั่งมาตรฐานของภาษาแทนการสร้างฟังก์ชันเอง
+     4. `Native Platform Feature`: ใช้ความสามารถของแพลตฟอร์ม/เฟรมเวิร์กก่อนสร้าง Abstraction
+     5. `Installed Dependencies`: ใช้แพ็กเกจที่มีอยู่แล้วใน `package.json` ห้ามติดตั้งเพิ่มโดยไม่จำเป็น
+     6. `Single Clean Line`: ใช้โค้ดบรรทัดเดียวที่อ่านง่ายหากทำได้
+     7. `Minimum Viable Code`: เขียนโค้ดให้น้อยที่สุดเท่าที่แก้ปัญหาได้ครบถ้วน
+   - กำหนดขอบเขตที่ไม่ประนีประนอม (Non-Negotiable Boundaries): ความปลอดภัย, การตรวจสอบสิทธิ์, การป้องกันข้อมูลเสียหาย, การดักจับข้อผิดพลาด (Error Handling), และความถูกต้องของเอกสาร
+2. **การสร้าง Workspace-wide Rule (`.agents/rules/ponytail.md`):**
+   - วางกฎข้อบังคับระดับ Workspace เพื่อให้ Antigravity โหลดกฎการเขียนโค้ดสไตล์ Ponytail เข้าสู่ Context อัตโนมัติทุกครั้งที่ทำงานในโปรเจกต์
+3. **การตั้งค่าสภาพแวดล้อมเพิ่มเติม (Android Environment & SDK):**
+   - จัดทำไฟล์คอนฟิก `master/mobile-app/android/local.properties` เพื่อระบุตำแหน่งของ Android SDK (`sdk.dir=C:\Users\Pattarawadee\AppData\Local\Android\Sdk`)
+   - วินิจฉัยปัญหา Java Version Mismatch (Java 27 / Class file major version 71 ขัดแย้งกับ React Native / Gradle 9.4 ที่ต้องการ JDK 17) พร้อมให้แนวทางแก้ไข
+
+---
+
+## <a id="phase-47-diagram-design-skill-integration"></a>47. การติดตั้งทักษะการออกแบบแผนภาพระบบ Diagram Design สำหรับ Antigravity (Editorial Diagram Design Skill Integration)
+> 🕒 **บันทึกเมื่อ:** 3 พฤศจิกายน 2026 (17:58 น.)
+
+### 47.1 ที่มาและความต้องการ
+ผู้พัฒนาต้องการติดตั้งทักษะ **Diagram Design** (`cathrynlavery/diagram-design`) เข้าสู่ระบบ **Antigravity** เพื่อยกระดับความสามารถในการสร้างแผนภาพสถาปัตยกรรม แผนภาพกระบวนการ (Flowcharts, Swimlanes), Sequence Diagrams, State Machines, Data Models (ER) และแผนภาพทางเทคนิคอื่นรวม 45 รูปแบบ ให้ออกมาเป็นไฟล์ HTML + Inline SVG ที่สมบูรณ์ในตัวเอง (Self-Contained) โดยยึดมาตรฐานการออกแบบระดับ Editorial ตัดทอนความรก หลีกเลี่ยงรูปแบบ "AI Slop" (เช่น การใช้ Dark Mode เรืองแสงสีม่วง-ฟ้า, การใส่ Drop Shadow ฟุ่มเฟือย, หรือการใช้กล่องเหลี่ยมซ้ำๆ โดยไม่มีลำดับชั้น)
+
+### 47.2 การพัฒนาระบบทักษะภายใน Antigravity
+1. **การสร้าง Antigravity Workspace Skill (`.agents/skills/diagram-design/SKILL.md`):**
+   - กำหนด Metadata ตามมาตรฐาน Antigravity (`name: diagram-design`, `description`)
+   - กำหนดหลักการออกแบบหลัก (Core Philosophy): การตัดทอนเส้นและโหนดที่ไม่จำเป็น (Deletion as High-Quality Design), การเน้นสีเฉพาะจุดสำคัญ (Editorial Accent 1-2 จุด), และการจัดลำดับชั้นสายตา (Hierarchy Over Uniformity)
+   - ระบุ Universal Anti-Patterns ที่ห้ามทำเด็ดขาด พร้อมระบุแนวทางที่ถูกต้องทดแทน
+   - กำหนดแม่แบบ HTML + Inline SVG พร้อม CSS Variables สำหรับโทนสีและการจัดวางบนกริด 4px
+   - รองรับประเภทแผนภาพครอบคลุม 45 หมวดหมู่ทั้งสถาปัตยกรรมระบบ, โฟลว์การทำงาน, พฤติกรรมระบบ, ฐานข้อมูล และการบริหารจัดการ
+
+---
+
+## <a id="phase-48-production-workflow-stage-approval"></a>48. ระบบเวิร์กโฟลว์ลำดับขั้นการผลิต, วันที่แบบไดนามิก, ล็อคสิทธิ์ตามตำแหน่ง และคิวงานตรวจ (Workflow Stage Approval, Position Locking, Collapsible Review Queue & Dynamic Dates)
+> บันทึกเมื่อ: 3 พฤศจิกายน 2026 (19:00 น.)
+
+### 48.1 ที่มาและความต้องการ
+ระบบเดิมมีการกำหนดวันที่ส่งมอบงานเป็นค่าคงที่ในอดีต (เช่น '2026-09-30', '2026-10-15') ทำให้ข้อมูลที่สร้างใหม่หรือข้อมูลจำลองในฐานข้อมูลไม่สอดคล้องกับเวลาปัจจุบัน นอกจากนี้ ในกระบวนการผลิตสื่อจริง สมาชิกแต่ละตำแหน่งมีความเชี่ยวชาญเฉพาะทาง (เช่น Script Writer, Video Editor, Graphic Designer) แต่ระบบเดิมยังขาดการจำกัดสิทธิ์ตามตำแหน่งงาน และไม่มีกลไกควบคุมลำดับขั้นตอนการผลิตตามสายงาน (Sequential Stage Progression 1 -> 2 -> 3 -> 4 -> 5) ทำให้สมาชิกสามารถเริ่มงานตัดต่อหรืองานกราฟิกได้ก่อนที่บท (Scripting) จะได้รับการอนุมัติจากผู้จัดการ รวมถึงหน้าจอแดชบอร์ดของผู้จัดการยังขาดการจัดกลุ่มและลำดับความสำคัญของงานที่รอตรวจ
+
+ผู้พัฒนาจึงได้กำหนดความต้องการ 5 ประการหลัก:
+1. ปรับเปลี่ยนวันที่เริ่มต้น (Default Dates) จากสตริงคงที่เป็นวันที่แบบไดนามิกอิงตามเวลาปัจจุบันของระบบ
+2. ล็อคปุ่มดำเนินการ (Action Locking) สำหรับงานที่ไม่ตรงกับตำแหน่ง (Position) ของสมาชิกที่เข้าสู่ระบบ
+3. จัดทำแดชบอร์ดการผลิตแบบพับเก็บได้ (Collapsible Dashboard) พร้อมคิวงานตรวจที่รอการอนุมัติไว้ด้านบนสุด
+4. บังคับใช้เวิร์กโฟลว์ตามลำดับขั้นตอนที่เคร่งครัด (Sequential Pipeline 1 -> 2 -> 3 -> 4 -> 5) โดยขั้นตอนถัดไปจะปลดล็อคเมื่อผู้จัดการอนุมัติขั้นตอนก่อนหน้าแล้วเท่านั้น
+5. ซิงค์สถานะการตรวจงาน (URLs, บันทึกส่งงาน, บันทึกสั่งแก้, บันทึกตอบกลับ) ให้สอดคล้องกันระหว่างมุมมอง Manager และ Member
+
+การพัฒนาทั้งหมดปฏิบัติตามแนวทาง Ponytail (เขียนโค้ดกระชับ เรียบง่าย ใช้ฟีเจอร์มาตรฐาน ไม่เพิ่ม Dependency โดยไม่จำเป็น) และรักษาความสมบูรณ์ของ PROJECT-HANDOVER.md อย่างเคร่งครัด
+
+### 48.2 การพัฒนาระบบ Backend (master/backend)
+1. **Dynamic Schema Defaults & Seeding:**
+   - ปรับปรุงโมเดล `Task.js` และ `Content.js` กำหนด Schema Default สำหรับ `dueDate` เป็นฟังก์ชันคำนวณล่วงหน้า 7 วัน (`() => new Date(Date.now() + 7 * 86400000)`)
+   - แก้ไข `seed.js` แทนที่สตริงวันที่คงที่ 16 จุดด้วยการคำนวณ Dynamic Offset จากเวลาปัจจุบัน ทำให้ข้อมูลที่ Seed มีกำหนดส่งสัมพันธ์กับเวลาจริง
+2. **Position-Based Action Locking (`workflow.service.js` & `tasks.controller.js`):**
+   - กำหนด `POSITION_TASK_MAP` ระบุประเภทงานที่แต่ละตำแหน่งได้รับอนุญาต:
+     - `Script Writer`: `['Scripting']`
+     - `Video Editor`: `['Editing', 'Filming', 'Sound Design']`
+     - `Graphic Designer`: `['Graphic Design']`
+     - `Content Creator`: ทุกประเภทงาน (`['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other']`)
+     - `Production Manager` / `Other`: ทุกประเภทงาน
+   - ใน `validateTaskTransition`: ตรวจสอบตำแหน่งของสมาชิก (`userPosition`) เทียบกับ `task.taskType` หากไม่ได้รับอนุญาตจะปฏิเสธด้วย HTTP 403 Forbidden
+   - ป้องกันสมาชิกอนุมัติงานตนเองเป็นสถานะ `DONE` (สงวนสิทธิ์เฉพาะ Manager/Admin)
+3. **Sequential Stage Progression Pipeline (`workflow.service.js`):**
+   - กำหนดลำดับขั้นตอน `STAGE_ORDER`: Scripting (Stage 1), Filming (Stage 2), Editing (Stage 3), Graphic Design (Stage 4), Sound Design / Other (Stage 5)
+   - พัฒนาฟังก์ชัน `validateStageProgression(TaskModel, task, targetStatus)`: สำหรับงาน Stage > 1 จะตรวจสอบว่างานในขั้นตอนก่อนหน้า (`stage < currentStage`) ภายใต้ `contentId` เดียวกันมีสถานะเป็น `DONE` ครบทั้งหมดหรือไม่ หากยังไม่เสร็จสิ้นจะบล็อกการเปลี่ยนสถานะพร้อมระบุขั้นตอนที่ขัดขวาง
+4. **Manager Stage Review Progression (`contents.controller.js`):**
+   - แก้ไข `submitReview` เมื่อผู้จัดการอนุมัติ (`APPROVED`): อัปเดตเฉพาะงานที่อยู่ระหว่างการตรวจเป็น `DONE` (Progress 100%) ยกเลิกคำสั่งเดิมที่เผลออัปเดตงานทั้งหมดของ Content เป็น DONE พร้อมกัน เพื่อให้ขั้นตอนถัดไปใน Pipeline ค่อยๆ ปลดล็อคตามลำดับ
+   - สถานะของ Content จะคงเป็น `IN_PROGRESS` จนกว่าทุกงานใน Pipeline จะเสร็จสิ้น จึงจะเปลี่ยนเป็น `APPROVED`
+5. **Deliverable Metadata & Reply Synchronization:**
+   - รองรับฟิลด์ `submissionUrl`, `notes`, `replyNotes`, และ `revisionNotes` ใน Task Schema และส่งคืนผ่าน REST Endpoints ครบถ้วน
+
+### 48.3 การพัฒนาระบบ Admin Web (master/admin-web)
+1. **Dynamic Date Offsets ในหน้า Contents (`src/app/contents/page.jsx`):**
+   - แทนที่ค่าคงที่ `'2026-09-30'` และ `'2026-10-05'` ด้วยฟังก์ชัน Lazy Initializer `() => new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]` (สำหรับ Content Due Date) และ `+ 3 * 86400000` (สำหรับ Subtask Due Date)
+   - ปรับการคำนวณ Fallback Date ให้ใช้วันที่ปัจจุบันหากไม่มีการระบุ Due Date
+2. **Dynamic Date Offsets ในหน้า Tasks (`src/app/tasks/page.jsx`):**
+   - กำหนดค่าเริ่มต้นของ `newTaskDueDate` เป็นวันที่ปัจจุบันบวก 3 วันล่วงหน้าแทนที่สตริงว่างเดิม
+3. **การตรวจสอบคุณภาพ:**
+   - ผ่านการตรวจสอบ ESLint (`npm run lint`) ครบถ้วน 0 errors
+
+### 48.4 การพัฒนาระบบ Mobile Application (master/mobile-app)
+1. **Dynamic Due Date Utility (`ManagerDashboard.jsx`):**
+   - สร้างฟังก์ชัน `getDynamicDueDate(daysAhead)` คำนวณวันที่แบบ ISO YYYY-MM-DD อัตโนมัติ แทนที่ค่าคงที่ `'2026-10-15'` และ `'2026-09-30'` ทั้งหมด
+2. **Native Collapsible Dashboard Sections:**
+   - ใช้ `LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)` ร่วมกับ `UIManager.setLayoutAnimationEnabledExperimental` ของ React Native ทำให้ส่วน Review Queue และ Pipeline สามารถพับเก็บหรือขยายได้โดยไม่ต้องเพิ่ม Library ภายนอก
+3. **Prioritized Top Review Queue:**
+   - ปรับปรุง `fetchLivePipeline` ดึงข้อมูลทั้ง `contentApi.getAll()` และ `taskApi.getAll()` พร้อมกันด้วย `Promise.all`
+   - กรองงานที่อยู่ในสถานะ `REVIEW` และ `REVISION` มาแสดงผลไว้ด้านบนสุดของการ์ดหน้าจอ พร้อมชื่อผู้ส่ง ตำแหน่ง (เช่น Jane Script - Script Writer) ลิงก์ตรวจงาน และบันทึกตอบกลับของสมาชิก (`replyNotes`) พร้อมปุ่มอนุมัติหรือส่งกลับแก้ไขได้ในคลิกเดียว
+4. **Position-Based Action Locking (`MemberTaskList.jsx`):**
+   - บังคับใช้ `POSITION_TASK_MAP`: หากตำแหน่งของผู้ใช้ไม่ตรงกับประเภทงาน ปุ่มเริ่มงานและส่งมอบงานจะถูกปิดการใช้งาน (Disabled) พร้อมแสดงแถบเตือนสถานะการล็อค
+5. **Sequential Stage Progression Notices (`MemberTaskList.jsx`):**
+   - ตรวจสอบ `STAGE_ORDER` และ `checkStageUnlocked`: หากงานในขั้นตอนก่อนหน้ายังไม่ผ่านการอนุมัติ (DONE) ปุ่มดำเนินการจะถูกปิดการใช้งานพร้อมแสดงข้อความแจ้งเตือนให้รอการอนุมัติตามลำดับ
+6. **การตรวจสอบคุณภาพ:**
+   - ตรวจสอบ ESLint (`npm run lint`): 0 errors
+   - รันการทดสอบ Jest (`npm test`): ผ่าน 100%
+
+### 48.5 การจัดทำชุดการทดสอบอัตโนมัติ (Automated Test Verification)
+1. **ไฟล์ทดสอบ `master/backend/tests/automated_verification.test.js`:**
+   - ใช้ Node.js native test runner (`node:test` + `node:assert`) ครอบคลุมการทดสอบ 4 ระดับ (Tier 1 Unit, Tier 2 Boundary, Tier 3 Pairwise, Tier 4 Full Studio Pipeline Simulation)
+   - ตรวจสอบครบทุกประเด็น: Dynamic Dates, Position Locking, Sequential Stage Gate, Step-by-Step Approval, และ Deliverable Metadata Synchronization
+2. **ผลการทดสอบระบบ Backend:**
+   - คำสั่ง: `npm test --prefix master/backend`
+   - ผลลัพธ์: ผ่าน 100% รวม 39 รายการทดสอบ ใน 13 Test Suites (ระยะเวลารัน ~800 มิลลิวินาที, Exit Code 0)
+3. **การจัดทำเอกสารความพร้อมในการทดสอบ (`TEST_READY.md`):**
+   - จัดทำเอกสารสรุปสถาปัตยกรรมการทดสอบ, ตาราง Feature Coverage Checklist ครบ 5 หัวข้อ, และแผนผังการทำงานระหว่างระบบ

@@ -11,12 +11,23 @@ import {
   TextInput,
   Platform,
   Linking,
+  UIManager,
+  LayoutAnimation,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { contentApi, taskApi, userApi } from '../../services/api';
+import { contentApi, taskApi, userApi, getBaseUrl, getAuthToken } from '../../services/api';
 import { presenceService } from '../../services/presenceService';
 import { useTheme } from '../../theme/ThemeContext';
 import SmoothModal from '../../components/SmoothModal';
+
+// Android layout animation guard
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+// Dynamic due date helper (native Date calculation)
+const getDynamicDueDate = (daysAhead = 7) =>
+  new Date(Date.now() + daysAhead * 86400000).toISOString().split('T')[0];
 
 export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   const { colors } = useTheme();
@@ -35,7 +46,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   const [newTitle, setNewTitle] = useState('');
   const [newPlatform, setNewPlatform] = useState('TikTok');
   const [newCategory] = useState('General');
-  const [newDueDate, setNewDueDate] = useState('2026-10-15');
+  const [newDueDate, setNewDueDate] = useState(() => getDynamicDueDate(7));
   const [newDesc, setNewDesc] = useState('');
   const [submittingCreate, setSubmittingCreate] = useState(false);
 
@@ -45,15 +56,33 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   const [taskTitle, setTaskTitle] = useState('');
   const [taskType, setTaskType] = useState('Editing');
   const [assignedToId, setAssignedToId] = useState('');
-  const [taskDueDate, setTaskDueDate] = useState('2026-10-15');
+  const [taskDueDate, setTaskDueDate] = useState(() => getDynamicDueDate(3));
   const [taskNotes, setTaskNotes] = useState('');
   const [submittingAssign, setSubmittingAssign] = useState(false);
   const [teamMembers, setTeamMembers] = useState([]);
 
+  // Priority Review Queue & Collapsible Sections
+  const [pendingReviewTasks, setPendingReviewTasks] = useState([]);
+  const [collapsedSections, setCollapsedSections] = useState({
+    reviewQueue: false,
+    productionPipeline: false,
+  });
+
+  const toggleSection = (sectionKey) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setCollapsedSections((prev) => ({
+      ...prev,
+      [sectionKey]: !prev[sectionKey],
+    }));
+  };
+
   const fetchLivePipeline = async () => {
     try {
-      const res = await contentApi.getAll();
-      const list = Array.isArray(res) ? res : (res?.contents || []);
+      const [contentsRes, tasksRes] = await Promise.all([
+        contentApi.getAll(),
+        taskApi.getAll().catch(() => []),
+      ]);
+      const list = Array.isArray(contentsRes) ? contentsRes : (contentsRes?.contents || []);
       if (Array.isArray(list)) {
         const mapped = list.map((c) => ({
           _id: c._id,
@@ -63,7 +92,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
           status: c.status || 'PLANNING',
           category: c.category || 'General',
           creator: c.createdBy?.firstName ? `${c.createdBy.firstName} ${c.createdBy.lastName || ''}`.trim() : (c.createdBy?.username || 'ผู้ผลิต'),
-          dueDate: c.dueDate ? c.dueDate.split('T')[0] : '2026-09-30',
+          dueDate: c.dueDate ? c.dueDate.split('T')[0] : getDynamicDueDate(7),
           reviewHistory: c.reviewHistory || [],
           latestSubmissionUrl: (c.versions && c.versions.length > 0)
             ? c.versions[c.versions.length - 1].fileUrl
@@ -71,6 +100,42 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         }));
         setPipeline(mapped);
         setIsLiveConnected(true);
+      }
+
+      // Extract tasks awaiting manager inspection (REVIEW or REVISION)
+      const rawTasks = Array.isArray(tasksRes) ? tasksRes : (tasksRes?.tasks || []);
+      if (Array.isArray(rawTasks)) {
+        const reviewTasks = rawTasks
+          .filter((t) => t.status === 'REVIEW' || t.status === 'REVISION')
+          .map((t) => {
+            const submitterName = t.assignedTo?.firstName
+              ? `${t.assignedTo.firstName} ${t.assignedTo.lastName || ''}`.trim()
+              : (t.assignedTo?.username || 'ทีมงาน');
+            const submitterPosition = t.assignedTo?.position || '';
+            const submitterDisplay = submitterPosition
+              ? `${submitterName} (${submitterPosition})`
+              : submitterName;
+
+            return {
+              _id: t._id || t.id,
+              title: t.title,
+              taskType: t.taskType || 'Editing',
+              stage: t.taskType || 'Editing',
+              status: t.status,
+              submitterName,
+              submitterPosition,
+              submitterDisplay,
+              submissionUrl: t.submissionUrl || '',
+              replyNotes: t.replyNotes || '',
+              notes: t.notes || '',
+              revisionNotes: t.revisionNotes || '',
+              contentTitle: t.contentId?.title || 'ชิ้นงานคอนเทนต์หลัก',
+              platform: t.contentId?.platform || 'General',
+              dueDate: t.dueDate ? t.dueDate.split('T')[0] : getDynamicDueDate(3),
+              isTask: true,
+            };
+          });
+        setPendingReviewTasks(reviewTasks);
       }
 
       // Fetch team members for task assignment if not yet loaded
@@ -144,7 +209,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     setAssignTargetContent(item);
     setTaskTitle(`ตัดต่อและผลิตงาน: ${item.title}`);
     setTaskType('Editing');
-    setTaskDueDate(item.dueDate || '2026-10-15');
+    setTaskDueDate(item.dueDate || getDynamicDueDate(3));
     setTaskNotes('');
     if (teamMembers.length > 0 && !assignedToId) {
       setAssignedToId(teamMembers[0]._id || teamMembers[0].id);
@@ -265,18 +330,66 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     if (!revisionTargetItem) return;
     const text = revisionFeedback.trim() || 'ส่งกลับแก้ไขตามข้อคิดเห็นของผู้จัดการ';
     setSubmittingReview(true);
-    setPipeline((prev) =>
-      prev.map((c) => (c._id === revisionTargetItem._id ? { ...c, status: 'REVISION' } : c))
-    );
     try {
-      await contentApi.submitReview(revisionTargetItem._id, 'REVISION', text);
-    } catch (e) {
-      console.warn('Updated locally:', e.message);
+      if (revisionTargetItem.isTask) {
+        try {
+          const baseUrl = getBaseUrl();
+          const token = getAuthToken();
+          await fetch(`${baseUrl}/tasks/${revisionTargetItem._id}/status`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({
+              status: 'REVISION',
+              revisionNotes: text,
+              notes: text,
+            }),
+          });
+        } catch {
+          await taskApi.updateStatus(revisionTargetItem._id, 'REVISION');
+        }
+      } else {
+        setPipeline((prev) =>
+          prev.map((c) => (c._id === revisionTargetItem._id ? { ...c, status: 'REVISION' } : c))
+        );
+        try {
+          await contentApi.submitReview(revisionTargetItem._id, 'REVISION', text);
+        } catch (e) {
+          console.warn('Updated locally:', e.message);
+        }
+      }
+      Alert.alert('ส่งกลับแก้ไขสำเร็จ', `ส่งข้อคิดเห็นไปยัง ${revisionTargetItem.submitterName || revisionTargetItem.creator || 'ทีมงาน'} เรียบร้อยแล้ว`);
+    } catch (err) {
+      Alert.alert('ข้อผิดพลาด', err.message || 'ไม่สามารถส่งกลับแก้ไขได้');
     } finally {
       setSubmittingReview(false);
       setRevisionModalVisible(false);
+      await fetchLivePipeline();
     }
-    Alert.alert('ส่งกลับแก้ไขสำเร็จ', `ส่งข้อคิดเห็นไปยัง ${revisionTargetItem.creator || 'ทีมงาน'} เรียบร้อยแล้ว`);
+  };
+
+  const handleApproveTask = (taskItem) => {
+    Alert.alert(
+      'อนุมัติชิ้นงาน',
+      `คุณต้องการอนุมัติ "${taskItem.title}" เพื่อผ่านสู่ขั้นตอนถัดไปใช่หรือไม่?`,
+      [
+        { text: 'ยกเลิก', style: 'cancel' },
+        {
+          text: 'ยืนยันอนุมัติ',
+          onPress: async () => {
+            try {
+              await taskApi.updateStatus(taskItem._id, 'DONE', 100);
+              Alert.alert('อนุมัติสำเร็จ', `ชิ้นงาน "${taskItem.title}" ได้รับการอนุมัติเรียบร้อยแล้ว`);
+              await fetchLivePipeline();
+            } catch (e) {
+              Alert.alert('ข้อผิดพลาด', e.message || 'ไม่สามารถอนุมัติได้');
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleApproveContent = (item) => {
@@ -356,13 +469,27 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     }
   };
 
-  const reviewCount = pipeline.filter((c) => c.status === 'REVIEW').length;
+  const reviewCount = pipeline.filter((c) => c.status === 'REVIEW').length + pendingReviewTasks.filter((t) => t.status === 'REVIEW').length;
   const prodCount = pipeline.filter((c) => c.status === 'PRODUCTION').length;
-  const revisionCount = pipeline.filter((c) => c.status === 'REVISION').length;
+  const revisionCount = pipeline.filter((c) => c.status === 'REVISION').length + pendingReviewTasks.filter((t) => t.status === 'REVISION').length;
   const approvedCount = pipeline.filter((c) => c.status === 'APPROVED' || c.status === 'PUBLISHED').length;
 
-  // Visual Hierarchy: Manager Priority Queue
-  const pendingReviewItems = pipeline.filter((c) => c.status === 'REVIEW' || c.status === 'REVISION');
+  // Visual Hierarchy: Manager Priority Review Queue Items
+  const contentReviewItems = pipeline
+    .filter((c) => c.status === 'REVIEW' || c.status === 'REVISION')
+    .filter((c) => !pendingReviewTasks.some((t) => t.contentTitle === c.title));
+
+  const reviewQueueItems = [
+    ...pendingReviewTasks,
+    ...contentReviewItems.map((c) => ({
+      ...c,
+      isTask: false,
+      submitterDisplay: `${c.creator} (Content Creator)`,
+      stage: c.category || 'General',
+      submissionUrl: c.latestSubmissionUrl,
+      replyNotes: '',
+    })),
+  ];
 
   const renderContentCard = (item, isHighlightQueue = false) => {
     const st = getStatusBadge(item.status);
@@ -529,6 +656,106 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     );
   };
 
+  const renderReviewDeliverableCard = (item) => {
+    const st = getStatusBadge(item.status);
+
+    return (
+      <View
+        key={item._id}
+        style={[
+          styles.reviewCard,
+          {
+            backgroundColor: colors.cardBg,
+            borderColor: item.status === 'REVISION'
+              ? colors.statusRevisionBorder
+              : colors.statusReviewBorder,
+          },
+        ]}
+      >
+        {/* Card Header Row: Stage & Status Pill */}
+        <View style={styles.cardTopRow}>
+          <View style={[styles.stageBadge, { backgroundColor: colors.surfaceSubtle }]}>
+            <Text style={[styles.stageBadgeText, { color: colors.textSecondary }]}>
+              {item.stage || item.taskType || 'Production'}
+            </Text>
+          </View>
+
+          <View style={[styles.statusBadge, { backgroundColor: st.bg, borderColor: st.border }]}>
+            <Text style={[styles.statusBadgeText, { color: st.text }]}>{st.label}</Text>
+          </View>
+        </View>
+
+        {/* Title & Parent Content */}
+        <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>{item.title}</Text>
+        {item.contentTitle && item.contentTitle !== item.title ? (
+          <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
+            ชิ้นงานหลัก: {item.contentTitle} ({item.platform || 'General'})
+          </Text>
+        ) : null}
+
+        {/* Submitter Name & Position */}
+        <View style={[styles.metaRow, { borderTopColor: colors.border }]}>
+          <View style={styles.metaItem}>
+            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+              ผู้ส่งงาน: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.submitterDisplay || item.creator || 'ทีมงาน'}</Text>
+            </Text>
+          </View>
+          <View style={styles.metaItem}>
+            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+              กำหนดส่ง: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.dueDate}</Text>
+            </Text>
+          </View>
+        </View>
+
+        {/* Deliverable URL with 1-Tap Open Link */}
+        {!!(item.submissionUrl || item.latestSubmissionUrl) && (
+          <TouchableOpacity
+            style={[styles.btnPreviewLink, { borderColor: colors.border, backgroundColor: colors.surfaceSubtle }]}
+            onPress={() => handleOpenUrl(item.submissionUrl || item.latestSubmissionUrl)}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.btnPreviewLinkText, { color: colors.primary }]} numberOfLines={1}>
+              เปิดดูผลงาน (URL): {item.submissionUrl || item.latestSubmissionUrl}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Member's replyNotes Callout */}
+        {!!item.replyNotes && (
+          <View style={[styles.replyNotesBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+            <Text style={[styles.replyNotesLabel, { color: colors.textSecondary }]}>
+              ข้อความตอบกลับจากผู้ส่งงาน:
+            </Text>
+            <Text style={[styles.replyNotesText, { color: colors.textPrimary }]}>
+              {item.replyNotes}
+            </Text>
+          </View>
+        )}
+
+        {/* Action Buttons: 1-Tap Direct Approval & Revision */}
+        <View style={styles.actionRow}>
+          <TouchableOpacity
+            style={[
+              styles.btnSecondary,
+              { backgroundColor: colors.surface, borderColor: colors.statusRevisionBorder },
+            ]}
+            onPress={() => openRevisionModal(item)}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.btnSecondaryText, { color: colors.statusRevisionText }]}>ส่งกลับแก้ไข</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.btnPrimary, { backgroundColor: colors.statusApprovedText }]}
+            onPress={() => (item.isTask ? handleApproveTask(item) : handleApproveContent(item))}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.btnPrimaryText}>อนุมัติชิ้นงาน</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Top Header Bar */}
@@ -639,37 +866,67 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
           </View>
         ) : (
           <>
-            {/* Visual Hierarchy: Priority 1 - Action Required Queue for Manager */}
-            {filter === 'ALL' && pendingReviewItems.length > 0 && (
+            {/* Visual Hierarchy: Priority 1 - Collapsible Manager Review Queue */}
+            {(filter === 'ALL' || filter === 'REVIEW' || filter === 'REVISION') && reviewQueueItems.length > 0 && (
               <View style={styles.sectionContainer}>
-                <View style={styles.sectionHeaderRow}>
-                  <Text style={[styles.sectionTitlePriority, { color: colors.statusReviewText }]}>
-                    คิวที่ต้องตรวจสอบและติดตาม (Action Required)
-                  </Text>
-                  <View style={[styles.badgeCount, { backgroundColor: colors.statusReviewBg }]}>
-                    <Text style={[styles.badgeCountText, { color: colors.statusReviewText }]}>
-                      {pendingReviewItems.length} ชิ้นงาน
+                <TouchableOpacity
+                  style={styles.sectionHeaderRow}
+                  onPress={() => toggleSection('reviewQueue')}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.sectionHeaderLeft}>
+                    <Text style={[styles.sectionTitlePriority, { color: colors.statusReviewText }]}>
+                      คิวรอตรวจสอบและอนุมัติ (Manager Review Queue)
                     </Text>
+                    <View style={[styles.badgeCount, { backgroundColor: colors.statusReviewBg }]}>
+                      <Text style={[styles.badgeCountText, { color: colors.statusReviewText }]}>
+                        {reviewQueueItems.length} รายการ
+                      </Text>
+                    </View>
                   </View>
-                </View>
-                <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-                  ชิ้นงานที่รอการตรวจทานความถูกต้อง หรืออยู่ในระหว่างการปรับปรุงแก้ไข
-                </Text>
-                {pendingReviewItems.map((item) => renderContentCard(item, true))}
+                  <Text style={[styles.toggleChevron, { color: colors.textSecondary }]}>
+                    {collapsedSections.reviewQueue ? '[แสดง]' : '[ซ่อน]'}
+                  </Text>
+                </TouchableOpacity>
+
+                {!collapsedSections.reviewQueue && (
+                  <View style={styles.sectionBody}>
+                    <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                      ชิ้นงานที่รอการตรวจทานความถูกต้อง หรืออยู่ในระหว่างการปรับปรุงแก้ไข
+                    </Text>
+                    {reviewQueueItems.map((item) => renderReviewDeliverableCard(item))}
+                  </View>
+                )}
               </View>
             )}
 
-            {/* General Pipeline List */}
+            {/* General Pipeline List (Collapsible) */}
             <View style={styles.sectionContainer}>
-              <View style={styles.sectionHeaderRow}>
-                <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                  {filter === 'ALL' && pendingReviewItems.length > 0 ? 'ชิ้นงานทั้งหมดในสายการผลิต' : 'รายการชิ้นงาน'}
+              <TouchableOpacity
+                style={styles.sectionHeaderRow}
+                onPress={() => toggleSection('productionPipeline')}
+                activeOpacity={0.7}
+              >
+                <View style={styles.sectionHeaderLeft}>
+                  <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                    {filter === 'ALL' && reviewQueueItems.length > 0 ? 'ชิ้นงานทั้งหมดในสายการผลิต' : 'รายการชิ้นงาน'}
+                  </Text>
+                  <View style={[styles.badgeCount, { backgroundColor: colors.surfaceSubtle }]}>
+                    <Text style={[styles.badgeCountText, { color: colors.textSecondary }]}>
+                      {filteredPipeline.length} รายการ
+                    </Text>
+                  </View>
+                </View>
+                <Text style={[styles.toggleChevron, { color: colors.textSecondary }]}>
+                  {collapsedSections.productionPipeline ? '[แสดง]' : '[ซ่อน]'}
                 </Text>
-                <Text style={[styles.sectionCount, { color: colors.textSecondary }]}>
-                  {filteredPipeline.length} ชิ้นงาน
-                </Text>
-              </View>
-              {filteredPipeline.map((item) => renderContentCard(item, false))}
+              </TouchableOpacity>
+
+              {!collapsedSections.productionPipeline && (
+                <View style={styles.sectionBody}>
+                  {filteredPipeline.map((item) => renderContentCard(item, false))}
+                </View>
+              )}
             </View>
           </>
         )}
@@ -765,7 +1022,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>กำหนดส่งงาน (YYYY-MM-DD)</Text>
         <TextInput
           style={[styles.modalSingleInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
-          placeholder="2026-10-15"
+          placeholder={getDynamicDueDate(7)}
           placeholderTextColor={colors.textMuted}
           value={newDueDate}
           onChangeText={setNewDueDate}
@@ -1003,6 +1260,58 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 4,
+  },
+  sectionHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  toggleChevron: {
+    fontSize: 12,
+    fontWeight: '700',
+    paddingHorizontal: 4,
+  },
+  sectionBody: {
+    marginTop: 4,
+  },
+  reviewCard: {
+    borderRadius: 14,
+    padding: 16,
+    borderWidth: 1.5,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  stageBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  stageBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  cardSubtitle: {
+    fontSize: 12,
+    marginTop: 2,
+    marginBottom: 6,
+  },
+  replyNotesBox: {
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginTop: 10,
+  },
+  replyNotesLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  replyNotesText: {
+    fontSize: 12,
+    lineHeight: 18,
   },
   sectionTitlePriority: {
     fontSize: 15,

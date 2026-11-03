@@ -45,7 +45,7 @@ export default function TasksPage() {
   const [newTaskContentId, setNewTaskContentId] = useState('');
   const [newTaskType, setNewTaskType] = useState('Editing');
   const [newTaskAssignee, setNewTaskAssignee] = useState('');
-  const [newTaskDueDate, setNewTaskDueDate] = useState('');
+  const [newTaskDueDate, setNewTaskDueDate] = useState(() => new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0]);
   const [newTaskNotes, setNewTaskNotes] = useState('');
   const [submittingTask, setSubmittingTask] = useState(false);
 

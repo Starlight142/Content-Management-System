@@ -13,6 +13,9 @@ const getAllTasks = async (req, res) => {
     if (req.user && req.user.role !== 'ADMIN' && req.user.teamId) {
       filter.teamId = req.user.teamId;
     }
+    if (req.query && req.query.contentId) {
+      filter.contentId = req.query.contentId;
+    }
 
     const tasks = await Task.find(filter)
       .populate('assignedTo', 'username email firstName lastName position role workingStatus')
@@ -31,7 +34,7 @@ const getAllTasks = async (req, res) => {
 // @access Private (Manager/Admin)
 const createTask = async (req, res) => {
   try {
-    const { title, contentId, taskType, assignedTo, dueDate, notes, teamId, progress } = req.body;
+    const { title, contentId, taskType, assignedTo, dueDate, notes, teamId, progress, submissionUrl, replyNotes, revisionNotes } = req.body;
     if (!title || String(title).trim() === '') {
       return res.status(400).json({ message: 'กรุณาระบุชื่องานย่อย (Task title is required)' });
     }
@@ -51,8 +54,11 @@ const createTask = async (req, res) => {
       taskType: taskType || 'Editing',
       assignedTo: assignedTo || null,
       teamId: resolvedTeamId || null,
-      dueDate,
-      notes,
+      dueDate: dueDate || new Date(Date.now() + 7 * 86400000),
+      notes: notes || '',
+      submissionUrl: submissionUrl || '',
+      replyNotes: replyNotes || '',
+      revisionNotes: revisionNotes || '',
       progress: progress || 0,
       status: 'TODO',
     });
@@ -112,6 +118,15 @@ const updateTaskStatus = async (req, res) => {
       });
     }
 
+    // Sequential stage progression check: Stage N > 1 requires all stages < N to be DONE
+    if (status === 'IN_PROGRESS' || status === 'REVIEW') {
+      try {
+        await workflowService.validateStageProgression(Task, existingTask, status);
+      } catch (stageErr) {
+        return res.status(403).json({ message: stageErr.message });
+      }
+    }
+
     // Role-based protection & Workflow transition validation
     if (status !== undefined) {
       try {
@@ -119,7 +134,8 @@ const updateTaskStatus = async (req, res) => {
           existingTask,
           status,
           userId,
-          req.user.role || 'MEMBER'
+          req.user.role || 'MEMBER',
+          req.user.position
         );
       } catch (wfErr) {
         return res.status(403).json({ message: wfErr.message });
@@ -132,6 +148,11 @@ const updateTaskStatus = async (req, res) => {
       if (!isAssigned) {
         return res.status(403).json({
           message: 'Permission denied: Members can only update their own assigned tasks',
+        });
+      }
+      if (req.user.position && !workflowService.isPositionAllowedForTask(req.user.position, existingTask.taskType)) {
+        return res.status(403).json({
+          message: `ไม่อนุญาต: ตำแหน่งงานของคุณ (${req.user.position}) ไม่สามารถดำเนินการในประเภทงาน ${existingTask.taskType} ได้`,
         });
       }
     }
@@ -165,20 +186,35 @@ const updateTaskStatus = async (req, res) => {
 
     // If task is submitted for review and parent content is IN_PROGRESS, auto-promote to REVIEW
     if (status === 'REVIEW' && task.contentId) {
-      const parentContent = await Content.findById(task.contentId._id);
-      if (parentContent && (parentContent.status === 'IN_PROGRESS' || parentContent.status === 'PRODUCTION' || parentContent.status === 'REVISION')) {
+      const parentContent = await Content.findById(task.contentId._id || task.contentId);
+      if (parentContent && (parentContent.status === 'IN_PROGRESS' || parentContent.status === 'PRODUCTION' || parentContent.status === 'REVISION' || parentContent.status === 'PLANNING')) {
         parentContent.status = 'REVIEW';
         if (submissionUrl) {
           const nextVer = (parentContent.versions?.length || 0) + 1;
           parentContent.versions.push({
             versionNumber: nextVer,
             fileUrl: submissionUrl,
-            changelog: `Delivered by task: ${task.title}`,
+            changelog: `Delivered by task: ${task.title}${replyNotes ? ` - ตอบกลับ: ${replyNotes}` : ''}`,
             submittedBy: userId,
             submittedAt: new Date(),
           });
         }
         await parentContent.save();
+      }
+    }
+
+    // If task is completed and all tasks for parent content are DONE, advance content to APPROVED
+    if (status === 'DONE' && task.contentId) {
+      const remainingUnfinished = await Task.countDocuments({
+        contentId: task.contentId._id || task.contentId,
+        _id: { $ne: task._id },
+        status: { $ne: 'DONE' },
+      });
+      if (remainingUnfinished === 0) {
+        await Content.findByIdAndUpdate(task.contentId._id || task.contentId, {
+          status: 'APPROVED',
+        });
+        broadcast('CONTENT_UPDATED', { contentId: task.contentId._id || task.contentId, status: 'APPROVED' });
       }
     }
 

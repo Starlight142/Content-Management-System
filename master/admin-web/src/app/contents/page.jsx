@@ -70,7 +70,7 @@ export default function ContentsPage() {
   // Form state for new content
   const [newTitle, setNewTitle] = useState('');
   const [newPlatform, setNewPlatform] = useState('TikTok');
-  const [newDate, setNewDate] = useState('2026-09-30');
+  const [newDate, setNewDate] = useState(() => new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]);
   const [newDescription, setNewDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -79,7 +79,7 @@ export default function ContentsPage() {
   const [taskTitle, setTaskTitle] = useState('');
   const [taskType, setTaskType] = useState('Editing');
   const [taskAssignee, setTaskAssignee] = useState('');
-  const [taskDueDate, setTaskDueDate] = useState('2026-10-05');
+  const [taskDueDate, setTaskDueDate] = useState(() => new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0]);
   const [taskNotes, setTaskNotes] = useState('');
   const [subtaskSubmitting, setSubtaskSubmitting] = useState(false);
 
@@ -100,7 +100,7 @@ export default function ContentsPage() {
     platform: c.platform || 'General',
     status: c.status || 'PLANNING',
     creator: c.createdBy?.firstName ? `${c.createdBy.firstName} ${c.createdBy.lastName || ''}`.trim() : (c.createdBy?.username || 'ผู้ดูแลระบบ'),
-    date: c.dueDate ? c.dueDate.split('T')[0] : (c.createdAt ? c.createdAt.split('T')[0] : '2026-09-30'),
+    date: c.dueDate ? c.dueDate.split('T')[0] : (c.createdAt ? c.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]),
     description: c.description || 'ยังไม่มีคำอธิบายเพิ่มเติม',
     category: c.category || 'General',
     progress: c.progress || 0,

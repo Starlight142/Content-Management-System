@@ -464,6 +464,9 @@
       <li class="nav-item"><a href="#phase-43" class="nav-link"><span class="nav-tag">P43</span>Academic Diagrams Suite</a></li>
       <li class="nav-item"><a href="#phase-44" class="nav-link"><span class="nav-tag">P44</span>Use Case Consolidation (3 Actors)</a></li>
       <li class="nav-item"><a href="#phase-45" class="nav-link"><span class="nav-tag">P45</span>Testing Suite (Manual & Robot)</a></li>
+      <li class="nav-item"><a href="#phase-46" class="nav-link"><span class="nav-tag">P46</span>Ponytail Antigravity Integration</a></li>
+      <li class="nav-item"><a href="#phase-47" class="nav-link"><span class="nav-tag">P47</span>Diagram Design Skill</a></li>
+      <li class="nav-item"><a href="#phase-48" class="nav-link"><span class="nav-tag">P48</span>Workflow & Stage Approval</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -537,6 +540,7 @@
           <tr><td>7 ต.ค. 2026 (12:55 น.)</td><td><a href="#phase-35">Phase 35: การอัปเดตและซิงค์ฐานข้อมูล MongoDB สู่ Schema ล่าสุด & การสร้างคอนฟิก .env</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>7 ต.ค. 2026 (13:10 น.)</td><td><a href="#phase-36">Phase 36: การลบฐานข้อมูลและโมดูลกฎหมายที่ไม่ใช้งาน (Unused Legal Articles & Module Removal)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>7 ต.ค. 2026 (13:25 น.)</td><td><a href="#phase-37">Phase 37: การแก้ไขปัญหาคอมไพล์ Android จากแคชเส้นทางเดิม & ชื่อโฟลเดอร์ภาษาไทย</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>3 พ.ย. 2026 (19:00 น.)</td><td><a href="#phase-48">Phase 48: ระบบเวิร์กโฟลว์ลำดับขั้นการผลิต, วันที่แบบไดนามิก, ล็อคสิทธิ์ตามตำแหน่ง & รายการตรวจสอบงานตรวจ (Workflow Stage Approval & Dynamic Dates)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
         </tbody>
       </table>
     </section>
@@ -1788,6 +1792,108 @@
         </li>
         <li><strong>Animation & Performance Optimization (Mobile App & Admin Web) + 7-Zip Packaging:</strong>
           ยกระดับแอนิเมชันและประสิทธิภาพทั้งฝั่ง Mobile App (<code>SmoothModal</code> GPU Hardware Texture, <code>ManagerNavigator</code> & <code>MemberNavigator</code> Native-Driver Screen Transition และ Persistent Tab Cache, แก้ไขลำดับ URL และ WebSocket <code>ws://10.0.2.2:5000</code>) และฝั่ง Admin Web (<code>@starting-style</code>, <code>transition-behavior: allow-discrete</code>, <code>content-visibility: auto</code> คู่กับ <code>contain-intrinsic-size</code> และ <code>useMemo</code>) พร้อมตรวจสอบ ESLint, Build และ Robot Automated Tests (28/28 Passed) ก่อนแพ็กไฟล์ส่งมอบด้วย 7-Zip
+        </li>
+      </ul>
+    </section>
+
+    <!-- Phase 46 -->
+    <section class="section-card" id="phase-46">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 46: การติดตั้งและเปิดใช้งานทักษะและกฎการเขียนโค้ด Ponytail สำหรับ Antigravity (Ponytail Minimalist Coding Skill & Rules Integration)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 3 พฤศจิกายน 2026 (17:45 น.)</span>
+        <span>•</span>
+        <span>📁 <code>.agents/skills/ponytail/</code> & <code>.agents/rules/ponytail.md</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>การผสานปรัชญาการเขียนโค้ดแบบกระชับ (Minimalist Coding Persona):</strong><br>
+        ติดตั้งทักษะและกฎการทำงานของ <strong>Ponytail</strong> (DietrichGebert/ponytail) สู่ระบบ Antigravity เพื่อควบคุมให้ AI คิดแบบ Senior Developer ที่เขียนโค้ดกระชับที่สุดเท่าที่จะแก้ปัญหาได้ครบถ้วน โดยยึดหลัก <em>"The best code is the code you never wrote"</em> และปฏิบัติตามลำดับขั้น The Ladder
+      </div>
+
+      <h3>การดำเนินงานทางเทคนิค:</h3>
+      <ul>
+        <li><strong>การสร้าง Workspace Skill (<code>.agents/skills/ponytail/SKILL.md</code>):</strong> กำหนดขั้นตอนการตัดสินใจ The Ladder (YAGNI, Reuse Existing, Standard Library, Native Platform Feature, Installed Dependencies, Single Clean Line, Minimum Viable Code) พร้อมกำหนดขอบเขตที่ไม่ประนีประนอม (ความปลอดภัย, สิทธิ์ RBAC, และความสมบูรณ์ของข้อมูล)</li>
+        <li><strong>การสร้าง Workspace Rule (<code>.agents/rules/ponytail.md</code>):</strong> วางกฎข้อบังคับระดับโปรเจกต์ให้ Antigravity โหลดพฤติกรรมการลดทอนความซับซ้อนและเขียนโค้ดเรียบง่ายเข้าสู่ Context อัตโนมัติ</li>
+        <li><strong>การตั้งค่าสภาพแวดล้อมระบบ (Android SDK & Java):</strong> สร้างไฟล์ <code>master/mobile-app/android/local.properties</code> กำหนดพาธ Android SDK และวินิจฉัยปัญหาความเข้ากันได้ของ JDK 27 กับ React Native / Gradle 9.4 ที่ต้องการ JDK 17</li>
+      </ul>
+    </section>
+
+    <!-- Phase 47 -->
+    <section class="section-card" id="phase-47">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 47: การติดตั้งทักษะการออกแบบแผนภาพระบบ Diagram Design สำหรับ Antigravity (Editorial Diagram Design Skill Integration)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 3 พฤศจิกายน 2026 (17:58 น.)</span>
+        <span>•</span>
+        <span>📁 <code>.agents/skills/diagram-design/</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>การสร้างแผนภาพสถาปัตยกรรมระดับ Editorial (45 Visual Types):</strong><br>
+        ติดตั้งทักษะ <strong>Diagram Design</strong> (cathrynlavery/diagram-design) เข้าสู่ Antigravity สำหรับสร้างแผนภาพ Architecture, Flowchart, Sequence, ER, และ State Machine ในรูปแบบไฟล์ HTML + Inline SVG ที่สมบูรณ์ในตัวเอง โดยยึดหลักลดทอนความรก หลีกเลี่ยง AI Slop และใช้กริดระเบียบแบบแผนสากล
+      </div>
+
+      <h3>การดำเนินงานทางเทคนิค:</h3>
+      <ul>
+        <li><strong>การสร้าง Workspace Skill (<code>.agents/skills/diagram-design/SKILL.md</code>):</strong> กำหนดมาตรฐานโครงสร้างแผนภาพ 45 หมวดหมู่, แนวทางการเลือกลำดับ Semantic Pattern, และข้อห้ามสากล (Universal Anti-Patterns)</li>
+        <li><strong>มาตรฐานไฟล์ผลลัพธ์ (Self-Contained Standalone HTML):</strong> ใช้ CSS Variables ควบคุมโทนสี, เส้นเชื่อมแบบ Orthogonal สบายตา และรองรับการเปิดดูได้ทันทีผ่านเว็บบราวเซอร์โดยไม่ต้องติดตั้งเครื่องมือเพิ่มเติม</li>
+      </ul>
+    </section>
+
+    <!-- Phase 48 -->
+    <section class="section-card" id="phase-48">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 48: ระบบเวิร์กโฟลว์ลำดับขั้นการผลิต, วันที่แบบไดนามิก, ล็อคสิทธิ์ตามตำแหน่ง & รายการตรวจสอบงานตรวจ</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 3 พฤศจิกายน 2026 (19:00 น.)</span>
+        <span>•</span>
+        <span>📁 <code>master/backend/</code>, <code>master/admin-web/</code>, <code>master/mobile-app/</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>การบังคับใช้กระบวนการผลิตสื่อตามลำดับขั้นตอนและสิทธิ์ตามตำแหน่ง (Sequential Production Pipeline & RBAC):</strong><br>
+        พัฒนาระบบควบคุมกระบวนการผลิตสื่อแบบเคร่งครัด (1 -> 2 -> 3 -> 4 -> 5), แทนที่วันที่คงที่ด้วยวันที่แบบไดนามิกอิงเวลาจริง, ล็อคปุ่มดำเนินการสำหรับตำแหน่งที่ไม่ตรงกับงาน, เพิ่มแดชบอร์ดพับเก็บได้พร้อมคิวงานตรวจที่รออนุมัติไว้บนสุด และซิงค์ข้อมูลการส่งงานระหว่าง Manager และ Member ตามแนวทาง Ponytail
+      </div>
+
+      <h3>การดำเนินงานทางเทคนิครายระบบ:</h3>
+      <ul>
+        <li><strong>Backend (<code>master/backend</code>):</strong>
+          <ul>
+            <li><strong>Dynamic Dates:</strong> กำหนด Schema Default สำหรับ <code>dueDate</code> ใน <code>Task.js</code> และ <code>Content.js</code> เป็นเวลาปัจจุบัน + 7 วัน และปรับปรุง <code>seed.js</code> แทนที่สตริงวันที่คงที่ 16 จุดด้วย Dynamic Offsets</li>
+            <li><strong>Position-Based Locking:</strong> กำหนด <code>POSITION_TASK_MAP</code> ใน <code>workflow.service.js</code> จำกัดสิทธิ์การเปลี่ยนสถานะตามตำแหน่งงาน (Script Writer, Video Editor, Graphic Designer, Content Creator) พร้อมส่งคืน 403 Forbidden หากผิดสิทธิ์ และป้องกัน Member กด Done เอง</li>
+            <li><strong>Sequential Stage Pipeline:</strong> กำหนด <code>STAGE_ORDER</code> (Scripting 1, Filming 2, Editing 3, Graphic Design 4, Sound Design 5) พร้อมฟังก์ชัน <code>validateStageProgression</code> บล็อกการเริ่มหรือส่งงานใน Stage ถัดไปจนกว่าขั้นตอนก่อนหน้าจะได้รับการอนุมัติ (DONE) ครบถ้วน</li>
+            <li><strong>Manager Stage Approval:</strong> ปรับปรุง <code>contents.controller.js:submitReview</code> ให้อนุมัติเฉพาะงานที่อยู่ระหว่างการตรวจเป็น DONE (Progress 100%) และปลดล็อคขั้นตอนถัดไปทีละขั้น ยกเลิกการอัปเดตทุกงานเป็น DONE พร้อมกัน</li>
+            <li><strong>Metadata Synchronization:</strong> รองรับและส่งคืนฟิลด์ <code>submissionUrl</code>, <code>notes</code>, <code>replyNotes</code>, และ <code>revisionNotes</code></li>
+          </ul>
+        </li>
+        <li><strong>Admin Web (<code>master/admin-web</code>):</strong>
+          <ul>
+            <li><strong>Dynamic Offsets:</strong> แทนที่ค่าคงที่ <code>'2026-09-30'</code> และ <code>'2026-10-05'</code> ใน <code>contents/page.jsx</code> และ <code>tasks/page.jsx</code> ด้วย Dynamic Offsets (+7 วัน และ +3 วัน)</li>
+            <li><strong>Quality Check:</strong> ผ่านการตรวจสอบ ESLint (<code>npm run lint</code>) 0 errors</li>
+          </ul>
+        </li>
+        <li><strong>Mobile App (<code>master/mobile-app</code>):</strong>
+          <ul>
+            <li><strong>Dynamic Due Dates:</strong> ใช้งาน <code>getDynamicDueDate(daysAhead)</code> ใน <code>ManagerDashboard.jsx</code> แทนที่ค่าคงที่ <code>'2026-10-15'</code></li>
+            <li><strong>Collapsible Sections:</strong> ใช้ React Native <code>LayoutAnimation</code> พับเก็บและขยายส่วนคิวงานตรวจและผังการผลิตได้อย่างลื่นไหลโดยไม่ต้องพึ่งพา Library เพิ่มเติม</li>
+            <li><strong>Prioritized Top Review Queue:</strong> ดึงข้อมูล Content และ Task พร้อมกันผ่าน <code>Promise.all</code> นำงานสถานะ <code>REVIEW</code> และ <code>REVISION</code> มาแสดงผลบนสุดของการ์ด พร้อมชื่อผู้ส่ง ตำแหน่ง ลิงก์ตรวจงาน บันทึกตอบกลับ (<code>replyNotes</code>) และปุ่มอนุมัติ/สั่งแก้</li>
+            <li><strong>Position & Sequential Locking (<code>MemberTaskList.jsx</code>):</strong> ล็อคปุ่มและแสดงแถบแจ้งเตือนเมื่อตำแหน่งไม่ตรงกับประเภทงาน หรือเมื่อขั้นตอนก่อนหน้ายังไม่ผ่านการอนุมัติจากผู้จัดการ</li>
+            <li><strong>Quality Check:</strong> ผ่านการตรวจสอบ ESLint 0 errors และ Jest ทดสอบผ่าน 100%</li>
+          </ul>
+        </li>
+        <li><strong>Automated Test Verification:</strong>
+          <ul>
+            <li>จัดทำชุดการทดสอบอัตโนมัติ <code>master/backend/tests/automated_verification.test.js</code> ครอบคลุม Unit, Boundary, Pairwise และ Full Pipeline Simulation รวม 39 รายการทดสอบ ใน 13 Test Suites</li>
+            <li>รันผ่าน Node.js native test runner (<code>npm test --prefix master/backend</code>) ผ่าน 100% (0 errors, &lt;1 วินาที, Exit Code 0)</li>
+            <li>จัดทำเอกสารความพร้อมในการทดสอบ <code>TEST_READY.md</code> ที่ Root Directory</li>
+          </ul>
         </li>
       </ul>
     </section>

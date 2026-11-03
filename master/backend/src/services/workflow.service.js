@@ -17,12 +17,14 @@ const CONTENT_TRANSITIONS = {
   REVIEW: {
     APPROVED: ['ADMIN', 'MANAGER'],
     REVISION: ['ADMIN', 'MANAGER'],
+    IN_PROGRESS: ['ADMIN', 'MANAGER'],
   },
   REVISION: {
     IN_PROGRESS: ['ADMIN', 'MANAGER', 'MEMBER'],
     REVIEW: ['ADMIN', 'MANAGER', 'MEMBER'],
   },
   APPROVED: {
+    IN_PROGRESS: ['ADMIN', 'MANAGER'],
     SCHEDULED: ['ADMIN', 'MANAGER'],
     PUBLISHED: ['ADMIN', 'MANAGER'],
   },
@@ -84,19 +86,55 @@ const TASK_TRANSITIONS = {
   },
 };
 
+// Permitted Task Types by Member Position
+const POSITION_TASK_MAP = {
+  'Script Writer': ['Scripting'],
+  'Video Editor': ['Editing', 'Filming', 'Sound Design'],
+  'Graphic Designer': ['Graphic Design'],
+  'Content Creator': ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'],
+  'Production Manager': ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'],
+  'Other': ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'],
+};
+
+const isPositionAllowedForTask = (position, taskType) => {
+  if (!position) return true;
+  const allowed = POSITION_TASK_MAP[position] || ['Other'];
+  return allowed.includes(taskType);
+};
+
+// Sequential Workflow Stages Order
+const STAGE_ORDER = {
+  Scripting: 1,
+  Filming: 2,
+  Editing: 3,
+  'Graphic Design': 4,
+  'Sound Design': 5,
+  Other: 5,
+};
+
+const getTaskStage = (taskType) => STAGE_ORDER[taskType] || 5;
+
 /**
- * Validates task transition and ownership
+ * Validates task transition, ownership, and position authorization
  */
-const validateTaskTransition = (task, targetStatus, userId, userRole) => {
+const validateTaskTransition = (task, targetStatus, userId, userRole, userPosition) => {
   const currentStatus = task.status;
   const assigneeId = (task.assignedTo && (task.assignedTo._id || task.assignedTo.id))
     ? (task.assignedTo._id || task.assignedTo.id).toString()
     : (task.assignedTo ? task.assignedTo.toString() : null);
   const isAssigned = Boolean(assigneeId && assigneeId === userId.toString());
 
-  // 1. Ownership & Role check: Member can ONLY edit their own task
-  if (userRole === 'MEMBER' && !isAssigned) {
-    throw new Error('ไม่อนุญาต: สมาชิกสามารถแก้ไขได้เฉพาะงานที่ได้รับมอบหมายให้ตนเองเท่านั้น');
+  // 1. Ownership & Position check: Member can ONLY edit their own task and matching position
+  if (userRole === 'MEMBER') {
+    if (!isAssigned) {
+      throw new Error('ไม่อนุญาต: สมาชิกสามารถแก้ไขได้เฉพาะงานที่ได้รับมอบหมายให้ตนเองเท่านั้น');
+    }
+    const resolvedPosition = userPosition || (task.assignedTo && task.assignedTo.position);
+    if (resolvedPosition && !isPositionAllowedForTask(resolvedPosition, task.taskType)) {
+      throw new Error(
+        `ไม่อนุญาต: ตำแหน่งงานของคุณ (${resolvedPosition}) ไม่สามารถดำเนินการในประเภทงาน ${task.taskType} ได้`
+      );
+    }
   }
 
   if (currentStatus === targetStatus) {
@@ -122,9 +160,54 @@ const validateTaskTransition = (task, targetStatus, userId, userRole) => {
   return true;
 };
 
+/**
+ * Validates sequential stage progression: for task of stage N > 1, all predecessor
+ * tasks (stage < N) under the same contentId must have status === 'DONE'.
+ */
+const validateStageProgression = async (TaskModel, task, targetStatus) => {
+  if (targetStatus !== 'IN_PROGRESS' && targetStatus !== 'REVIEW') {
+    return true;
+  }
+
+  const contentId = task.contentId?._id || task.contentId;
+  if (!contentId || !TaskModel) {
+    return true;
+  }
+
+  const currentStage = getTaskStage(task.taskType);
+  if (currentStage <= 1) {
+    return true;
+  }
+
+  const predecessorTaskTypes = Object.keys(STAGE_ORDER).filter(
+    (type) => STAGE_ORDER[type] < currentStage
+  );
+
+  const unapprovedPredecessor = await TaskModel.findOne({
+    contentId,
+    _id: { $ne: task._id },
+    taskType: { $in: predecessorTaskTypes },
+    status: { $ne: 'DONE' },
+  }).sort({ createdAt: 1 });
+
+  if (unapprovedPredecessor) {
+    const predStage = getTaskStage(unapprovedPredecessor.taskType);
+    throw new Error(
+      `ไม่อนุญาต: ขั้นตอน ${task.taskType} (Stage ${currentStage}) ถูกล็อค ต้องรอให้ขั้นตอนก่อนหน้า (${unapprovedPredecessor.taskType} - Stage ${predStage}) ได้รับการอนุมัติ (DONE) จากผู้จัดการก่อน`
+    );
+  }
+
+  return true;
+};
+
 module.exports = {
   validateContentTransition,
   validateTaskTransition,
+  validateStageProgression,
+  isPositionAllowedForTask,
+  getTaskStage,
+  POSITION_TASK_MAP,
+  STAGE_ORDER,
   CONTENT_TRANSITIONS,
   TASK_TRANSITIONS,
 };

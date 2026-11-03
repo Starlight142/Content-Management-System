@@ -1,36 +1,36 @@
 [
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531af"
+      "$oid": "6ae9c9965acca0c43752e44e"
     },
     "username": "somchai_admin",
     "email": "admin@studio.com",
-    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "passwordHash": "$2b$10$nQ6STQ2c3qoI25yM2up/peKIEREbQ8Vj9DLx3vKRcV59H0Vqp13ea",
     "firstName": "สมชาย",
     "lastName": "ดูแลระบบ",
     "position": "Other",
     "role": "ADMIN",
     "status": "ACTIVE",
     "workingStatus": "WORKING",
-    "isOnline": true,
+    "isOnline": false,
     "lastActiveAt": {
-      "$date": "2026-10-17T15:43:01.374Z"
+      "$date": "2026-11-03T11:46:30.558Z"
     },
     "createdAt": {
-      "$date": "2026-10-17T15:41:18.816Z"
+      "$date": "2026-11-03T11:46:30.560Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T15:43:01.374Z"
+      "$date": "2026-11-03T12:09:43.488Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531b0"
+      "$oid": "6ae9c9965acca0c43752e44f"
     },
     "username": "somsri_manager",
     "email": "manager@studio.com",
-    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "passwordHash": "$2b$10$nQ6STQ2c3qoI25yM2up/peKIEREbQ8Vj9DLx3vKRcV59H0Vqp13ea",
     "firstName": "สมศรี",
     "lastName": "จัดการทีม",
     "position": "Production Manager",
@@ -39,26 +39,26 @@
     "workingStatus": "WORKING",
     "isOnline": false,
     "lastActiveAt": {
-      "$date": "2026-10-17T15:41:18.818Z"
+      "$date": "2026-11-03T11:46:30.563Z"
     },
     "createdAt": {
-      "$date": "2026-10-17T15:41:18.818Z"
+      "$date": "2026-11-03T11:46:30.563Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T15:41:18.829Z"
+      "$date": "2026-11-03T12:09:43.488Z"
     },
     "__v": 0,
     "teamId": {
-      "$oid": "6ad3971e5afbfde3ae8531b5"
+      "$oid": "6ae9c9965acca0c43752e454"
     }
   },
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531b1"
+      "$oid": "6ae9c9965acca0c43752e450"
     },
     "username": "john_creator",
     "email": "member@studio.com",
-    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "passwordHash": "$2b$10$nQ6STQ2c3qoI25yM2up/peKIEREbQ8Vj9DLx3vKRcV59H0Vqp13ea",
     "firstName": "John",
     "lastName": "Editor",
     "position": "Video Editor",
@@ -67,26 +67,26 @@
     "workingStatus": "WORKING",
     "isOnline": false,
     "lastActiveAt": {
-      "$date": "2026-10-17T15:41:18.819Z"
+      "$date": "2026-11-03T11:46:30.564Z"
     },
     "createdAt": {
-      "$date": "2026-10-17T15:41:18.819Z"
+      "$date": "2026-11-03T11:46:30.564Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T15:41:18.829Z"
+      "$date": "2026-11-03T12:09:43.488Z"
     },
     "__v": 0,
     "teamId": {
-      "$oid": "6ad3971e5afbfde3ae8531b5"
+      "$oid": "6ae9c9965acca0c43752e454"
     }
   },
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531b2"
+      "$oid": "6ae9c9965acca0c43752e451"
     },
     "username": "jane_script",
     "email": "jane@studio.com",
-    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "passwordHash": "$2b$10$nQ6STQ2c3qoI25yM2up/peKIEREbQ8Vj9DLx3vKRcV59H0Vqp13ea",
     "firstName": "Jane",
     "lastName": "Script",
     "position": "Script Writer",
@@ -95,26 +95,26 @@
     "workingStatus": "REVIEWING",
     "isOnline": false,
     "lastActiveAt": {
-      "$date": "2026-10-17T15:41:18.820Z"
+      "$date": "2026-11-03T11:46:30.565Z"
     },
     "createdAt": {
-      "$date": "2026-10-17T15:41:18.820Z"
+      "$date": "2026-11-03T11:46:30.565Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T15:41:18.829Z"
+      "$date": "2026-11-03T12:09:43.488Z"
     },
     "__v": 0,
     "teamId": {
-      "$oid": "6ad3971e5afbfde3ae8531b5"
+      "$oid": "6ae9c9965acca0c43752e454"
     }
   },
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531b3"
+      "$oid": "6ae9c9965acca0c43752e452"
     },
     "username": "mike_graphic",
     "email": "mike@studio.com",
-    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "passwordHash": "$2b$10$nQ6STQ2c3qoI25yM2up/peKIEREbQ8Vj9DLx3vKRcV59H0Vqp13ea",
     "firstName": "Mike",
     "lastName": "Graphic",
     "position": "Graphic Designer",
@@ -123,26 +123,26 @@
     "workingStatus": "WORKING",
     "isOnline": false,
     "lastActiveAt": {
-      "$date": "2026-10-17T15:41:18.821Z"
+      "$date": "2026-11-03T11:46:30.565Z"
     },
     "createdAt": {
-      "$date": "2026-10-17T15:41:18.821Z"
+      "$date": "2026-11-03T11:46:30.565Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T15:41:18.829Z"
+      "$date": "2026-11-03T12:09:43.488Z"
     },
     "__v": 0,
     "teamId": {
-      "$oid": "6ad3971e5afbfde3ae8531b5"
+      "$oid": "6ae9c9965acca0c43752e454"
     }
   },
   {
     "_id": {
-      "$oid": "6ad3971e5afbfde3ae8531b4"
+      "$oid": "6ae9c9965acca0c43752e453"
     },
     "username": "outsider_user",
     "email": "outsider@studio.com",
-    "passwordHash": "$2b$10$bXM3DPXd2dNBEePgFJAcV.2M/aHDyffiT.o78GRgmM9qGxt1lufTm",
+    "passwordHash": "$2b$10$nQ6STQ2c3qoI25yM2up/peKIEREbQ8Vj9DLx3vKRcV59H0Vqp13ea",
     "firstName": "Bob",
     "lastName": "Outsider",
     "position": "Content Creator",
@@ -151,17 +151,17 @@
     "workingStatus": "IDLE",
     "isOnline": false,
     "lastActiveAt": {
-      "$date": "2026-10-17T15:41:18.822Z"
+      "$date": "2026-11-03T11:46:30.566Z"
     },
     "createdAt": {
-      "$date": "2026-10-17T15:41:18.822Z"
+      "$date": "2026-11-03T11:46:30.566Z"
     },
     "updatedAt": {
-      "$date": "2026-10-17T15:41:18.835Z"
+      "$date": "2026-11-03T12:09:43.488Z"
     },
     "__v": 0,
     "teamId": {
-      "$oid": "6ad3971e5afbfde3ae8531b6"
+      "$oid": "6ae9c9965acca0c43752e455"
     }
   }
 ]
