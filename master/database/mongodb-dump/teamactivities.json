@@ -76,5 +76,18 @@
     "createdAt": "2026-11-03T09:26:30.602Z",
     "updatedAt": "2026-11-03T09:26:30.602Z",
     "__v": 0
+  },
+  {
+    "_id": "6ae9e0fe03cc8e29c2618443",
+    "teamId": "6ae9c9965acca0c43752e454",
+    "actor": "6ae9c9965acca0c43752e44f",
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": "6ae9c9965acca0c43752e44f",
+    "entityModel": "User",
+    "createdAt": "2026-11-03T13:26:22.648Z",
+    "updatedAt": "2026-11-03T13:26:22.648Z",
+    "__v": 0
   }
 ]
