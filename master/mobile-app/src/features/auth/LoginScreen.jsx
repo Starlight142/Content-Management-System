@@ -17,12 +17,11 @@ import { useTheme } from '../../theme/ThemeContext';
 import ServerConfigModal from '../../components/ServerConfigModal';
 
 const POSITIONS = [
-  { value: 'Video Editor', label: 'ตัดต่อวิดีโอ (Video Editor)' },
-  { value: 'Graphic Designer', label: 'กราฟิกดีไซน์ (Graphic Designer)' },
-  { value: 'Script Writer', label: 'เขียนบทสคริปต์ (Script Writer)' },
-  { value: 'Content Creator', label: 'ครีเอเตอร์ (Content Creator)' },
   { value: 'Production Manager', label: 'ผู้จัดการโปรดักชัน (Manager)' },
-  { value: 'Other', label: 'ทั่วไป / อื่นๆ (Other)' },
+  { value: 'Video Editor', label: 'ตัดต่อวิดีโอ (Video Editor)' },
+  { value: 'Script Writer', label: 'เขียนบทสคริปต์ (Script Writer)' },
+  { value: 'Graphic Designer', label: 'กราฟิกดีไซน์ (Graphic Designer)' },
+  { value: 'Content Creator', label: 'ครีเอเตอร์ (Content Creator)' },
 ];
 
 export default function LoginScreen({ onLoginSuccess }) {
@@ -39,7 +38,7 @@ export default function LoginScreen({ onLoginSuccess }) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [teamCode, setTeamCode] = useState('');
-  const [selectedPosition, setSelectedPosition] = useState('Video Editor');
+  const [selectedPosition, setSelectedPosition] = useState('Content Creator');
   const [selectedRole, setSelectedRole] = useState('MEMBER');
   const [loading, setLoading] = useState(false);
 
@@ -68,7 +67,7 @@ export default function LoginScreen({ onLoginSuccess }) {
           ? `${res.user.firstName} ${res.user.lastName || ''}`.trim()
           : (res.user?.role === 'MANAGER' ? 'สมศรี (Manager)' : 'จอห์น (Member)'),
         role: res.user?.role || selectedRole,
-        position: res.user?.position || 'Video Editor',
+        position: res.user?.position || 'Content Creator',
         email: email.trim(),
         teamId: res.user?.teamId,
         teamName: res.user?.teamName,
@@ -91,7 +90,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                   id: selectedRole === 'MANAGER' ? 101 : 202,
                   name: selectedRole === 'MANAGER' ? 'Somsri (Manager)' : 'John (Creator/Member)',
                   role: selectedRole,
-                  position: 'Video Editor',
+                  position: 'Content Creator',
                   email: email.trim(),
                 });
               },

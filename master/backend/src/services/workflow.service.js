@@ -86,19 +86,18 @@ const TASK_TRANSITIONS = {
   },
 };
 
-// Permitted Task Types by Member Position
+// Permitted Task Types by Member Position (Strict 5 Studio Positions)
 const POSITION_TASK_MAP = {
-  'Script Writer': ['Scripting'],
+  'Production Manager': ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'],
   'Video Editor': ['Editing', 'Filming', 'Sound Design'],
+  'Script Writer': ['Scripting'],
   'Graphic Designer': ['Graphic Design'],
   'Content Creator': ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'],
-  'Production Manager': ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'],
-  'Other': ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'],
 };
 
 const isPositionAllowedForTask = (position, taskType) => {
   if (!position) return true;
-  const allowed = POSITION_TASK_MAP[position] || ['Other'];
+  const allowed = POSITION_TASK_MAP[position] || [];
   return allowed.includes(taskType);
 };
 

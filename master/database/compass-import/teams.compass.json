@@ -1,117 +1,99 @@
 [
   {
     "_id": {
-      "$oid": "6aea12d29ed6fa6a275efd42"
+      "$oid": "6aead88c2b1d3faf565185a0"
     },
     "name": "Content Team A",
     "code": "TEAM-A",
     "joinCode": "TEAM01",
     "leader": {
-      "$oid": "6aea12d29ed6fa6a275efd3d"
+      "$oid": "6aead88c2b1d3faf5651859b"
     },
     "status": "ACTIVE",
     "description": "ทีมผลิต Content หลักประจำปี 2026 สำหรับ TikTok & YouTube",
     "members": [
       {
         "user": {
-          "$oid": "6aea12d29ed6fa6a275efd3d"
+          "$oid": "6aead88c2b1d3faf5651859b"
         },
         "roleInTeam": "LEAD",
         "joinedAt": {
-          "$date": "2026-11-03T16:58:58.260Z"
+          "$date": "2026-11-04T07:02:36.882Z"
         }
       },
       {
         "user": {
-          "$oid": "6aea12d29ed6fa6a275efd3e"
+          "$oid": "6aead88c2b1d3faf5651859c"
         },
         "roleInTeam": "EDITOR",
         "joinedAt": {
-          "$date": "2026-11-03T16:58:58.260Z"
+          "$date": "2026-11-04T07:02:36.882Z"
         }
       },
       {
         "user": {
-          "$oid": "6aea12d29ed6fa6a275efd3f"
+          "$oid": "6aead88c2b1d3faf5651859d"
         },
         "roleInTeam": "CREATOR",
         "joinedAt": {
-          "$date": "2026-11-03T16:58:58.260Z"
+          "$date": "2026-11-04T07:02:36.883Z"
         }
       },
       {
         "user": {
-          "$oid": "6aea12d29ed6fa6a275efd40"
+          "$oid": "6aead88c2b1d3faf5651859e"
         },
         "roleInTeam": "DESIGNER",
         "joinedAt": {
-          "$date": "2026-11-03T16:58:58.260Z"
-        }
-      },
-      {
-        "user": {
-          "$oid": "6aea12fa068e7b5d75831ab0"
-        },
-        "roleInTeam": "CREATOR",
-        "joinedAt": {
-          "$date": "2026-11-03T16:59:38.178Z"
-        }
-      },
-      {
-        "user": {
-          "$oid": "6aea1323068e7b5d75831ae5"
-        },
-        "roleInTeam": "CREATOR",
-        "joinedAt": {
-          "$date": "2026-11-03T17:00:19.125Z"
+          "$date": "2026-11-04T07:02:36.883Z"
         }
       }
     ],
     "createdAt": {
-      "$date": "2026-11-03T16:58:58.261Z"
+      "$date": "2026-11-04T07:02:36.884Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T17:00:19.125Z"
+      "$date": "2026-11-04T07:02:36.884Z"
     },
-    "__v": 2
+    "__v": 0
   },
   {
     "_id": {
-      "$oid": "6aea12d29ed6fa6a275efd43"
+      "$oid": "6aead88c2b1d3faf565185a1"
     },
     "name": "Content Team B (Beta Studio)",
     "code": "TEAM-B",
     "joinCode": "TEAM02",
     "leader": {
-      "$oid": "6aea12d29ed6fa6a275efd3c"
+      "$oid": "6aead88c2b1d3faf5651859a"
     },
     "status": "ACTIVE",
     "description": "ทีมสำรองสำหรับทดสอบการกั้นสิทธิ์ความปลอดภัยข้ามทีม",
     "members": [
       {
         "user": {
-          "$oid": "6aea12d29ed6fa6a275efd3c"
+          "$oid": "6aead88c2b1d3faf5651859a"
         },
         "roleInTeam": "LEAD",
         "joinedAt": {
-          "$date": "2026-11-03T16:58:58.263Z"
+          "$date": "2026-11-04T07:02:36.885Z"
         }
       },
       {
         "user": {
-          "$oid": "6aea12d29ed6fa6a275efd41"
+          "$oid": "6aead88c2b1d3faf5651859f"
         },
         "roleInTeam": "MEMBER",
         "joinedAt": {
-          "$date": "2026-11-03T16:58:58.263Z"
+          "$date": "2026-11-04T07:02:36.886Z"
         }
       }
     ],
     "createdAt": {
-      "$date": "2026-11-03T16:58:58.263Z"
+      "$date": "2026-11-04T07:02:36.886Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T16:58:58.263Z"
+      "$date": "2026-11-04T07:02:36.886Z"
     },
     "__v": 0
   }

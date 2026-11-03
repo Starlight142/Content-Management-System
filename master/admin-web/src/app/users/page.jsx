@@ -62,7 +62,7 @@ export default function UsersPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('MEMBER');
-  const [position, setPosition] = useState('Video Editor');
+  const [position, setPosition] = useState('Production Manager');
   const [submitting, setSubmitting] = useState(false);
 
   // Modals for Teams
@@ -254,7 +254,7 @@ export default function UsersPage() {
 
       setName('');
       setEmail('');
-      setPosition('Video Editor');
+      setPosition('Production Manager');
       setIsModalOpen(false);
     } catch (err) {
       alert(`ไม่สามารถเพิ่มผู้ใช้ได้: ${err.message}`);
@@ -630,12 +630,11 @@ export default function UsersPage() {
                             className="text-xs font-semibold bg-slate-50 hover:bg-white text-slate-700 border border-slate-200 rounded-lg px-2.5 py-1.5 outline-hidden cursor-pointer transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                             title="คลิกเพื่อเลือกกำหนดตำแหน่งงาน"
                           >
-                            <option value="Video Editor">Video Editor</option>
-                            <option value="Graphic Designer">Graphic Designer</option>
-                            <option value="Script Writer">Script Writer</option>
-                            <option value="Content Creator">Content Creator</option>
                             <option value="Production Manager">Production Manager</option>
-                            <option value="Other">Other</option>
+                            <option value="Video Editor">Video Editor</option>
+                            <option value="Script Writer">Script Writer</option>
+                            <option value="Graphic Designer">Graphic Designer</option>
+                            <option value="Content Creator">Content Creator</option>
                           </select>
                         </td>
                         <td className="py-4 px-5">
@@ -862,12 +861,11 @@ export default function UsersPage() {
                   onChange={(e) => setPosition(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500"
                 >
-                  <option value="Video Editor">Video Editor (ตัดต่อวิดีโอ)</option>
-                  <option value="Graphic Designer">Graphic Designer (กราฟิกดีไซน์)</option>
-                  <option value="Script Writer">Script Writer (เขียนบทสคริปต์)</option>
-                  <option value="Content Creator">Content Creator (คอนเทนต์ครีเอเตอร์)</option>
                   <option value="Production Manager">Production Manager (ผู้จัดการฝ่ายผลิต)</option>
-                  <option value="Other">Other (ทั่วไป / อื่นๆ)</option>
+                  <option value="Video Editor">Video Editor (ตัดต่อวิดีโอ)</option>
+                  <option value="Script Writer">Script Writer (เขียนบทสคริปต์)</option>
+                  <option value="Graphic Designer">Graphic Designer (กราฟิกดีไซน์)</option>
+                  <option value="Content Creator">Content Creator (คอนเทนต์ครีเอเตอร์)</option>
                 </select>
               </div>
               <div>

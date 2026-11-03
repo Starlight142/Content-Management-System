@@ -25,7 +25,6 @@ const INITIAL_TASK_TYPES = [
   { id: 3, name: 'Editing', description: 'ตัดต่อและใส่เอฟเฟกต์ (Post-Production)', defaultDuration: '3 Days' },
   { id: 4, name: 'Graphic Design', description: 'ทำภาพปก (Thumbnail) และกราฟิกประกอบ', defaultDuration: '1 Day' },
   { id: 5, name: 'Sound Design', description: 'ออกแบบเสียงและดนตรีประกอบ (Sound & Mixing)', defaultDuration: '1 Day' },
-  { id: 6, name: 'SEO & Publishing', description: 'จัดทำ Metadata, แฮชแท็ก และตั้งเวลาโพสต์', defaultDuration: '1 Day' },
 ];
 
 const CORE_POSITIONS = [

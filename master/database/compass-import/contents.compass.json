@@ -1,7 +1,7 @@
 [
   {
     "_id": {
-      "$oid": "6aea12d29ed6fa6a275efd47"
+      "$oid": "6aead88c2b1d3faf565185a5"
     },
     "title": "AI Tutorial EP.01",
     "description": "เจาะลึกการใช้ AI ช่วย Generate Prompt และสร้าง Storyboard ฉบับสมบูรณ์",
@@ -9,17 +9,17 @@
     "status": "IN_PROGRESS",
     "category": "Education",
     "createdBy": {
-      "$oid": "6aea12d29ed6fa6a275efd3e"
+      "$oid": "6aead88c2b1d3faf5651859c"
     },
     "teamId": {
-      "$oid": "6aea12d29ed6fa6a275efd42"
+      "$oid": "6aead88c2b1d3faf565185a0"
     },
     "progress": 70,
     "dueDate": {
-      "$date": "2026-11-06T16:58:58.242Z"
+      "$date": "2026-11-07T07:02:36.866Z"
     },
     "ideaId": {
-      "$oid": "6aea12d29ed6fa6a275efd44"
+      "$oid": "6aead88c2b1d3faf565185a2"
     },
     "metrics": [
       {
@@ -32,7 +32,7 @@
         "engagementRate": 17.5,
         "followersGained": 0,
         "collectedAt": {
-          "$date": "2026-11-03T16:58:58.301Z"
+          "$date": "2026-11-04T07:02:36.895Z"
         }
       }
     ],
@@ -40,16 +40,16 @@
     "versions": [],
     "reviewHistory": [],
     "createdAt": {
-      "$date": "2026-11-03T16:58:58.302Z"
+      "$date": "2026-11-04T07:02:36.895Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T16:58:58.302Z"
+      "$date": "2026-11-04T07:02:36.895Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6aea12d29ed6fa6a275efd48"
+      "$oid": "6aead88c2b1d3faf565185a6"
     },
     "title": "Product Review 8K Camera",
     "description": "รีวิวอุปกรณ์สตูดิโอ 8K ไมโครโฟนและไฟสตูดิโอแบบพกพา",
@@ -57,14 +57,14 @@
     "status": "REVIEW",
     "category": "Tech Review",
     "createdBy": {
-      "$oid": "6aea12d29ed6fa6a275efd3f"
+      "$oid": "6aead88c2b1d3faf5651859d"
     },
     "teamId": {
-      "$oid": "6aea12d29ed6fa6a275efd42"
+      "$oid": "6aead88c2b1d3faf565185a0"
     },
     "progress": 85,
     "dueDate": {
-      "$date": "2026-11-04T16:58:58.242Z"
+      "$date": "2026-11-05T07:02:36.866Z"
     },
     "metrics": [
       {
@@ -77,7 +77,7 @@
         "engagementRate": 14.2,
         "followersGained": 0,
         "collectedAt": {
-          "$date": "2026-11-03T16:58:58.303Z"
+          "$date": "2026-11-04T07:02:36.896Z"
         }
       }
     ],
@@ -85,16 +85,16 @@
     "versions": [],
     "reviewHistory": [],
     "createdAt": {
-      "$date": "2026-11-03T16:58:58.304Z"
+      "$date": "2026-11-04T07:02:36.897Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T16:58:58.304Z"
+      "$date": "2026-11-04T07:02:36.897Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6aea12d29ed6fa6a275efd49"
+      "$oid": "6aead88c2b1d3faf565185a7"
     },
     "title": "Thumbnail Campaign",
     "description": "ชุดภาพปกและแคมเปญโปรโมตสื่อประจำสัปดาห์บน Instagram",
@@ -102,30 +102,30 @@
     "status": "IN_PROGRESS",
     "category": "Design",
     "createdBy": {
-      "$oid": "6aea12d29ed6fa6a275efd40"
+      "$oid": "6aead88c2b1d3faf5651859e"
     },
     "teamId": {
-      "$oid": "6aea12d29ed6fa6a275efd42"
+      "$oid": "6aead88c2b1d3faf565185a0"
     },
     "progress": 30,
     "dueDate": {
-      "$date": "2026-11-08T16:58:58.242Z"
+      "$date": "2026-11-09T07:02:36.866Z"
     },
     "files": [],
     "versions": [],
     "reviewHistory": [],
     "metrics": [],
     "createdAt": {
-      "$date": "2026-11-03T16:58:58.305Z"
+      "$date": "2026-11-04T07:02:36.898Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T16:58:58.305Z"
+      "$date": "2026-11-04T07:02:36.898Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6aea12d29ed6fa6a275efd4a"
+      "$oid": "6aead88c2b1d3faf565185a8"
     },
     "title": "Tech News Daily Recap",
     "description": "คลิปสรุปข่าว AI ประจำวันใน 60 วินาที เน้นความกระชับและเสียงพากย์คมชัด",
@@ -133,24 +133,24 @@
     "status": "REVISION",
     "category": "News & Tech",
     "createdBy": {
-      "$oid": "6aea12d29ed6fa6a275efd3e"
+      "$oid": "6aead88c2b1d3faf5651859c"
     },
     "teamId": {
-      "$oid": "6aea12d29ed6fa6a275efd42"
+      "$oid": "6aead88c2b1d3faf565185a0"
     },
     "progress": 60,
     "dueDate": {
-      "$date": "2026-11-04T16:58:58.242Z"
+      "$date": "2026-11-05T07:02:36.866Z"
     },
     "reviewHistory": [
       {
         "reviewerId": {
-          "$oid": "6aea12d29ed6fa6a275efd3d"
+          "$oid": "6aead88c2b1d3faf5651859b"
         },
         "decision": "REVISION",
         "notes": "นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ",
         "reviewedAt": {
-          "$date": "2026-11-03T16:18:58.306Z"
+          "$date": "2026-11-04T06:22:36.899Z"
         }
       }
     ],
@@ -158,16 +158,16 @@
     "versions": [],
     "metrics": [],
     "createdAt": {
-      "$date": "2026-11-03T16:58:58.306Z"
+      "$date": "2026-11-04T07:02:36.900Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T16:58:58.306Z"
+      "$date": "2026-11-04T07:02:36.900Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6aea12d29ed6fa6a275efd4b"
+      "$oid": "6aead88c2b1d3faf565185a9"
     },
     "title": "Desk Setup Minimalist Guide",
     "description": "วิดีโอแนะนำอุปกรณ์จัดโต๊ะทำงานสไตล์ Minimalist แสงธรรมชาติ",
@@ -175,24 +175,24 @@
     "status": "APPROVED",
     "category": "Lifestyle",
     "createdBy": {
-      "$oid": "6aea12d29ed6fa6a275efd40"
+      "$oid": "6aead88c2b1d3faf5651859e"
     },
     "teamId": {
-      "$oid": "6aea12d29ed6fa6a275efd42"
+      "$oid": "6aead88c2b1d3faf565185a0"
     },
     "progress": 100,
     "dueDate": {
-      "$date": "2026-11-01T16:58:58.242Z"
+      "$date": "2026-11-02T07:02:36.866Z"
     },
     "reviewHistory": [
       {
         "reviewerId": {
-          "$oid": "6aea12d29ed6fa6a275efd3d"
+          "$oid": "6aead88c2b1d3faf5651859b"
         },
         "decision": "APPROVED",
         "notes": "งานตัดต่อและเกรดสีผ่านเกณฑ์เรียบร้อย พร้อมสำหรับขั้นตอนการเผยแพร่",
         "reviewedAt": {
-          "$date": "2026-11-03T14:58:58.307Z"
+          "$date": "2026-11-04T05:02:36.901Z"
         }
       }
     ],
@@ -200,16 +200,16 @@
     "versions": [],
     "metrics": [],
     "createdAt": {
-      "$date": "2026-11-03T16:58:58.308Z"
+      "$date": "2026-11-04T07:02:36.901Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T16:58:58.308Z"
+      "$date": "2026-11-04T07:02:36.901Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6aea12d29ed6fa6a275efd4c"
+      "$oid": "6aead88c2b1d3faf565185aa"
     },
     "title": "AI Voice Cloning Behind-The-Scenes",
     "description": "เบื้องหลังการพากย์เสียงจำลองสำหรับวิดีโอสตูดิโอ",
@@ -217,24 +217,24 @@
     "status": "PLANNING",
     "category": "Technology",
     "createdBy": {
-      "$oid": "6aea12d29ed6fa6a275efd3f"
+      "$oid": "6aead88c2b1d3faf5651859d"
     },
     "teamId": {
-      "$oid": "6aea12d29ed6fa6a275efd42"
+      "$oid": "6aead88c2b1d3faf565185a0"
     },
     "progress": 10,
     "dueDate": {
-      "$date": "2026-11-10T16:58:58.242Z"
+      "$date": "2026-11-11T07:02:36.866Z"
     },
     "files": [],
     "versions": [],
     "reviewHistory": [],
     "metrics": [],
     "createdAt": {
-      "$date": "2026-11-03T16:58:58.309Z"
+      "$date": "2026-11-04T07:02:36.903Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T16:58:58.309Z"
+      "$date": "2026-11-04T07:02:36.903Z"
     },
     "__v": 0
   }

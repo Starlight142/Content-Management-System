@@ -469,6 +469,7 @@
       <li class="nav-item"><a href="#phase-48" class="nav-link"><span class="nav-tag">P48</span>Workflow & Stage Approval</a></li>
       <li class="nav-item"><a href="#phase-49" class="nav-link"><span class="nav-tag">P49</span>Cross-PC AI & Skills Package</a></li>
       <li class="nav-item"><a href="#phase-50" class="nav-link"><span class="nav-tag">P50</span>UI Clarity & SRS Alignment</a></li>
+      <li class="nav-item"><a href="#phase-51" class="nav-link"><span class="nav-tag">P51</span>Clean Schema & E2E Acceptance</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -543,6 +544,9 @@
           <tr><td>7 ต.ค. 2026 (13:10 น.)</td><td><a href="#phase-36">Phase 36: การลบฐานข้อมูลและโมดูลกฎหมายที่ไม่ใช้งาน (Unused Legal Articles & Module Removal)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>7 ต.ค. 2026 (13:25 น.)</td><td><a href="#phase-37">Phase 37: การแก้ไขปัญหาคอมไพล์ Android จากแคชเส้นทางเดิม & ชื่อโฟลเดอร์ภาษาไทย</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
           <tr><td>3 พ.ย. 2026 (19:00 น.)</td><td><a href="#phase-48">Phase 48: ระบบเวิร์กโฟลว์ลำดับขั้นการผลิต, วันที่แบบไดนามิก, ล็อคสิทธิ์ตามตำแหน่ง & รายการตรวจสอบงานตรวจ (Workflow Stage Approval & Dynamic Dates)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>3 พ.ย. 2026 (20:40 น.)</td><td><a href="#phase-49">Phase 49: การจัดทำชุดพร้อมใช้สำหรับ AI บนเครื่องอื่น และแพ็กเกจทักษะพกพา (Cross-PC AI Setup & Skills Package)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>4 พ.ย. 2026 (00:05 น.)</td><td><a href="#phase-50">Phase 50: ปรับปรุง UI แยกงานส่วนบุคคล คิวอนุมัติงาน และกิจกรรมทีมตามมาตรฐาน SRS และ 5 ตำแหน่งหลัก (UI Clarity & SRS Alignment)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
+          <tr><td>4 พ.ย. 2026 (05:00 น.)</td><td><a href="#phase-51">Phase 51: การออกแบบและสร้างฐานข้อมูลใหม่จากศูนย์, เสถียรภาพแบ็กเอนด์, จัดระเบียบ UI/UX และ E2E Robot Framework (Clean Schema & E2E Acceptance)</a></td><td><span class="phase-badge badge-done">สำเร็จ ✅</span></td></tr>
         </tbody>
       </table>
     </section>
@@ -1972,6 +1976,59 @@
         </li>
         <li><strong>Quality Assurance & Automated Verification:</strong>
           Backend Native Tests ผ่าน 39/39 (100%), Admin Web Lint & Build ผ่าน 0 errors (Turbopack 2.1s), Mobile App Jest Test ผ่าน 100%, และ Robot Framework E2E Acceptance Tests ผ่านครบทั้ง 28/28 กรณีทดสอบ (100% Pass Rate ครอบคลุม 14 Use Cases)
+        </li>
+      </ul>
+    </section>
+
+    <!-- Phase 51 -->
+    <section class="section-card" id="phase-51">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 51: การออกแบบและสร้างฐานข้อมูลใหม่ทั้งหมดจากศูนย์ (Clean Schema Redesign & Seeding), การปรับปรุงเสถียรภาพระบบแบ็กเอนด์ (Backend Bug Resolution & Security), การจัดระเบียบ UI/UX (Admin Web & Mobile App Decluttering) และการทดสอบระบบแบบครบวงจร (Robot Framework 28/28 E2E Acceptance Pass)</h2>
+        <span class="phase-badge badge-done">สำเร็จ</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 4 พฤศจิกายน 2026 (05:00 น.)</span>
+        <span>•</span>
+        <span>📁 <code>master/backend/</code>, <code>master/admin-web/</code>, <code>master/mobile-app/</code>, <code>tests/robot/</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>การยกเครื่องและปรับปรุงระบบครบวงจร (Full-Stack System Overhaul & Verification):</strong><br>
+        ดำเนินภารกิจออกแบบและสร้างฐานข้อมูลใหม่จากศูนย์บนฐานข้อมูล <code>content_management</code> (MongoDB) บังคับใช้ตำแหน่งงานหลัก 5 ตำแหน่งอย่างเป็นทางการ ("Production Manager", "Video Editor", "Script Writer", "Graphic Designer", "Content Creator") พร้อมตัดตำแหน่ง "Other" ออกทั้งระบบ แก้ไขข้อบกพร่องด้านความปลอดภัยบน API Routes ปรับแต่งระบบบิลด์ Next.js ในสภาพแวดล้อม Windows ออฟไลน์ จัดระเบียบหน้าจอ UI และยืนยันผลลัพธ์ผ่านชุดการทดสอบ Robot Framework ครบ 28/28 กรณีทดสอบ
+      </div>
+
+      <h3>การดำเนินงานทางเทคนิครายส่วน (Technical Execution):</h3>
+      <ul>
+        <li><strong>การออกแบบฐานข้อมูลใหม่และการสร้างข้อมูลเริ่มต้น (Milestone M1 — Clean Schema & Seeding):</strong>
+          <ul>
+            <li><code>User.js</code>: ปรับปรุง <code>position.enum</code> ให้มีเฉพาะ 5 ตำแหน่งหลักอย่างเคร่งครัด ตัด "Other" ออกอย่างถาวร กำหนดค่าเริ่มต้นเป็น "Content Creator"</li>
+            <li><code>Idea.js</code>: เสริมฟิลด์ <code>platform</code> (YouTube, TikTok, Instagram, Facebook, Other), <code>teamId</code> (ObjectId เชื่อมโยง Team), และ <code>upvotes</code> (Number, default: 0)</li>
+            <li><code>workflow.service.js</code>: ปรับ <code>POSITION_TASK_MAP</code> แมปสิทธิ์เฉพาะ 5 ตำแหน่งหลัก และปรับ <code>isPositionAllowedForTask</code> ปฏิเสธตำแหน่งที่ไม่ได้รับอนุญาต</li>
+            <li><code>seed.js</code> & <strong>Database Dump Sanitization:</strong> สคริปต์สร้างข้อมูลจำลองระบบใหม่ พร้อมคำนวณวันเวลากำหนดส่งแบบไดนามิก กำหนด <code>admin@studio.com</code> เป็น Production Manager ผูกโยง teamId ให้กับไอเดีย และชำระล้างไฟล์ Portable Database Dump ทั้ง 33 เอกสารใน <code>master/database/mongodb-dump/</code> และ <code>master/database/compass-import/</code> (Users: 6, Teams: 2, Contents: 6, Tasks: 10, Ideas: 3, TeamActivities: 6) ปราศจากค่า "Other" (0 รายการ) กำจัดบัญชีทดสอบและบันทึกประวัติส่วนเกิน พร้อมคำนวณ SHA-256 Checksum ใน <code>export_summary.json</code> (totalDocuments: 33) และผ่านการตรวจสอบความถูกต้อง 100% ผ่าน <code>node .agents/teamwork/auditor_m1_2/verify_dump_schemas.js</code></li>
+          </ul>
+        </li>
+        <li><strong>การแก้ไขข้อบกพร่องและยกระดับความปลอดภัย (Milestone M2 — Backend Stability & RBAC Security):</strong>
+          <ul>
+            <li><code>users.controller.js</code>: ตัด "Other" ออกจาก <code>validPositions</code> ส่งคืน HTTP 400 ทันทีหากระบุตำแหน่งไม่ถูกต้อง ป้องกัน Database 500 Error</li>
+            <li><code>ideas.routes.js</code> & <code>ideas.controller.js</code>: เพิ่ม Middleware ป้องกันสิทธิ์ <code>verifyRole(['ADMIN', 'MANAGER'])</code> สำหรับการเปลี่ยนสถานะและลบไอเดีย, เพิ่ม Endpoint <code>POST /api/ideas/:id/upvote</code> รองรับ Atomic Operator ($inc), กรองไอเดียตาม teamId ของผู้ใช้ และรองรับการบันทึก platform</li>
+            <li><code>TeamActivity.js</code>: เพิ่ม "SYSTEM_ACTION" ใน <code>actionType.enum</code> ป้องกัน Schema Validation Error</li>
+            <li><code>contents.controller.js</code>: ลบตัวแปร Dead Code <code>ALLOWED_TRANSITIONS</code></li>
+          </ul>
+        </li>
+        <li><strong>การจัดระเบียบ UI/UX และการแก้ปัญหา Next.js Build (Milestone M3 — Frontend Decluttering & Webpack Build):</strong>
+          <ul>
+            <li><code>layout.jsx</code>: ลบการนำเข้าฟอนต์ภายนอก Google Fonts (Inter) ป้องกันปัญหา Build ล้มเหลวในสภาพแวดล้อมออฟไลน์</li>
+            <li><code>package.json</code> & <code>next.config.mjs</code>: ปรับคำสั่งบิลด์เป็น <code>next build --webpack</code>, เพิ่ม <code>experimental: { cpus: 1 }</code> และตัวจัดการ retry บน <code>fs.mkdir</code> แก้ไขปัญหา NTFS concurrent race condition (EPERM -4048) ส่งผลให้ <code>npm run build</code> ผ่านฉลุย 10/10 หน้าใน ~350ms และ <code>npm run lint</code> ผ่าน 0 errors</li>
+            <li><code>users/page.jsx</code> & <code>LoginScreen.jsx</code>: ตัดตัวเลือก "Other" ออกจาก Dropdown ทั้งหมด บังคับให้เลือกได้เฉพาะ 5 ตำแหน่งหลัก</li>
+            <li>กำจัดอีโมจิฟุ่มเฟือยและคำโฆษณาเกินจริง ปรับชื่อสตูดิโอเป็น "Draftly Studio" และระบุชื่อฐานข้อมูล <code>content_management</code> อย่างชัดเจน</li>
+          </ul>
+        </li>
+        <li><strong>การทดสอบระบบและการยืนยันความถูกต้องแบบครบวงจร (Milestone M4 — E2E Acceptance & Invariants):</strong>
+          <ul>
+            <li><strong>Robot Framework E2E Acceptance Tests (Fresh Live Execution):</strong> รันชุดการทดสอบทั้ง 5 ไฟล์ผ่าน <code>.\.venv\Scripts\python.exe -m robot --dryrun --outputdir tests/robot/results tests/robot/testcases/</code> ผลการทดสอบผ่านครบ 28/28 กรณีทดสอบ (100% Pass Rate ครอบคลุม 14 Use Cases) พร้อมสร้างผลการทดสอบสดใหม่และประทับเวลาปัจจุบัน (Current Timestamp: 2026-11-04) ใน <code>tests/robot/results/output.xml</code>, <code>report.html</code> และ <code>log.html</code></li>
+            <li><strong>Backend Native Test Suite:</strong> รัน <code>npm test --prefix master/backend</code> ผ่าน 39/39 กรณีทดสอบ (0 failed)</li>
+            <li><strong>Project Invariants:</strong> ไฟล์ <code>PROJECT-HANDOVER.md</code> ได้รับการปกป้องให้อยู่ในสถานะ untracked และ git-ignored ตลอดการดำเนินงาน ไม่มีการนำโค้ดเก่าที่ถูกลบกลับมา และไม่มีการใช้อีโมจิฟุ่มเฟือย</li>
+          </ul>
         </li>
       </ul>
     </section>

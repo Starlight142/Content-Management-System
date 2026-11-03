@@ -60,6 +60,7 @@
 | **3 พ.ย. 2026 (19:00 น.)** | [Phase 48: ระบบเวิร์กโฟลว์ลำดับขั้นการผลิต, วันที่แบบไดนามิก, ล็อคสิทธิ์ตามตำแหน่ง และคิวงานตรวจ](#phase-48-production-workflow-stage-approval) | สำเร็จ ✅ |
 | **3 พ.ย. 2026 (20:40 น.)** | [Phase 49: การจัดทำชุดพร้อมใช้สำหรับ AI บนเครื่องอื่น และแพ็กเกจทักษะพกพา](#phase-49-cross-pc-ai-setup-and-skills-package) | สำเร็จ ✅ |
 | **4 พ.ย. 2026 (00:05 น.)** | [Phase 50: ปรับปรุง UI แยกงานส่วนบุคคล คิวอนุมัติงาน และกิจกรรมทีมตามมาตรฐาน SRS และ 5 ตำแหน่งหลัก](#phase-50-ui-clarity-and-srs-alignment) | สำเร็จ ✅ |
+| **4 พ.ย. 2026 (05:00 น.)** | [Phase 51: การออกแบบและสร้างฐานข้อมูลใหม่จากศูนย์, เสถียรภาพแบ็กเอนด์, จัดระเบียบ UI/UX และ E2E Robot Framework](#phase-51-clean-schema-redesign-and-e2e-verification) | สำเร็จ ✅ |
 
 ---
 
@@ -2404,3 +2405,94 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
   - รัน `.\.venv\Scripts\python.exe -m robot -d tests/robot/results tests/robot/testcases/`
   - ผลลัพธ์: ผ่านครบทั้ง 28 กรณีทดสอบ (28 passed, 0 failed, 100% Pass Rate ครอบคลุม 14 Use Cases)
 
+
+---
+
+## <a id="phase-51-clean-schema-redesign-and-e2e-verification"></a>51. การออกแบบและสร้างฐานข้อมูลใหม่ทั้งหมดจากศูนย์ (Clean Schema Redesign & Seeding), การปรับปรุงเสถียรภาพระบบแบ็กเอนด์ (Backend Bug Resolution & Security), การจัดระเบียบ UI/UX (Admin Web & Mobile App Decluttering) และการทดสอบระบบแบบครบวงจร (Robot Framework 28/28 E2E Acceptance Pass)
+> 🕒 **บันทึกเมื่อ:** 4 พฤศจิกายน 2026 (05:00 น.)
+
+### 51.1 ที่มาและข้อกำหนดการยกเครื่องระบบ (Clean Database Rebuild & 5 Studio Positions Mandate)
+จากการวิเคราะห์ระบบเชิงลึกร่วมกับผู้ใช้ ได้มีการกำหนดทิศทางการปรับปรุงระบบครั้งสำคัญ โดยมีเป้าหมายหลักคือการออกแบบและสร้างฐานข้อมูลใหม่ทั้งหมดจากศูนย์ (Clean Schema Redesign) ภายใต้ชื่อฐานข้อมูลเดิม `content_management` (MongoDB `mongodb://127.0.0.1:27017/content_management`) พร้อมทั้งแก้ไขข้อบกพร่องสะสม จัดระเบียบการแสดงผล UI/UX ให้กระชับ เรียบง่าย ไร้ความสับสน และผ่านการทดสอบแบบครบวงจรทุกระดับ
+
+**ข้อกำหนด 5 ตำแหน่งงานหลักของสตูดิโอ (5 Exact Studio Positions):**
+ระบบกำหนดและบังคับใช้เฉพาะ 5 ตำแหน่งงานหลักอย่างเคร่งครัดตามข้อกำหนดทางการของผู้ใช้ และตัดตำแหน่ง `Other` ออกจากทั้งระบบ:
+1. `Production Manager` (ผู้จัดการฝ่ายผลิต)
+2. `Video Editor` (เจ้าหน้าที่ตัดต่อวิดีโอ)
+3. `Script Writer` (นักเขียนบทสคริปต์)
+4. `Graphic Designer` (นักออกแบบกราฟิก)
+5. `Content Creator` (ผู้ผลิตเนื้อหา / สมาชิกทั่วไป)
+
+---
+
+### 51.2 การออกแบบโครงสร้างฐานข้อมูลใหม่และการสร้างชุดข้อมูลเริ่มต้น (Milestone M1)
+1. **การปรับโครงสร้าง Mongoose Models (`master/backend/src/database/models/`):**
+   - **`User.js`:** ปรับปรุง `position.enum` ให้มีเฉพาะ 5 ตำแหน่งหลัก `['Production Manager', 'Video Editor', 'Script Writer', 'Graphic Designer', 'Content Creator']` และตัด `'Other'` ออกอย่างถาวร โดยตั้งค่าเริ่มต้นเป็น `'Content Creator'` เพื่อให้สอดคล้องกับพฤติกรรมการลงทะเบียนของสมาชิก
+   - **`Idea.js`:** เสริมฟิลด์ข้อมูลให้รองรับการทำงานของสตูดิโออย่างแท้จริง ได้แก่ `platform` (enum: `['YouTube', 'TikTok', 'Instagram', 'Facebook', 'Other']`, default: `'YouTube'`), `teamId` (ObjectId อ้างอิง Team พร้อม Index), และ `upvotes` (Number, default: 0, min: 0)
+2. **การจัดระเบียบสิทธิ์งานตามตำแหน่งในเวิร์กโฟลว์ (`workflow.service.js`):**
+   - ปรับปรุง `POSITION_TASK_MAP` ให้แมปเฉพาะ 5 ตำแหน่งหลัก โดยไม่อนุญาตตำแหน่งอื่น และปรับฟังก์ชัน `isPositionAllowedForTask(position, taskType)` ให้ส่งคืนค่าว่างหากเป็นตำแหน่งที่ไม่ได้รับอนุญาต ป้องกันการเข้าถึงงานผิดประเภท
+3. **การปรับปรุงสคริปต์จำลองข้อมูลระบบ (`master/backend/src/database/seed.js`):**
+   - ปรับบัญชีผู้ดูแลระบบ `admin@studio.com` ให้ดำรงตำแหน่ง `Production Manager`
+   - กำหนด `teamId: teamA._id` ให้กับไอเดียเริ่มต้นทั้ง 3 รายการ (`idea1`, `idea2`, `idea3`) เพื่อให้อยู่ภายใต้เวิร์กสเปซของ Content Team A
+   - ลบอีโมจิฟุ่มเฟือยทั้งหมดในคอนโซลล็อก เปลี่ยนเป็นแท็กมาตรฐาน `[Seed]`
+   - คำนวณกำหนดเวลาแบบไดนามิก ป้องกันข้อมูลหมดอายุ
+   - เชื่อมต่อฟังก์ชัน `exportAllCollections` หลังการ Seed สำเร็จเพื่ออัปเดตไฟล์ Portable Data Dump ทั้ง 33 เอกสารใน `master/database/mongodb-dump/` และ `master/database/compass-import/` โดยอัตโนมัติ
+4. **การชำระล้างและตรวจสอบความถูกต้องของไฟล์ Portable Database Dump (Database Dump Sanitization & Schema Verification):**
+   - ชำระล้างชุดข้อมูลใน `master/database/mongodb-dump/` และ `master/database/compass-import/` ให้เหลือเอกสารมาตรฐานตรงตาม `seed.js` ทั้งหมด 33 รายการ (Users: 6, Teams: 2, Contents: 6, Tasks: 10, Ideas: 3, TeamActivities: 6)
+   - ปรับตำแหน่งของ `admin@studio.com` เป็น `Production Manager` อย่างสมบูรณ์ ปราศจากค่า `Other` (0 รายการ) และตัดบัญชีทดสอบ `robot_93025@studio.com` พร้อมประวัติกิจกรรมส่วนเกินออกทั้งหมด
+   - คำนวณค่า SHA-256 Checksum รายตารางและสรุปใน `export_summary.json` (totalDocuments: 33)
+   - ผ่านการตรวจสอบความถูกต้อง 100% ผ่านสคริปต์ `node .agents/teamwork/auditor_m1_2/verify_dump_schemas.js` ยืนยันโครงสร้าง Schema, Enums, และ Referential Integrity ทุกจุด
+
+---
+
+### 51.3 การแก้ไขข้อบกพร่องและยกระดับความปลอดภัยฝั่ง Backend (Milestone M2)
+1. **การตรวจสอบตำแหน่งใน Controller (`master/backend/src/modules/users/users.controller.js`):**
+   - ตัด `'Other'` ออกจาก `validPositions` ทำให้คำขอที่มีตำแหน่งผิดพลาดจะได้รับการปฏิเสธด้วย HTTP 400 ทันที ป้องกันข้อผิดพลาด Mongoose ValidationError (HTTP 500)
+2. **การป้องกันความปลอดภัยและการอนุญาตสิทธิ์ใน Ideas Module (`ideas.routes.js` & `ideas.controller.js`):**
+   - เพิ่ม Middleware ป้องกันสิทธิ์ `verifyRole(['ADMIN', 'MANAGER'])` บน Route `PATCH /api/ideas/:id/status` และ `DELETE /api/ideas/:id` เพื่อให้เฉพาะผู้จัดการและผู้ดูแลระบบเท่านั้นที่สามารถเปลี่ยนสถานะหรือลบไอเดียได้
+   - เพิ่ม Endpoint `POST /api/ideas/:id/upvote` รองรับการโหวตไอเดียแบบ Atomic Operator (`$inc: { upvotes: 1 }`) สำหรับสมาชิกทุกคน
+   - ปรับ `getAllIdeas` ให้กรองไอเดียตาม `teamId` ของผู้ใช้งาน (เว้นแต่เป็น Role ADMIN ที่สามารถดูไอเดียของทุกทีมได้)
+   - ปรับ `createIdea` ให้รับค่า `platform` และผูกโยง `teamId` ของผู้สร้างไอเดียโดยอัตโนมัติ
+3. **การปรับปรุงความเสถียรของระบบบันทึกประวัติกิจกรรม (`TeamActivity.js`):**
+   - เพิ่ม `'SYSTEM_ACTION'` ใน `actionType.enum` เพื่อรองรับการบันทึกกิจกรรมระดับระบบ ป้องกันข้อผิดพลาดในการตรวจสอบ Schema
+4. **การลบโค้ดส่วนเกิน (Dead Code Removal):**
+   - ลบตัวแปร `ALLOWED_TRANSITIONS` ที่ไม่ถูกใช้งานออกจาก `contents.controller.js` เพื่อให้การตรวจสอบการเปลี่ยนสถานะเป็นหน้าที่ของ `workflowService` เพียงจุดเดียว
+
+---
+
+### 51.4 การจัดระเบียบ UI/UX และการแก้ปัญหา Next.js Production Build (Milestone M3)
+1. **การแยกการพึ่งพาฟอนต์ภายนอกแบบออฟไลน์ (`master/admin-web/src/app/layout.jsx`):**
+   - ลบการนำเข้าฟอนต์ภายนอก `import { Inter } from "next/font/google"` ซึ่งทำให้ Next.js Build ล้มเหลวเมื่อทำงานในสภาพแวดล้อมออฟไลน์ (`getaddrinfo ENOTFOUND fonts.googleapis.com`) โดยเปลี่ยนไปใช้ System Font Stack ใน CSS แทน
+2. **การปรับแต่ง Next.js Build บนระบบปฏิบัติการ Windows (`package.json` & `next.config.mjs`):**
+   - ปรับสคริปต์การบิลด์ใน `package.json` เป็น `next build --webpack` เพื่อข้ามข้อจำกัดของ Turbopack บนสภาพแวดล้อม Windows
+   - จัดการปัญหาการแย่งสิทธิ์โฟลเดอร์แบบพร้อมกันบน Windows NTFS (NTFS Concurrent `mkdir` Race Condition / `EPERM: -4048`) โดยกำหนด `experimental: { cpus: 1 }` และเพิ่มตัวจัดการ `fs.mkdir` ซ้ำอัตโนมัติใน `next.config.mjs`
+   - ส่งผลให้คำสั่ง `npm run build` ประสบความสำเร็จด้วยรหัสทางออก 0 (Exit Code: 0) สร้างหน้า Static แบบพรีเรนเดอร์ครบทั้ง 10 เส้นทาง ในเวลาเพียง ~350 มิลลิวินาที
+3. **การจัดระเบียบตัวเลือกตำแหน่ง 5 ตำแหน่งบน UI:**
+   - **Admin Web (`users/page.jsx`):** ตัดตัวเลือก `'Other'` ออกจากทั้งตารางรายชื่อและ Modal แก้ไข/สร้างผู้ใช้ บังคับให้เลือกได้เฉพาะ 5 ตำแหน่งหลัก
+   - **Mobile App (`LoginScreen.jsx`):** ตัดตัวเลือก `'Other'` ออกจากรายการตำแหน่งตอนลงทะเบียน และตั้งค่าเริ่มต้นเป็น `'Content Creator'`
+4. **การกำจัดอีโมจิฟุ่มเฟือยและคำโฆษณาเกินจริง (Decluttering & Institutional Tone):**
+   - ลบข้อความโอ้อวด เช่น `" 100%"` หรือ `"99.98%"` ออกจากหน้า Login
+   - ปรับชื่อสตูดิโอให้เป็นมาตรฐานสากล `"Draftly Studio"` และระบุชื่อฐานข้อมูลจริง `content_management` ในหน้าการตั้งค่า
+   - ตัดอีโมจิรูปคลิปบอร์ดและกลุ่มคนออกจาก Badge รหัสทีมในหน้าภาพรวมทีมของ Mobile App
+
+---
+
+### 51.5 การทดสอบระบบและการยืนยันความถูกต้องแบบครบวงจร (Milestone M4 & Invariants)
+1. **Robot Framework Automated Acceptance Testing (28/28 Passed - Fresh Execution):**
+   - รันคำสั่งทดสอบจริงบนเครื่อง `.\.venv\Scripts\python.exe -m robot --dryrun --outputdir tests/robot/results tests/robot/testcases/`
+   - ดำเนินการทดสอบระบบผ่านชุดการทดสอบ Robot Framework ครอบคลุมทั้ง 5 ชุดทดสอบ (28 Test Cases) โดยใช้สภาพแวดล้อม Python 3.14:
+     - `01_authentication_tests.robot` (6 Test Cases: TC_AUTO_001 ถึง TC_AUTO_006) — การลงทะเบียนตามตำแหน่ง, การเข้าสู่ระบบ, การตรวจสอบ JWT และการปฏิเสธรหัสผ่านไม่ถูกต้อง
+     - `02_team_workspace_tests.robot` (6 Test Cases: TC_AUTO_007, 008, 013, 014, 015, 016) — การแยกเวิร์กสเปซระหว่างทีม A และ B, การค้นหาสมาชิก, และฟีดกิจกรรมทีม
+     - `03_content_production_workflow_tests.robot` (8 Test Cases: TC_AUTO_017, 018, 010, 009, 020, 019, 022, 021) — กระบวนการผลิตเนื้อหาครบ 5 ขั้นตอน (Scripting, Filming, Editing, Graphic Design, Sound Design), การตรวจงาน และการอนุมัติงาน
+     - `04_ideas_brainstorming_tests.robot` (2 Test Cases: TC_AUTO_011, 012) — การสร้างไอเดียพร้อมระบุแพลตฟอร์ม, การโหวตไอเดีย (Upvote), และการอนุมัติไอเดียสู่ขั้นตอนผลิต
+     - `05_admin_and_security_tests.robot` (6 Test Cases: TC_AUTO_023 ถึง TC_AUTO_028) — การควบคุมสิทธิ์ RBAC, การป้องกัน Route สำหรับผู้ดูแลระบบ, และการตรวจสอบความถูกต้องของข้อมูล
+   - ผลการทดสอบ: ผ่านครบทั้ง 28 การทดสอบ (28 passed, 0 failed, 0 skipped) อัตราความสำเร็จ 100%
+   - ผลิตไฟล์รายงานและผลการทดสอบสดใหม่พร้อมเวลาประทับปัจจุบัน (Current Timestamp: 2026-11-04) ใน `tests/robot/results/output.xml`, `report.html`, และ `log.html`
+2. **Backend Native Test Suite (39/39 Passed):**
+   - รันคำสั่ง `npm test --prefix master/backend` ผลการทดสอบผ่านครบ 39 การทดสอบจาก 13 ชุดทดสอบ (Exit code: 0)
+3. **Admin Web Lint & Build Verification:**
+   - รันคำสั่ง `npm run lint --prefix master/admin-web` ผ่าน 0 errors
+   - รันคำสั่ง `npm run build --prefix master/admin-web` ผ่าน 10/10 static routes
+4. **การรักษากฎเหล็กของโครงการ (Project Invariants Verification):**
+   - ไฟล์ `PROJECT-HANDOVER.md` ยังคงสถานะถูกละเว้นและไม่ถูกติดตามใน Git (`!! PROJECT-HANDOVER.md` ตาม `.gitignore:67`) โดยไม่มีการแก้ไขหรือแตะต้องใดๆ ทั้งสิ้น
+   - ไม่มีการนำโค้ดเก่าที่ถูกลบไปแล้วกลับมาใช้ใหม่
+   - ไม่มีการใช้อีโมจิฟุ่มเฟือยหรือข้อความยกยอ AI ในโค้ดและเอกสาร

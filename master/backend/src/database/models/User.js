@@ -28,7 +28,13 @@ const userSchema = new mongoose.Schema({
   },
   position: {
     type: String,
-    enum: ['Video Editor', 'Graphic Designer', 'Script Writer', 'Content Creator', 'Production Manager', 'Other'],
+    enum: [
+      'Production Manager',
+      'Video Editor',
+      'Script Writer',
+      'Graphic Designer',
+      'Content Creator',
+    ],
     default: 'Content Creator',
     trim: true,
   },

@@ -40,6 +40,7 @@ const teamActivitySchema = new mongoose.Schema({
       'REVIEW_REQUESTED',
       'REVISION_REQUESTED',
       'SETTINGS_UPDATED',
+      'SYSTEM_ACTION',
     ],
     required: true,
   },

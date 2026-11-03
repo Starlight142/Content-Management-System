@@ -14,15 +14,30 @@ const ideaSchema = new mongoose.Schema({
     type: String,
     default: 'General',
   },
+  platform: {
+    type: String,
+    enum: ['YouTube', 'TikTok', 'Instagram', 'Facebook', 'Other'],
+    default: 'YouTube',
+  },
   proposedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
+  teamId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Team',
+    index: true,
+  },
   status: {
     type: String,
     enum: ['DRAFT', 'APPROVED', 'REJECTED'],
     default: 'DRAFT',
+  },
+  upvotes: {
+    type: Number,
+    default: 0,
+    min: 0,
   },
 }, {
   timestamps: true,

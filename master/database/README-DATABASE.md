@@ -80,7 +80,7 @@ npm run db:clean
 
 | บทบาท (Role) | อีเมล (Email) | ชื่อผู้ใช้ (Username) | ตำแหน่ง (Position) | ทีม (Team) |
 | :--- | :--- | :--- | :--- | :--- |
-| **ADMIN** | `admin@studio.com` | `somchai_admin` | Other | - |
+| **ADMIN** | `admin@studio.com` | `somchai_admin` | Production Manager | - |
 | **MANAGER** | `manager@studio.com` | `somsri_manager` | Production Manager | Content Team A (`TEAM-A`) |
 | **MEMBER** | `member@studio.com` | `john_editor` | Video Editor | Content Team A (`TEAM-A`) |
 | **MEMBER** | `jane@studio.com` | `jane_writer` | Script Writer | Content Team A (`TEAM-A`) |

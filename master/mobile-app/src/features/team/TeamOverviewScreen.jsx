@@ -276,7 +276,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
                 activeOpacity={0.7}
               >
                 <Text style={[styles.teamCodeBadgeText, { color: isDark ? '#93C5FD' : '#1D4ED8' }]}>
-                  รหัส: {teamData.team.joinCode || teamData.team.code} 📋
+                  รหัส: {teamData.team.joinCode || teamData.team.code}
                 </Text>
               </TouchableOpacity>
               {isManager && (
@@ -314,7 +314,7 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
         ) : hasNoTeam ? (
           <View style={[styles.noTeamCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <View style={[styles.noTeamIconBox, { backgroundColor: isDark ? '#1E293B' : '#EFF6FF' }]}>
-              <Text style={styles.noTeamIconText}>👥</Text>
+              <Text style={[styles.noTeamIconText, { color: colors.primary, fontWeight: '700' }]}>T</Text>
             </View>
             <Text style={[styles.noTeamTitle, { color: colors.textPrimary }]}>
               ยังไม่ได้เข้าร่วมทีมผลิตคอนเทนต์

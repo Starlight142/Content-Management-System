@@ -21,7 +21,7 @@ import {
 import { presenceClient, apiFetch } from '../../services/presenceClient';
 
 const DEFAULT_SETTINGS = {
-  studioName: 'Production Studio 69',
+  studioName: 'Draftly Studio',
   adminEmail: 'admin@studio.com',
   timezone: 'Asia/Bangkok (UTC+07:00)',
   language: 'th',
@@ -58,7 +58,7 @@ export default function SettingsPage() {
   const [healthInfo, setHealthInfo] = useState({
     apiStatus: 'Online (HTTP 200)',
     dbStatus: 'Connected',
-    uptimeText: '99.98% (Active)',
+    uptimeText: 'กำลังตรวจสอบ...',
     usersCount: 0,
     contentsCount: 0,
     tasksCount: 0,
@@ -263,7 +263,7 @@ export default function SettingsPage() {
                 <p className="text-xs font-bold text-slate-900">MongoDB Database</p>
               </div>
               <p className="text-[11px] text-slate-500 mt-0.5">สถานะ: {healthInfo.dbStatus}</p>
-              <p className="text-[10px] text-slate-400">ฐานข้อมูล: production_cms</p>
+              <p className="text-[10px] text-slate-400">ฐานข้อมูล: content_management</p>
             </div>
           </div>
 
@@ -340,6 +340,7 @@ export default function SettingsPage() {
                 type="text" 
                 value={settings.studioName}
                 onChange={(e) => setSettings({ ...settings, studioName: e.target.value })}
+                placeholder="Draftly Studio"
                 className="w-full px-3.5 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
             </div>

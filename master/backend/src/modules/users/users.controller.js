@@ -193,7 +193,6 @@ const updateUserPosition = async (req, res) => {
       'Script Writer',
       'Graphic Designer',
       'Content Creator',
-      'Other',
     ];
 
     if (!position || !validPositions.includes(position)) {

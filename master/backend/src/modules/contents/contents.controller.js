@@ -112,16 +112,6 @@ const getContentById = async (req, res) => {
   }
 };
 
-const ALLOWED_TRANSITIONS = {
-  PLANNING: ['PRODUCTION'],
-  PRODUCTION: ['REVIEW'],
-  REVIEW: ['REVISION', 'APPROVED'],
-  REVISION: ['PRODUCTION', 'REVIEW'],
-  APPROVED: ['SCHEDULED', 'PUBLISHED'],
-  SCHEDULED: ['PUBLISHED'],
-  PUBLISHED: [],
-};
-
 // @route PATCH /api/contents/:id/status
 // @access Private (Manager/Admin)
 const updateContentStatus = async (req, res) => {

@@ -1,58 +1,73 @@
 [
   {
     "_id": {
-      "$oid": "6aea12d29ed6fa6a275efd44"
+      "$oid": "6aead88c2b1d3faf565185a2"
     },
     "title": "รีวิวเปรียบเทียบ AI Video Generator 2026",
     "description": "ทดสอบตัดต่อคลิปด้วย AI 5 ตัวเทียบความคมชัด ความเร็ว และการพากย์เสียงภาษาไทย",
     "category": "Tech Review",
+    "platform": "YouTube",
     "proposedBy": {
-      "$oid": "6aea12d29ed6fa6a275efd3e"
+      "$oid": "6aead88c2b1d3faf5651859c"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
     },
     "status": "APPROVED",
+    "upvotes": 18,
     "createdAt": {
-      "$date": "2026-11-03T16:58:58.298Z"
+      "$date": "2026-11-04T07:02:36.892Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T16:58:58.298Z"
+      "$date": "2026-11-04T07:02:36.892Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6aea12d29ed6fa6a275efd45"
+      "$oid": "6aead88c2b1d3faf565185a3"
     },
     "title": "สรุปข่าวเทคโนโลยีประจำวันใน 1 นาที",
     "description": "คลิปสั้นเจาะลึกฟีเจอร์ AI ใหม่ล่าสุดประจำวันสำหรับคนไม่มีเวลาอ่านข่าว",
     "category": "News & Tech",
+    "platform": "TikTok",
     "proposedBy": {
-      "$oid": "6aea12d29ed6fa6a275efd3f"
+      "$oid": "6aead88c2b1d3faf5651859d"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
     },
     "status": "APPROVED",
+    "upvotes": 24,
     "createdAt": {
-      "$date": "2026-11-03T16:58:58.299Z"
+      "$date": "2026-11-04T07:02:36.893Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T16:58:58.299Z"
+      "$date": "2026-11-04T07:02:36.893Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6aea12d29ed6fa6a275efd46"
+      "$oid": "6aead88c2b1d3faf565185a4"
     },
     "title": "แจกพิกัดอุปกรณ์จัดโต๊ะคอม Minimal สำหรับ Live",
     "description": "Content สไตล์ Minimal แนะนำการจัดแสงและไมโครโฟนไร้สาย",
     "category": "Lifestyle",
+    "platform": "Instagram",
     "proposedBy": {
-      "$oid": "6aea12d29ed6fa6a275efd40"
+      "$oid": "6aead88c2b1d3faf5651859e"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
     },
     "status": "DRAFT",
+    "upvotes": 9,
     "createdAt": {
-      "$date": "2026-11-03T16:58:58.300Z"
+      "$date": "2026-11-04T07:02:36.893Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T16:58:58.300Z"
+      "$date": "2026-11-04T07:02:36.893Z"
     },
     "__v": 0
   }

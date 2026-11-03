@@ -156,7 +156,7 @@ export default function AdminLoginPage() {
         <div className="text-center pt-2">
           <p className="text-[11px] text-slate-500 flex items-center justify-center gap-1.5">
             <Shield size={13} className="text-slate-400" />
-            <span>ระบบความปลอดภัย RBAC & JWT Session Guard 100%</span>
+            <span>ระบบความปลอดภัย RBAC & JWT Session Guard</span>
           </p>
         </div>
       </div>
