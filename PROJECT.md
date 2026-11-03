@@ -31,7 +31,7 @@ Draftly is a media production management system comprising three subsystems:
 | M1 | Backend Workflow & Dynamic Dates | master/backend: models, seed, workflow.service, controllers | none | DONE |
 | M2 | Admin Web Dynamic Dates | master/admin-web: contents/page, tasks/page | none | DONE |
 | M3 | Mobile Production Dashboard & Stage Locking | master/mobile-app: ManagerDashboard, MemberTaskList | M1 | DONE |
-| M4 | Final Milestone: E2E Verification & Delivery | E2E automated test execution, dual logging, git commit & push | M1, M2, M3 | IN_PROGRESS |
+| M4 | Final Milestone: E2E Verification & Delivery | E2E automated test execution, dual logging, git commit & push | M1, M2, M3 | DONE |
 
 ## Interface Contracts
 ### Workflow Service ↔ Task Controller & Routes

@@ -53,6 +53,7 @@ Thumbs.db
 *.swo
 
 # Local tooling & Python Virtual Environment
+.agents/teamwork/
 powershell.cmd
 compass-connections.json
 *.exe

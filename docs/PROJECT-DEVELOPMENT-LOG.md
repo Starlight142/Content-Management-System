@@ -2319,3 +2319,8 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - ผลลัพธ์: ผ่าน 100% รวม 39 รายการทดสอบ ใน 13 Test Suites (ระยะเวลารัน ~800 มิลลิวินาที, Exit Code 0)
 3. **การจัดทำเอกสารความพร้อมในการทดสอบ (`TEST_READY.md`):**
    - จัดทำเอกสารสรุปสถาปัตยกรรมการทดสอบ, ตาราง Feature Coverage Checklist ครบ 5 หัวข้อ, และแผนผังการทำงานระหว่างระบบ
+
+### 48.6 การบีบอัดไฟล์แพ็กเกจระบบส่งมอบด้วย 7-Zip (Standalone Deliverable Packaging with 7-Zip)
+- ทำการบีบอัดโครงสร้างโปรเจกต์ทั้งหมดเป็นไฟล์ `Draftly-Content-Management-System.7z` ขนาด 37 MB (38,280,863 bytes) ด้วย 7-Zip (อัตราการบีบอัดระดับ 5)
+- ยกเว้นโฟลเดอร์ชั่วคราวและไฟล์ขนาดใหญ่ (`node_modules`, `.next`, `.gradle`, `build`, `.git`, `.venv`, `__pycache__`, `*.zip`, `*.7z`)
+- ตรวจสอบและรักษาความปลอดภัยของไฟล์ `PROJECT-HANDOVER.md` ไม่ให้รั่วไหลหรือถูกบีบอัดรวมเข้าไปในแพ็กเกจ 100% ตามกฎ Prime Directives

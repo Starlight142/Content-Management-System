@@ -123,3 +123,4 @@ node --test tests/automated_verification.test.js
 - [x] `PROJECT-HANDOVER.md` is strictly untracked and untouched.
 - [x] Ponytail minimalist coding principles strictly applied (zero new dependencies, native standard libraries).
 - [x] All 39 automated tests pass with exit code 0.
+
