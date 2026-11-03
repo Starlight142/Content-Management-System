@@ -12,7 +12,6 @@ import {
   Platform,
   Linking,
   UIManager,
-  LayoutAnimation,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { contentApi, taskApi, userApi, getBaseUrl, getAuthToken } from '../../services/api';
@@ -30,18 +29,30 @@ const getDynamicDueDate = (daysAhead = 7) =>
   new Date(Date.now() + daysAhead * 86400000).toISOString().split('T')[0];
 
 export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const [pipeline, setPipeline] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
+  const [pendingReviewTasks, setPendingReviewTasks] = useState([]);
+  const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('ALL');
   const [refreshing, setRefreshing] = useState(false);
   const [isLiveConnected, setIsLiveConnected] = useState(false);
+
+  // 3 Clear Primary Tabs:
+  // 'REVIEW_QUEUE' (ภาพที่ 45 หน้า 65: หน้าอนุมัติงาน)
+  // 'MEMBER_TASKS' (งานทั้งหมดแยกตามสมาชิก: งานใครงานมัน)
+  // 'PIPELINE'     (ภาพที่ 35 หน้า 55: หน้างานผลิตของผู้จัดการทีม)
+  const [activeTab, setActiveTab] = useState('REVIEW_QUEUE');
+  const [memberPositionFilter, setMemberPositionFilter] = useState('ALL');
+  const [pipelineFilter, setPipelineFilter] = useState('ALL');
+
+  // Modals state
   const [revisionModalVisible, setRevisionModalVisible] = useState(false);
   const [revisionTargetItem, setRevisionTargetItem] = useState(null);
   const [revisionFeedback, setRevisionFeedback] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
 
-  // States for Create Content Modal (User Requirement 1.3.1 #6)
+  // Create Content Modal
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newPlatform, setNewPlatform] = useState('TikTok');
@@ -50,7 +61,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   const [newDesc, setNewDesc] = useState('');
   const [submittingCreate, setSubmittingCreate] = useState(false);
 
-  // States for Assign Task Modal (User Requirement 1.3.1 #7)
+  // Assign Task Modal
   const [assignModalVisible, setAssignModalVisible] = useState(false);
   const [assignTargetContent, setAssignTargetContent] = useState(null);
   const [taskTitle, setTaskTitle] = useState('');
@@ -59,22 +70,6 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   const [taskDueDate, setTaskDueDate] = useState(() => getDynamicDueDate(3));
   const [taskNotes, setTaskNotes] = useState('');
   const [submittingAssign, setSubmittingAssign] = useState(false);
-  const [teamMembers, setTeamMembers] = useState([]);
-
-  // Priority Review Queue & Collapsible Sections
-  const [pendingReviewTasks, setPendingReviewTasks] = useState([]);
-  const [collapsedSections, setCollapsedSections] = useState({
-    reviewQueue: false,
-    productionPipeline: false,
-  });
-
-  const toggleSection = (sectionKey) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setCollapsedSections((prev) => ({
-      ...prev,
-      [sectionKey]: !prev[sectionKey],
-    }));
-  };
 
   const fetchLivePipeline = async () => {
     try {
@@ -82,6 +77,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         contentApi.getAll(),
         taskApi.getAll().catch(() => []),
       ]);
+
       const list = Array.isArray(contentsRes) ? contentsRes : (contentsRes?.contents || []);
       if (Array.isArray(list)) {
         const mapped = list.map((c) => ({
@@ -102,43 +98,44 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         setIsLiveConnected(true);
       }
 
-      // Extract tasks awaiting manager inspection (REVIEW or REVISION)
+      // Map All Tasks and Pending Review Tasks
       const rawTasks = Array.isArray(tasksRes) ? tasksRes : (tasksRes?.tasks || []);
       if (Array.isArray(rawTasks)) {
-        const reviewTasks = rawTasks
-          .filter((t) => t.status === 'REVIEW' || t.status === 'REVISION')
-          .map((t) => {
-            const submitterName = t.assignedTo?.firstName
-              ? `${t.assignedTo.firstName} ${t.assignedTo.lastName || ''}`.trim()
-              : (t.assignedTo?.username || 'ทีมงาน');
-            const submitterPosition = t.assignedTo?.position || '';
-            const submitterDisplay = submitterPosition
-              ? `${submitterName} (${submitterPosition})`
-              : submitterName;
+        const mappedAllTasks = rawTasks.map((t) => {
+          const submitterName = t.assignedTo?.firstName
+            ? `${t.assignedTo.firstName} ${t.assignedTo.lastName || ''}`.trim()
+            : (t.assignedTo?.username || 'ทีมงาน');
+          const submitterPosition = t.assignedTo?.position || 'Content Creator';
+          const submitterDisplay = `${submitterName} (${submitterPosition})`;
 
-            return {
-              _id: t._id || t.id,
-              title: t.title,
-              taskType: t.taskType || 'Editing',
-              stage: t.taskType || 'Editing',
-              status: t.status,
-              submitterName,
-              submitterPosition,
-              submitterDisplay,
-              submissionUrl: t.submissionUrl || '',
-              replyNotes: t.replyNotes || '',
-              notes: t.notes || '',
-              revisionNotes: t.revisionNotes || '',
-              contentTitle: t.contentId?.title || 'ชิ้นงานคอนเทนต์หลัก',
-              platform: t.contentId?.platform || 'General',
-              dueDate: t.dueDate ? t.dueDate.split('T')[0] : getDynamicDueDate(3),
-              isTask: true,
-            };
-          });
+          return {
+            _id: t._id || t.id,
+            title: t.title,
+            taskType: t.taskType || 'Editing',
+            stage: t.taskType || 'Editing',
+            status: t.status || 'TODO',
+            assignedToId: t.assignedTo?._id || t.assignedTo,
+            submitterName,
+            submitterPosition,
+            submitterDisplay,
+            submissionUrl: t.submissionUrl || '',
+            replyNotes: t.replyNotes || '',
+            notes: t.notes || '',
+            revisionNotes: t.revisionNotes || '',
+            contentTitle: t.contentId?.title || 'ชิ้นงานคอนเทนต์หลัก',
+            platform: t.contentId?.platform || 'General',
+            dueDate: t.dueDate ? t.dueDate.split('T')[0] : getDynamicDueDate(3),
+            progress: t.progress || (t.status === 'DONE' ? 100 : t.status === 'REVIEW' ? 85 : t.status === 'IN_PROGRESS' ? 50 : 0),
+            isTask: true,
+          };
+        });
+
+        setAllTasks(mappedAllTasks);
+        const reviewTasks = mappedAllTasks.filter((t) => t.status === 'REVIEW' || t.status === 'REVISION');
         setPendingReviewTasks(reviewTasks);
       }
 
-      // Fetch team members for task assignment if not yet loaded
+      // Fetch team members for task assignment
       try {
         const uList = await userApi.getAll();
         if (Array.isArray(uList) && uList.length > 0) {
@@ -150,9 +147,9 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         }
       } catch {
         setTeamMembers([
-          { _id: '3', firstName: 'John', lastName: 'Creator', role: 'MEMBER' },
-          { _id: '4', firstName: 'Jane', lastName: 'Script', role: 'MEMBER' },
-          { _id: '5', firstName: 'Mike', lastName: 'Graphic', role: 'MEMBER' },
+          { _id: '3', firstName: 'John', lastName: 'Editor', position: 'Video Editor', role: 'MEMBER' },
+          { _id: '4', firstName: 'Jane', lastName: 'Script', position: 'Script Writer', role: 'MEMBER' },
+          { _id: '5', firstName: 'Mike', lastName: 'Graphic', position: 'Graphic Designer', role: 'MEMBER' },
         ]);
       }
     } catch (e) {
@@ -205,13 +202,15 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     }
   };
 
-  const openAssignModal = (item) => {
-    setAssignTargetContent(item);
-    setTaskTitle(`ตัดต่อและผลิตงาน: ${item.title}`);
+  const openAssignModal = (contentItem, targetMemberId = null) => {
+    setAssignTargetContent(contentItem);
+    setTaskTitle(contentItem ? `ตัดต่อและผลิตงาน: ${contentItem.title}` : 'งานผลิตสื่อใหม่');
     setTaskType('Editing');
-    setTaskDueDate(item.dueDate || getDynamicDueDate(3));
+    setTaskDueDate(contentItem?.dueDate || getDynamicDueDate(3));
     setTaskNotes('');
-    if (teamMembers.length > 0 && !assignedToId) {
+    if (targetMemberId) {
+      setAssignedToId(targetMemberId);
+    } else if (teamMembers.length > 0 && !assignedToId) {
       setAssignedToId(teamMembers[0]._id || teamMembers[0].id);
     }
     setAssignModalVisible(true);
@@ -416,11 +415,6 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     );
   };
 
-  const filteredPipeline = pipeline.filter((item) => {
-    if (filter === 'ALL') return true;
-    return item.status === filter;
-  });
-
   const getStatusBadge = (status) => {
     switch (status) {
       case 'APPROVED':
@@ -491,171 +485,20 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     })),
   ];
 
-  const renderContentCard = (item, isHighlightQueue = false) => {
-    const st = getStatusBadge(item.status);
+  // Filtered Pipeline for Tab 3
+  const filteredPipeline = pipeline.filter((item) => {
+    if (pipelineFilter === 'ALL') return true;
+    if (pipelineFilter === 'APPROVED_ALL') return item.status === 'APPROVED' || item.status === 'PUBLISHED';
+    return item.status === pipelineFilter;
+  });
 
-    return (
-      <View
-        key={item._id}
-        style={[
-          styles.card,
-          {
-            backgroundColor: colors.cardBg,
-            borderColor: isHighlightQueue && item.status === 'REVIEW'
-              ? colors.statusReviewBorder
-              : isHighlightQueue && item.status === 'REVISION'
-              ? colors.statusRevisionBorder
-              : colors.cardBorder,
-          },
-        ]}
-      >
-        {/* Card Header Row: Platform & Status Pill */}
-        <View style={styles.cardTopRow}>
-          <View style={[styles.platBadge, { backgroundColor: colors.surfaceSubtle }]}>
-            <Text style={[styles.platText, { color: colors.textSecondary }]}>{item.platform}</Text>
-          </View>
+  // Filtered Member Groups for Tab 2
+  const filteredMembers = teamMembers.filter((m) => {
+    if (memberPositionFilter === 'ALL') return true;
+    return (m.position || 'Content Creator') === memberPositionFilter;
+  });
 
-          <View style={[styles.statusBadge, { backgroundColor: st.bg, borderColor: st.border }]}>
-            <Text style={[styles.statusBadgeText, { color: st.text }]}>{st.label}</Text>
-          </View>
-        </View>
-
-        {/* Title & Description */}
-        <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>{item.title}</Text>
-        <Text style={[styles.cardDesc, { color: colors.textSecondary }]} numberOfLines={2}>
-          {item.description}
-        </Text>
-
-        {/* Meta details without emojis */}
-        <View style={[styles.metaRow, { borderTopColor: colors.border }]}>
-          <View style={styles.metaItem}>
-            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-              ผู้ผลิต: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.creator}</Text>
-            </Text>
-          </View>
-          <View style={styles.metaItem}>
-            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-              กำหนดส่ง: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.dueDate}</Text>
-            </Text>
-          </View>
-        </View>
-
-        {/* Media Submission Link Preview (One-Tap Direct Launch) */}
-        {!!item.latestSubmissionUrl && (
-          <TouchableOpacity
-            style={[styles.btnPreviewLink, { borderColor: colors.border, backgroundColor: colors.surfaceSubtle }]}
-            onPress={() => handleOpenUrl(item.latestSubmissionUrl)}
-          >
-            <Text style={[styles.btnPreviewLinkText, { color: colors.primary }]} numberOfLines={1}>
-              เปิดดูผลงาน: {item.latestSubmissionUrl}
-            </Text>
-          </TouchableOpacity>
-        )}
-
-        {/* Contextual Action Buttons based on Status */}
-        {item.status === 'PLANNING' && (
-          <View style={styles.actionRow}>
-            <TouchableOpacity
-              style={[styles.btnSecondary, { backgroundColor: colors.surface, borderColor: colors.border }]}
-              onPress={() => openAssignModal(item)}
-            >
-              <Text style={[styles.btnSecondaryText, { color: colors.textPrimary }]}>+ มอบหมายงาน</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.btnPrimary, { backgroundColor: colors.primary }]}
-              onPress={() => handleStartProduction(item)}
-            >
-              <Text style={styles.btnPrimaryText}>เริ่มขั้นตอนผลิต</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {item.status === 'PRODUCTION' && (
-          <View style={styles.actionRow}>
-            <TouchableOpacity
-              style={[styles.btnSecondary, { backgroundColor: colors.surface, borderColor: colors.border }]}
-              onPress={() => openAssignModal(item)}
-            >
-              <Text style={[styles.btnSecondaryText, { color: colors.textPrimary }]}>+ มอบหมายงาน</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.btnPrimary, { backgroundColor: colors.primary }]}
-              onPress={() => handleSendToReview(item)}
-            >
-              <Text style={styles.btnPrimaryText}>ส่งเข้าสู่การตรวจ</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {item.status === 'REVIEW' && (
-          <View style={styles.actionRow}>
-            <TouchableOpacity
-              style={[
-                styles.btnSecondary,
-                { backgroundColor: colors.surface, borderColor: colors.statusRevisionBorder },
-              ]}
-              onPress={() => openRevisionModal(item)}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.btnSecondaryText, { color: colors.statusRevisionText }]}>ส่งกลับแก้ไข</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.btnPrimary, { backgroundColor: colors.statusApprovedText }]}
-              onPress={() => handleApproveContent(item)}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.btnPrimaryText}>อนุมัติชิ้นงาน</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {item.status === 'APPROVED' && (
-          <TouchableOpacity
-            style={[styles.btnPublish, { backgroundColor: colors.statusApprovedText }]}
-            onPress={() => handlePublishNow(item)}
-          >
-            <Text style={styles.btnPublishText}>เผยแพร่ชิ้นงาน</Text>
-          </TouchableOpacity>
-        )}
-
-        {item.status === 'PUBLISHED' && (
-          <View style={[styles.publishedNotice, { backgroundColor: colors.statusApprovedBg, borderColor: colors.statusApprovedBorder }]}>
-            <Text style={[styles.publishedNoticeText, { color: colors.statusApprovedText }]}>
-              เผยแพร่สู่สาธารณะเรียบร้อยแล้ว
-            </Text>
-          </View>
-        )}
-
-        {item.status === 'REVISION' && (
-          <View style={{ gap: 8 }}>
-            <View style={[styles.revisionNotice, { backgroundColor: colors.statusRevisionBg, borderColor: colors.statusRevisionBorder }]}>
-              <Text style={[styles.revisionNoticeText, { color: colors.statusRevisionText }]}>
-                อยู่ในระหว่างผู้ผลิตนำกลับไปปรับปรุงแก้ไข
-              </Text>
-            </View>
-            <View style={styles.actionRow}>
-              <TouchableOpacity
-                style={[
-                  styles.btnSecondary,
-                  { backgroundColor: colors.surface, borderColor: colors.border },
-                ]}
-                onPress={() => handleStartProduction(item)}
-              >
-                <Text style={[styles.btnSecondaryText, { color: colors.textSecondary }]}>เริ่มผลิตซ้ำ</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.btnPrimary, { backgroundColor: colors.primary }]}
-                onPress={() => handleSendToReview(item)}
-              >
-                <Text style={styles.btnPrimaryText}>ส่งตรวจอีกครั้ง</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      </View>
-    );
-  };
-
+  // Render a Single Review Deliverable Card (SRS ภาพที่ 45 หน้า 65)
   const renderReviewDeliverableCard = (item) => {
     const st = getStatusBadge(item.status);
 
@@ -666,17 +509,17 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
           styles.reviewCard,
           {
             backgroundColor: colors.cardBg,
-            borderColor: item.status === 'REVISION'
-              ? colors.statusRevisionBorder
-              : colors.statusReviewBorder,
+            borderColor: item.status === 'REVIEW'
+              ? colors.statusReviewBorder
+              : colors.statusRevisionBorder,
           },
         ]}
       >
-        {/* Card Header Row: Stage & Status Pill */}
+        {/* Card Header Row: Platform & Status Pill */}
         <View style={styles.cardTopRow}>
-          <View style={[styles.stageBadge, { backgroundColor: colors.surfaceSubtle }]}>
-            <Text style={[styles.stageBadgeText, { color: colors.textSecondary }]}>
-              {item.stage || item.taskType || 'Production'}
+          <View style={[styles.platBadge, { backgroundColor: colors.surfaceSubtle }]}>
+            <Text style={[styles.platText, { color: colors.textSecondary }]}>
+              {item.platform || 'General'}
             </Text>
           </View>
 
@@ -693,11 +536,11 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
           </Text>
         ) : null}
 
-        {/* Submitter Name & Position */}
+        {/* Submitter Name & 5 Core Positions */}
         <View style={[styles.metaRow, { borderTopColor: colors.border }]}>
           <View style={styles.metaItem}>
             <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-              ผู้ส่งงาน: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.submitterDisplay || item.creator || 'ทีมงาน'}</Text>
+              ผู้ส่งงาน: <Text style={{ color: colors.textPrimary, fontWeight: '700' }}>{item.submitterDisplay || item.creator || 'ทีมงาน'}</Text>
             </Text>
           </View>
           <View style={styles.metaItem}>
@@ -756,14 +599,151 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     );
   };
 
+  // Render a Single Content Project Card (SRS ภาพที่ 35 หน้า 55)
+  const renderContentCard = (item) => {
+    const st = getStatusBadge(item.status);
+
+    return (
+      <View
+        key={item._id}
+        style={[
+          styles.card,
+          {
+            backgroundColor: colors.cardBg,
+            borderColor: colors.cardBorder,
+          },
+        ]}
+      >
+        {/* Header Row */}
+        <View style={styles.cardTopRow}>
+          <View style={[styles.platBadge, { backgroundColor: colors.surfaceSubtle }]}>
+            <Text style={[styles.platText, { color: colors.textSecondary }]}>{item.platform}</Text>
+          </View>
+
+          <View style={[styles.statusBadge, { backgroundColor: st.bg, borderColor: st.border }]}>
+            <Text style={[styles.statusBadgeText, { color: st.text }]}>{st.label}</Text>
+          </View>
+        </View>
+
+        <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>{item.title}</Text>
+        <Text style={[styles.cardDesc, { color: colors.textSecondary }]} numberOfLines={2}>
+          {item.description}
+        </Text>
+
+        <View style={[styles.metaRow, { borderTopColor: colors.border }]}>
+          <View style={styles.metaItem}>
+            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+              ผู้ผลิต: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.creator}</Text>
+            </Text>
+          </View>
+          <View style={styles.metaItem}>
+            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+              กำหนดส่ง: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.dueDate}</Text>
+            </Text>
+          </View>
+        </View>
+
+        {!!item.latestSubmissionUrl && (
+          <TouchableOpacity
+            style={[styles.btnPreviewLink, { borderColor: colors.border, backgroundColor: colors.surfaceSubtle }]}
+            onPress={() => handleOpenUrl(item.latestSubmissionUrl)}
+          >
+            <Text style={[styles.btnPreviewLinkText, { color: colors.primary }]} numberOfLines={1}>
+              เปิดดูผลงาน: {item.latestSubmissionUrl}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Contextual Actions */}
+        {item.status === 'PLANNING' && (
+          <View style={styles.actionRow}>
+            <TouchableOpacity
+              style={[styles.btnSecondary, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              onPress={() => openAssignModal(item)}
+            >
+              <Text style={[styles.btnSecondaryText, { color: colors.textPrimary }]}>+ มอบหมายงาน</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.btnPrimary, { backgroundColor: colors.primary }]}
+              onPress={() => handleStartProduction(item)}
+            >
+              <Text style={styles.btnPrimaryText}>เริ่มขั้นตอนผลิต</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {item.status === 'PRODUCTION' && (
+          <View style={styles.actionRow}>
+            <TouchableOpacity
+              style={[styles.btnSecondary, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              onPress={() => openAssignModal(item)}
+            >
+              <Text style={[styles.btnSecondaryText, { color: colors.textPrimary }]}>+ มอบหมายงาน</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.btnPrimary, { backgroundColor: colors.primary }]}
+              onPress={() => handleSendToReview(item)}
+            >
+              <Text style={styles.btnPrimaryText}>ส่งเข้าสู่การตรวจ</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {item.status === 'REVIEW' && (
+          <View style={styles.actionRow}>
+            <TouchableOpacity
+              style={[
+                styles.btnSecondary,
+                { backgroundColor: colors.surface, borderColor: colors.statusRevisionBorder },
+              ]}
+              onPress={() => openRevisionModal(item)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.btnSecondaryText, { color: colors.statusRevisionText }]}>ส่งกลับแก้ไข</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.btnPrimary, { backgroundColor: colors.statusApprovedText }]}
+              onPress={() => handleApproveContent(item)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.btnPrimaryText}>อนุมัติชิ้นงาน</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {item.status === 'APPROVED' && (
+          <View style={styles.actionRow}>
+            <TouchableOpacity
+              style={[styles.btnPrimary, { backgroundColor: colors.statusApprovedText }]}
+              onPress={() => handlePublishNow(item)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.btnPrimaryText}>เผยแพร่ชิ้นงาน (Publish)</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {item.status === 'PUBLISHED' && (
+          <View style={[styles.publishedBanner, { backgroundColor: colors.statusApprovedBg }]}>
+            <Text style={[styles.publishedBannerText, { color: colors.statusApprovedText }]}>
+              เผยแพร่สู่สาธารณะแล้วบน {item.platform}
+            </Text>
+          </View>
+        )}
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Top Header Bar */}
       <View style={[styles.topHeader, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View style={styles.headerInfo}>
-          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{user?.name || 'สมศรี'}</Text>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+            {user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'สมศรี')}
+          </Text>
           <View style={styles.roleRow}>
-            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>ผู้จัดการฝ่ายผลิต (Manager)</Text>
+            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>ผู้จัดการฝ่ายผลิต (Production Manager)</Text>
             <View style={[styles.dbBadge, isLiveConnected ? styles.dbLive : styles.dbMock]}>
               <View style={[styles.dbDot, isLiveConnected ? styles.dotLive : styles.dotMock]} />
               <Text style={styles.dbText}>{isLiveConnected ? 'API Live' : 'Offline'}</Text>
@@ -782,10 +762,10 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
 
           <TouchableOpacity
             style={[styles.avatarButton, { backgroundColor: colors.primary }]}
-            onPress={() => onNavigate('profile')}
+            onPress={() => onNavigate && onNavigate('profile')}
           >
             <Text style={styles.avatarButtonText}>
-              {user?.name ? user.name.charAt(0).toUpperCase() : 'M'}
+              {user?.name ? user.name.charAt(0).toUpperCase() : (user?.firstName ? user.firstName.charAt(0).toUpperCase() : 'M')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -818,38 +798,66 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
           </View>
         </View>
 
-        {/* Filter Tabs */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
-          {[
-            { id: 'ALL', label: 'ทั้งหมด' },
-            { id: 'REVIEW', label: 'รอตรวจ' },
-            { id: 'PRODUCTION', label: 'กำลังผลิต' },
-            { id: 'REVISION', label: 'ส่งกลับแก้' },
-            { id: 'APPROVED', label: 'อนุมัติแล้ว' },
-          ].map((tab) => (
-            <TouchableOpacity
-              key={tab.id}
+        {/* Primary Manager Mode Switcher (ตัดความสับสนระหว่างทั้งหมด กับ อนุมัติงาน) */}
+        <View style={[styles.scopeBar, { backgroundColor: isDark ? colors.surface : '#E2E8F0' }]}>
+          <TouchableOpacity
+            style={[
+              styles.scopeBtn,
+              activeTab === 'REVIEW_QUEUE' && [styles.scopeBtnActive, { backgroundColor: colors.cardBg }],
+            ]}
+            onPress={() => setActiveTab('REVIEW_QUEUE')}
+            activeOpacity={0.7}
+          >
+            <Text
               style={[
-                styles.filterPill,
-                { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
-                filter === tab.id && { backgroundColor: colors.primary, borderColor: colors.primary },
+                styles.scopeBtnText,
+                { color: colors.textSecondary },
+                activeTab === 'REVIEW_QUEUE' && { color: colors.textPrimary, fontWeight: '700' },
               ]}
-              onPress={() => setFilter(tab.id)}
             >
-              <Text
-                style={[
-                  styles.filterPillText,
-                  { color: colors.textSecondary },
-                  filter === tab.id && { color: '#FFFFFF', fontWeight: '700' },
-                ]}
-              >
-                {tab.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+              หน้าอนุมัติงาน ({reviewQueueItems.length})
+            </Text>
+          </TouchableOpacity>
 
-        {/* Content Production Cards */}
+          <TouchableOpacity
+            style={[
+              styles.scopeBtn,
+              activeTab === 'MEMBER_TASKS' && [styles.scopeBtnActive, { backgroundColor: colors.cardBg }],
+            ]}
+            onPress={() => setActiveTab('MEMBER_TASKS')}
+            activeOpacity={0.7}
+          >
+            <Text
+              style={[
+                styles.scopeBtnText,
+                { color: colors.textSecondary },
+                activeTab === 'MEMBER_TASKS' && { color: colors.textPrimary, fontWeight: '700' },
+              ]}
+            >
+              งานแยกตามสมาชิก ({allTasks.length})
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.scopeBtn,
+              activeTab === 'PIPELINE' && [styles.scopeBtnActive, { backgroundColor: colors.cardBg }],
+            ]}
+            onPress={() => setActiveTab('PIPELINE')}
+            activeOpacity={0.7}
+          >
+            <Text
+              style={[
+                styles.scopeBtnText,
+                { color: colors.textSecondary },
+                activeTab === 'PIPELINE' && { color: colors.textPrimary, fontWeight: '700' },
+              ]}
+            >
+              โครงการคอนเทนต์ ({pipeline.length})
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         {loading ? (
           <View style={styles.centerLoading}>
             <ActivityIndicator size="small" color={colors.primary} />
@@ -857,78 +865,215 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
               กำลังโหลดสถานะกระบวนการผลิตจากระบบ...
             </Text>
           </View>
-        ) : filteredPipeline.length === 0 ? (
-          <View style={[styles.emptyBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>ไม่มีชิ้นงานในสถานะนี้</Text>
-            <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
-              เลือกตัวกรอง "ทั้งหมด" หรือตรวจสอบสถานะงานในแท็บ "ภาพรวมทีม"
-            </Text>
+        ) : activeTab === 'REVIEW_QUEUE' ? (
+          /* TAB 1: หน้าอนุมัติงาน (SRS ภาพที่ 45 หน้า 65) */
+          <View style={styles.sectionContainer}>
+            <View style={[styles.sectionNoticeBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+              <Text style={[styles.sectionNoticeTitle, { color: colors.statusReviewText }]}>
+                คิวตรวจสอบและอนุมัติงาน (Review & Approval Queue)
+              </Text>
+              <Text style={[styles.sectionNoticeSub, { color: colors.textSecondary }]}>
+                รวบรวมเฉพาะงานที่ลูกทีมส่งมอบเพื่อตรวจรับ สั่งแก้ไข หรืออนุมัติผ่านเข้าสู่ขั้นตอนถัดไป
+              </Text>
+            </View>
+
+            {reviewQueueItems.length === 0 ? (
+              <View style={[styles.emptyBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+                <Text style={[styles.emptyTitle, { color: colors.statusApprovedText }]}>
+                  ไม่มีงานค้างตรวจอนุมัติ (All Clear)
+                </Text>
+                <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
+                  ทุกชิ้นงานได้รับการตรวจสอบเรียบร้อยแล้ว หรือลูกทีมยังไม่ได้ส่งงานใหม่ในขณะนี้
+                </Text>
+              </View>
+            ) : (
+              reviewQueueItems.map((item) => renderReviewDeliverableCard(item))
+            )}
           </View>
-        ) : (
-          <>
-            {/* Visual Hierarchy: Priority 1 - Collapsible Manager Review Queue */}
-            {(filter === 'ALL' || filter === 'REVIEW' || filter === 'REVISION') && reviewQueueItems.length > 0 && (
-              <View style={styles.sectionContainer}>
+        ) : activeTab === 'MEMBER_TASKS' ? (
+          /* TAB 2: งานทั้งหมดแยกตามสมาชิก (งานใครงานมัน 100%) */
+          <View style={styles.sectionContainer}>
+            {/* 5 Core Positions Filter */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterChipScroll}>
+              {[
+                { id: 'ALL', label: 'ทั้งหมด' },
+                { id: 'Script Writer', label: 'Script Writer' },
+                { id: 'Video Editor', label: 'Video Editor' },
+                { id: 'Graphic Designer', label: 'Graphic Designer' },
+                { id: 'Content Creator', label: 'Content Creator' },
+                { id: 'Production Manager', label: 'Production Manager' },
+              ].map((chip) => (
                 <TouchableOpacity
-                  style={styles.sectionHeaderRow}
-                  onPress={() => toggleSection('reviewQueue')}
+                  key={chip.id}
+                  style={[
+                    styles.filterChip,
+                    { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+                    memberPositionFilter === chip.id && { backgroundColor: colors.primary, borderColor: colors.primary },
+                  ]}
+                  onPress={() => setMemberPositionFilter(chip.id)}
                   activeOpacity={0.7}
                 >
-                  <View style={styles.sectionHeaderLeft}>
-                    <Text style={[styles.sectionTitlePriority, { color: colors.statusReviewText }]}>
-                      คิวรอตรวจสอบและอนุมัติ (Manager Review Queue)
-                    </Text>
-                    <View style={[styles.badgeCount, { backgroundColor: colors.statusReviewBg }]}>
-                      <Text style={[styles.badgeCountText, { color: colors.statusReviewText }]}>
-                        {reviewQueueItems.length} รายการ
-                      </Text>
-                    </View>
-                  </View>
-                  <Text style={[styles.toggleChevron, { color: colors.textSecondary }]}>
-                    {collapsedSections.reviewQueue ? '[แสดง]' : '[ซ่อน]'}
+                  <Text
+                    style={[
+                      styles.filterChipText,
+                      { color: colors.textSecondary },
+                      memberPositionFilter === chip.id && { color: '#FFFFFF', fontWeight: '700' },
+                    ]}
+                  >
+                    {chip.label}
                   </Text>
                 </TouchableOpacity>
+              ))}
+            </ScrollView>
 
-                {!collapsedSections.reviewQueue && (
-                  <View style={styles.sectionBody}>
-                    <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-                      ชิ้นงานที่รอการตรวจทานความถูกต้อง หรืออยู่ในระหว่างการปรับปรุงแก้ไข
-                    </Text>
-                    {reviewQueueItems.map((item) => renderReviewDeliverableCard(item))}
-                  </View>
-                )}
-              </View>
-            )}
-
-            {/* General Pipeline List (Collapsible) */}
-            <View style={styles.sectionContainer}>
-              <TouchableOpacity
-                style={styles.sectionHeaderRow}
-                onPress={() => toggleSection('productionPipeline')}
-                activeOpacity={0.7}
-              >
-                <View style={styles.sectionHeaderLeft}>
-                  <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                    {filter === 'ALL' && reviewQueueItems.length > 0 ? 'ชิ้นงานทั้งหมดในสายการผลิต' : 'รายการชิ้นงาน'}
-                  </Text>
-                  <View style={[styles.badgeCount, { backgroundColor: colors.surfaceSubtle }]}>
-                    <Text style={[styles.badgeCountText, { color: colors.textSecondary }]}>
-                      {filteredPipeline.length} รายการ
-                    </Text>
-                  </View>
-                </View>
-                <Text style={[styles.toggleChevron, { color: colors.textSecondary }]}>
-                  {collapsedSections.productionPipeline ? '[แสดง]' : '[ซ่อน]'}
-                </Text>
-              </TouchableOpacity>
-
-              {!collapsedSections.productionPipeline && (
-                <View style={styles.sectionBody}>
-                  {filteredPipeline.map((item) => renderContentCard(item, false))}
-                </View>
-              )}
+            <View style={[styles.sectionNoticeBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+              <Text style={[styles.sectionNoticeTitle, { color: colors.textPrimary }]}>
+                ผังงานแยกตามรายบุคคล (Workload by Team Member)
+              </Text>
+              <Text style={[styles.sectionNoticeSub, { color: colors.textSecondary }]}>
+                แสดงภาระงานและสถานะความคืบหน้าของสมาชิกแต่ละคนใน 5 ตำแหน่งหลัก
+              </Text>
             </View>
-          </>
+
+            {filteredMembers.length === 0 ? (
+              <View style={[styles.emptyBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+                <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>ไม่พบสมาชิกในตำแหน่งนี้</Text>
+                <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
+                  เลือกตัวกรอง "ทั้งหมด" เพื่อดูสมาชิกทุกคนในทีม
+                </Text>
+              </View>
+            ) : (
+              filteredMembers.map((member) => {
+                const memberId = member._id || member.id;
+                const memberName = member.firstName ? `${member.firstName} ${member.lastName || ''}`.trim() : (member.username || 'สมาชิก');
+                const memberPosition = member.position || 'Content Creator';
+                const memberTasks = allTasks.filter((t) => t.assignedToId && t.assignedToId.toString() === memberId.toString());
+
+                return (
+                  <View
+                    key={memberId}
+                    style={[
+                      styles.memberOverviewCard,
+                      { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
+                    ]}
+                  >
+                    {/* Member Header */}
+                    <View style={styles.memberOverviewHeader}>
+                      <View style={styles.memberOverviewLeft}>
+                        <View style={[styles.memberAvatar, { backgroundColor: colors.primary }]}>
+                          <Text style={styles.memberAvatarText}>
+                            {memberName ? memberName.charAt(0).toUpperCase() : 'M'}
+                          </Text>
+                        </View>
+                        <View>
+                          <Text style={[styles.memberOverviewName, { color: colors.textPrimary }]}>
+                            {memberName}
+                          </Text>
+                          <View style={styles.memberRoleBadgeRow}>
+                            <View style={[styles.positionPill, { backgroundColor: colors.surfaceSubtle }]}>
+                              <Text style={[styles.positionPillText, { color: colors.primary }]}>
+                                {memberPosition}
+                              </Text>
+                            </View>
+                            <Text style={[styles.memberRoleText, { color: colors.textSecondary }]}>
+                              {member.role || 'MEMBER'}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+
+                      <TouchableOpacity
+                        style={[styles.btnAssignMini, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
+                        onPress={() => openAssignModal(pipeline[0] || null, memberId)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={[styles.btnAssignMiniText, { color: colors.primary }]}>+ มอบหมายงาน</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Member Assigned Tasks */}
+                    <View style={styles.memberTasksBody}>
+                      {memberTasks.length === 0 ? (
+                        <Text style={[styles.noTaskText, { color: colors.textMuted }]}>
+                          ยังไม่มีงานที่มอบหมายให้สมาชิกคนนี้
+                        </Text>
+                      ) : (
+                        memberTasks.map((t) => {
+                          const st = getStatusBadge(t.status);
+                          return (
+                            <View
+                              key={t._id}
+                              style={[
+                                styles.memberTaskRow,
+                                { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+                              ]}
+                            >
+                              <View style={styles.memberTaskTop}>
+                                <Text style={[styles.memberTaskType, { color: colors.textSecondary }]}>{t.taskType}</Text>
+                                <View style={[styles.statusBadgeSmall, { backgroundColor: st.bg, borderColor: st.border }]}>
+                                  <Text style={[styles.statusBadgeSmallText, { color: st.text }]}>{st.label}</Text>
+                                </View>
+                              </View>
+                              <Text style={[styles.memberTaskTitle, { color: colors.textPrimary }]}>{t.title}</Text>
+                              <Text style={[styles.memberTaskContent, { color: colors.textSecondary }]} numberOfLines={1}>
+                                ชิ้นงาน: {t.contentTitle} • กำหนดส่ง: {t.dueDate}
+                              </Text>
+                            </View>
+                          );
+                        })
+                      )}
+                    </View>
+                  </View>
+                );
+              })
+            )}
+          </View>
+        ) : (
+          /* TAB 3: โครงการคอนเทนต์ (SRS ภาพที่ 35 หน้า 55) */
+          <View style={styles.sectionContainer}>
+            {/* Status Filter Pills */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterChipScroll}>
+              {[
+                { id: 'ALL', label: 'ทั้งหมด' },
+                { id: 'PLANNING', label: 'วางแผน' },
+                { id: 'PRODUCTION', label: 'กำลังผลิต' },
+                { id: 'REVIEW', label: 'รอตรวจ' },
+                { id: 'APPROVED_ALL', label: 'เสร็จสิ้น/เผยแพร่' },
+              ].map((chip) => (
+                <TouchableOpacity
+                  key={chip.id}
+                  style={[
+                    styles.filterChip,
+                    { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+                    pipelineFilter === chip.id && { backgroundColor: colors.primary, borderColor: colors.primary },
+                  ]}
+                  onPress={() => setPipelineFilter(chip.id)}
+                  activeOpacity={0.7}
+                >
+                  <Text
+                    style={[
+                      styles.filterChipText,
+                      { color: colors.textSecondary },
+                      pipelineFilter === chip.id && { color: '#FFFFFF', fontWeight: '700' },
+                    ]}
+                  >
+                    {chip.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            {filteredPipeline.length === 0 ? (
+              <View style={[styles.emptyBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+                <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>ไม่มีชิ้นงานในสถานะนี้</Text>
+                <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
+                  กดปุ่ม "+ สร้างงาน" ด้านบนเพื่อเปิดโครงการคอนเทนต์ใหม่
+                </Text>
+              </View>
+            ) : (
+              filteredPipeline.map((item) => renderContentCard(item))
+            )}
+          </View>
         )}
       </ScrollView>
 
@@ -937,7 +1082,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         visible={revisionModalVisible}
         onClose={() => setRevisionModalVisible(false)}
         title="ส่งกลับแก้ไขชิ้นงาน"
-        subtitle={`${revisionTargetItem?.title || ''} • ผู้รับผิดชอบ: ${revisionTargetItem?.creator || 'ทีมงาน'}`}
+        subtitle={`${revisionTargetItem?.title || ''} • ผู้รับผิดชอบ: ${revisionTargetItem?.submitterName || revisionTargetItem?.creator || 'ทีมงาน'}`}
       >
         <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>
           ระบุข้อคิดเห็น / คำแนะนำสิ่งที่ต้องแก้ไข:
@@ -951,203 +1096,223 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
               color: colors.textPrimary,
             },
           ]}
-          placeholder="เช่น นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป..."
+          placeholder="เช่น ปรับสีวิดีโอให้สว่างขึ้น, ลดเสียงดนตรีประกอบ..."
           placeholderTextColor={colors.textMuted}
           value={revisionFeedback}
           onChangeText={setRevisionFeedback}
           multiline
           numberOfLines={4}
         />
-
         <View style={styles.modalBtnRow}>
           <TouchableOpacity
-            style={[styles.modalCancelBtn, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
+            style={[styles.modalBtnCancel, { borderColor: colors.border }]}
             onPress={() => setRevisionModalVisible(false)}
-            disabled={submittingReview}
-            activeOpacity={0.7}
           >
-            <Text style={[styles.modalCancelBtnText, { color: colors.textSecondary }]}>ยกเลิก</Text>
+            <Text style={[styles.modalBtnCancelText, { color: colors.textSecondary }]}>ยกเลิก</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
-            style={[styles.modalConfirmBtn, { backgroundColor: colors.statusRevisionText }]}
+            style={[styles.modalBtnConfirm, { backgroundColor: colors.statusRevisionText }]}
             onPress={confirmSubmitRevision}
             disabled={submittingReview}
-            activeOpacity={0.7}
           >
             {submittingReview ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
+              <ActivityIndicator color="#fff" size="small" />
             ) : (
-              <Text style={styles.modalConfirmBtnText}>ยืนยันส่งกลับแก้ไข</Text>
+              <Text style={styles.modalBtnConfirmText}>ยืนยันส่งกลับแก้ไข</Text>
             )}
           </TouchableOpacity>
         </View>
       </SmoothModal>
 
-      {/* Create Content Modal (User Requirement 1.3.1 #6) */}
+      {/* Create Content Modal */}
       <SmoothModal
         visible={createModalVisible}
         onClose={() => setCreateModalVisible(false)}
         title="สร้าง Content ชิ้นใหม่"
-        subtitle="เปิดโปรเจกต์งานสื่อใหม่เข้าสู่สายพานการผลิต"
+        subtitle="เปิดโครงการผลิตสื่อใหม่เพื่อกระจายงานผลิต"
       >
         <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>ชื่อชิ้นงาน (Title) *</Text>
         <TextInput
-          style={[styles.modalSingleInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
-          placeholder="เช่น รีวิวฟีเจอร์ AI ในสมาร์ตโฟน..."
+          style={[styles.modalTextInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+          placeholder="เช่น รีวิวไมโครโฟนไร้สายสำหรับ Creator..."
           placeholderTextColor={colors.textMuted}
           value={newTitle}
           onChangeText={setNewTitle}
         />
 
-        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>แพลตฟอร์มเผยแพร่</Text>
-        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>แพลตฟอร์มเผยแพร่</Text>
+        <View style={styles.platChoiceRow}>
           {['TikTok', 'YouTube', 'Instagram'].map((p) => (
             <TouchableOpacity
               key={p}
               style={[
-                styles.choiceChip,
+                styles.platChoiceBtn,
                 { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
                 newPlatform === p && { backgroundColor: colors.primary, borderColor: colors.primary },
               ]}
               onPress={() => setNewPlatform(p)}
             >
-              <Text style={[styles.choiceChipText, { color: colors.textSecondary }, newPlatform === p && { color: '#fff', fontWeight: '700' }]}>
+              <Text
+                style={[
+                  styles.platChoiceBtnText,
+                  { color: colors.textSecondary },
+                  newPlatform === p && { color: '#FFFFFF', fontWeight: '700' },
+                ]}
+              >
                 {p}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>กำหนดส่งงาน (YYYY-MM-DD)</Text>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>กำหนดส่งงาน (YYYY-MM-DD)</Text>
         <TextInput
-          style={[styles.modalSingleInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
-          placeholder={getDynamicDueDate(7)}
+          style={[styles.modalTextInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+          placeholder="YYYY-MM-DD"
           placeholderTextColor={colors.textMuted}
           value={newDueDate}
           onChangeText={setNewDueDate}
         />
 
-        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>คำอธิบาย / รายละเอียดเบื้องต้น</Text>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>คำอธิบาย / รายละเอียดเบื้องต้น</Text>
         <TextInput
-          style={[styles.modalInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary, height: 70 }]}
-          placeholder="เนื้อหาคร่าวๆ, จุดประสงค์ หรือแนวคิด..."
+          style={[styles.modalInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+          placeholder="เนื้อหาคร่าวๆ, จุดประสงค์ หรือแนวทาง..."
           placeholderTextColor={colors.textMuted}
           value={newDesc}
           onChangeText={setNewDesc}
           multiline
+          numberOfLines={3}
         />
 
         <View style={styles.modalBtnRow}>
           <TouchableOpacity
-            style={[styles.modalCancelBtn, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
+            style={[styles.modalBtnCancel, { borderColor: colors.border }]}
             onPress={() => setCreateModalVisible(false)}
-            disabled={submittingCreate}
           >
-            <Text style={[styles.modalCancelBtnText, { color: colors.textSecondary }]}>ยกเลิก</Text>
+            <Text style={[styles.modalBtnCancelText, { color: colors.textSecondary }]}>ยกเลิก</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
-            style={[styles.modalConfirmBtn, { backgroundColor: colors.primary }]}
+            style={[styles.modalBtnConfirm, { backgroundColor: colors.primary }]}
             onPress={handleCreateContent}
             disabled={submittingCreate}
           >
             {submittingCreate ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
+              <ActivityIndicator color="#fff" size="small" />
             ) : (
-              <Text style={styles.modalConfirmBtnText}>ยืนยันสร้างงาน</Text>
+              <Text style={styles.modalBtnConfirmText}>ยืนยันสร้างงาน</Text>
             )}
           </TouchableOpacity>
         </View>
       </SmoothModal>
 
-      {/* Assign Task Modal (User Requirement 1.3.1 #7) */}
+      {/* Assign Task Modal */}
       <SmoothModal
         visible={assignModalVisible}
         onClose={() => setAssignModalVisible(false)}
-        title="มอบหมายงานย่อย (Assign Task)"
-        subtitle={`สำหรับชิ้นงาน: ${assignTargetContent?.title || ''}`}
+        title="มอบหมายงานย่อย"
+        subtitle={assignTargetContent ? `ชิ้นงาน: ${assignTargetContent.title}` : 'มอบหมายงานใหม่'}
       >
-        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>ชื่องานย่อย *</Text>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>ชื่องานย่อย (Task Title) *</Text>
         <TextInput
-          style={[styles.modalSingleInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
-          placeholder="เช่น ตัดต่อคลิปหลัก 60 วินาที..."
+          style={[styles.modalTextInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+          placeholder="เช่น เขียนบทสคริปต์, ตัดต่อวิดีโอหลัก..."
           placeholderTextColor={colors.textMuted}
           value={taskTitle}
           onChangeText={setTaskTitle}
         />
 
-        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>ประเภทงาน (Task Type)</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-          {['Editing', 'Scripting', 'Filming', 'Graphic Design', 'Sound Design'].map((type) => (
+        <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>ประเภทงาน</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 6 }}>
+          {['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design'].map((type) => (
             <TouchableOpacity
               key={type}
               style={[
-                styles.choiceChip,
-                { backgroundColor: colors.surfaceSubtle, borderColor: colors.border, marginRight: 6 },
+                styles.platChoiceBtn,
+                { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
                 taskType === type && { backgroundColor: colors.primary, borderColor: colors.primary },
               ]}
               onPress={() => setTaskType(type)}
             >
-              <Text style={[styles.choiceChipText, { color: colors.textSecondary }, taskType === type && { color: '#fff', fontWeight: '700' }]}>
+              <Text
+                style={[
+                  styles.platChoiceBtnText,
+                  { color: colors.textSecondary },
+                  taskType === type && { color: '#FFFFFF', fontWeight: '700' },
+                ]}
+              >
                 {type}
               </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>มอบหมายให้ (Assignee)</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>ผู้รับผิดชอบงาน</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 6 }}>
           {teamMembers.map((m) => {
-            const memberId = m._id || m.id;
-            const memberName = m.firstName ? `${m.firstName} (${m.role})` : (m.name || m.username);
-            const isSelected = assignedToId === memberId;
+            const mId = m._id || m.id;
+            const mName = m.firstName ? `${m.firstName} ${m.lastName || ''}`.trim() : (m.username || 'สมาชิก');
+            const isSelected = assignedToId === mId;
             return (
               <TouchableOpacity
-                key={memberId}
+                key={mId}
                 style={[
-                  styles.choiceChip,
-                  { backgroundColor: colors.surfaceSubtle, borderColor: colors.border, marginRight: 6 },
+                  styles.platChoiceBtn,
+                  { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
                   isSelected && { backgroundColor: colors.primary, borderColor: colors.primary },
                 ]}
-                onPress={() => setAssignedToId(memberId)}
+                onPress={() => setAssignedToId(mId)}
               >
-                <Text style={[styles.choiceChipText, { color: colors.textSecondary }, isSelected && { color: '#fff', fontWeight: '700' }]}>
-                  {memberName}
+                <Text
+                  style={[
+                    styles.platChoiceBtnText,
+                    { color: colors.textSecondary },
+                    isSelected && { color: '#FFFFFF', fontWeight: '700' },
+                  ]}
+                >
+                  {mName} ({m.position || 'Member'})
                 </Text>
               </TouchableOpacity>
             );
           })}
         </ScrollView>
 
-        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>คำสั่งการ / รายละเอียดงาน</Text>
+        <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>กำหนดส่ง (YYYY-MM-DD)</Text>
         <TextInput
-          style={[styles.modalInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary, height: 60 }]}
-          placeholder="ระบุข้อกำหนดเฉพาะเจาะจง..."
+          style={[styles.modalTextInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+          placeholder="YYYY-MM-DD"
+          placeholderTextColor={colors.textMuted}
+          value={taskDueDate}
+          onChangeText={setTaskDueDate}
+        />
+
+        <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>หมายเหตุ / บรีฟงาน</Text>
+        <TextInput
+          style={[styles.modalInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+          placeholder="ระบุข้อกำหนดเพิ่มเติม..."
           placeholderTextColor={colors.textMuted}
           value={taskNotes}
           onChangeText={setTaskNotes}
           multiline
+          numberOfLines={2}
         />
 
         <View style={styles.modalBtnRow}>
           <TouchableOpacity
-            style={[styles.modalCancelBtn, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
+            style={[styles.modalBtnCancel, { borderColor: colors.border }]}
             onPress={() => setAssignModalVisible(false)}
-            disabled={submittingAssign}
           >
-            <Text style={[styles.modalCancelBtnText, { color: colors.textSecondary }]}>ยกเลิก</Text>
+            <Text style={[styles.modalBtnCancelText, { color: colors.textSecondary }]}>ยกเลิก</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
-            style={[styles.modalConfirmBtn, { backgroundColor: colors.primary }]}
+            style={[styles.modalBtnConfirm, { backgroundColor: colors.primary }]}
             onPress={handleAssignTask}
             disabled={submittingAssign}
           >
             {submittingAssign ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
+              <ActivityIndicator color="#fff" size="small" />
             ) : (
-              <Text style={styles.modalConfirmBtnText}>มอบหมายงาน</Text>
+              <Text style={styles.modalBtnConfirmText}>ยืนยันมอบหมาย</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -1164,7 +1329,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: 1,
   },
@@ -1172,7 +1337,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
   },
   roleRow: {
@@ -1182,37 +1347,47 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   headerSubtitle: {
-    fontSize: 12,
+    fontSize: 11,
   },
   dbBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: 10,
+    gap: 4,
   },
   dbLive: {
-    backgroundColor: '#F0FDF4',
+    backgroundColor: '#ECFDF5',
   },
   dbMock: {
     backgroundColor: '#F1F5F9',
   },
   dbDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    marginRight: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   dotLive: {
-    backgroundColor: '#16A34A',
+    backgroundColor: '#10B981',
   },
   dotMock: {
     backgroundColor: '#94A3B8',
   },
   dbText: {
     fontSize: 10,
-    color: '#64748B',
-    fontWeight: '500',
+    fontWeight: '700',
+    color: '#047857',
+  },
+  addBtnHeader: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
+  },
+  addBtnHeaderText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
   },
   avatarButton: {
     width: 38,
@@ -1233,139 +1408,97 @@ const styles = StyleSheet.create({
   kpiContainer: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 14,
   },
   kpiBox: {
     flex: 1,
     borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 6,
+    padding: 10,
     alignItems: 'center',
     borderWidth: 1,
   },
   kpiNumber: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
-    marginBottom: 2,
   },
   kpiLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  scopeBar: {
+    flexDirection: 'row',
+    padding: 3,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  scopeBtn: {
+    flex: 1,
+    paddingVertical: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 9,
+  },
+  scopeBtnActive: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  scopeBtnText: {
     fontSize: 11,
     fontWeight: '600',
   },
   sectionContainer: {
     marginBottom: 20,
   },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
+  sectionNoticeBox: {
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    marginBottom: 14,
   },
-  sectionHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  toggleChevron: {
-    fontSize: 12,
+  sectionNoticeTitle: {
+    fontSize: 13,
     fontWeight: '700',
-    paddingHorizontal: 4,
+    marginBottom: 2,
   },
-  sectionBody: {
-    marginTop: 4,
+  sectionNoticeSub: {
+    fontSize: 11,
+    lineHeight: 16,
+  },
+  filterChipScroll: {
+    marginBottom: 12,
+  },
+  filterChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginRight: 8,
+  },
+  filterChipText: {
+    fontSize: 11,
+    fontWeight: '600',
   },
   reviewCard: {
     borderRadius: 14,
     padding: 16,
-    borderWidth: 1.5,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  stageBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  stageBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  cardSubtitle: {
-    fontSize: 12,
-    marginTop: 2,
-    marginBottom: 6,
-  },
-  replyNotesBox: {
-    padding: 10,
-    borderRadius: 8,
     borderWidth: 1,
-    marginTop: 10,
-  },
-  replyNotesLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  replyNotesText: {
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  sectionTitlePriority: {
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  badgeCount: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  badgeCountText: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  sectionSubtitle: {
-    fontSize: 11,
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  sectionCount: {
-    fontSize: 12,
-  },
-  filterScroll: {
-    marginBottom: 16,
-  },
-  filterPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginRight: 8,
-  },
-  filterPillText: {
-    fontSize: 12,
-    fontWeight: '500',
   },
   card: {
     borderRadius: 14,
     padding: 16,
-    borderWidth: 1,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 1,
+    borderWidth: 1,
   },
   cardTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   platBadge: {
     paddingHorizontal: 8,
@@ -1373,8 +1506,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   platText: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '700',
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -1383,122 +1516,100 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   statusBadgeText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '700',
   },
   cardTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
     marginBottom: 4,
   },
+  cardSubtitle: {
+    fontSize: 11,
+    marginBottom: 6,
+  },
   cardDesc: {
-    fontSize: 13,
-    lineHeight: 19,
-    marginBottom: 10,
+    fontSize: 12,
+    lineHeight: 16,
+    marginBottom: 8,
   },
   metaRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 8,
-    paddingTop: 12,
     borderTopWidth: 1,
+    paddingTop: 8,
     marginTop: 4,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   metaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flex: 1,
   },
   metaText: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 11,
+  },
+  btnPreviewLink: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 10,
+  },
+  btnPreviewLinkText: {
+    fontSize: 11,
+    textDecorationLine: 'underline',
+  },
+  replyNotesBox: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 10,
+  },
+  replyNotesLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  replyNotesText: {
+    fontSize: 11,
+    lineHeight: 15,
   },
   actionRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 2,
+    gap: 10,
+    marginTop: 6,
   },
   btnSecondary: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 10,
     borderWidth: 1,
+    borderRadius: 8,
+    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 44,
   },
   btnSecondaryText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
   },
   btnPrimary: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 10,
+    borderRadius: 8,
+    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 44,
   },
   btnPrimaryText: {
-    fontSize: 13,
-    fontWeight: '700',
     color: '#FFFFFF',
-  },
-  btnAction: {
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 44,
-    marginTop: 2,
-  },
-  btnActionText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  btnPublish: {
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 44,
-    marginTop: 2,
-  },
-  btnPublishText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  revisionNotice: {
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginBottom: 8,
-  },
-  revisionNoticeText: {
     fontSize: 12,
-    textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: '700',
   },
-  publishedNotice: {
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+  publishedBanner: {
     borderRadius: 8,
-    borderWidth: 1,
-    marginTop: 2,
+    padding: 8,
+    alignItems: 'center',
+    marginTop: 6,
   },
-  publishedNoticeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    textAlign: 'center',
+  publishedBannerText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   centerLoading: {
     padding: 32,
@@ -1512,125 +1623,189 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: 'center',
     borderRadius: 12,
-    marginTop: 12,
     borderWidth: 1,
+    marginTop: 8,
   },
   emptyTitle: {
     fontSize: 14,
     fontWeight: '700',
-    textAlign: 'center',
   },
   emptyDesc: {
     fontSize: 12,
     marginTop: 4,
     textAlign: 'center',
   },
-  modalOverlay: {
+  // Member Workload Styles (Tab 2)
+  memberOverviewCard: {
+    borderRadius: 14,
+    padding: 14,
+    borderWidth: 1,
+    marginBottom: 14,
+  },
+  memberOverviewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  memberOverviewLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.65)',
+  },
+  memberAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
   },
-  modalCard: {
-    width: '100%',
-    maxWidth: 400,
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 20,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 16,
+  memberAvatarText: {
+    color: '#FFFFFF',
     fontWeight: '700',
+    fontSize: 14,
+  },
+  memberOverviewName: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  memberRoleBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 2,
+  },
+  positionPill: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  positionPillText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  memberRoleText: {
+    fontSize: 10,
+  },
+  btnAssignMini: {
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  btnAssignMiniText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  memberTasksBody: {
+    marginTop: 10,
+  },
+  noTaskText: {
+    fontSize: 11,
+    fontStyle: 'italic',
+    paddingVertical: 4,
+  },
+  memberTaskRow: {
+    borderRadius: 8,
+    padding: 10,
+    borderWidth: 1,
+    marginBottom: 8,
+  },
+  memberTaskTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 4,
   },
-  modalSubtitle: {
-    fontSize: 12,
-    marginBottom: 16,
+  memberTaskType: {
+    fontSize: 10,
+    fontWeight: '700',
   },
+  statusBadgeSmall: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    borderWidth: 1,
+  },
+  statusBadgeSmallText: {
+    fontSize: 9,
+    fontWeight: '700',
+  },
+  memberTaskTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  memberTaskContent: {
+    fontSize: 10,
+  },
+  // Modal Styles
   modalLabel: {
     fontSize: 12,
-    fontWeight: '600',
-    marginBottom: 8,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  modalTextInput: {
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 13,
   },
   modalInput: {
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 8,
     fontSize: 13,
-    minHeight: 88,
     textAlignVertical: 'top',
-    marginBottom: 16,
   },
   modalBtnRow: {
     flexDirection: 'row',
     gap: 10,
+    marginTop: 14,
   },
-  modalCancelBtn: {
+  modalBtnCancel: {
     flex: 1,
-    minHeight: 44,
-    borderRadius: 10,
     borderWidth: 1,
-    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 10,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  modalCancelBtnText: {
-    fontSize: 13,
+  modalBtnCancelText: {
+    fontSize: 12,
     fontWeight: '600',
   },
-  modalConfirmBtn: {
-    flex: 1.5,
-    minHeight: 44,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalConfirmBtnText: {
-    color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  addBtnHeader: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
+  modalBtnConfirm: {
+    flex: 1,
     borderRadius: 8,
+    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addBtnHeaderText: {
+  modalBtnConfirmText: {
     color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '700',
   },
-  btnPreviewLink: {
+  platChoiceRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 6,
+  },
+  platChoiceBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
     borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-    marginBottom: 12,
+    marginRight: 6,
   },
-  btnPreviewLinkText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  modalSingleInput: {
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-    fontSize: 13,
-    marginBottom: 12,
-  },
-  choiceChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  choiceChipText: {
-    fontSize: 12,
+  platChoiceBtnText: {
+    fontSize: 11,
     fontWeight: '600',
   },
 });

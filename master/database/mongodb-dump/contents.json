@@ -1,16 +1,16 @@
 [
   {
-    "_id": "6ae9c9965acca0c43752e459",
+    "_id": "6aea12d29ed6fa6a275efd47",
     "title": "AI Tutorial EP.01",
     "description": "เจาะลึกการใช้ AI ช่วย Generate Prompt และสร้าง Storyboard ฉบับสมบูรณ์",
     "platform": "TikTok",
     "status": "IN_PROGRESS",
     "category": "Education",
-    "createdBy": "6ae9c9965acca0c43752e450",
-    "teamId": "6ae9c9965acca0c43752e454",
+    "createdBy": "6aea12d29ed6fa6a275efd3e",
+    "teamId": "6aea12d29ed6fa6a275efd42",
     "progress": 70,
-    "dueDate": "2026-11-06T11:46:30.556Z",
-    "ideaId": "6ae9c9965acca0c43752e456",
+    "dueDate": "2026-11-06T16:58:58.242Z",
+    "ideaId": "6aea12d29ed6fa6a275efd44",
     "metrics": [
       {
         "views": 45200,
@@ -21,27 +21,27 @@
         "averageViewDuration": 0,
         "engagementRate": 17.5,
         "followersGained": 0,
-        "collectedAt": "2026-11-03T11:46:30.583Z"
+        "collectedAt": "2026-11-03T16:58:58.301Z"
       }
     ],
     "files": [],
     "versions": [],
     "reviewHistory": [],
-    "createdAt": "2026-11-03T11:46:30.583Z",
-    "updatedAt": "2026-11-03T11:46:30.583Z",
+    "createdAt": "2026-11-03T16:58:58.302Z",
+    "updatedAt": "2026-11-03T16:58:58.302Z",
     "__v": 0
   },
   {
-    "_id": "6ae9c9965acca0c43752e45a",
+    "_id": "6aea12d29ed6fa6a275efd48",
     "title": "Product Review 8K Camera",
     "description": "รีวิวอุปกรณ์สตูดิโอ 8K ไมโครโฟนและไฟสตูดิโอแบบพกพา",
     "platform": "YouTube",
     "status": "REVIEW",
     "category": "Tech Review",
-    "createdBy": "6ae9c9965acca0c43752e451",
-    "teamId": "6ae9c9965acca0c43752e454",
+    "createdBy": "6aea12d29ed6fa6a275efd3f",
+    "teamId": "6aea12d29ed6fa6a275efd42",
     "progress": 85,
-    "dueDate": "2026-11-04T11:46:30.556Z",
+    "dueDate": "2026-11-04T16:58:58.242Z",
     "metrics": [
       {
         "views": 18400,
@@ -52,104 +52,104 @@
         "averageViewDuration": 0,
         "engagementRate": 14.2,
         "followersGained": 0,
-        "collectedAt": "2026-11-03T11:46:30.586Z"
+        "collectedAt": "2026-11-03T16:58:58.303Z"
       }
     ],
     "files": [],
     "versions": [],
     "reviewHistory": [],
-    "createdAt": "2026-11-03T11:46:30.587Z",
-    "updatedAt": "2026-11-03T11:46:30.587Z",
+    "createdAt": "2026-11-03T16:58:58.304Z",
+    "updatedAt": "2026-11-03T16:58:58.304Z",
     "__v": 0
   },
   {
-    "_id": "6ae9c9965acca0c43752e45b",
+    "_id": "6aea12d29ed6fa6a275efd49",
     "title": "Thumbnail Campaign",
     "description": "ชุดภาพปกและแคมเปญโปรโมตสื่อประจำสัปดาห์บน Instagram",
     "platform": "Instagram",
     "status": "IN_PROGRESS",
     "category": "Design",
-    "createdBy": "6ae9c9965acca0c43752e452",
-    "teamId": "6ae9c9965acca0c43752e454",
+    "createdBy": "6aea12d29ed6fa6a275efd40",
+    "teamId": "6aea12d29ed6fa6a275efd42",
     "progress": 30,
-    "dueDate": "2026-11-08T11:46:30.556Z",
+    "dueDate": "2026-11-08T16:58:58.242Z",
     "files": [],
     "versions": [],
     "reviewHistory": [],
     "metrics": [],
-    "createdAt": "2026-11-03T11:46:30.588Z",
-    "updatedAt": "2026-11-03T11:46:30.588Z",
+    "createdAt": "2026-11-03T16:58:58.305Z",
+    "updatedAt": "2026-11-03T16:58:58.305Z",
     "__v": 0
   },
   {
-    "_id": "6ae9c9965acca0c43752e45c",
+    "_id": "6aea12d29ed6fa6a275efd4a",
     "title": "Tech News Daily Recap",
     "description": "คลิปสรุปข่าว AI ประจำวันใน 60 วินาที เน้นความกระชับและเสียงพากย์คมชัด",
     "platform": "TikTok",
     "status": "REVISION",
     "category": "News & Tech",
-    "createdBy": "6ae9c9965acca0c43752e450",
-    "teamId": "6ae9c9965acca0c43752e454",
+    "createdBy": "6aea12d29ed6fa6a275efd3e",
+    "teamId": "6aea12d29ed6fa6a275efd42",
     "progress": 60,
-    "dueDate": "2026-11-04T11:46:30.556Z",
+    "dueDate": "2026-11-04T16:58:58.242Z",
     "reviewHistory": [
       {
-        "reviewerId": "6ae9c9965acca0c43752e44f",
+        "reviewerId": "6aea12d29ed6fa6a275efd3d",
         "decision": "REVISION",
         "notes": "นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ",
-        "reviewedAt": "2026-11-03T11:06:30.589Z"
+        "reviewedAt": "2026-11-03T16:18:58.306Z"
       }
     ],
     "files": [],
     "versions": [],
     "metrics": [],
-    "createdAt": "2026-11-03T11:46:30.589Z",
-    "updatedAt": "2026-11-03T11:46:30.589Z",
+    "createdAt": "2026-11-03T16:58:58.306Z",
+    "updatedAt": "2026-11-03T16:58:58.306Z",
     "__v": 0
   },
   {
-    "_id": "6ae9c9965acca0c43752e45d",
+    "_id": "6aea12d29ed6fa6a275efd4b",
     "title": "Desk Setup Minimalist Guide",
     "description": "วิดีโอแนะนำอุปกรณ์จัดโต๊ะทำงานสไตล์ Minimalist แสงธรรมชาติ",
     "platform": "YouTube",
     "status": "APPROVED",
     "category": "Lifestyle",
-    "createdBy": "6ae9c9965acca0c43752e452",
-    "teamId": "6ae9c9965acca0c43752e454",
+    "createdBy": "6aea12d29ed6fa6a275efd40",
+    "teamId": "6aea12d29ed6fa6a275efd42",
     "progress": 100,
-    "dueDate": "2026-11-01T11:46:30.556Z",
+    "dueDate": "2026-11-01T16:58:58.242Z",
     "reviewHistory": [
       {
-        "reviewerId": "6ae9c9965acca0c43752e44f",
+        "reviewerId": "6aea12d29ed6fa6a275efd3d",
         "decision": "APPROVED",
         "notes": "งานตัดต่อและเกรดสีผ่านเกณฑ์เรียบร้อย พร้อมสำหรับขั้นตอนการเผยแพร่",
-        "reviewedAt": "2026-11-03T09:46:30.590Z"
+        "reviewedAt": "2026-11-03T14:58:58.307Z"
       }
     ],
     "files": [],
     "versions": [],
     "metrics": [],
-    "createdAt": "2026-11-03T11:46:30.591Z",
-    "updatedAt": "2026-11-03T11:46:30.591Z",
+    "createdAt": "2026-11-03T16:58:58.308Z",
+    "updatedAt": "2026-11-03T16:58:58.308Z",
     "__v": 0
   },
   {
-    "_id": "6ae9c9965acca0c43752e45e",
+    "_id": "6aea12d29ed6fa6a275efd4c",
     "title": "AI Voice Cloning Behind-The-Scenes",
     "description": "เบื้องหลังการพากย์เสียงจำลองสำหรับวิดีโอสตูดิโอ",
     "platform": "YouTube",
     "status": "PLANNING",
     "category": "Technology",
-    "createdBy": "6ae9c9965acca0c43752e451",
-    "teamId": "6ae9c9965acca0c43752e454",
+    "createdBy": "6aea12d29ed6fa6a275efd3f",
+    "teamId": "6aea12d29ed6fa6a275efd42",
     "progress": 10,
-    "dueDate": "2026-11-10T11:46:30.556Z",
+    "dueDate": "2026-11-10T16:58:58.242Z",
     "files": [],
     "versions": [],
     "reviewHistory": [],
     "metrics": [],
-    "createdAt": "2026-11-03T11:46:30.592Z",
-    "updatedAt": "2026-11-03T11:46:30.592Z",
+    "createdAt": "2026-11-03T16:58:58.309Z",
+    "updatedAt": "2026-11-03T16:58:58.309Z",
     "__v": 0
   }
 ]

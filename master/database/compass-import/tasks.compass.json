@@ -1,321 +1,321 @@
 [
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e45f"
+      "$oid": "6aea12d29ed6fa6a275efd4d"
     },
     "title": "ตัดต่อแก้ไขคลิปและปรับแต่งเสียง (Tech News Recap)",
     "contentId": {
-      "$oid": "6ae9c9965acca0c43752e45c"
+      "$oid": "6aea12d29ed6fa6a275efd4a"
     },
     "taskType": "Editing",
     "assignedTo": {
-      "$oid": "6ae9c9965acca0c43752e450"
+      "$oid": "6aea12d29ed6fa6a275efd3e"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "progress": 60,
     "status": "REVISION",
     "dueDate": {
-      "$date": "2026-11-04T11:46:30.556Z"
+      "$date": "2026-11-04T16:58:58.242Z"
     },
     "submissionUrl": "https://drive.google.com/file/d/tech_news_recap_v1_draft",
     "notes": "นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ",
     "revisionNotes": "นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป ช่วยแก้แล้วส่งตรวจใหม่ด้วยครับ",
     "replyNotes": "",
     "createdAt": {
-      "$date": "2026-11-03T11:46:30.593Z"
+      "$date": "2026-11-03T16:58:58.310Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T11:46:30.593Z"
+      "$date": "2026-11-03T16:58:58.310Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e460"
+      "$oid": "6aea12d29ed6fa6a275efd4e"
     },
     "title": "ตัดต่อวิดีโอ (Highlight & Sound FX)",
     "contentId": {
-      "$oid": "6ae9c9965acca0c43752e459"
+      "$oid": "6aea12d29ed6fa6a275efd47"
     },
     "taskType": "Editing",
     "assignedTo": {
-      "$oid": "6ae9c9965acca0c43752e450"
+      "$oid": "6aea12d29ed6fa6a275efd3e"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "progress": 70,
     "status": "IN_PROGRESS",
     "dueDate": {
-      "$date": "2026-11-06T11:46:30.556Z"
+      "$date": "2026-11-06T16:58:58.242Z"
     },
     "submissionUrl": "",
     "notes": "กำลังใส่ Sound FX และ Subtitle ส่วนท้ายคลิป",
     "revisionNotes": "",
     "replyNotes": "",
     "createdAt": {
-      "$date": "2026-11-03T11:46:30.594Z"
+      "$date": "2026-11-03T16:58:58.311Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T11:46:30.594Z"
+      "$date": "2026-11-03T16:58:58.311Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e461"
+      "$oid": "6aea12d29ed6fa6a275efd4f"
     },
     "title": "Export วิดีโอ Master 4K Color Graded",
     "contentId": {
-      "$oid": "6ae9c9965acca0c43752e45a"
+      "$oid": "6aea12d29ed6fa6a275efd48"
     },
     "taskType": "Editing",
     "assignedTo": {
-      "$oid": "6ae9c9965acca0c43752e450"
+      "$oid": "6aea12d29ed6fa6a275efd3e"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "progress": 85,
     "status": "REVIEW",
     "dueDate": {
-      "$date": "2026-11-05T11:46:30.556Z"
+      "$date": "2026-11-05T16:58:58.242Z"
     },
     "submissionUrl": "https://frame.io/player/product_review_master_4k",
     "notes": "ปรับ Color Grading และ Render 4K เสร็จแล้ว ส่งให้ Manager ตรวจสอบ",
     "revisionNotes": "",
     "replyNotes": "",
     "createdAt": {
-      "$date": "2026-11-03T11:46:30.595Z"
+      "$date": "2026-11-03T16:58:58.312Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T11:46:30.595Z"
+      "$date": "2026-11-03T16:58:58.312Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e462"
+      "$oid": "6aea12d29ed6fa6a275efd50"
     },
     "title": "คัดเลือกฟุตเทจ B-Roll สำหรับคลิปเสียงพากย์ AI",
     "contentId": {
-      "$oid": "6ae9c9965acca0c43752e45e"
+      "$oid": "6aea12d29ed6fa6a275efd4c"
     },
     "taskType": "Editing",
     "assignedTo": {
-      "$oid": "6ae9c9965acca0c43752e450"
+      "$oid": "6aea12d29ed6fa6a275efd3e"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "progress": 0,
     "status": "TODO",
     "dueDate": {
-      "$date": "2026-11-09T11:46:30.556Z"
+      "$date": "2026-11-09T16:58:58.242Z"
     },
     "submissionUrl": "",
     "notes": "รอดำเนินการหลังจากสคริปต์เสร็จสมบูรณ์",
     "revisionNotes": "",
     "replyNotes": "",
     "createdAt": {
-      "$date": "2026-11-03T11:46:30.596Z"
+      "$date": "2026-11-03T16:58:58.313Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T11:46:30.596Z"
+      "$date": "2026-11-03T16:58:58.313Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e463"
+      "$oid": "6aea12d29ed6fa6a275efd51"
     },
     "title": "Export Teaser สรุปอุปกรณ์จัดโต๊ะ 30 วินาที",
     "contentId": {
-      "$oid": "6ae9c9965acca0c43752e45d"
+      "$oid": "6aea12d29ed6fa6a275efd4b"
     },
     "taskType": "Editing",
     "assignedTo": {
-      "$oid": "6ae9c9965acca0c43752e450"
+      "$oid": "6aea12d29ed6fa6a275efd3e"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "progress": 100,
     "status": "DONE",
     "dueDate": {
-      "$date": "2026-11-01T11:46:30.556Z"
+      "$date": "2026-11-01T16:58:58.242Z"
     },
     "submissionUrl": "https://drive.google.com/file/d/desk_setup_teaser_final",
     "notes": "ผ่านการอนุมัติเรียบร้อย",
     "revisionNotes": "",
     "replyNotes": "",
     "createdAt": {
-      "$date": "2026-11-03T11:46:30.597Z"
+      "$date": "2026-11-03T16:58:58.313Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T11:46:30.597Z"
+      "$date": "2026-11-03T16:58:58.313Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e464"
+      "$oid": "6aea12d29ed6fa6a275efd52"
     },
     "title": "เขียนบทและตรวจทานสคริปต์ (Script Product Review v2)",
     "contentId": {
-      "$oid": "6ae9c9965acca0c43752e45a"
+      "$oid": "6aea12d29ed6fa6a275efd48"
     },
     "taskType": "Scripting",
     "assignedTo": {
-      "$oid": "6ae9c9965acca0c43752e451"
+      "$oid": "6aea12d29ed6fa6a275efd3f"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "progress": 85,
     "status": "REVIEW",
     "dueDate": {
-      "$date": "2026-11-04T11:46:30.556Z"
+      "$date": "2026-11-04T16:58:58.242Z"
     },
     "submissionUrl": "https://docs.google.com/document/d/script_product_review_v2",
     "notes": "ปรับแก้บทสนทนาและจุดเน้นสปอนเซอร์เรียบร้อยแล้ว ส่งให้ Manager ตรวจสอบ",
     "revisionNotes": "",
     "replyNotes": "",
     "createdAt": {
-      "$date": "2026-11-03T11:46:30.598Z"
+      "$date": "2026-11-03T16:58:58.314Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T11:46:30.598Z"
+      "$date": "2026-11-03T16:58:58.314Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e465"
+      "$oid": "6aea12d29ed6fa6a275efd53"
     },
     "title": "ร่างสคริปต์สัมภาษณ์ AI Tutorial EP.02",
     "contentId": {
-      "$oid": "6ae9c9965acca0c43752e459"
+      "$oid": "6aea12d29ed6fa6a275efd47"
     },
     "taskType": "Scripting",
     "assignedTo": {
-      "$oid": "6ae9c9965acca0c43752e451"
+      "$oid": "6aea12d29ed6fa6a275efd3f"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "progress": 40,
     "status": "IN_PROGRESS",
     "dueDate": {
-      "$date": "2026-11-07T11:46:30.556Z"
+      "$date": "2026-11-07T16:58:58.242Z"
     },
     "submissionUrl": "",
     "notes": "กำลังสรุปประเด็นคำถามหลัก 5 ข้อ",
     "revisionNotes": "",
     "replyNotes": "",
     "createdAt": {
-      "$date": "2026-11-03T11:46:30.599Z"
+      "$date": "2026-11-03T16:58:58.315Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T11:46:30.599Z"
+      "$date": "2026-11-03T16:58:58.315Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e466"
+      "$oid": "6aea12d29ed6fa6a275efd54"
     },
     "title": "ออกแบบภาพปกและแบนเนอร์ (Thumbnail Campaign)",
     "contentId": {
-      "$oid": "6ae9c9965acca0c43752e45b"
+      "$oid": "6aea12d29ed6fa6a275efd49"
     },
     "taskType": "Graphic Design",
     "assignedTo": {
-      "$oid": "6ae9c9965acca0c43752e452"
+      "$oid": "6aea12d29ed6fa6a275efd40"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "progress": 30,
     "status": "IN_PROGRESS",
     "dueDate": {
-      "$date": "2026-11-08T11:46:30.556Z"
+      "$date": "2026-11-08T16:58:58.242Z"
     },
     "submissionUrl": "",
     "notes": "กำลังขึ้นโครงร่าง Layout มินิมอล 3 รูปแบบ",
     "revisionNotes": "",
     "replyNotes": "",
     "createdAt": {
-      "$date": "2026-11-03T11:46:30.600Z"
+      "$date": "2026-11-03T16:58:58.316Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T11:46:30.600Z"
+      "$date": "2026-11-03T16:58:58.316Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e467"
+      "$oid": "6aea12d29ed6fa6a275efd55"
     },
     "title": "จัดทำ Infographic กราฟิกสถิติ Tech News Recap",
     "contentId": {
-      "$oid": "6ae9c9965acca0c43752e45c"
+      "$oid": "6aea12d29ed6fa6a275efd4a"
     },
     "taskType": "Graphic Design",
     "assignedTo": {
-      "$oid": "6ae9c9965acca0c43752e452"
+      "$oid": "6aea12d29ed6fa6a275efd40"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "progress": 0,
     "status": "TODO",
     "dueDate": {
-      "$date": "2026-11-05T11:46:30.556Z"
+      "$date": "2026-11-05T16:58:58.242Z"
     },
     "submissionUrl": "",
     "notes": "เตรียมแผนภูมิเปรียบเทียบ AI Models",
     "revisionNotes": "",
     "replyNotes": "",
     "createdAt": {
-      "$date": "2026-11-03T11:46:30.601Z"
+      "$date": "2026-11-03T16:58:58.316Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T11:46:30.601Z"
+      "$date": "2026-11-03T16:58:58.316Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e468"
+      "$oid": "6aea12d29ed6fa6a275efd56"
     },
     "title": "ออกแบบ Cover Art Desk Setup Minimalist",
     "contentId": {
-      "$oid": "6ae9c9965acca0c43752e45d"
+      "$oid": "6aea12d29ed6fa6a275efd4b"
     },
     "taskType": "Graphic Design",
     "assignedTo": {
-      "$oid": "6ae9c9965acca0c43752e452"
+      "$oid": "6aea12d29ed6fa6a275efd40"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "progress": 100,
     "status": "DONE",
     "dueDate": {
-      "$date": "2026-11-01T11:46:30.556Z"
+      "$date": "2026-11-01T16:58:58.242Z"
     },
     "submissionUrl": "https://drive.google.com/file/d/cover_desk_setup_final",
     "notes": "อัปโหลดภาพขนาด 1920x1080 ผ่านเกณฑ์",
     "revisionNotes": "",
     "replyNotes": "",
     "createdAt": {
-      "$date": "2026-11-03T11:46:30.602Z"
+      "$date": "2026-11-03T16:58:58.317Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T11:46:30.602Z"
+      "$date": "2026-11-03T16:58:58.317Z"
     },
     "__v": 0
   }

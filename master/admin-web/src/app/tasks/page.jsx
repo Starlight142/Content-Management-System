@@ -14,7 +14,8 @@ import {
   Radio,
   CheckCircle2,
   FolderKanban,
-  Settings2
+  Settings2,
+  ExternalLink
 } from 'lucide-react';
 import { presenceClient, apiFetch } from '../../services/presenceClient';
 
@@ -25,6 +26,14 @@ const INITIAL_TASK_TYPES = [
   { id: 4, name: 'Graphic Design', description: 'ทำภาพปก (Thumbnail) และกราฟิกประกอบ', defaultDuration: '1 Day' },
   { id: 5, name: 'Sound Design', description: 'ออกแบบเสียงและดนตรีประกอบ (Sound & Mixing)', defaultDuration: '1 Day' },
   { id: 6, name: 'SEO & Publishing', description: 'จัดทำ Metadata, แฮชแท็ก และตั้งเวลาโพสต์', defaultDuration: '1 Day' },
+];
+
+const CORE_POSITIONS = [
+  'Production Manager',
+  'Video Editor',
+  'Script Writer',
+  'Graphic Designer',
+  'Content Creator',
 ];
 
 export default function TasksPage() {
@@ -38,6 +47,7 @@ export default function TasksPage() {
   const [isWsConnected, setIsWsConnected] = useState(() => presenceClient.isConnected);
   const [taskSearch, setTaskSearch] = useState('');
   const [taskStatusFilter, setTaskStatusFilter] = useState('ALL');
+  const [taskPositionFilter, setTaskPositionFilter] = useState('ALL');
 
   // Modal: Create New Task
   const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
@@ -286,18 +296,24 @@ export default function TasksPage() {
   };
 
   // Filtered lists
+  const pendingReviewCount = tasks.filter((t) => t.status === 'REVIEW').length;
+
   const filteredTasks = tasks.filter((t) => {
     const s = taskSearch.toLowerCase();
     const assigneeName = t.assignedTo
       ? `${t.assignedTo.firstName || ''} ${t.assignedTo.lastName || ''} ${t.assignedTo.username || ''}`.toLowerCase()
       : 'unassigned';
+    const assigneePosition = t.assignedTo?.position || '';
     const contentTitle = (t.contentId?.title || '').toLowerCase();
     const titleMatch = (t.title || '').toLowerCase().includes(s);
     const typeMatch = (t.taskType || '').toLowerCase().includes(s);
     const searchMatch = titleMatch || typeMatch || assigneeName.includes(s) || contentTitle.includes(s);
 
-    if (taskStatusFilter === 'ALL') return searchMatch;
-    return searchMatch && t.status === taskStatusFilter;
+    if (!searchMatch) return false;
+    if (taskStatusFilter !== 'ALL' && t.status !== taskStatusFilter) return false;
+    if (taskPositionFilter !== 'ALL' && assigneePosition !== taskPositionFilter) return false;
+
+    return true;
   });
 
   const filteredTypes = taskTypes.filter((t) => 
@@ -405,21 +421,46 @@ export default function TasksPage() {
               )}
             </div>
 
-            {/* Status Filter */}
-            <div className="flex items-center gap-1.5 overflow-x-auto">
-              {['ALL', 'TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'].map((st) => (
-                <button
-                  key={st}
-                  onClick={() => setTaskStatusFilter(st)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer whitespace-nowrap ${
-                    taskStatusFilter === st
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  {st === 'ALL' ? 'ทั้งหมด' : st}
-                </button>
-              ))}
+            {/* Status & Position Filters */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1.5 overflow-x-auto">
+                {['ALL', 'TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'].map((st) => {
+                  const isReview = st === 'REVIEW';
+                  return (
+                    <button
+                      key={st}
+                      onClick={() => setTaskStatusFilter(st)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                        taskStatusFilter === st
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>{st === 'ALL' ? 'ทั้งหมด' : st}</span>
+                      {isReview && pendingReviewCount > 0 && (
+                        <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                          taskStatusFilter === 'REVIEW' ? 'bg-amber-400 text-slate-900' : 'bg-amber-100 text-amber-800'
+                        }`}>
+                          {pendingReviewCount}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Position Filter Dropdown */}
+              <select
+                value={taskPositionFilter}
+                onChange={(e) => setTaskPositionFilter(e.target.value)}
+                className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 outline-hidden hover:border-blue-400 focus:border-blue-500 cursor-pointer shadow-2xs whitespace-nowrap"
+                title="กรองตามตำแหน่งงาน 5 ตำแหน่งหลัก"
+              >
+                <option value="ALL">ทุกตำแหน่ง (5 Roles)</option>
+                {CORE_POSITIONS.map((pos) => (
+                  <option key={pos} value={pos}>{pos}</option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -466,6 +507,20 @@ export default function TasksPage() {
                               <span className="text-[11px] text-slate-500 inline-block mt-0.5 font-medium px-2 py-0.5 bg-slate-100 rounded">
                                 {t.taskType || 'General'}
                               </span>
+                              {t.submissionUrl && (
+                                <div className="mt-1">
+                                  <a
+                                    href={t.submissionUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                                    title="เปิดดูไฟล์ผลงานที่ทีมงานส่งมอบ"
+                                  >
+                                    <ExternalLink size={11} />
+                                    <span>เปิดดูไฟล์ผลงาน</span>
+                                  </a>
+                                </div>
+                              )}
                             </div>
                           </td>
                           <td className="py-4 px-5 text-slate-700 text-sm">
@@ -480,7 +535,14 @@ export default function TasksPage() {
                               <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">
                                 {assigneeName.charAt(0).toUpperCase()}
                               </div>
-                              <span className="text-xs font-medium text-slate-800">{assigneeName}</span>
+                              <div>
+                                <span className="text-xs font-medium text-slate-800 block">{assigneeName}</span>
+                                {t.assignedTo?.position && (
+                                  <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded inline-block mt-0.5">
+                                    {t.assignedTo.position}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </td>
                           <td className="py-4 px-5 text-xs text-slate-600 whitespace-nowrap">
@@ -679,7 +741,7 @@ export default function TasksPage() {
                     <option value="">-- ยังไม่ระบุ --</option>
                     {users.map((u) => (
                       <option key={u._id || u.id} value={u._id || u.id}>
-                        {u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : u.username} ({u.role})
+                        {u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : u.username} {u.position ? `• ${u.position}` : `(${u.role})`}
                       </option>
                     ))}
                   </select>

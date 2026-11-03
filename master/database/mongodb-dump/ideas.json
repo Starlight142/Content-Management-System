@@ -1,35 +1,35 @@
 [
   {
-    "_id": "6ae9c9965acca0c43752e456",
+    "_id": "6aea12d29ed6fa6a275efd44",
     "title": "รีวิวเปรียบเทียบ AI Video Generator 2026",
     "description": "ทดสอบตัดต่อคลิปด้วย AI 5 ตัวเทียบความคมชัด ความเร็ว และการพากย์เสียงภาษาไทย",
     "category": "Tech Review",
-    "proposedBy": "6ae9c9965acca0c43752e450",
+    "proposedBy": "6aea12d29ed6fa6a275efd3e",
     "status": "APPROVED",
-    "createdAt": "2026-11-03T11:46:30.579Z",
-    "updatedAt": "2026-11-03T11:46:30.579Z",
+    "createdAt": "2026-11-03T16:58:58.298Z",
+    "updatedAt": "2026-11-03T16:58:58.298Z",
     "__v": 0
   },
   {
-    "_id": "6ae9c9965acca0c43752e457",
+    "_id": "6aea12d29ed6fa6a275efd45",
     "title": "สรุปข่าวเทคโนโลยีประจำวันใน 1 นาที",
     "description": "คลิปสั้นเจาะลึกฟีเจอร์ AI ใหม่ล่าสุดประจำวันสำหรับคนไม่มีเวลาอ่านข่าว",
     "category": "News & Tech",
-    "proposedBy": "6ae9c9965acca0c43752e451",
+    "proposedBy": "6aea12d29ed6fa6a275efd3f",
     "status": "APPROVED",
-    "createdAt": "2026-11-03T11:46:30.580Z",
-    "updatedAt": "2026-11-03T11:46:30.580Z",
+    "createdAt": "2026-11-03T16:58:58.299Z",
+    "updatedAt": "2026-11-03T16:58:58.299Z",
     "__v": 0
   },
   {
-    "_id": "6ae9c9965acca0c43752e458",
+    "_id": "6aea12d29ed6fa6a275efd46",
     "title": "แจกพิกัดอุปกรณ์จัดโต๊ะคอม Minimal สำหรับ Live",
     "description": "Content สไตล์ Minimal แนะนำการจัดแสงและไมโครโฟนไร้สาย",
     "category": "Lifestyle",
-    "proposedBy": "6ae9c9965acca0c43752e452",
+    "proposedBy": "6aea12d29ed6fa6a275efd40",
     "status": "DRAFT",
-    "createdAt": "2026-11-03T11:46:30.582Z",
-    "updatedAt": "2026-11-03T11:46:30.582Z",
+    "createdAt": "2026-11-03T16:58:58.300Z",
+    "updatedAt": "2026-11-03T16:58:58.300Z",
     "__v": 0
   }
 ]

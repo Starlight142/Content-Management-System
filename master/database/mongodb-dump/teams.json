@@ -1,60 +1,70 @@
 [
   {
-    "_id": "6ae9c9965acca0c43752e454",
+    "_id": "6aea12d29ed6fa6a275efd42",
     "name": "Content Team A",
     "code": "TEAM-A",
     "joinCode": "TEAM01",
-    "leader": "6ae9c9965acca0c43752e44f",
+    "leader": "6aea12d29ed6fa6a275efd3d",
     "status": "ACTIVE",
     "description": "ทีมผลิต Content หลักประจำปี 2026 สำหรับ TikTok & YouTube",
     "members": [
       {
-        "user": "6ae9c9965acca0c43752e44f",
+        "user": "6aea12d29ed6fa6a275efd3d",
         "roleInTeam": "LEAD",
-        "joinedAt": "2026-11-03T11:46:30.569Z"
+        "joinedAt": "2026-11-03T16:58:58.260Z"
       },
       {
-        "user": "6ae9c9965acca0c43752e450",
+        "user": "6aea12d29ed6fa6a275efd3e",
         "roleInTeam": "EDITOR",
-        "joinedAt": "2026-11-03T11:46:30.569Z"
+        "joinedAt": "2026-11-03T16:58:58.260Z"
       },
       {
-        "user": "6ae9c9965acca0c43752e451",
+        "user": "6aea12d29ed6fa6a275efd3f",
         "roleInTeam": "CREATOR",
-        "joinedAt": "2026-11-03T11:46:30.569Z"
+        "joinedAt": "2026-11-03T16:58:58.260Z"
       },
       {
-        "user": "6ae9c9965acca0c43752e452",
+        "user": "6aea12d29ed6fa6a275efd40",
         "roleInTeam": "DESIGNER",
-        "joinedAt": "2026-11-03T11:46:30.569Z"
+        "joinedAt": "2026-11-03T16:58:58.260Z"
+      },
+      {
+        "user": "6aea12fa068e7b5d75831ab0",
+        "roleInTeam": "CREATOR",
+        "joinedAt": "2026-11-03T16:59:38.178Z"
+      },
+      {
+        "user": "6aea1323068e7b5d75831ae5",
+        "roleInTeam": "CREATOR",
+        "joinedAt": "2026-11-03T17:00:19.125Z"
       }
     ],
-    "createdAt": "2026-11-03T11:46:30.570Z",
-    "updatedAt": "2026-11-03T11:46:30.570Z",
-    "__v": 0
+    "createdAt": "2026-11-03T16:58:58.261Z",
+    "updatedAt": "2026-11-03T17:00:19.125Z",
+    "__v": 2
   },
   {
-    "_id": "6ae9c9965acca0c43752e455",
+    "_id": "6aea12d29ed6fa6a275efd43",
     "name": "Content Team B (Beta Studio)",
     "code": "TEAM-B",
     "joinCode": "TEAM02",
-    "leader": "6ae9c9965acca0c43752e44e",
+    "leader": "6aea12d29ed6fa6a275efd3c",
     "status": "ACTIVE",
     "description": "ทีมสำรองสำหรับทดสอบการกั้นสิทธิ์ความปลอดภัยข้ามทีม",
     "members": [
       {
-        "user": "6ae9c9965acca0c43752e44e",
+        "user": "6aea12d29ed6fa6a275efd3c",
         "roleInTeam": "LEAD",
-        "joinedAt": "2026-11-03T11:46:30.572Z"
+        "joinedAt": "2026-11-03T16:58:58.263Z"
       },
       {
-        "user": "6ae9c9965acca0c43752e453",
+        "user": "6aea12d29ed6fa6a275efd41",
         "roleInTeam": "MEMBER",
-        "joinedAt": "2026-11-03T11:46:30.572Z"
+        "joinedAt": "2026-11-03T16:58:58.263Z"
       }
     ],
-    "createdAt": "2026-11-03T11:46:30.573Z",
-    "updatedAt": "2026-11-03T11:46:30.573Z",
+    "createdAt": "2026-11-03T16:58:58.263Z",
+    "updatedAt": "2026-11-03T16:58:58.263Z",
     "__v": 0
   }
 ]

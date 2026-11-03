@@ -18,12 +18,11 @@ import { useTheme } from '../../theme/ThemeContext';
 import SmoothModal from '../../components/SmoothModal';
 
 const AVAILABLE_POSITIONS = [
-  'Video Editor',
-  'Graphic Designer',
-  'Script Writer',
-  'Content Creator',
   'Production Manager',
-  'Other',
+  'Video Editor',
+  'Script Writer',
+  'Graphic Designer',
+  'Content Creator',
 ];
 
 export default function TeamOverviewScreen({ user, onNavigate }) {
@@ -243,9 +242,19 @@ export default function TeamOverviewScreen({ user, onNavigate }) {
   const formatActivityTime = (isoString) => {
     if (!isoString) return '';
     const date = new Date(isoString);
+    if (isNaN(date.getTime())) return '';
+    const now = new Date();
+    const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
+    if (diffSec < 60) return 'เมื่อสักครู่';
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${diffMin} นาทีที่แล้ว`;
+    const diffHour = Math.floor(diffMin / 60);
+    if (diffHour < 24) return `${diffHour} ชั่วโมงที่แล้ว`;
+    const diffDay = Math.floor(diffHour / 24);
+    if (diffDay < 7) return `${diffDay} วันที่แล้ว`;
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes} น.`;
+    return `${date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })} ${hours}:${minutes} น.`;
   };
 
   return (

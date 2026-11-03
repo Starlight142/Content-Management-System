@@ -12,7 +12,7 @@ import {
   Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { taskApi } from '../../services/api';
+import { taskApi, teamApi } from '../../services/api';
 import { presenceService } from '../../services/presenceService';
 import { useTheme } from '../../theme/ThemeContext';
 
@@ -55,11 +55,31 @@ const checkStageUnlocked = (currentTask, allTasks) => {
 export default function MemberTaskList({ user, onNavigate }) {
   const { colors, isDark } = useTheme();
   const [tasks, setTasks] = useState([]);
-  const [taskScope, setTaskScope] = useState('MY_TASKS'); // 'MY_TASKS' | 'TEAM_TASKS'
+  const [activities, setActivities] = useState([]);
+  const [taskScope, setTaskScope] = useState('MY_TASKS'); // 'MY_TASKS' | 'TEAM_TASKS' | 'ACTIVITY_FEED'
+  const [positionFilter, setPositionFilter] = useState('ALL');
   const [loading, setLoading] = useState(true);
   const [submissionInputs, setSubmissionInputs] = useState({});
   const [replyInputs, setReplyInputs] = useState({});
   const [refreshing, setRefreshing] = useState(false);
+
+  const formatRelativeTime = (isoString) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return '';
+    const now = new Date();
+    const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
+    if (diffSec < 60) return 'เมื่อสักครู่';
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${diffMin} นาทีที่แล้ว`;
+    const diffHour = Math.floor(diffMin / 60);
+    if (diffHour < 24) return `${diffHour} ชั่วโมงที่แล้ว`;
+    const diffDay = Math.floor(diffHour / 24);
+    if (diffDay < 7) return `${diffDay} วันที่แล้ว`;
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })} ${hours}:${minutes} น.`;
+  };
 
   const checkDeadline = (dueDateStr) => {
     if (!dueDateStr) return { isOverdue: false, isUrgent: false, label: 'ไม่ระบุ' };
@@ -109,6 +129,7 @@ export default function MemberTaskList({ user, onNavigate }) {
             assigneeName: t.assignedTo?.firstName
               ? `${t.assignedTo.firstName} ${t.assignedTo.lastName || ''}`.trim()
               : (t.assignedTo?.username || 'ยังไม่ได้มอบหมาย'),
+            assigneePosition: t.assignedTo?.position || 'Content Creator',
             progress: t.progress || (t.status === 'DONE' ? 100 : t.status === 'REVIEW' ? 85 : t.status === 'IN_PROGRESS' ? 50 : 0),
             isMyTask,
           };
@@ -124,12 +145,30 @@ export default function MemberTaskList({ user, onNavigate }) {
     }
   };
 
+  const fetchActivities = async () => {
+    try {
+      const myTeam = await teamApi.getMyTeam().catch(() => null);
+      if (myTeam?._id) {
+        const dashboard = await teamApi.getDashboard(myTeam._id).catch(() => null);
+        if (dashboard?.recentActivities) {
+          setActivities(dashboard.recentActivities);
+        }
+      }
+    } catch (err) {
+      console.warn('fetchActivities error:', err.message);
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
+    fetchActivities();
 
     const unsubscribe = presenceService.subscribe((event) => {
       if (['TASK_CREATED', 'TASK_UPDATED', 'TASK_DELETED', 'CONTENT_UPDATED'].includes(event.type)) {
         fetchTasks();
+      }
+      if (['ACTIVITY_CREATED', 'TASK_CREATED', 'TASK_UPDATED', 'CONTENT_UPDATED'].includes(event.type)) {
+        fetchActivities();
       }
     });
 
@@ -141,7 +180,7 @@ export default function MemberTaskList({ user, onNavigate }) {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchTasks();
+    await Promise.all([fetchTasks(), fetchActivities()]);
     setRefreshing(false);
   };
 
@@ -152,7 +191,7 @@ export default function MemberTaskList({ user, onNavigate }) {
     try {
       await taskApi.updateStatus(taskId, 'IN_PROGRESS');
     } catch (e) {
-      console.warn('Updated task locally');
+      console.warn('Updated task locally:', e.message);
     }
   };
 
@@ -265,12 +304,32 @@ export default function MemberTaskList({ user, onNavigate }) {
     }
   };
 
-  // Visual Hierarchy: Filtered by active scope (My Tasks vs Team Tasks)
-  const displayedTasks = taskScope === 'MY_TASKS'
-    ? tasks.filter((t) => t.isMyTask)
-    : tasks;
-  const urgentTasks = displayedTasks.filter((t) => t.status === 'REVISION' || t.isOverdue || t.isUrgent);
-  const generalTasks = displayedTasks.filter((t) => !(t.status === 'REVISION' || t.isOverdue || t.isUrgent));
+  // 1. My Tasks (ภาพที่ 43 หน้า 63) - งานใครงานมัน 100%
+  const myTasks = tasks.filter((t) => t.isMyTask);
+  const myUrgentTasks = myTasks.filter((t) => t.status === 'REVISION' || t.isOverdue || t.isUrgent);
+  const myGeneralTasks = myTasks.filter((t) => !(t.status === 'REVISION' || t.isOverdue || t.isUrgent));
+
+  // 2. Team Tasks Grouped by Member & 5 Core Positions (ภาพที่ 44 หน้า 64)
+  const filteredTeamTasks = tasks.filter((t) => {
+    if (positionFilter === 'ALL') return true;
+    return (t.assigneePosition || 'Content Creator') === positionFilter;
+  });
+
+  const memberGroupsMap = {};
+  filteredTeamTasks.forEach((t) => {
+    const key = t.assignedToId ? t.assignedToId.toString() : 'unassigned';
+    if (!memberGroupsMap[key]) {
+      memberGroupsMap[key] = {
+        id: key,
+        name: t.assigneeName,
+        position: t.assigneePosition || 'Content Creator',
+        isMySelf: t.isMyTask,
+        tasks: [],
+      };
+    }
+    memberGroupsMap[key].tasks.push(t);
+  });
+  const memberGroups = Object.values(memberGroupsMap);
 
   const renderTaskCard = (item, isActionRequiredSection = false) => {
     const st = getStatusColor(item.status, item.isOverdue);
@@ -348,7 +407,7 @@ export default function MemberTaskList({ user, onNavigate }) {
           <Text style={[styles.progressText, { color: colors.textSecondary }]}>{item.progress || 0}%</Text>
         </View>
 
-        {/* Revision Feedback Callout (Priority 2) */}
+        {/* Revision Feedback Callout */}
         {item.status === 'REVISION' && (
           <View
             style={[
@@ -561,8 +620,12 @@ export default function MemberTaskList({ user, onNavigate }) {
       {/* Top Header Bar */}
       <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View>
-          <Text style={[styles.userName, { color: colors.textPrimary }]}>{user?.name || 'จอห์น'}</Text>
-          <Text style={[styles.userSub, { color: colors.textSecondary }]}>ทีมงานฝ่ายผลิตสื่อ (Creator & Member)</Text>
+          <Text style={[styles.userName, { color: colors.textPrimary }]}>
+            {user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'จอห์น')}
+          </Text>
+          <Text style={[styles.userSub, { color: colors.textSecondary }]}>
+            ทีมงานฝ่ายผลิตสื่อ ({user?.position || 'Video Editor'} • Member)
+          </Text>
         </View>
 
         <TouchableOpacity
@@ -570,7 +633,7 @@ export default function MemberTaskList({ user, onNavigate }) {
           onPress={() => onNavigate && onNavigate('profile')}
         >
           <Text style={styles.avatarButtonText}>
-            {user?.name ? user.name.charAt(0).toUpperCase() : 'M'}
+            {user?.name ? user.name.charAt(0).toUpperCase() : (user?.firstName ? user.firstName.charAt(0).toUpperCase() : 'M')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -579,35 +642,35 @@ export default function MemberTaskList({ user, onNavigate }) {
         contentContainerStyle={styles.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
-        {/* Creator KPI Metrics Bar */}
+        {/* Creator KPI Metrics Bar (Reflects logged-in Member's own tasks) */}
         <View style={styles.kpiRow}>
           <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
             <Text style={[styles.kpiNum, { color: colors.primary }]}>
-              {tasks.filter((t) => t.status === 'IN_PROGRESS').length}
+              {myTasks.filter((t) => t.status === 'IN_PROGRESS').length}
             </Text>
             <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>กำลังดำเนินงาน</Text>
           </View>
           <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
             <Text style={[styles.kpiNum, { color: colors.statusReviewText }]}>
-              {tasks.filter((t) => t.status === 'REVIEW').length}
+              {myTasks.filter((t) => t.status === 'REVIEW').length}
             </Text>
             <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>รอตรวจทาน</Text>
           </View>
           <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
             <Text style={[styles.kpiNum, { color: colors.statusRevisionText }]}>
-              {tasks.filter((t) => t.status === 'REVISION').length}
+              {myTasks.filter((t) => t.status === 'REVISION').length}
             </Text>
             <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>ต้องแก้ไข</Text>
           </View>
           <View style={[styles.kpiBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
             <Text style={[styles.kpiNum, { color: colors.statusApprovedText }]}>
-              {tasks.filter((t) => t.status === 'DONE').length}
+              {myTasks.filter((t) => t.status === 'DONE').length}
             </Text>
             <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>เสร็จสิ้น</Text>
           </View>
         </View>
 
-        {/* Scope Switcher: My Tasks vs Team Tasks */}
+        {/* 3 Clear Segment Tabs: งานของฉัน | งานเพื่อนในทีม | กิจกรรมทีม */}
         <View style={[styles.scopeBar, { backgroundColor: isDark ? colors.surface : '#E2E8F0' }]}>
           <TouchableOpacity
             style={[
@@ -624,7 +687,7 @@ export default function MemberTaskList({ user, onNavigate }) {
                 taskScope === 'MY_TASKS' && { color: colors.textPrimary, fontWeight: '700' },
               ]}
             >
-              งานของฉัน ({tasks.filter((t) => t.isMyTask).length})
+              งานของฉัน ({myTasks.length})
             </Text>
           </TouchableOpacity>
 
@@ -643,7 +706,26 @@ export default function MemberTaskList({ user, onNavigate }) {
                 taskScope === 'TEAM_TASKS' && { color: colors.textPrimary, fontWeight: '700' },
               ]}
             >
-              งานในทีมทั้งหมด ({tasks.length})
+              งานเพื่อนในทีม ({tasks.length})
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.scopeBtn,
+              taskScope === 'ACTIVITY_FEED' && [styles.scopeBtnActive, { backgroundColor: colors.cardBg }],
+            ]}
+            onPress={() => setTaskScope('ACTIVITY_FEED')}
+            activeOpacity={0.7}
+          >
+            <Text
+              style={[
+                styles.scopeBtnText,
+                { color: colors.textSecondary },
+                taskScope === 'ACTIVITY_FEED' && { color: colors.textPrimary, fontWeight: '700' },
+              ]}
+            >
+              กิจกรรมทีม ({activities.length})
             </Text>
           </TouchableOpacity>
         </View>
@@ -655,56 +737,202 @@ export default function MemberTaskList({ user, onNavigate }) {
               กำลังโหลดงานจากระบบ...
             </Text>
           </View>
-        ) : displayedTasks.length === 0 ? (
-          <View style={[styles.emptyBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
-              {taskScope === 'MY_TASKS' ? 'คุณไม่มีงานที่ต้องรับผิดชอบขณะนี้' : 'ยังไม่มีงานในทีมขณะนี้'}
-            </Text>
-            <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
-              {taskScope === 'MY_TASKS'
-                ? 'เลือกแท็บ "งานในทีมทั้งหมด" เพื่อติดตามความคืบหน้าของเพื่อนร่วมทีม'
-                : 'งานใหม่จะปรากฏที่นี่เมื่อหัวหน้าทีมมอบหมายงาน'}
-            </Text>
-          </View>
-        ) : (
-          <>
-            {/* Visual Hierarchy: Priority 1 - Action Required Section */}
-            {urgentTasks.length > 0 && (
-              <View style={styles.sectionContainer}>
-                <View style={styles.sectionHeaderRow}>
-                  <Text style={[styles.sectionTitlePriority, { color: colors.statusRevisionText }]}>
-                    งานที่ต้องดำเนินการ (Action Required)
-                  </Text>
-                  <View style={[styles.urgentBadge, { backgroundColor: colors.statusRevisionBg }]}>
-                    <Text style={[styles.urgentBadgeText, { color: colors.statusRevisionText }]}>
-                      {urgentTasks.length} งาน
+        ) : taskScope === 'MY_TASKS' ? (
+          /* TAB 1: งานของฉัน (SRS ภาพที่ 43 หน้า 63) - งานใครงานมัน 100% */
+          myTasks.length === 0 ? (
+            <View style={[styles.emptyBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+              <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>คุณไม่มีงานที่ต้องรับผิดชอบขณะนี้</Text>
+              <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
+                เลือกแท็บ "งานเพื่อนในทีม" เพื่อติดตามความคืบหน้าของเพื่อนร่วมทีม
+              </Text>
+            </View>
+          ) : (
+            <>
+              {myUrgentTasks.length > 0 && (
+                <View style={styles.sectionContainer}>
+                  <View style={styles.sectionHeaderRow}>
+                    <Text style={[styles.sectionTitlePriority, { color: colors.statusRevisionText }]}>
+                      งานที่ต้องดำเนินการ (Action Required)
                     </Text>
+                    <View style={[styles.urgentBadge, { backgroundColor: colors.statusRevisionBg }]}>
+                      <Text style={[styles.urgentBadgeText, { color: colors.statusRevisionText }]}>
+                        {myUrgentTasks.length} งาน
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                    งานที่ต้องแก้ไข หรือใกล้ครบกำหนดส่งมอบ
+                  </Text>
+                  {myUrgentTasks.map((t) => renderTaskCard(t, true))}
+                </View>
+              )}
+
+              <View style={styles.sectionContainer}>
+                <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                  {myUrgentTasks.length > 0 ? 'งานอื่นๆ ที่ได้รับมอบหมาย' : 'งานที่ได้รับมอบหมาย'} ({myGeneralTasks.length})
+                </Text>
+                <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                  อัปเดตสถานะและส่งมอบไฟล์งานเพื่อการตรวจสอบ
+                </Text>
+                {myGeneralTasks.length === 0 ? (
+                  <Text style={[styles.allClearText, { color: colors.textSecondary }]}>
+                    ไม่มีงานอื่นเพิ่มเติม ทุกงานอยู่ในส่วนที่ต้องดำเนินการเรียบร้อยแล้ว
+                  </Text>
+                ) : (
+                  myGeneralTasks.map((t) => renderTaskCard(t, false))
+                )}
+              </View>
+            </>
+          )
+        ) : taskScope === 'TEAM_TASKS' ? (
+          /* TAB 2: งานเพื่อนในทีม (SRS ภาพที่ 44 หน้า 64) - จัดกลุ่มตามสมาชิกและ 5 ตำแหน่งหลัก */
+          <View style={styles.teamTasksWrapper}>
+            {/* Position Filter Chips */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterChipScroll}>
+              {[
+                { id: 'ALL', label: 'ทั้งหมด' },
+                { id: 'Script Writer', label: 'Script Writer' },
+                { id: 'Video Editor', label: 'Video Editor' },
+                { id: 'Graphic Designer', label: 'Graphic Designer' },
+                { id: 'Content Creator', label: 'Content Creator' },
+                { id: 'Production Manager', label: 'Production Manager' },
+              ].map((chip) => (
+                <TouchableOpacity
+                  key={chip.id}
+                  style={[
+                    styles.filterChip,
+                    { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+                    positionFilter === chip.id && { backgroundColor: colors.primary, borderColor: colors.primary },
+                  ]}
+                  onPress={() => setPositionFilter(chip.id)}
+                  activeOpacity={0.7}
+                >
+                  <Text
+                    style={[
+                      styles.filterChipText,
+                      { color: colors.textSecondary },
+                      positionFilter === chip.id && { color: '#FFFFFF', fontWeight: '700' },
+                    ]}
+                  >
+                    {chip.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <View style={[styles.teamOverviewNotice, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+              <Text style={[styles.teamOverviewNoticeText, { color: colors.textSecondary }]}>
+                ผังงานทั้งหมดในทีม • จัดกลุ่มงานแยกตามสมาชิกแต่ละคน เพื่อติดตามสถานะโดยไม่รบกวนงานส่วนบุคคล
+              </Text>
+            </View>
+
+            {memberGroups.length === 0 ? (
+              <View style={[styles.emptyBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+                <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>ไม่พบงานในหมวดตำแหน่งนี้</Text>
+                <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
+                  เลือกตัวกรอง "ทั้งหมด" เพื่อดูงานของเพื่อนร่วมทีมทุกคน
+                </Text>
+              </View>
+            ) : (
+              memberGroups.map((group) => (
+                <View
+                  key={group.id}
+                  style={[
+                    styles.memberGroupCard,
+                    {
+                      backgroundColor: colors.cardBg,
+                      borderColor: group.isMySelf ? colors.primary : colors.cardBorder,
+                    },
+                  ]}
+                >
+                  {/* Member Header */}
+                  <View style={styles.memberGroupHeader}>
+                    <View style={styles.memberGroupInfo}>
+                      <View style={[styles.memberAvatarCircle, { backgroundColor: group.isMySelf ? colors.primary : colors.textSecondary }]}>
+                        <Text style={styles.memberAvatarCircleText}>
+                          {group.name ? group.name.charAt(0).toUpperCase() : 'U'}
+                        </Text>
+                      </View>
+                      <View>
+                        <Text style={[styles.memberGroupName, { color: colors.textPrimary }]}>
+                          {group.name} {group.isMySelf ? '(คุณ)' : ''}
+                        </Text>
+                        <View style={[styles.memberPositionBadge, { backgroundColor: colors.surfaceSubtle }]}>
+                          <Text style={[styles.memberPositionBadgeText, { color: colors.primary }]}>
+                            {group.position}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View style={[styles.memberTaskCountBadge, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+                      <Text style={[styles.memberTaskCountBadgeText, { color: colors.textSecondary }]}>
+                        {group.tasks.length} งาน
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Tasks List for This Member */}
+                  <View style={styles.memberTaskListContainer}>
+                    {group.tasks.map((t) => renderTaskCard(t, false))}
                   </View>
                 </View>
-                <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-                  งานที่ต้องแก้ไข หรือใกล้ครบกำหนดส่งมอบ
+              ))
+            )}
+          </View>
+        ) : (
+          /* TAB 3: กิจกรรมทีม (Live Activity Feed - Use Case 7 / Table 17 / ภาพที่ 8) */
+          <View style={styles.activityFeedWrapper}>
+            <View style={[styles.activityNoticeBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+              <Text style={[styles.activityNoticeTitle, { color: colors.textPrimary }]}>
+                กิจกรรมทีมแบบเรียลไทม์ (Live Team Activities)
+              </Text>
+              <Text style={[styles.activityNoticeSub, { color: colors.textSecondary }]}>
+                ผู้ร่วมทีมทุกคนมองเห็นความเคลื่อนไหว การส่งมอบงาน และการอนุมัติได้ทันที
+              </Text>
+            </View>
+
+            {activities.length === 0 ? (
+              <View style={[styles.emptyBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+                <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>ยังไม่มีบันทึกกิจกรรมล่าสุดในทีม</Text>
+                <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
+                  เมื่อมีสมาชิกส่งงาน หรือหัวหน้าอนุมัติงาน รายการอัปเดตจะปรากฏที่นี่แบบเรียลไทม์
                 </Text>
-                {urgentTasks.map((t) => renderTaskCard(t, true))}
+              </View>
+            ) : (
+              <View style={[styles.activityCardContainer, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+                {activities.map((act) => {
+                  const actorName = act.actor?.firstName
+                    ? `${act.actor.firstName} ${act.actor.lastName || ''}`.trim()
+                    : (act.actor?.username || 'สมาชิกในทีม');
+                  const actorPosition = act.actor?.position || '';
+
+                  return (
+                    <View key={act._id} style={[styles.activityItemRow, { borderBottomColor: colors.border }]}>
+                      <View style={[styles.activityDot, { backgroundColor: colors.primary }]} />
+                      <View style={styles.activityContentBody}>
+                        <View style={styles.activityTopLine}>
+                          <Text style={[styles.activityActorText, { color: colors.textPrimary }]}>
+                            {actorName} {actorPosition ? `(${actorPosition})` : ''}
+                          </Text>
+                          <Text style={[styles.activityTimeText, { color: colors.textMuted }]}>
+                            {formatRelativeTime(act.createdAt)}
+                          </Text>
+                        </View>
+                        <Text style={[styles.activityTitleText, { color: colors.textPrimary }]}>
+                          {act.title}
+                        </Text>
+                        {!!act.details && (
+                          <Text style={[styles.activityDetailsText, { color: colors.textSecondary }]}>
+                            {act.details}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  );
+                })}
               </View>
             )}
-
-            {/* General Tasks Section */}
-            <View style={styles.sectionContainer}>
-              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                {urgentTasks.length > 0 ? 'งานอื่นๆ ที่ได้รับมอบหมาย' : 'งานที่ได้รับมอบหมาย'} ({generalTasks.length})
-              </Text>
-              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-                อัปเดตสถานะและส่งมอบไฟล์งานเพื่อการตรวจสอบ
-              </Text>
-              {generalTasks.length === 0 ? (
-                <Text style={[styles.allClearText, { color: colors.textSecondary }]}>
-                  ไม่มีงานอื่นเพิ่มเติม ทุกงานอยู่ในส่วนที่ต้องดำเนินการเรียบร้อยแล้ว
-                </Text>
-              ) : (
-                generalTasks.map((t) => renderTaskCard(t, false))
-              )}
-            </View>
-          </>
+          </View>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -752,11 +980,27 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 14,
   },
+  kpiBox: {
+    flex: 1,
+    borderRadius: 12,
+    padding: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  kpiNum: {
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  kpiLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 2,
+  },
   scopeBar: {
     flexDirection: 'row',
     padding: 3,
     borderRadius: 12,
-    marginBottom: 18,
+    marginBottom: 16,
   },
   scopeBtn: {
     flex: 1,
@@ -773,86 +1017,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   scopeBtnText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  assigneeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  assigneeText: {
-    fontSize: 12,
-  },
-  myTaskTag: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-    borderWidth: 1,
-  },
-  myTaskTagText: {
-    fontSize: 10,
-    fontWeight: '700',
-  },
-  otherTaskTag: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-    borderWidth: 1,
-  },
-  otherTaskTagText: {
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  progressRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 10,
-  },
-  progressBarBg: {
-    flex: 1,
-    height: 6,
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressBarFill: {
-    height: '100%',
-    borderRadius: 3,
-  },
-  progressText: {
     fontSize: 11,
-    fontWeight: '700',
-    minWidth: 30,
-    textAlign: 'right',
-  },
-  otherMemberNoteBox: {
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 6,
-  },
-  otherMemberNoteText: {
-    fontSize: 11,
-    lineHeight: 16,
-    fontStyle: 'italic',
-  },
-  kpiBox: {
-    flex: 1,
-    borderRadius: 12,
-    padding: 10,
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  kpiNum: {
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  kpiLabel: {
-    fontSize: 10,
     fontWeight: '600',
-    marginTop: 2,
   },
   sectionContainer: {
     marginBottom: 20,
@@ -939,6 +1105,58 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 1,
   },
+  assigneeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  assigneeText: {
+    fontSize: 12,
+  },
+  myTaskTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  myTaskTagText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  otherTaskTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  otherTaskTagText: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 10,
+  },
+  progressBarBg: {
+    flex: 1,
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  progressText: {
+    fontSize: 11,
+    fontWeight: '700',
+    minWidth: 30,
+    textAlign: 'right',
+  },
   feedbackBox: {
     borderRadius: 8,
     padding: 10,
@@ -961,6 +1179,16 @@ const styles = StyleSheet.create({
   dueText: {
     fontSize: 11,
     fontWeight: '600',
+  },
+  otherMemberNoteBox: {
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 6,
+  },
+  otherMemberNoteText: {
+    fontSize: 11,
+    lineHeight: 16,
+    fontStyle: 'italic',
   },
   startBtn: {
     paddingVertical: 12,
@@ -1085,5 +1313,155 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontStyle: 'italic',
     paddingVertical: 8,
+  },
+  // Team Tasks Styles
+  teamTasksWrapper: {
+    marginBottom: 20,
+  },
+  filterChipScroll: {
+    marginBottom: 12,
+  },
+  filterChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginRight: 8,
+  },
+  filterChipText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  teamOverviewNotice: {
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    marginBottom: 14,
+  },
+  teamOverviewNoticeText: {
+    fontSize: 11,
+    lineHeight: 16,
+  },
+  memberGroupCard: {
+    borderRadius: 14,
+    padding: 14,
+    borderWidth: 1,
+    marginBottom: 16,
+  },
+  memberGroupHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  memberGroupInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  memberAvatarCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  memberAvatarCircleText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  memberGroupName: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  memberPositionBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginTop: 2,
+  },
+  memberPositionBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  memberTaskCountBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  memberTaskCountBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  memberTaskListContainer: {
+    marginTop: 4,
+  },
+  // Activity Feed Styles
+  activityFeedWrapper: {
+    marginBottom: 20,
+  },
+  activityNoticeBox: {
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    marginBottom: 12,
+  },
+  activityNoticeTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  activityNoticeSub: {
+    fontSize: 11,
+  },
+  activityCardContainer: {
+    borderRadius: 14,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  activityItemRow: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+  },
+  activityDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginTop: 5,
+    marginRight: 10,
+  },
+  activityContentBody: {
+    flex: 1,
+  },
+  activityTopLine: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: 3,
+  },
+  activityActorText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  activityTimeText: {
+    fontSize: 10,
+  },
+  activityTitleText: {
+    fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 16,
+  },
+  activityDetailsText: {
+    fontSize: 11,
+    marginTop: 2,
+    lineHeight: 15,
   },
 });

@@ -24,7 +24,7 @@ TC_AUTO_001: [UC-01 / TS_001 Valid] Register New User With Position And Team Cod
     ${response}=       POST On Session    cms_session    /api/auth/register    json=${payload}    expected_status=201
     Should Contain     ${response.json()}[message]    registered
     Should Be Equal As Strings    ${response.json()}[user][role]        MEMBER
-    Should Be Equal As Strings    ${response.json()}[user][position]    Other
+    Should Be Equal As Strings    ${response.json()}[user][position]    Content Creator
     Should Be Equal As Strings    ${response.json()}[user][teamCode]    ${TEAM_CODE_A}
     Set Suite Variable            ${CREATED_USER_ID}                    ${response.json()}[user][id]
 

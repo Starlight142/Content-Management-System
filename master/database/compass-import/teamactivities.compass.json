@@ -1,176 +1,2573 @@
 [
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e46a"
+      "$oid": "6aea12d29ed6fa6a275efd57"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "actor": {
-      "$oid": "6ae9c9965acca0c43752e450"
-    },
-    "actionType": "TASK_SUBMITTED",
-    "title": "John ส่ง Master 4K ของ Product Review ให้ตรวจ",
-    "details": "ลิงก์: https://frame.io/player/product_review_master_4k",
-    "entityId": {
-      "$oid": "6ae9c9965acca0c43752e461"
-    },
-    "entityModel": "Task",
-    "createdAt": {
-      "$date": "2026-11-03T11:11:30.602Z"
-    },
-    "updatedAt": {
-      "$date": "2026-11-03T11:11:30.602Z"
-    },
-    "__v": 0
-  },
-  {
-    "_id": {
-      "$oid": "6ae9c9965acca0c43752e469"
-    },
-    "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
-    },
-    "actor": {
-      "$oid": "6ae9c9965acca0c43752e44f"
+      "$oid": "6aea12d29ed6fa6a275efd3d"
     },
     "actionType": "CONTENT_REVISED",
     "title": "Manager ส่ง Tech News Daily Recap กลับไปแก้ไข",
     "details": "นาทีที่ 0:35 เสียงเพลงกลบเสียงพูด และมีคำผิดใน Subtitle ท้ายคลิป",
     "entityId": {
-      "$oid": "6ae9c9965acca0c43752e45c"
+      "$oid": "6aea12d29ed6fa6a275efd4a"
     },
     "entityModel": "Content",
     "createdAt": {
-      "$date": "2026-11-03T11:31:30.602Z"
+      "$date": "2026-11-03T16:43:58.318Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T11:31:30.602Z"
+      "$date": "2026-11-03T16:43:58.318Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e46b"
+      "$oid": "6aea12d29ed6fa6a275efd59"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "actor": {
-      "$oid": "6ae9c9965acca0c43752e451"
+      "$oid": "6aea12d29ed6fa6a275efd3f"
     },
     "actionType": "TASK_SUBMITTED",
     "title": "Jane อัปโหลด Script v2 ของ Product Review",
     "details": "แนบลิงก์ Google Docs สคริปต์ฉบับปรับแก้",
     "entityId": {
-      "$oid": "6ae9c9965acca0c43752e464"
+      "$oid": "6aea12d29ed6fa6a275efd52"
     },
     "entityModel": "Task",
     "createdAt": {
-      "$date": "2026-11-03T10:51:30.602Z"
+      "$date": "2026-11-03T16:03:58.318Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T10:51:30.602Z"
+      "$date": "2026-11-03T16:03:58.318Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e46c"
+      "$oid": "6aea12d29ed6fa6a275efd58"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "actor": {
-      "$oid": "6ae9c9965acca0c43752e44f"
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "TASK_SUBMITTED",
+    "title": "John ส่ง Master 4K ของ Product Review ให้ตรวจ",
+    "details": "ลิงก์: https://frame.io/player/product_review_master_4k",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd4f"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-03T16:23:58.318Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:23:58.318Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12d29ed6fa6a275efd5a"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
     },
     "actionType": "CONTENT_APPROVED",
     "title": "Manager อนุมัติคอนเทนต์ \"Desk Setup Minimalist Guide\" เรียบร้อยแล้ว",
     "details": "งานตัดต่อและเกรดสีผ่านเกณฑ์สมบูรณ์",
     "entityId": {
-      "$oid": "6ae9c9965acca0c43752e45d"
+      "$oid": "6aea12d29ed6fa6a275efd4b"
     },
     "entityModel": "Content",
     "createdAt": {
-      "$date": "2026-11-03T10:26:30.602Z"
+      "$date": "2026-11-03T15:38:58.318Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T10:26:30.602Z"
+      "$date": "2026-11-03T15:38:58.318Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e46d"
+      "$oid": "6aea12d29ed6fa6a275efd5b"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "actor": {
-      "$oid": "6ae9c9965acca0c43752e44f"
+      "$oid": "6aea12d29ed6fa6a275efd3d"
     },
     "actionType": "TASK_ASSIGNED",
     "title": "Manager มอบหมาย Thumbnail ให้ Mike",
     "details": "กำหนดส่งงานสไตล์ Minimal Clean",
     "entityId": {
-      "$oid": "6ae9c9965acca0c43752e466"
+      "$oid": "6aea12d29ed6fa6a275efd54"
     },
     "entityModel": "Task",
     "createdAt": {
-      "$date": "2026-11-03T09:46:30.602Z"
+      "$date": "2026-11-03T14:58:58.318Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T09:46:30.602Z"
+      "$date": "2026-11-03T14:58:58.318Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9c9965acca0c43752e46e"
+      "$oid": "6aea12d29ed6fa6a275efd5c"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "actor": {
-      "$oid": "6ae9c9965acca0c43752e452"
+      "$oid": "6aea12d29ed6fa6a275efd40"
     },
     "actionType": "TASK_STATUS_CHANGED",
     "title": "Mike เริ่มทำงาน Thumbnail Campaign",
     "details": "ความคืบหน้า 30%",
     "entityId": {
-      "$oid": "6ae9c9965acca0c43752e466"
+      "$oid": "6aea12d29ed6fa6a275efd54"
     },
     "entityModel": "Task",
     "createdAt": {
-      "$date": "2026-11-03T09:26:30.602Z"
+      "$date": "2026-11-03T14:38:58.318Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T09:26:30.602Z"
+      "$date": "2026-11-03T14:38:58.318Z"
     },
     "__v": 0
   },
   {
     "_id": {
-      "$oid": "6ae9e0fe03cc8e29c2618443"
+      "$oid": "6aea12fa068e7b5d75831ab1"
     },
     "teamId": {
-      "$oid": "6ae9c9965acca0c43752e454"
+      "$oid": "6aea12d29ed6fa6a275efd42"
     },
     "actor": {
-      "$oid": "6ae9c9965acca0c43752e44f"
+      "$oid": "6aea12fa068e7b5d75831ab0"
+    },
+    "actionType": "TEAM_JOINED",
+    "title": "สมชาย ทดสอบระบบ เข้าร่วมทีม \"Content Team A\"",
+    "details": "ตำแหน่ง: Content Creator, บทบาทในทีม: CREATOR",
+    "entityId": {
+      "$oid": "6aea12fa068e7b5d75831ab0"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:38.187Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:38.187Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fa068e7b5d75831ab2"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12fa068e7b5d75831ab0"
+    },
+    "actionType": "USER_CREATED",
+    "title": "ผู้ใช้งานใหม่สมัครเข้าสู่ระบบ: robot_93025 (สมชาย ทดสอบระบบ)",
+    "details": "อีเมล: robot_93025@studio.com, ตำแหน่ง: Content Creator, สิทธิ์: MEMBER",
+    "entityId": {
+      "$oid": "6aea12fa068e7b5d75831ab0"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:38.196Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:38.196Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fa068e7b5d75831ab3"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:38.288Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:38.288Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fa068e7b5d75831ab4"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
     },
     "actionType": "USER_LOGIN",
     "title": "สมศรี เข้าสู่ระบบสำเร็จ",
     "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
     "entityId": {
-      "$oid": "6ae9c9965acca0c43752e44f"
+      "$oid": "6aea12d29ed6fa6a275efd3d"
     },
     "entityModel": "User",
     "createdAt": {
-      "$date": "2026-11-03T13:26:22.648Z"
+      "$date": "2026-11-03T16:59:38.367Z"
     },
     "updatedAt": {
-      "$date": "2026-11-03T13:26:22.648Z"
+      "$date": "2026-11-03T16:59:38.367Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fa068e7b5d75831ab5"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:38.445Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:38.445Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fa068e7b5d75831ab6"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:38.617Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:38.617Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fa068e7b5d75831ab7"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:38.735Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:38.735Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fa068e7b5d75831ab8"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:38.838Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:38.838Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fa068e7b5d75831ab9"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:38.953Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:38.953Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831aba"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.048Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.048Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831abb"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.184Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.184Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831abc"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd43"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd41"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "Bob เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: outsider@studio.com (ตำแหน่ง: Content Creator, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd41"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.271Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.271Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831abd"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.354Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.354Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831abe"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.434Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.434Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831abf"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_UPDATED",
+    "title": "somsri_manager กำหนดตำแหน่งของ john_creator เป็น Video Editor",
+    "details": "ผู้ใช้: john_creator (member@studio.com) ตำแหน่งใหม่: Video Editor",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.460Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.460Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831ac0"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.537Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.537Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831ac1"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.635Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.635Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831ac2"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.711Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.711Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831ac4"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "CONTENT_CREATED",
+    "title": "สมศรี เพิ่มแผนคอนเทนต์ใหม่: \"Robot Automated Showcase EP01\"",
+    "details": "",
+    "entityId": {
+      "$oid": "6aea12fb068e7b5d75831ac3"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.727Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.727Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831ac6"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "TASK_ASSIGNED",
+    "title": "somsri_manager มอบหมายงาน \"Editing Video EP01\" ให้ John",
+    "details": "",
+    "entityId": {
+      "$oid": "6aea12fb068e7b5d75831ac5"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.750Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.750Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831ac7"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.829Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.829Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831ac8"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.914Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.914Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fb068e7b5d75831ac9"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "TASK_STATUS_CHANGED",
+    "title": "John เปลี่ยน Task เป็น IN_PROGRESS (25%)",
+    "details": "",
+    "entityId": {
+      "$oid": "6aea12fb068e7b5d75831ac5"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:39.936Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:39.936Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831aca"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.025Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.025Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831acb"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "TASK_SUBMITTED",
+    "title": "John ส่งงาน \"Editing Video EP01\" ให้ตรวจสอบ",
+    "details": "ลิงก์ส่งงาน: https://drive.google.com/robot-cut-v1",
+    "entityId": {
+      "$oid": "6aea12fb068e7b5d75831ac5"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.045Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.045Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831acc"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.122Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.122Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831acd"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.208Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.208Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831ace"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "CONTENT_REVISED",
+    "title": "สมศรี ส่งคอนเทนต์ \"Robot Automated Showcase EP01\" กลับไปแก้ไข",
+    "details": "Please lower background music by 20%",
+    "entityId": {
+      "$oid": "6aea12fb068e7b5d75831ac3"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.221Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.221Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831acf"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.297Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.297Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831ad0"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "TASK_SUBMITTED",
+    "title": "John ส่งงาน \"Editing Video EP01\" ให้ตรวจสอบ",
+    "details": "ตอบกลับ: Adjusted audio levels as requested | ลิงก์: https://drive.google.com/robot-cut-v2",
+    "entityId": {
+      "$oid": "6aea12fb068e7b5d75831ac5"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.317Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.317Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831ad1"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "CONTENT_APPROVED",
+    "title": "สมศรี อนุมัติคอนเทนต์ \"Robot Automated Showcase EP01\" เรียบร้อยแล้ว",
+    "details": "Approved for immediate release",
+    "entityId": {
+      "$oid": "6aea12fb068e7b5d75831ac3"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.338Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.338Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831ad2"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.417Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.417Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831ad3"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.501Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.501Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831ad4"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.589Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.589Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831ad5"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "TASK_DELETED",
+    "title": "somsri_manager ลบงาน \"Editing Video EP01\"",
+    "details": "",
+    "entityId": {
+      "$oid": "6aea12fb068e7b5d75831ac5"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.598Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.598Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831ad6"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "CONTENT_DELETED",
+    "title": "somsri_manager ลบคอนเทนต์: \"Robot Automated Showcase EP01\"",
+    "details": "",
+    "entityId": {
+      "$oid": "6aea12fb068e7b5d75831ac3"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.604Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.604Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831ad7"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.686Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.686Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831ad9"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.773Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.773Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831ada"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.863Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.863Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fc068e7b5d75831adb"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:40.947Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:40.947Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fd068e7b5d75831adc"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:41.039Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:41.039Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fd068e7b5d75831ade"
+    },
+    "teamId": {
+      "$oid": "6aea12fd068e7b5d75831add"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "TEAM_CREATED",
+    "title": "สมชาย สร้างทีมใหม่: \"Studio C Automated\" (รหัส: 3RCLDY)",
+    "details": "รหัสเข้าร่วมทีม: 3RCLDY, รหัสอ้างอิง: TEAM-C",
+    "entityId": {
+      "$oid": "6aea12fd068e7b5d75831add"
+    },
+    "entityModel": "Team",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:41.064Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:41.064Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fd068e7b5d75831adf"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:41.147Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:41.147Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fd068e7b5d75831ae0"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:41.234Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:41.234Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fd068e7b5d75831ae1"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:41.315Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:41.315Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fd068e7b5d75831ae2"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:41.412Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:41.412Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fd068e7b5d75831ae3"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:41.501Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:41.501Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea12fd068e7b5d75831ae4"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T16:59:41.596Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T16:59:41.596Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831ae6"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea1323068e7b5d75831ae5"
+    },
+    "actionType": "TEAM_JOINED",
+    "title": "สมชาย ทดสอบระบบ เข้าร่วมทีม \"Content Team A\"",
+    "details": "ตำแหน่ง: Content Creator, บทบาทในทีม: CREATOR",
+    "entityId": {
+      "$oid": "6aea1323068e7b5d75831ae5"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.127Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.127Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831ae7"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea1323068e7b5d75831ae5"
+    },
+    "actionType": "USER_CREATED",
+    "title": "ผู้ใช้งานใหม่สมัครเข้าสู่ระบบ: robot_78631 (สมชาย ทดสอบระบบ)",
+    "details": "อีเมล: robot_78631@studio.com, ตำแหน่ง: Content Creator, สิทธิ์: MEMBER",
+    "entityId": {
+      "$oid": "6aea1323068e7b5d75831ae5"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.130Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.130Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831ae8"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.209Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.209Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831ae9"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_DELETED",
+    "title": "somchai_admin ลบผู้ใช้งาน robot_78631 ออกจากระบบ",
+    "details": "อีเมล: robot_78631@studio.com",
+    "entityId": {
+      "$oid": "6aea1323068e7b5d75831ae5"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.217Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.217Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831aea"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.301Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.301Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831aeb"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.381Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.381Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831aec"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.458Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.458Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831aed"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.612Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.612Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831aee"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.704Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.704Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831aef"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.792Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.792Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831af0"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.893Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.893Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1323068e7b5d75831af1"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:19.980Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:19.980Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831af2"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.101Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.101Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831af3"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd43"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd41"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "Bob เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: outsider@studio.com (ตำแหน่ง: Content Creator, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd41"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.186Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.186Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831af4"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.272Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.272Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831af5"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.350Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.350Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831af6"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_UPDATED",
+    "title": "somsri_manager กำหนดตำแหน่งของ john_creator เป็น Video Editor",
+    "details": "ผู้ใช้: john_creator (member@studio.com) ตำแหน่งใหม่: Video Editor",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.374Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.374Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831af7"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.453Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.453Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831af8"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.545Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.545Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831af9"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.621Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.621Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831afb"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "CONTENT_CREATED",
+    "title": "สมศรี เพิ่มแผนคอนเทนต์ใหม่: \"Robot Automated Showcase EP01\"",
+    "details": "",
+    "entityId": {
+      "$oid": "6aea1324068e7b5d75831afa"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.633Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.633Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831afd"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "TASK_ASSIGNED",
+    "title": "somsri_manager มอบหมายงาน \"Editing Video EP01\" ให้ John",
+    "details": "",
+    "entityId": {
+      "$oid": "6aea1324068e7b5d75831afc"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.653Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.653Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831afe"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.727Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.727Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831aff"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.811Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.811Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831b00"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "TASK_STATUS_CHANGED",
+    "title": "John เปลี่ยน Task เป็น IN_PROGRESS (25%)",
+    "details": "",
+    "entityId": {
+      "$oid": "6aea1324068e7b5d75831afc"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.827Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.827Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831b01"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.911Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.911Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1324068e7b5d75831b02"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "TASK_SUBMITTED",
+    "title": "John ส่งงาน \"Editing Video EP01\" ให้ตรวจสอบ",
+    "details": "ลิงก์ส่งงาน: https://drive.google.com/robot-cut-v1",
+    "entityId": {
+      "$oid": "6aea1324068e7b5d75831afc"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:20.928Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:20.928Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b03"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.002Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.002Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b04"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.085Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.085Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b05"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "CONTENT_REVISED",
+    "title": "สมศรี ส่งคอนเทนต์ \"Robot Automated Showcase EP01\" กลับไปแก้ไข",
+    "details": "Please lower background music by 20%",
+    "entityId": {
+      "$oid": "6aea1324068e7b5d75831afa"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.098Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.098Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b06"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.175Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.175Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b07"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "TASK_SUBMITTED",
+    "title": "John ส่งงาน \"Editing Video EP01\" ให้ตรวจสอบ",
+    "details": "ตอบกลับ: Adjusted audio levels as requested | ลิงก์: https://drive.google.com/robot-cut-v2",
+    "entityId": {
+      "$oid": "6aea1324068e7b5d75831afc"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.198Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.198Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b08"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "CONTENT_APPROVED",
+    "title": "สมศรี อนุมัติคอนเทนต์ \"Robot Automated Showcase EP01\" เรียบร้อยแล้ว",
+    "details": "Approved for immediate release",
+    "entityId": {
+      "$oid": "6aea1324068e7b5d75831afa"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.214Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.214Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b09"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.290Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.290Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b0a"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.375Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.375Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b0b"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.465Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.465Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b0c"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "TASK_DELETED",
+    "title": "somsri_manager ลบงาน \"Editing Video EP01\"",
+    "details": "",
+    "entityId": {
+      "$oid": "6aea1324068e7b5d75831afc"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.473Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.473Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b0d"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "CONTENT_DELETED",
+    "title": "somsri_manager ลบคอนเทนต์: \"Robot Automated Showcase EP01\"",
+    "details": "",
+    "entityId": {
+      "$oid": "6aea1324068e7b5d75831afa"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.477Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.477Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b0e"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.558Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.558Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b10"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.642Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.642Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b11"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.735Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.735Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b12"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.814Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.814Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b13"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.898Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.898Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b15"
+    },
+    "teamId": {
+      "$oid": "6aea1325068e7b5d75831b14"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "TEAM_CREATED",
+    "title": "สมชาย สร้างทีมใหม่: \"Studio C Automated\" (รหัส: W7WT9H)",
+    "details": "รหัสเข้าร่วมทีม: W7WT9H, รหัสอ้างอิง: TEAM-C",
+    "entityId": {
+      "$oid": "6aea1325068e7b5d75831b14"
+    },
+    "entityModel": "Team",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.918Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.918Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1325068e7b5d75831b16"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:21.993Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:21.993Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1326068e7b5d75831b17"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:22.076Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:22.076Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1326068e7b5d75831b18"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:22.155Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:22.155Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1326068e7b5d75831b19"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:22.250Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:22.250Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1326068e7b5d75831b1a"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Other, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:22.339Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:22.339Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aea1326068e7b5d75831b1b"
+    },
+    "teamId": {
+      "$oid": "6aea12d29ed6fa6a275efd42"
+    },
+    "actor": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aea12d29ed6fa6a275efd3e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-03T17:00:22.472Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-03T17:00:22.472Z"
     },
     "__v": 0
   }

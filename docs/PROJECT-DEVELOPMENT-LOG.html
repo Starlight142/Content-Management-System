@@ -468,6 +468,7 @@
       <li class="nav-item"><a href="#phase-47" class="nav-link"><span class="nav-tag">P47</span>Diagram Design Skill</a></li>
       <li class="nav-item"><a href="#phase-48" class="nav-link"><span class="nav-tag">P48</span>Workflow & Stage Approval</a></li>
       <li class="nav-item"><a href="#phase-49" class="nav-link"><span class="nav-tag">P49</span>Cross-PC AI & Skills Package</a></li>
+      <li class="nav-item"><a href="#phase-50" class="nav-link"><span class="nav-tag">P50</span>UI Clarity & SRS Alignment</a></li>
       <li class="nav-item"><a href="#catalog" class="nav-link"><span class="nav-tag">DOC</span>แผนที่ไฟล์และดัชนีเอกสาร</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -1927,6 +1928,51 @@
         <li><strong>Master AI Prompt (<code>AI-PORTABLE-PROMPT.md</code>):</strong> ไฟล์บริบทระบบฉบับสมบูรณ์ที่ระบุพอร์ตทั้ง 4 ระบบ, บัญชีทดสอบ, กฎเหล็ก Prime Directives, และตรรกะเวิร์กโฟลว์ Phase 48</li>
         <li><strong>Portable Skills Package (<code>tools/ai-skills/</code>):</strong> รวบรวมทักษะ <code>ponytail</code> และ <code>diagram-design</code> พร้อมสคริปต์ติดตั้งอัตโนมัติ <code>install-skills-to-machine.bat</code> และ <code>install-skills-to-machine.ps1</code></li>
         <li><strong>System Knowledge Base Update (<code>AI-MEMORY.md</code>):</strong> อัปเดตข้อกำหนดบังคับใช้ JDK 17 ป้องกันข้อผิดพลาดในการคอมไพล์ Android และเชื่อมโยงไปยังแพ็กเกจทักษะพกพา</li>
+      </ul>
+    </section>
+
+    <!-- Phase 50 -->
+    <section class="section-card" id="phase-50">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="section-title">Phase 50: การปรับปรุง UI ความชัดเจนในการแยกงานส่วนบุคคล การอนุมัติงาน และกิจกรรมทีมตามข้อกำหนด SRS (UI Clarity & SRS Alignment)</h2>
+        <span class="phase-badge badge-done">สำเร็จ ✅</span>
+      </div>
+      <div class="phase-meta">
+        <span>🕒 4 พฤศจิกายน 2026 (00:05 น.)</span>
+        <span>•</span>
+        <span>📁 <code>master/mobile-app/</code>, <code>master/admin-web/</code>, <code>master/backend/</code></span>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>การออกแบบสถาปัตยกรรม UI ให้ชัดเจน ไม่สับสน และตรงตามเอกสาร SRS 93 หน้า:</strong><br>
+        แก้ไขปัญหาความสับสนจากการแสดงผลงานรวม ด้วยการแยกพื้นที่ความรับผิดชอบอย่างเด็ดขาดตามมาตรฐาน SRS (ภาพที่ 43, 44, 45): สมาชิกเห็นเฉพาะงานของตนเอง 100% ("งานใครงานมัน"), ดูงานเพื่อนร่วมทีมแยกตามรายบุคคลและตำแหน่ง, และมีฟีดกิจกรรมทีมสดแบบเรียลไทม์ ขณะที่ผู้จัดการมีหน้าคิวตรวจงานโดยเฉพาะ ปราศจากการแสดงผลซ้ำซ้อน พร้อมบังคับใช้ 5 ตำแหน่งงานหลักของสตูดิโอ
+      </div>
+
+      <h3>การดำเนินงานทางเทคนิครายระบบ:</h3>
+      <ul>
+        <li><strong>5 ตำแหน่งงานหลักของสตูดิโอ (Core Positions):</strong>
+          กำหนดและบังคับใช้ 5 ตำแหน่งอย่างเป็นทางการ: <code>Production Manager</code>, <code>Video Editor</code>, <code>Script Writer</code>, <code>Graphic Designer</code>, และ <code>Content Creator</code> (ปรับปรุงทั้ง Backend User Controller, Auth Service และ Mobile App Team Screen)
+        </li>
+        <li><strong>Mobile App — Member Task Interface (<code>MemberTaskList.jsx</code>):</strong>
+          <ul>
+            <li><strong>แท็บ 1: งานของฉัน (SRS ภาพที่ 43 หน้า 63):</strong> แสดงเฉพาะงานที่ตนเองได้รับมอบหมาย 100% พร้อมการ์ดสรุป KPI ส่วนบุคคล และส่วน Action Required เตือนงานแก้ไขหรืองานเลยกำหนด</li>
+            <li><strong>แท็บ 2: งานเพื่อนในทีม (SRS ภาพที่ 44 หน้า 64):</strong> แสดงงานเพื่อนร่วมทีมโดยจัดกลุ่มตามสมาชิกและตำแหน่งงาน 5 ตำแหน่ง พร้อมตัวกรองตำแหน่ง ช่วยให้เห็นภาพรวมของทีมโดยไม่ปะปนกับงานตนเอง</li>
+            <li><strong>แท็บ 3: กิจกรรมทีม (SRS ตารางที่ 17, ภาพที่ 8, Use Case 7):</strong> ฟีดความเคลื่อนไหวเรียลไทม์ ซิงค์ผ่าน WebSocket แสดงผลเวลาแบบสัมพันธ์ที่เป็นมิตร ("เมื่อสักครู่", "5 นาทีที่แล้ว")</li>
+          </ul>
+        </li>
+        <li><strong>Mobile App — Manager Dashboard (<code>ManagerDashboard.jsx</code>):</strong>
+          <ul>
+            <li><strong>แท็บ 1: หน้าอนุมัติงาน (SRS ภาพที่ 45 หน้า 65):</strong> คิวงานตรวจโดยเฉพาะ รวบรวมงานรอตรวจ (REVIEW และ REVISION) ลิงก์ตรวจงาน และปุ่มอนุมัติ 1-Tap หรือสั่งแก้ไขในที่เดียว</li>
+            <li><strong>แท็บ 2: งานแยกตามสมาชิก:</strong> แสดงงานแยกตามรายบุคคลและตำแหน่งงาน พร้อมปุ่มมอบหมายงานตรงถึงสมาชิกรายนั้น</li>
+            <li><strong>แท็บ 3: โครงการคอนเทนต์ (SRS ภาพที่ 35 หน้า 55):</strong> รายการคอนเทนต์หลักของสตูดิโอพร้อมตัวกรองสถานะและปุ่มสร้างงานใหม่</li>
+          </ul>
+        </li>
+        <li><strong>Admin Web (<code>master/admin-web/src/app/tasks/page.jsx</code>):</strong>
+          เพิ่มตัวกรองตำแหน่งงาน 5 ตำแหน่งหลัก, เพิ่ม Badge แจ้งเตือนจำนวนงานรอตรวจบนปุ่มสถานะ REVIEW, แสดง Badge ตำแหน่งงานใต้ชื่อผู้รับผิดชอบ และเพิ่มลิงก์เปิดดูไฟล์ผลงานที่ส่งมอบ (submissionUrl)
+        </li>
+        <li><strong>Quality Assurance & Automated Verification:</strong>
+          Backend Native Tests ผ่าน 39/39 (100%), Admin Web Lint & Build ผ่าน 0 errors (Turbopack 2.1s), Mobile App Jest Test ผ่าน 100%, และ Robot Framework E2E Acceptance Tests ผ่านครบทั้ง 28/28 กรณีทดสอบ (100% Pass Rate ครอบคลุม 14 Use Cases)
+        </li>
       </ul>
     </section>
 

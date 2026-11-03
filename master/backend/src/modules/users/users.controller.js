@@ -188,11 +188,11 @@ const updateUserPosition = async (req, res) => {
     const { position } = req.body;
 
     const validPositions = [
-      'Video Editor',
-      'Graphic Designer',
-      'Script Writer',
-      'Content Creator',
       'Production Manager',
+      'Video Editor',
+      'Script Writer',
+      'Graphic Designer',
+      'Content Creator',
       'Other',
     ];
 
