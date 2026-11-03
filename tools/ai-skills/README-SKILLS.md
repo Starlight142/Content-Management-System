@@ -60,3 +60,4 @@
 
 ### 3.4 ChatGPT / Claude Web / GitHub Copilot Chat
 คัดลอกเนื้อหาจากไฟล์ [AI-PORTABLE-PROMPT.md](../../AI-PORTABLE-PROMPT.md) ไปวางที่ช่อง Custom Instructions หรือส่งเป็นข้อความแรกของการเริ่มสนทนา
+

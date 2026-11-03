@@ -49,3 +49,4 @@ Write-Host "  Active Skills:" -ForegroundColor Cyan
 Write-Host "    - ponytail (Minimalist Senior Developer Coding)"
 Write-Host "    - diagram-design (Editorial Architecture Diagrams)"
 Write-Host "========================================================" -ForegroundColor Cyan
+
