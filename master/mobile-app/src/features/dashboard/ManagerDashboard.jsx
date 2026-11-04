@@ -33,39 +33,72 @@ const PIPELINE_STAGES = [
   {
     stage: 1,
     taskType: 'Scripting',
-    shortLabel: '1. Scripting',
+    shortLabel: '1. เขียนบท',
+    engLabel: 'Scripting',
     titlePrefix: 'เขียนบทและสคริปต์',
     targetPositions: ['Script Writer', 'Content Creator', 'Production Manager'],
   },
   {
     stage: 2,
     taskType: 'Filming',
-    shortLabel: '2. Filming',
+    shortLabel: '2. ถ่ายทำ',
+    engLabel: 'Filming',
     titlePrefix: 'ถ่ายทำฟุตเทจหลัก',
     targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'],
   },
   {
     stage: 3,
     taskType: 'Editing',
-    shortLabel: '3. Editing',
+    shortLabel: '3. ตัดต่อ',
+    engLabel: 'Editing',
     titlePrefix: 'ตัดต่อวิดีโอหลัก',
     targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'],
   },
   {
     stage: 4,
     taskType: 'Graphic Design',
-    shortLabel: '4. Graphic',
+    shortLabel: '4. กราฟิก',
+    engLabel: 'Graphic Design',
     titlePrefix: 'ออกแบบภาพปกและกราฟิก',
     targetPositions: ['Graphic Designer', 'Content Creator', 'Production Manager'],
   },
   {
     stage: 5,
     taskType: 'Sound Design',
-    shortLabel: '5. Sound',
+    shortLabel: '5. มิกซ์เสียง',
+    engLabel: 'Sound Design',
     titlePrefix: 'มิกซ์เสียงและดนตรีประกอบ',
     targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'],
   },
 ];
+
+const getStageInfoByType = (taskType, membersList = []) => {
+  const stageObj = PIPELINE_STAGES.find((s) => s.taskType === taskType) || PIPELINE_STAGES[0];
+  const nextStageObj = PIPELINE_STAGES.find((s) => s.stage === stageObj.stage + 1) || null;
+
+  const findMemberNameForPositions = (positions = []) => {
+    const ordered = [
+      ...(membersList || []).filter((m) => m.role === 'MEMBER'),
+      ...(membersList || []).filter((m) => m.role !== 'MEMBER'),
+    ];
+    for (const pos of positions) {
+      const match = ordered.find((m) => m.position === pos);
+      if (match) {
+        const name = match.firstName ? `${match.firstName} ${match.lastName || ''}`.trim() : match.username;
+        return `${name} (${match.position})`;
+      }
+    }
+    return positions[0] || 'ทีมงานถัดไป';
+  };
+
+  return {
+    currentStage: stageObj,
+    nextStage: nextStageObj,
+    nextAssigneeDisplay: nextStageObj
+      ? findMemberNameForPositions(nextStageObj.targetPositions)
+      : 'ผู้จัดการอนุมัติขั้นสุดท้ายเพื่อเผยแพร่ (Publish)',
+  };
+};
 
 const resolveAutoStageForContent = (contentItem, tasksList = [], membersList = []) => {
   const cId = contentItem?._id ? String(contentItem._id) : null;
@@ -350,30 +383,6 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     setRefreshing(false);
   };
 
-  const handleStartProduction = async (item) => {
-    setPipeline((prev) =>
-      prev.map((c) => (c._id === item._id ? { ...c, status: 'PRODUCTION' } : c))
-    );
-    try {
-      await contentApi.updateStatus(item._id, 'PRODUCTION');
-    } catch (e) {
-      console.warn('Updated locally:', e.message);
-    }
-    Alert.alert('เริ่มงานผลิต', `ส่ง "${item.title}" เข้าสู่ขั้นตอนกำลังผลิตเรียบร้อย`);
-  };
-
-  const handleSendToReview = async (item) => {
-    setPipeline((prev) =>
-      prev.map((c) => (c._id === item._id ? { ...c, status: 'REVIEW' } : c))
-    );
-    try {
-      await contentApi.updateStatus(item._id, 'REVIEW');
-    } catch (e) {
-      console.warn('Updated locally:', e.message);
-    }
-    Alert.alert('ส่งตรวจสอบ', `ส่ง "${item.title}" เข้าสู่คิวการตรวจสอบเรียบร้อย`);
-  };
-
   const handlePublishNow = async (item) => {
     Alert.alert(
       'เผยแพร่ชิ้นงาน',
@@ -449,17 +458,27 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   };
 
   const handleApproveTask = (taskItem) => {
+    const stageInfo = getStageInfoByType(taskItem.taskType, teamMembers);
+    const nextHint = stageInfo.nextStage
+      ? `เมื่ออนุมัติแล้ว ระบบจะปลดล็อกขั้นตอนที่ ${stageInfo.nextStage.stage}/5 (${stageInfo.nextStage.shortLabel}) ส่งต่อให้ ${stageInfo.nextAssigneeDisplay} อัตโนมัติ`
+      : 'นี่คือขั้นตอนสุดท้าย (5/5) เมื่ออนุมัติแล้ว ชิ้นงานหลักจะพร้อมสำหรับการเผยแพร่ทันที';
+
     Alert.alert(
-      'อนุมัติชิ้นงาน',
-      `คุณต้องการอนุมัติ "${taskItem.title}" เพื่อผ่านสู่ขั้นตอนถัดไปใช่หรือไม่?`,
+      `อนุมัติขั้นตอนที่ ${stageInfo.currentStage.stage}/5 (${stageInfo.currentStage.shortLabel})`,
+      `${nextHint}\n\nยืนยันอนุมัติ "${taskItem.title}" ใช่หรือไม่?`,
       [
         { text: 'ยกเลิก', style: 'cancel' },
         {
-          text: 'ยืนยันอนุมัติ',
+          text: 'ยืนยันอนุมัติและส่งต่อ',
           onPress: async () => {
             try {
               await taskApi.updateStatus(taskItem._id, 'DONE', 100);
-              Alert.alert('อนุมัติสำเร็จ', `ชิ้นงาน "${taskItem.title}" ได้รับการอนุมัติเรียบร้อยแล้ว`);
+              Alert.alert(
+                'อนุมัติและส่งไม้ต่อสำเร็จ',
+                stageInfo.nextStage
+                  ? `ผ่านขั้นตอนที่ ${stageInfo.currentStage.stage}/5 เรียบร้อย ระบบส่งต่องานไปยังขั้นตอนที่ ${stageInfo.nextStage.stage}/5 (${stageInfo.nextStage.shortLabel}) ให้ ${stageInfo.nextAssigneeDisplay} แล้ว`
+                  : `ผ่านครบทั้ง 5 ขั้นตอนเรียบร้อย ชิ้นงานพร้อมเผยแพร่แล้ว`
+              );
               await fetchLivePipeline();
             } catch (e) {
               Alert.alert('ข้อผิดพลาด', e.message || 'ไม่สามารถอนุมัติได้');
@@ -577,9 +596,82 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     return (m.position || 'Content Creator') === memberPositionFilter;
   });
 
+  // Helper: Render 5-Stage Sequential Pipeline Stepper for a Content item
+  const renderPipelineStepper = (contentId, contentTitle, activeTaskType = null) => {
+    const cIdStr = contentId ? String(contentId) : null;
+    const relatedTasks = allTasks.filter(
+      (t) => (cIdStr && t.contentId && String(t.contentId) === cIdStr) || (contentTitle && t.contentTitle === contentTitle)
+    );
+
+    return (
+      <View style={[styles.stepperBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+        <Text style={[styles.stepperTitle, { color: colors.textSecondary }]}>
+          สายพานการผลิต 5 ขั้นตอน (ทำตามลำดับ 1 → 5):
+        </Text>
+        <View style={styles.stepperRow}>
+          {PIPELINE_STAGES.map((s) => {
+            const taskForStage = relatedTasks.find((t) => t.taskType === s.taskType);
+            const isDone = taskForStage?.status === 'DONE';
+            const isReview = taskForStage?.status === 'REVIEW';
+            const isRevision = taskForStage?.status === 'REVISION';
+            const isInProgress = taskForStage?.status === 'IN_PROGRESS';
+            const isCurrentHighlight = activeTaskType === s.taskType;
+
+            let bg = colors.surface;
+            let border = colors.border;
+            let textColor = colors.textMuted;
+            let statusIcon = '';
+
+            if (isDone) {
+              bg = colors.statusApprovedBg;
+              border = colors.statusApprovedBorder;
+              textColor = colors.statusApprovedText;
+              statusIcon = ' ✓';
+            } else if (isReview) {
+              bg = colors.statusReviewBg;
+              border = colors.statusReviewBorder;
+              textColor = colors.statusReviewText;
+              statusIcon = ' (รอตรวจ)';
+            } else if (isRevision) {
+              bg = colors.statusRevisionBg;
+              border = colors.statusRevisionBorder;
+              textColor = colors.statusRevisionText;
+              statusIcon = ' (แก้)';
+            } else if (isInProgress) {
+              bg = colors.statusInProgressBg;
+              border = colors.statusInProgressBorder;
+              textColor = colors.statusInProgressText;
+              statusIcon = ' (กำลังทำ)';
+            } else if (isCurrentHighlight) {
+              bg = colors.primary;
+              border = colors.primary;
+              textColor = '#FFFFFF';
+            }
+
+            return (
+              <View
+                key={s.taskType}
+                style={[
+                  styles.stepperPill,
+                  { backgroundColor: bg, borderColor: border },
+                  isCurrentHighlight && { borderWidth: 1.5 },
+                ]}
+              >
+                <Text style={[styles.stepperPillText, { color: textColor }]} numberOfLines={1}>
+                  {s.shortLabel}{statusIcon}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
+      </View>
+    );
+  };
+
   // Render a Single Review Deliverable Card (SRS ภาพที่ 45 หน้า 65)
   const renderReviewDeliverableCard = (item) => {
     const st = getStatusBadge(item.status);
+    const stageInfo = item.isTask ? getStageInfoByType(item.taskType, teamMembers) : null;
 
     return (
       <View
@@ -596,10 +688,19 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
       >
         {/* Card Header Row: Platform & Status Pill */}
         <View style={styles.cardTopRow}>
-          <View style={[styles.platBadge, { backgroundColor: colors.surfaceSubtle }]}>
-            <Text style={[styles.platText, { color: colors.textSecondary }]}>
-              {item.platform || 'General'}
-            </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+            <View style={[styles.platBadge, { backgroundColor: colors.surfaceSubtle }]}>
+              <Text style={[styles.platText, { color: colors.textSecondary }]}>
+                {item.platform || 'General'}
+              </Text>
+            </View>
+            {stageInfo && (
+              <View style={[styles.platBadge, { backgroundColor: colors.statusInProgressBg }]}>
+                <Text style={[styles.platText, { color: colors.statusInProgressText }]}>
+                  ขั้นตอนที่ {stageInfo.currentStage.stage}/5 • {stageInfo.currentStage.shortLabel}
+                </Text>
+              </View>
+            )}
           </View>
 
           <View style={[styles.statusBadge, { backgroundColor: st.bg, borderColor: st.border }]}>
@@ -615,18 +716,24 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
           </Text>
         ) : null}
 
-        {/* Submitter Name & 5 Core Positions */}
-        <View style={[styles.metaRow, { borderTopColor: colors.border }]}>
-          <View style={styles.metaItem}>
+        {/* 5-Stage Pipeline Stepper */}
+        {renderPipelineStepper(item.contentId || item._id, item.contentTitle || item.title, item.taskType)}
+
+        {/* Submitter Name & Next Handoff Info */}
+        <View style={[styles.metaRow, { borderTopColor: colors.border, flexDirection: 'column', gap: 4 }]}>
+          <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+            1. ผู้ส่งงานขั้นนี้: <Text style={{ color: colors.textPrimary, fontWeight: '700' }}>{item.submitterDisplay || item.creator || 'ทีมงาน'}</Text>
+          </Text>
+          {stageInfo && (
             <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-              ผู้ส่งงาน: <Text style={{ color: colors.textPrimary, fontWeight: '700' }}>{item.submitterDisplay || item.creator || 'ทีมงาน'}</Text>
+              2. เมื่ออนุมัติจะส่งต่อให้:{' '}
+              <Text style={{ color: colors.primary, fontWeight: '700' }}>
+                {stageInfo.nextStage
+                  ? `ขั้นที่ ${stageInfo.nextStage.stage}/5 (${stageInfo.nextStage.shortLabel}) → ${stageInfo.nextAssigneeDisplay}`
+                  : 'ครบ 5 ขั้นตอน (พร้อมเผยแพร่ทันที)'}
+              </Text>
             </Text>
-          </View>
-          <View style={styles.metaItem}>
-            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-              กำหนดส่ง: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.dueDate}</Text>
-            </Text>
-          </View>
+          )}
         </View>
 
         {/* Deliverable URL with 1-Tap Open Link */}
@@ -637,7 +744,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
             activeOpacity={0.7}
           >
             <Text style={[styles.btnPreviewLinkText, { color: colors.primary }]} numberOfLines={1}>
-              เปิดดูผลงาน (URL): {item.submissionUrl || item.latestSubmissionUrl}
+              เปิดดูผลงานที่ส่งตรวจ (URL): {item.submissionUrl || item.latestSubmissionUrl}
             </Text>
           </TouchableOpacity>
         )}
@@ -664,14 +771,20 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
             onPress={() => openRevisionModal(item)}
             activeOpacity={0.7}
           >
-            <Text style={[styles.btnSecondaryText, { color: colors.statusRevisionText }]}>ส่งกลับแก้ไข</Text>
+            <Text style={[styles.btnSecondaryText, { color: colors.statusRevisionText }]}>
+              สั่งแก้ขั้นที่ {stageInfo ? stageInfo.currentStage.stage : ''}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.btnPrimary, { backgroundColor: colors.statusApprovedText }]}
             onPress={() => (item.isTask ? handleApproveTask(item) : handleApproveContent(item))}
             activeOpacity={0.7}
           >
-            <Text style={styles.btnPrimaryText}>อนุมัติชิ้นงาน</Text>
+            <Text style={styles.btnPrimaryText}>
+              {stageInfo?.nextStage
+                ? `อนุมัติ → ส่งต่อขั้นที่ ${stageInfo.nextStage.stage}`
+                : 'อนุมัติชิ้นงานสมบูรณ์'}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -681,6 +794,12 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   // Render a Single Content Project Card (SRS ภาพที่ 35 หน้า 55)
   const renderContentCard = (item) => {
     const st = getStatusBadge(item.status);
+    const autoInfo = resolveAutoStageForContent(item, allTasks, teamMembers);
+    const cIdStr = item._id ? String(item._id) : null;
+    const relatedTasks = allTasks.filter(
+      (t) => (cIdStr && t.contentId && String(t.contentId) === cIdStr) || (item.title && t.contentTitle === item.title)
+    );
+    const doneCount = relatedTasks.filter((t) => t.status === 'DONE').length;
 
     return (
       <View
@@ -695,8 +814,15 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
       >
         {/* Header Row */}
         <View style={styles.cardTopRow}>
-          <View style={[styles.platBadge, { backgroundColor: colors.surfaceSubtle }]}>
-            <Text style={[styles.platText, { color: colors.textSecondary }]}>{item.platform}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={[styles.platBadge, { backgroundColor: colors.surfaceSubtle }]}>
+              <Text style={[styles.platText, { color: colors.textSecondary }]}>{item.platform}</Text>
+            </View>
+            <View style={[styles.platBadge, { backgroundColor: colors.surfaceSubtle }]}>
+              <Text style={[styles.platText, { color: colors.primary }]}>
+                ผ่านแล้ว {doneCount}/5 ขั้นตอน
+              </Text>
+            </View>
           </View>
 
           <View style={[styles.statusBadge, { backgroundColor: st.bg, borderColor: st.border }]}>
@@ -709,17 +835,21 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
           {item.description}
         </Text>
 
-        <View style={[styles.metaRow, { borderTopColor: colors.border }]}>
-          <View style={styles.metaItem}>
-            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-              ผู้ผลิต: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.creator}</Text>
+        {/* 5-Stage Pipeline Stepper */}
+        {renderPipelineStepper(item._id, item.title)}
+
+        <View style={[styles.metaRow, { borderTopColor: colors.border, flexDirection: 'column', gap: 4 }]}>
+          <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+            ผู้รับผิดชอบคิวถัดไป:{' '}
+            <Text style={{ color: colors.textPrimary, fontWeight: '700' }}>
+              {doneCount >= 5
+                ? 'ครบทั้ง 5 ขั้นตอนแล้ว (พร้อมเผยแพร่)'
+                : `ขั้นที่ ${autoInfo.stage}/5 (${autoInfo.taskType}) → ${autoInfo.assigneeDisplay}`}
             </Text>
-          </View>
-          <View style={styles.metaItem}>
-            <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-              กำหนดส่ง: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.dueDate}</Text>
-            </Text>
-          </View>
+          </Text>
+          <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+            กำหนดส่งโครงการ: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.dueDate}</Text>
+          </Text>
         </View>
 
         {!!item.latestSubmissionUrl && (
@@ -728,43 +858,32 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
             onPress={() => handleOpenUrl(item.latestSubmissionUrl)}
           >
             <Text style={[styles.btnPreviewLinkText, { color: colors.primary }]} numberOfLines={1}>
-              เปิดดูผลงาน: {item.latestSubmissionUrl}
+              เปิดดูผลงานล่าสุด: {item.latestSubmissionUrl}
             </Text>
           </TouchableOpacity>
         )}
 
         {/* Contextual Actions */}
-        {item.status === 'PLANNING' && (
+        {(item.status === 'PLANNING' || item.status === 'PRODUCTION' || item.status === 'IN_PROGRESS') && (
           <View style={styles.actionRow}>
-            <TouchableOpacity
-              style={[styles.btnSecondary, { backgroundColor: colors.surface, borderColor: colors.border }]}
-              onPress={() => openAssignModal(item)}
-            >
-              <Text style={[styles.btnSecondaryText, { color: colors.textPrimary }]}>+ มอบหมายงาน</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.btnPrimary, { backgroundColor: colors.primary }]}
-              onPress={() => handleStartProduction(item)}
-            >
-              <Text style={styles.btnPrimaryText}>เริ่มขั้นตอนผลิต</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {item.status === 'PRODUCTION' && (
-          <View style={styles.actionRow}>
-            <TouchableOpacity
-              style={[styles.btnSecondary, { backgroundColor: colors.surface, borderColor: colors.border }]}
-              onPress={() => openAssignModal(item)}
-            >
-              <Text style={[styles.btnSecondaryText, { color: colors.textPrimary }]}>+ มอบหมายงาน</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.btnPrimary, { backgroundColor: colors.primary }]}
-              onPress={() => handleSendToReview(item)}
-            >
-              <Text style={styles.btnPrimaryText}>ส่งเข้าสู่การตรวจ</Text>
-            </TouchableOpacity>
+            {autoInfo.existingTypes.size < 5 && (
+              <TouchableOpacity
+                style={[styles.btnSecondary, { backgroundColor: colors.surface, borderColor: colors.primary }]}
+                onPress={() => openAssignModal(item)}
+              >
+                <Text style={[styles.btnSecondaryText, { color: colors.primary }]}>
+                  + มอบหมายขั้นที่ {autoInfo.stage}/5 ({autoInfo.taskType})
+                </Text>
+              </TouchableOpacity>
+            )}
+            {doneCount >= 5 && (
+              <TouchableOpacity
+                style={[styles.btnPrimary, { backgroundColor: colors.statusApprovedText }]}
+                onPress={() => handleApproveContent(item)}
+              >
+                <Text style={styles.btnPrimaryText}>อนุมัติชิ้นงานสมบูรณ์</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
 
@@ -797,7 +916,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
               onPress={() => handlePublishNow(item)}
               activeOpacity={0.7}
             >
-              <Text style={styles.btnPrimaryText}>เผยแพร่ชิ้นงาน (Publish)</Text>
+              <Text style={styles.btnPrimaryText}>เผยแพร่ชิ้นงานสู่ {item.platform} (Publish)</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -1916,5 +2035,31 @@ const styles = StyleSheet.create({
   platChoiceBtnText: {
     fontSize: 11,
     fontWeight: '600',
+  },
+  stepperBox: {
+    borderRadius: 8,
+    padding: 8,
+    borderWidth: 1,
+    marginBottom: 8,
+  },
+  stepperTitle: {
+    fontSize: 10,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  stepperRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 5,
+  },
+  stepperPill: {
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  stepperPillText: {
+    fontSize: 10,
+    fontWeight: '700',
   },
 });

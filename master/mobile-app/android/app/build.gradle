@@ -82,8 +82,8 @@ android {
         applicationId "com.draftly"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 68
-        versionName "1.5.68"
+        versionCode 69
+        versionName "1.5.69"
     }
     signingConfigs {
         debug {

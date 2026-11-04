@@ -2601,6 +2601,22 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
 10. **การจัดระเบียบไฟล์ในโปรเจกต์ และสร้าง Skill `draftly-portable` สำหรับย้ายเครื่อง:**
     - ลบโฟลเดอร์ซ้ำซ้อนที่ว่างเปล่าใน Root (`diagram-design/`, `ponytail/`, `.next/`) และย้าย `TEST_INFRA.md`, `TEST_READY.md` เข้าสู่ `docs/testing/` รวมถึงย้ายไฟล์ PDF รายงานเข้าสู่ `docs/academic/reports/` (โดยไม่แตะต้อง `PROJECT-HANDOVER.md`)
     - อัปเดต `AI-MEMORY.md`, `AI-PORTABLE-PROMPT.md` และสร้าง `.agents/skills/draftly-portable/SKILL.md` พร้อมสคริปต์ติดตั้ง `tools/ai-skills/install-skills-to-machine.ps1` / `.bat`
+11. **การเพิ่มแถบสายพานลำดับงาน 5 ขั้นตอน (Visual 5-Stage Pipeline Stepper & Auto-Handoff `1→2→3→4→5`):**
+    - แก้ปัญหาความสับสนในการส่งงานไปมาระหว่าง Member และ Manager โดยเพิ่มแถบแสดงสถานะสายพาน 5 ขั้นตอน (`1. เขียนบท` → `2. ถ่ายทำ` → `3. ตัดต่อ` → `4. กราฟิก` → `5. มิกซ์เสียง`) และข้อความระบุชัดเจนว่า **"ส่งต่อไปไหนต่อ / เมื่ออนุมัติจะส่งต่อให้ใคร"** ทั้งใน [`ManagerDashboard.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/dashboard/ManagerDashboard.jsx) และ [`MemberTaskList.jsx`](file:///d:/VsCode/Project/Content-Management-System/master/mobile-app/src/features/tasks/MemberTaskList.jsx) รวมถึงอัปเกรด [`tasks.controller.js`](file:///d:/VsCode/Project/Content-Management-System/master/backend/src/modules/tasks/tasks.controller.js) ให้สร้าง/ปลดล็อกขั้นตอนถัดไป (`stage + 1`) ส่งต่อให้สมาชิกตามตำแหน่งโดยอัตโนมัติทันทีที่ Manager กดอนุมัติ (`DONE`):
+    ```diff
+    // master/backend/src/modules/tasks/tasks.controller.js
+    +if (status === 'DONE' && task.contentId) {
+    +  const currentStageNum = workflowService.getTaskStage(task.taskType);
+    +  if (currentStageNum < 5) {
+    +    const nextStageSpec = workflowService.PIPELINE_SEQUENCE.find((s) => s.stage === currentStageNum + 1);
+    +    // Auto-create next stage task if not yet created and assign by studio position
+    +  }
+    +}
+
+    // master/mobile-app/src/features/dashboard/ManagerDashboard.jsx & MemberTaskList.jsx
+    +{renderPipelineStepper(item.contentId || item._id, item.contentTitle || item.title, item.taskType)}
+    +<Text>เมื่ออนุมัติจะส่งต่อให้: ขั้นที่ {stageInfo.nextStage.stage}/5 ({stageInfo.nextStage.shortLabel}) → {stageInfo.nextAssigneeDisplay}</Text>
+    ```
 
 ---
 

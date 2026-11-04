@@ -13,7 +13,7 @@
     "isOnline": false,
     "lastActiveAt": "2026-11-04T11:15:06.796Z",
     "createdAt": "2026-11-04T07:02:36.871Z",
-    "updatedAt": "2026-11-04T11:39:02.109Z",
+    "updatedAt": "2026-11-04T11:52:32.100Z",
     "__v": 0
   },
   {
@@ -28,9 +28,9 @@
     "status": "ACTIVE",
     "workingStatus": "WORKING",
     "isOnline": false,
-    "lastActiveAt": "2026-11-04T11:25:37.958Z",
+    "lastActiveAt": "2026-11-04T11:52:24.742Z",
     "createdAt": "2026-11-04T07:02:36.874Z",
-    "updatedAt": "2026-11-04T11:39:02.109Z",
+    "updatedAt": "2026-11-04T11:52:32.100Z",
     "__v": 0,
     "teamId": "6aead88c2b1d3faf565185a0"
   },
@@ -46,9 +46,9 @@
     "status": "ACTIVE",
     "workingStatus": "WORKING",
     "isOnline": false,
-    "lastActiveAt": "2026-11-04T07:02:36.875Z",
+    "lastActiveAt": "2026-11-04T11:47:40.615Z",
     "createdAt": "2026-11-04T07:02:36.875Z",
-    "updatedAt": "2026-11-04T11:39:02.109Z",
+    "updatedAt": "2026-11-04T11:52:32.100Z",
     "__v": 0,
     "teamId": "6aead88c2b1d3faf565185a0"
   },
@@ -64,9 +64,9 @@
     "status": "ACTIVE",
     "workingStatus": "IDLE",
     "isOnline": false,
-    "lastActiveAt": "2026-11-04T10:52:16.140Z",
+    "lastActiveAt": "2026-11-04T11:46:38.026Z",
     "createdAt": "2026-11-04T07:02:36.878Z",
-    "updatedAt": "2026-11-04T11:39:02.109Z",
+    "updatedAt": "2026-11-04T11:52:32.100Z",
     "__v": 0,
     "teamId": "6aead88c2b1d3faf565185a0"
   },
@@ -82,9 +82,9 @@
     "status": "ACTIVE",
     "workingStatus": "WORKING",
     "isOnline": false,
-    "lastActiveAt": "2026-11-04T07:02:36.879Z",
+    "lastActiveAt": "2026-11-04T11:52:18.499Z",
     "createdAt": "2026-11-04T07:02:36.879Z",
-    "updatedAt": "2026-11-04T11:39:02.109Z",
+    "updatedAt": "2026-11-04T11:52:32.100Z",
     "__v": 0,
     "teamId": "6aead88c2b1d3faf565185a0"
   },
@@ -102,7 +102,7 @@
     "isOnline": false,
     "lastActiveAt": "2026-11-04T07:02:36.880Z",
     "createdAt": "2026-11-04T07:02:36.880Z",
-    "updatedAt": "2026-11-04T11:39:02.109Z",
+    "updatedAt": "2026-11-04T11:52:32.100Z",
     "__v": 0,
     "teamId": "6aead88c2b1d3faf565185a1"
   }

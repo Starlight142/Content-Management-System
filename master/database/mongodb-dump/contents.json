@@ -171,5 +171,40 @@
     "createdAt": "2026-11-04T07:05:03.911Z",
     "updatedAt": "2026-11-04T07:05:03.911Z",
     "__v": 0
+  },
+  {
+    "_id": "6aeb1b019131ccf44a371952",
+    "title": "Ooo",
+    "description": "Bbb",
+    "platform": "TikTok",
+    "status": "IN_PROGRESS",
+    "category": "General",
+    "createdBy": "6aead88c2b1d3faf5651859b",
+    "teamId": "6aead88c2b1d3faf565185a0",
+    "progress": 0,
+    "dueDate": "2026-11-11T00:00:00.000Z",
+    "ideaId": null,
+    "files": [],
+    "versions": [
+      {
+        "versionNumber": 1,
+        "fileUrl": "hshs",
+        "changelog": "Delivered by task: เขียนบทและสคริปต์: Ooo",
+        "submittedBy": "6aead88c2b1d3faf5651859d",
+        "submittedAt": "2026-11-04T11:46:23.299Z"
+      }
+    ],
+    "reviewHistory": [
+      {
+        "reviewerId": "6aead88c2b1d3faf5651859b",
+        "decision": "APPROVED",
+        "notes": "ผ่านการตรวจสอบคุณภาพเรียบร้อย",
+        "reviewedAt": "2026-11-04T11:46:48.739Z"
+      }
+    ],
+    "metrics": [],
+    "createdAt": "2026-11-04T11:46:09.663Z",
+    "updatedAt": "2026-11-04T11:46:48.740Z",
+    "__v": 2
   }
 ]

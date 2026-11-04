@@ -1,16 +1,16 @@
 {
   "database": "content_management",
-  "exportedAt": "2026-11-04T11:39:02.233Z",
+  "exportedAt": "2026-11-04T11:52:32.187Z",
   "exportReason": "boot-auto-export-newer-local",
-  "overallSha256": "f9cea5ab4e5775a541167a2795f10baca8089d376b3cd72367521f7f512a57e9",
-  "latestRecordUpdatedAt": "2026-11-04T11:39:02.109Z",
-  "totalDocuments": 47,
+  "overallSha256": "6d1ca457980255a76c25d672b5c9b7eacaa36a88cb0a12b26857ccd89891cf5b",
+  "latestRecordUpdatedAt": "2026-11-04T11:52:32.100Z",
+  "totalDocuments": 66,
   "collections": [
     {
       "name": "users",
       "count": 6,
-      "sha256": "49562ef7fd6822ad02c36068afe3c5f4baee61974472f4aba0c06026b05c92b6",
-      "latestUpdatedAt": "2026-11-04T11:39:02.109Z"
+      "sha256": "509f87348717783615c72ee0ea971c9028c02cd2b2f0c0b06998f07dafcf779d",
+      "latestUpdatedAt": "2026-11-04T11:52:32.100Z"
     },
     {
       "name": "teams",
@@ -20,15 +20,15 @@
     },
     {
       "name": "contents",
-      "count": 7,
-      "sha256": "36651656c806a92b5d66fd1869ede5c3dfe0591e53f4eb9cc54d6b3df33410ba",
-      "latestUpdatedAt": "2026-11-04T07:05:03.911Z"
+      "count": 8,
+      "sha256": "a4fc61c236eec41a3800401feaf58b9ca97ab0682d1495350f77d64e16cece78",
+      "latestUpdatedAt": "2026-11-04T11:46:48.740Z"
     },
     {
       "name": "tasks",
-      "count": 10,
-      "sha256": "57c0e7f2b972eab46e3d481911c665e994dd4b3b14a984724d57ed28ab9f967c",
-      "latestUpdatedAt": "2026-11-04T10:52:05.173Z"
+      "count": 15,
+      "sha256": "667412a8a5b34ab199d47af754653dad512a4f993f42c1339ee7416f6e5f7c56",
+      "latestUpdatedAt": "2026-11-04T11:46:48.736Z"
     },
     {
       "name": "ideas",
@@ -38,9 +38,9 @@
     },
     {
       "name": "teamactivities",
-      "count": 18,
-      "sha256": "c536cfd132a4145a3867add7e6212cb4ca396e1a8ec7cbe5874af1dc5d9c8993",
-      "latestUpdatedAt": "2026-11-04T11:15:46.035Z"
+      "count": 31,
+      "sha256": "90079324569391de03e7607b2493b06431e11ee851fdfe2e8cb32bd6a961dc02",
+      "latestUpdatedAt": "2026-11-04T11:47:43.197Z"
     }
   ]
 }

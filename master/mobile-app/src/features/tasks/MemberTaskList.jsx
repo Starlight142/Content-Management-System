@@ -33,24 +33,36 @@ const STAGE_ORDER = {
   Other: 5,
 };
 
-const checkStageUnlocked = (currentTask, allTasks) => {
+const PIPELINE_STEPS = [
+  { stage: 1, type: 'Scripting', label: '1. เขียนบท', nextRole: 'Video Editor (ถ่ายทำ)' },
+  { stage: 2, type: 'Filming', label: '2. ถ่ายทำ', nextRole: 'Video Editor (ตัดต่อ)' },
+  { stage: 3, type: 'Editing', label: '3. ตัดต่อ', nextRole: 'Graphic Designer (ภาพปก)' },
+  { stage: 4, type: 'Graphic Design', label: '4. กราฟิก', nextRole: 'Video Editor (มิกซ์เสียง)' },
+  { stage: 5, type: 'Sound Design', label: '5. มิกซ์เสียง', nextRole: 'ผู้จัดการอนุมัติเผยแพร่' },
+];
+
+const getBlockingPredecessor = (currentTask, allTasks) => {
   const currentStageNum = STAGE_ORDER[currentTask.type] || 5;
-  if (currentStageNum <= 1) return true;
+  if (currentStageNum <= 1) return null;
 
   const currentContentId = currentTask.contentId;
-  if (!currentContentId) return true;
+  if (!currentContentId) return null;
 
   const peerTasks = allTasks.filter(
     (t) => t.contentId && t.contentId.toString() === currentContentId.toString() && t.id !== currentTask.id
   );
 
-  const uncompletedPreceding = peerTasks.filter((t) => {
-    const stageNum = STAGE_ORDER[t.type] || 5;
-    return stageNum < currentStageNum && t.status !== 'DONE';
-  });
+  const uncompletedPreceding = peerTasks
+    .filter((t) => {
+      const stageNum = STAGE_ORDER[t.type] || 5;
+      return stageNum < currentStageNum && t.status !== 'DONE';
+    })
+    .sort((a, b) => (STAGE_ORDER[a.type] || 5) - (STAGE_ORDER[b.type] || 5));
 
-  return uncompletedPreceding.length === 0;
+  return uncompletedPreceding[0] || null;
 };
+
+const checkStageUnlocked = (currentTask, allTasks) => !getBlockingPredecessor(currentTask, allTasks);
 
 export default function MemberTaskList({ user, onNavigate }) {
   const { colors, isDark } = useTheme();
@@ -338,7 +350,13 @@ export default function MemberTaskList({ user, onNavigate }) {
     const isManager = userRole === 'MANAGER' || userRole === 'ADMIN';
     const allowedTypes = POSITION_TASK_MAP[userPosition] || ['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design', 'Other'];
     const isPositionAuthorized = isManager || allowedTypes.includes(item.type);
-    const isStageUnlocked = checkStageUnlocked(item, tasks);
+    const blockingTask = getBlockingPredecessor(item, tasks);
+    const isStageUnlocked = !blockingTask;
+    const currentStepObj = PIPELINE_STEPS.find((s) => s.type === item.type) || PIPELINE_STEPS[0];
+    const nextStepObj = PIPELINE_STEPS.find((s) => s.stage === currentStepObj.stage + 1) || null;
+    const peerTasks = tasks.filter(
+      (t) => item.contentId && t.contentId && t.contentId.toString() === item.contentId.toString()
+    );
 
     return (
       <View
@@ -357,8 +375,15 @@ export default function MemberTaskList({ user, onNavigate }) {
       >
         {/* Task Header: Type & Status Pill */}
         <View style={styles.taskCardTop}>
-          <View style={[styles.typeBadge, { backgroundColor: colors.surfaceSubtle }]}>
-            <Text style={[styles.typeBadgeText, { color: colors.textSecondary }]}>{item.type}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+            <View style={[styles.typeBadge, { backgroundColor: colors.statusInProgressBg }]}>
+              <Text style={[styles.typeBadgeText, { color: colors.statusInProgressText }]}>
+                ขั้นตอนที่ {currentStepObj.stage}/5 • {currentStepObj.label}
+              </Text>
+            </View>
+            <View style={[styles.typeBadge, { backgroundColor: colors.surfaceSubtle }]}>
+              <Text style={[styles.typeBadgeText, { color: colors.textSecondary }]}>{item.type}</Text>
+            </View>
           </View>
 
           <View style={[styles.statusBadge, { backgroundColor: st.bg, borderColor: st.border }]}>
@@ -369,16 +394,67 @@ export default function MemberTaskList({ user, onNavigate }) {
         {/* Task Title & Parent Content */}
         <Text style={[styles.taskTitle, { color: colors.textPrimary }]}>{item.title}</Text>
         <View style={[styles.parentContentBox, { backgroundColor: colors.surfaceSubtle }]}>
-          <Text style={[styles.parentContentLabel, { color: colors.textSecondary }]}>ชิ้นงาน:</Text>
+          <Text style={[styles.parentContentLabel, { color: colors.textSecondary }]}>ชิ้นงานหลัก:</Text>
           <Text style={[styles.parentContentTitle, { color: colors.textPrimary }]}>
             {item.contentTitle} ({item.platform})
+          </Text>
+        </View>
+
+        {/* 5-Stage Pipeline Stepper */}
+        <View style={[styles.stepperBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
+          <Text style={[styles.stepperTitle, { color: colors.textSecondary }]}>
+            ลำดับการส่งต่องาน 1 → 5 (คุณอยู่ขั้นที่ {currentStepObj.stage}/5):
+          </Text>
+          <View style={styles.stepperRow}>
+            {PIPELINE_STEPS.map((s) => {
+              const matchedPeer = peerTasks.find((pt) => pt.type === s.type);
+              const isCurrent = s.type === item.type;
+              const isDone = matchedPeer?.status === 'DONE';
+              const isReview = matchedPeer?.status === 'REVIEW';
+
+              let bg = colors.surface;
+              let border = colors.border;
+              let textColor = colors.textMuted;
+              let suffix = '';
+
+              if (isDone) {
+                bg = colors.statusApprovedBg;
+                border = colors.statusApprovedBorder;
+                textColor = colors.statusApprovedText;
+                suffix = ' ✓';
+              } else if (isCurrent) {
+                bg = colors.primary;
+                border = colors.primary;
+                textColor = '#FFFFFF';
+                suffix = ' (คิวนี้)';
+              } else if (isReview) {
+                bg = colors.statusReviewBg;
+                border = colors.statusReviewBorder;
+                textColor = colors.statusReviewText;
+                suffix = ' (รอตรวจ)';
+              }
+
+              return (
+                <View key={s.type} style={[styles.stepperPill, { backgroundColor: bg, borderColor: border }]}>
+                  <Text style={[styles.stepperPillText, { color: textColor }]} numberOfLines={1}>
+                    {s.label}{suffix}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+          <Text style={[styles.handoffHintText, { color: colors.textSecondary }]}>
+            ส่งต่อไปไหนต่อ:{' '}
+            <Text style={{ color: colors.primary, fontWeight: '700' }}>
+              ส่งให้ผู้จัดการตรวจ → {nextStepObj ? `ส่งต่อขั้นที่ ${nextStepObj.stage}/5 (${nextStepObj.label}) ให้ ${currentStepObj.nextRole}` : 'ครบ 5 ขั้นตอน พร้อมเผยแพร่ทันที'}
+            </Text>
           </Text>
         </View>
 
         {/* Assignee & Ownership Tag */}
         <View style={styles.assigneeRow}>
           <Text style={[styles.assigneeText, { color: colors.textSecondary }]}>
-            ผู้รับผิดชอบ: <Text style={{ fontWeight: '700', color: colors.textPrimary }}>{item.assigneeName}</Text>
+            ผู้รับผิดชอบ: <Text style={{ fontWeight: '700', color: colors.textPrimary }}>{item.assigneeName} ({item.assigneePosition})</Text>
           </Text>
           {item.isMyTask ? (
             <View style={[styles.myTaskTag, { backgroundColor: colors.statusInProgressBg, borderColor: colors.statusInProgressBorder }]}>
@@ -457,7 +533,7 @@ export default function MemberTaskList({ user, onNavigate }) {
             {item.status === 'REVIEW' && (
               <View style={[styles.submittedBox, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
                 <Text style={[styles.submittedText, { color: colors.statusReviewText }]}>
-                  ส่งงานเรียบร้อย • อยู่ในคิวรอการตรวจสอบ
+                  ส่งให้ผู้จัดการตรวจสอบแล้ว • {nextStepObj ? `เมื่ออนุมัติจะปลดล็อกขั้นที่ ${nextStepObj.stage}/5 (${nextStepObj.label}) ต่อทันที` : 'เมื่ออนุมัติจะเสร็จสมบูรณ์ครบ 5 ขั้นตอน'}
                 </Text>
                 {item.submissionUrl ? (
                   <TouchableOpacity
@@ -496,14 +572,14 @@ export default function MemberTaskList({ user, onNavigate }) {
               ) : !isStageUnlocked ? (
                 <View style={[styles.lockedContainer, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}>
                   <Text style={[styles.lockedNoticeText, { color: colors.statusRevisionText }]}>
-                    รอดำเนินการ: ต้องรอให้ขั้นตอนก่อนหน้าได้รับการอนุมัติจากหัวหน้าทีมก่อน
+                    ยังไม่ถึงคิวขั้นตอนนี้: ต้องรอให้ขั้นที่ {STAGE_ORDER[blockingTask?.type] || 1}/5 ({blockingTask?.type} โดย {blockingTask?.assigneeName}) ทำเสร็จและผ่านการอนุมัติจากผู้จัดการก่อน
                   </Text>
                   <TouchableOpacity
                     style={[styles.disabledBtn, { backgroundColor: colors.border }]}
                     disabled={true}
                   >
                     <Text style={[styles.disabledBtnText, { color: colors.textMuted }]}>
-                      รอขั้นตอนก่อนหน้าอนุมัติ
+                      รอขั้นที่ {STAGE_ORDER[blockingTask?.type] || 1}/5 ({blockingTask?.type}) อนุมัติก่อน
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -514,7 +590,9 @@ export default function MemberTaskList({ user, onNavigate }) {
                       style={[styles.startBtn, { backgroundColor: colors.primary }]}
                       onPress={() => handleStartTask(item.id)}
                     >
-                      <Text style={styles.startBtnText}>เริ่มทำงาน</Text>
+                      <Text style={styles.startBtnText}>
+                        เริ่มทำขั้นตอนที่ {currentStepObj.stage}/5 ({currentStepObj.label})
+                      </Text>
                     </TouchableOpacity>
                   )}
 
@@ -570,7 +648,7 @@ export default function MemberTaskList({ user, onNavigate }) {
                         onPress={() => handleSubmitTask(item.id, true)}
                         activeOpacity={0.7}
                       >
-                        <Text style={styles.submitBtnText}>ส่งงานที่แก้ไขแล้ว</Text>
+                        <Text style={styles.submitBtnText}>ส่งงานที่แก้ไขแล้วให้ผู้จัดการตรวจ</Text>
                       </TouchableOpacity>
                     </View>
                   )}
@@ -602,7 +680,9 @@ export default function MemberTaskList({ user, onNavigate }) {
                         onPress={() => handleSubmitTask(item.id, false)}
                         activeOpacity={0.7}
                       >
-                        <Text style={styles.submitBtnText}>ส่งมอบงานให้ตรวจสอบ</Text>
+                        <Text style={styles.submitBtnText}>
+                          ส่งตรวจขั้นที่ {currentStepObj.stage}/5 {nextStepObj ? `(เพื่อส่งต่อ ${nextStepObj.label})` : '(ขั้นตอนสุดท้าย)'}
+                        </Text>
                       </TouchableOpacity>
                     </View>
                   )}
@@ -1463,5 +1543,36 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 2,
     lineHeight: 15,
+  },
+  stepperBox: {
+    borderRadius: 8,
+    padding: 8,
+    borderWidth: 1,
+    marginBottom: 8,
+  },
+  stepperTitle: {
+    fontSize: 10,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  stepperRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 5,
+    marginBottom: 6,
+  },
+  stepperPill: {
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  stepperPillText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  handoffHintText: {
+    fontSize: 10,
+    lineHeight: 14,
   },
 });

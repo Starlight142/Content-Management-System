@@ -239,18 +239,56 @@ const updateTaskStatus = async (req, res) => {
       }
     }
 
-    // If task is completed and all tasks for parent content are DONE, advance content to APPROVED
+    // If task is completed, check if next sequential stage (1->5) should be auto-created or if all 5 stages are DONE
     if (status === 'DONE' && task.contentId) {
-      const remainingUnfinished = await Task.countDocuments({
-        contentId: task.contentId._id || task.contentId,
-        _id: { $ne: task._id },
-        status: { $ne: 'DONE' },
-      });
-      if (remainingUnfinished === 0) {
-        await Content.findByIdAndUpdate(task.contentId._id || task.contentId, {
+      const cId = task.contentId._id || task.contentId;
+      const parentContent = await Content.findById(cId);
+      const currentStageNum = workflowService.getTaskStage(task.taskType);
+
+      if (currentStageNum < 5) {
+        const nextStageSpec = workflowService.PIPELINE_SEQUENCE.find((s) => s.stage === currentStageNum + 1);
+        if (nextStageSpec) {
+          const existingNext = await Task.findOne({ contentId: cId, taskType: nextStageSpec.taskType });
+          if (!existingNext) {
+            const teamFilter = (task.teamId?._id || task.teamId || parentContent?.teamId)
+              ? { teamId: task.teamId?._id || task.teamId || parentContent?.teamId }
+              : {};
+            let teamUsers = await User.find(teamFilter);
+            if (!teamUsers || teamUsers.length === 0) teamUsers = await User.find();
+            const matchedNextUser = workflowService.findAssigneeForStage(nextStageSpec, teamUsers);
+            const nextTask = await Task.create({
+              title: `${nextStageSpec.titlePrefix}: ${parentContent?.title || task.contentId?.title || ''}`,
+              contentId: cId,
+              teamId: task.teamId?._id || task.teamId || parentContent?.teamId || null,
+              taskType: nextStageSpec.taskType,
+              assignedTo: matchedNextUser ? matchedNextUser._id : null,
+              dueDate: new Date(Date.now() + (6 - nextStageSpec.stage) * 86400000),
+              notes: `รับส่งต่ออัตโนมัติจากขั้นตอนที่ ${currentStageNum}/5 (${task.taskType})`,
+              progress: 0,
+              status: 'TODO',
+            });
+            broadcast('TASK_CREATED', { task: nextTask });
+          }
+        }
+      }
+
+      const allContentTasks = await Task.find({ contentId: cId });
+      const doneCount = allContentTasks.filter((t) => t.status === 'DONE').length;
+      const remainingUnfinished = allContentTasks.filter((t) => t.status !== 'DONE').length;
+      const newContentProgress = Math.min(100, Math.round((doneCount / 5) * 100));
+
+      if (remainingUnfinished === 0 && doneCount >= 5) {
+        await Content.findByIdAndUpdate(cId, {
           status: 'APPROVED',
+          progress: 100,
         });
-        broadcast('CONTENT_UPDATED', { contentId: task.contentId._id || task.contentId, status: 'APPROVED' });
+        broadcast('CONTENT_UPDATED', { contentId: cId, status: 'APPROVED' });
+      } else {
+        await Content.findByIdAndUpdate(cId, {
+          status: 'IN_PROGRESS',
+          progress: newContentProgress,
+        });
+        broadcast('CONTENT_UPDATED', { contentId: cId, status: 'IN_PROGRESS' });
       }
     }
 

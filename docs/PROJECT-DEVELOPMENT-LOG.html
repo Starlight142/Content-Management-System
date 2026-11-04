@@ -2060,6 +2060,13 @@
 + {allowDelete &amp;&amp; (&lt;TouchableOpacity style={styles.deleteBtn} onPress={() =&gt; handleDeleteIdea(item)}&gt;&lt;Text&gt;ลบ&lt;/Text&gt;&lt;/TouchableOpacity&gt;)}</code></pre>
             </li>
             <li><strong>Workspace Cleanup &amp; Portable Migration Skill (<code>draftly-portable</code>):</strong> ลบโฟลเดอร์ซ้ำซ้อนใน Root (<code>diagram-design/</code>, <code>ponytail/</code>, <code>.next/</code>) ย้าย <code>TEST_INFRA.md</code> และ <code>TEST_READY.md</code> ไปยัง <code>docs/testing/</code> และอัปเดต <code>AI-MEMORY.md</code>, <code>AI-PORTABLE-PROMPT.md</code> พร้อมทักษะ <code>.agents/skills/draftly-portable/SKILL.md</code></li>
+            <li><strong>Visual 5-Stage Pipeline Stepper &amp; Auto-Handoff (<code>tasks.controller.js</code>, <code>ManagerDashboard.jsx</code>, <code>MemberTaskList.jsx</code>):</strong> เพิ่มแถบสายพาน 5 ขั้นตอน (<code>1. เขียนบท</code> → <code>2. ถ่ายทำ</code> → <code>3. ตัดต่อ</code> → <code>4. กราฟิก</code> → <code>5. มิกซ์เสียง</code>) บนการ์ดงานทุกใบ พร้อมระบุชัดเจนว่าอยู่ขั้นที่เท่าไหร่ รอใครอนุมัติ และเมื่อผ่านแล้วจะส่งต่อให้ตำแหน่งใดโดยอัตโนมัติ:
+              <pre><code>// master/backend/src/modules/tasks/tasks.controller.js
++ if (status === 'DONE' &amp;&amp; currentStageNum &lt; 5) { /* Auto-create/unlock stage N+1 */ }
+// master/mobile-app/src/features/dashboard/ManagerDashboard.jsx &amp; MemberTaskList.jsx
++ {renderPipelineStepper(item.contentId || item._id, item.contentTitle || item.title, item.taskType)}
++ เมื่ออนุมัติจะส่งต่อให้: ขั้นที่ {stageInfo.nextStage.stage}/5 ({stageInfo.nextStage.shortLabel}) → {stageInfo.nextAssigneeDisplay}</code></pre>
+            </li>
           </ul>
         </li>
         <li><strong>การทดสอบระบบและการยืนยันความถูกต้องแบบครบวงจร (Milestone M4 — E2E Acceptance & Invariants):</strong>

@@ -446,5 +446,330 @@
       "$date": "2026-11-04T11:15:46.035Z"
     },
     "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1a9d9131ccf44a37194e"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-04T11:44:29.010Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:44:29.010Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1ab49131ccf44a37194f"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "Jane เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: jane@studio.com (ตำแหน่ง: Script Writer, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf5651859d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-04T11:44:52.675Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:44:52.675Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1af09131ccf44a371950"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859d"
+    },
+    "actionType": "TASK_SUBMITTED",
+    "title": "Jane ส่งงาน \"เขียนบทและตรวจทานสคริปต์ (Script Product Review v2)\" ให้ตรวจสอบ",
+    "details": "ลิงก์ส่งงาน: https://docs.google.com/document/d/script_product_review_v2",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf565185b0"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-04T11:45:52.730Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:45:52.730Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1af59131ccf44a371951"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "TASK_STATUS_CHANGED",
+    "title": "สมศรี ทำงาน \"เขียนบทและตรวจทานสคริปต์ (Script Product Review v2)\" เสร็จสมบูรณ์แล้ว (100%)",
+    "details": "",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf565185b0"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-04T11:45:57.264Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:45:57.264Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1b019131ccf44a371953"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "CONTENT_CREATED",
+    "title": "สมศรี เพิ่มแผนคอนเทนต์ใหม่: \"Ooo\"",
+    "details": "",
+    "entityId": {
+      "$oid": "6aeb1b019131ccf44a371952"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-04T11:46:09.666Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:46:09.666Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1b019131ccf44a371959"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "TASK_ASSIGNED",
+    "title": "สมศรี ระบบกระจายงานอัตโนมัติ 5 ขั้นตอน (1->5) สำหรับ \"Ooo\"",
+    "details": "",
+    "entityId": {
+      "$oid": "6aeb1b019131ccf44a371952"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-04T11:46:09.677Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:46:09.677Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1b0b9131ccf44a37195a"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859d"
+    },
+    "actionType": "TASK_STATUS_CHANGED",
+    "title": "Jane เปลี่ยน Task เป็น IN_PROGRESS (25%)",
+    "details": "",
+    "entityId": {
+      "$oid": "6aeb1b019131ccf44a371954"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-04T11:46:19.681Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:46:19.681Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1b0f9131ccf44a37195b"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859d"
+    },
+    "actionType": "TASK_SUBMITTED",
+    "title": "Jane ส่งงาน \"เขียนบทและสคริปต์: Ooo\" ให้ตรวจสอบ",
+    "details": "ลิงก์ส่งงาน: hshs",
+    "entityId": {
+      "$oid": "6aeb1b019131ccf44a371954"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-04T11:46:23.304Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:46:23.304Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1b169131ccf44a37195c"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "TASK_STATUS_CHANGED",
+    "title": "สมศรี ทำงาน \"เขียนบทและสคริปต์: Ooo\" เสร็จสมบูรณ์แล้ว (100%)",
+    "details": "",
+    "entityId": {
+      "$oid": "6aeb1b019131ccf44a371954"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-04T11:46:30.495Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:46:30.495Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1b229131ccf44a37195d"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-04T11:46:42.974Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:46:42.974Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1b289131ccf44a37195e"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "CONTENT_APPROVED",
+    "title": "สมศรี อนุมัติคอนเทนต์ \"Ooo\" เรียบร้อยแล้ว",
+    "details": "ผ่านการตรวจสอบคุณภาพเรียบร้อย",
+    "entityId": {
+      "$oid": "6aeb1b019131ccf44a371952"
+    },
+    "entityModel": "Content",
+    "createdAt": {
+      "$date": "2026-11-04T11:46:48.742Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:46:48.742Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1b439131ccf44a37195f"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859c"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "John เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: member@studio.com (ตำแหน่ง: Video Editor, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf5651859c"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-04T11:47:15.466Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:47:15.466Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1b5f9131ccf44a371960"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859e"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "Mike เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: mike@studio.com (ตำแหน่ง: Graphic Designer, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf5651859e"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-04T11:47:43.197Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:47:43.197Z"
+    },
+    "__v": 0
   }
 ]
