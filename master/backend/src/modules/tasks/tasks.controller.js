@@ -34,25 +34,61 @@ const getAllTasks = async (req, res) => {
 // @access Private (Manager/Admin)
 const createTask = async (req, res) => {
   try {
-    const { title, contentId, taskType, assignedTo, dueDate, notes, teamId, progress, submissionUrl, replyNotes, revisionNotes } = req.body;
-    if (!title || String(title).trim() === '') {
-      return res.status(400).json({ message: 'กรุณาระบุชื่องานย่อย (Task title is required)' });
-    }
+    const { title, contentId, taskType, assignedTo, dueDate, notes, teamId, progress, submissionUrl, replyNotes, revisionNotes, autoAssign } = req.body;
 
-    // If teamId not explicitly passed, inherit from content
-    let resolvedTeamId = teamId;
-    if (!resolvedTeamId && contentId) {
-      const content = await Content.findById(contentId);
-      if (content && content.teamId) {
-        resolvedTeamId = content.teamId;
+    // If teamId not explicitly passed, inherit from content or user
+    let resolvedTeamId = teamId || req.user?.teamId || null;
+    let contentDoc = null;
+    if (contentId) {
+      contentDoc = await Content.findById(contentId);
+      if (contentDoc && contentDoc.teamId) {
+        resolvedTeamId = contentDoc.teamId;
       }
     }
 
+    let finalTaskType = taskType;
+    let finalAssignedTo = assignedTo;
+    let finalTitle = title ? String(title).trim() : '';
+
+    // Auto-resolve sequential stage (1 -> 2 -> 3 -> 4 -> 5) and assignee by studio position
+    if (autoAssign || !finalTaskType || !finalAssignedTo) {
+      const existingTasks = contentId ? await Task.find({ contentId }) : [];
+      const teamFilter = resolvedTeamId ? { teamId: resolvedTeamId } : {};
+      let teamUsers = await User.find(teamFilter);
+      if (!teamUsers || teamUsers.length === 0) {
+        teamUsers = await User.find();
+      }
+
+      const autoResolved = workflowService.resolveAutoTaskAssignment(
+        existingTasks,
+        teamUsers,
+        contentDoc?.title || ''
+      );
+
+      if (autoAssign || !finalTaskType) {
+        finalTaskType = autoResolved.taskType;
+      }
+      if (autoAssign || !finalAssignedTo) {
+        const stageSpec =
+          workflowService.PIPELINE_SEQUENCE.find((s) => s.taskType === finalTaskType) ||
+          workflowService.PIPELINE_SEQUENCE[0];
+        const matchedMember = workflowService.findAssigneeForStage(stageSpec, teamUsers);
+        finalAssignedTo = matchedMember ? matchedMember._id : autoResolved.assignedTo;
+      }
+      if (!finalTitle) {
+        finalTitle = autoResolved.defaultTitle;
+      }
+    }
+
+    if (!finalTitle) {
+      return res.status(400).json({ message: 'กรุณาระบุชื่องานย่อย (Task title is required)' });
+    }
+
     const newTask = await Task.create({
-      title,
+      title: finalTitle,
       contentId: contentId || null,
-      taskType: taskType || 'Editing',
-      assignedTo: assignedTo || null,
+      taskType: finalTaskType || 'Scripting',
+      assignedTo: finalAssignedTo || null,
       teamId: resolvedTeamId || null,
       dueDate: dueDate || new Date(Date.now() + 7 * 86400000),
       notes: notes || '',
@@ -64,7 +100,7 @@ const createTask = async (req, res) => {
     });
 
     const populated = await newTask.populate([
-      { path: 'assignedTo', select: 'username email firstName lastName role workingStatus' },
+      { path: 'assignedTo', select: 'username email firstName lastName position role workingStatus' },
       { path: 'contentId', select: 'title platform' },
       { path: 'teamId', select: 'name' },
     ]);
@@ -77,7 +113,7 @@ const createTask = async (req, res) => {
         teamId: resolvedTeamId,
         actor: req.user.userId || req.user.id,
         actionType: 'TASK_ASSIGNED',
-        title: `${actorName} มอบหมายงาน "${title}" ให้ ${assigneeName}`,
+        title: `${actorName} มอบหมายงาน "${finalTitle}" (${newTask.taskType}) ให้ ${assigneeName}`,
         entityId: newTask._id,
         entityModel: 'Task',
       });

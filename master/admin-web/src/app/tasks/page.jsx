@@ -52,8 +52,6 @@ export default function TasksPage() {
   const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskContentId, setNewTaskContentId] = useState('');
-  const [newTaskType, setNewTaskType] = useState('Editing');
-  const [newTaskAssignee, setNewTaskAssignee] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState(() => new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0]);
   const [newTaskNotes, setNewTaskNotes] = useState('');
   const [submittingTask, setSubmittingTask] = useState(false);
@@ -115,9 +113,6 @@ export default function TasksPage() {
       }
       if (Array.isArray(uData)) {
         setUsers(uData);
-        if (uData.length > 0) {
-          setNewTaskAssignee((prev) => prev || (uData[0]._id || uData[0].id));
-        }
       }
     } catch (err) {
       console.warn('Error fetching tasks data:', err.message);
@@ -144,9 +139,6 @@ export default function TasksPage() {
       }
       if (Array.isArray(uData)) {
         setUsers(uData);
-        if (uData.length > 0) {
-          setNewTaskAssignee((prev) => prev || (uData[0]._id || uData[0].id));
-        }
       }
     }).catch((err) => {
       console.warn('Initial tasks load error:', err.message);
@@ -178,23 +170,62 @@ export default function TasksPage() {
     };
   }, [fetchTasksData]);
 
-  // Handle Create Task in MongoDB
+  // Helper: Auto-resolve next sequential stage (1 -> 2 -> 3 -> 4 -> 5) and assignee by position
+  const resolveAutoStageForContentId = (contentIdVal = newTaskContentId) => {
+    const stages = [
+      { stage: 1, taskType: 'Scripting', prefix: 'เขียนบทและสคริปต์', positions: ['Script Writer', 'Content Creator', 'Production Manager'] },
+      { stage: 2, taskType: 'Filming', prefix: 'ถ่ายทำฟุตเทจหลัก', positions: ['Video Editor', 'Content Creator', 'Production Manager'] },
+      { stage: 3, taskType: 'Editing', prefix: 'ตัดต่อวิดีโอหลัก', positions: ['Video Editor', 'Content Creator', 'Production Manager'] },
+      { stage: 4, taskType: 'Graphic Design', prefix: 'ออกแบบภาพปกและกราฟิก', positions: ['Graphic Designer', 'Content Creator', 'Production Manager'] },
+      { stage: 5, taskType: 'Sound Design', prefix: 'มิกซ์เสียงและดนตรีประกอบ', positions: ['Video Editor', 'Content Creator', 'Production Manager'] },
+    ];
+    const targetContent = contents.find((c) => String(c._id || c.id) === String(contentIdVal));
+    const existingTypes = new Set(
+      tasks
+        .filter((t) => String(t.contentId?._id || t.contentId?.id || t.contentId) === String(contentIdVal))
+        .map((t) => t.taskType)
+    );
+    const nextStage = stages.find((s) => !existingTypes.has(s.taskType)) || stages[0];
+    const orderedUsers = [
+      ...users.filter((u) => u.role === 'MEMBER'),
+      ...users.filter((u) => u.role !== 'MEMBER'),
+    ];
+    let matchedUser = null;
+    for (const pos of nextStage.positions) {
+      matchedUser = orderedUsers.find((u) => u.position === pos);
+      if (matchedUser) break;
+    }
+    if (!matchedUser && orderedUsers.length > 0) matchedUser = orderedUsers[0];
+    const uName = matchedUser
+      ? (matchedUser.firstName ? `${matchedUser.firstName} ${matchedUser.lastName || ''}`.trim() : matchedUser.username)
+      : 'ระบบจัดสรรอัตโนมัติ';
+    const uPos = matchedUser?.position || nextStage.positions[0];
+
+    return {
+      stage: nextStage.stage,
+      taskType: nextStage.taskType,
+      defaultTitle: targetContent?.title ? `${nextStage.prefix}: ${targetContent.title}` : nextStage.prefix,
+      assigneeId: matchedUser ? (matchedUser._id || matchedUser.id) : '',
+      assigneeDisplay: `${uName} (${uPos})`,
+    };
+  };
+
+  // Handle Create Task in MongoDB (Auto-Assigned by Sequential Order 1 -> 5)
   const handleCreateTask = async (e) => {
     e.preventDefault();
-    if (!newTaskTitle.trim()) {
-      alert('กรุณากรอกชื่องาน');
-      return;
-    }
+    const autoInfo = resolveAutoStageForContentId(newTaskContentId);
+    const finalTitle = newTaskTitle.trim() || autoInfo.defaultTitle;
 
     try {
       setSubmittingTask(true);
       const res = await apiFetch('/tasks', {
         method: 'POST',
         body: JSON.stringify({
-          title: newTaskTitle.trim(),
+          title: finalTitle,
           contentId: newTaskContentId || null,
-          taskType: newTaskType,
-          assignedTo: newTaskAssignee || null,
+          taskType: autoInfo.taskType,
+          assignedTo: autoInfo.assigneeId || null,
+          autoAssign: true,
           dueDate: newTaskDueDate || new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0],
           notes: newTaskNotes,
         }),
@@ -203,7 +234,7 @@ export default function TasksPage() {
       if (res?.task) {
         setTasks((prev) => [res.task, ...prev]);
       }
-      showToast('มอบหมายงานใหม่ลงในฐานข้อมูลสำเร็จ!');
+      showToast(`ระบบมอบหมายงาน (${autoInfo.taskType}) ให้ ${autoInfo.assigneeDisplay} อัตโนมัติสำเร็จ!`);
       setIsCreateTaskModalOpen(false);
       setNewTaskTitle('');
       setNewTaskNotes('');
@@ -673,121 +704,112 @@ export default function TasksPage() {
         </div>
       )}
 
-      {/* Modal: Create Real Task */}
-      {isCreateTaskModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-              <h3 className="text-base font-bold text-slate-900">มอบหมายงานใหม่ (Assign Task)</h3>
-              <button 
-                onClick={() => setIsCreateTaskModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 cursor-pointer"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateTask} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">ชื่องาน (Task Title) *</label>
-                <input 
-                  type="text" 
-                  required
-                  value={newTaskTitle}
-                  onChange={(e) => setNewTaskTitle(e.target.value)}
-                  placeholder="เช่น ตัดต่อคลิป EP.1, ออกแบบภาพปก Thumbnail" 
-                  className="w-full px-3.5 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">ผูกกับ Content (ไม่บังคับ)</label>
-                <select
-                  value={newTaskContentId}
-                  onChange={(e) => setNewTaskContentId(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 bg-white"
+      {/* Modal: Create Real Task (Auto-Assigned by Sequential Order 1 -> 5) */}
+      {isCreateTaskModalOpen && (() => {
+        const autoInfo = resolveAutoStageForContentId(newTaskContentId);
+        return (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h3 className="text-base font-bold text-slate-900">มอบหมายงานใหม่ตามลำดับสายงานอัตโนมัติ (Auto 1→5)</h3>
+                <button 
+                  onClick={() => setIsCreateTaskModalOpen(false)}
+                  className="text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
-                  <option value="">-- ไม่ระบุ (งานทั่วไป) --</option>
-                  {contents.map((c) => (
-                    <option key={c._id || c.id} value={c._id || c.id}>
-                      {c.title} ({c.platform})
-                    </option>
-                  ))}
-                </select>
+                  <X size={18} />
+                </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <form onSubmit={handleCreateTask} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">ประเภทงาน (Task Type)</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">ผูกกับ Content</label>
                   <select
-                    value={newTaskType}
-                    onChange={(e) => setNewTaskType(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 bg-white"
+                    value={newTaskContentId}
+                    onChange={(e) => {
+                      const nextId = e.target.value;
+                      setNewTaskContentId(nextId);
+                      const nextAuto = resolveAutoStageForContentId(nextId);
+                      setNewTaskTitle(nextAuto.defaultTitle);
+                    }}
+                    className="w-full px-3.5 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 bg-white"
                   >
-                    {taskTypes.map((t) => (
-                      <option key={t.id} value={t.name}>{t.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">มอบหมายให้ (Assignee)</label>
-                  <select
-                    value={newTaskAssignee}
-                    onChange={(e) => setNewTaskAssignee(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 bg-white"
-                  >
-                    <option value="">-- ยังไม่ระบุ --</option>
-                    {users.map((u) => (
-                      <option key={u._id || u.id} value={u._id || u.id}>
-                        {u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : u.username} {u.position ? `• ${u.position}` : `(${u.role})`}
+                    {contents.map((c) => (
+                      <option key={c._id || c.id} value={c._id || c.id}>
+                        {c.title} ({c.platform})
                       </option>
                     ))}
                   </select>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">กำหนดส่งงาน (Due Date)</label>
-                <input 
-                  type="date"
-                  value={newTaskDueDate}
-                  onChange={(e) => setNewTaskDueDate(e.target.value)}
-                  className="w-full px-3.5 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500"
-                />
-              </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">ประเภทงาน (จัดลำดับอัตโนมัติ)</label>
+                    <div className="w-full px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm font-semibold text-blue-800">
+                      ขั้นตอนที่ {autoInfo.stage}/5: {autoInfo.taskType}
+                    </div>
+                  </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">คำแนะนำหรือโน้ตเพิ่มเติม (Notes)</label>
-                <textarea 
-                  rows={2}
-                  value={newTaskNotes}
-                  onChange={(e) => setNewTaskNotes(e.target.value)}
-                  placeholder="ระบุข้อกำหนดเฉพาะ เช่น ใช้โทนสีฟ้า, เน้นช่วงนาทีที่ 01:20..."
-                  className="w-full px-3.5 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 resize-none"
-                />
-              </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">มอบหมายให้ (ตามตำแหน่งอัตโนมัติ)</label>
+                    <div className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm font-semibold text-slate-800 truncate">
+                      {autoInfo.assigneeDisplay}
+                    </div>
+                  </div>
+                </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsCreateTaskModalOpen(false)}
-                  className="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-xs font-semibold hover:bg-slate-50 cursor-pointer"
-                >
-                  ยกเลิก
-                </button>
-                <button
-                  type="submit"
-                  disabled={submittingTask}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 shadow-xs cursor-pointer disabled:opacity-50"
-                >
-                  {submittingTask ? 'กำลังสร้าง...' : 'บันทึกและมอบหมายงาน'}
-                </button>
-              </div>
-            </form>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">ชื่องาน (Task Title)</label>
+                  <input 
+                    type="text" 
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    placeholder={autoInfo.defaultTitle} 
+                    className="w-full px-3.5 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">กำหนดส่งงาน (Due Date)</label>
+                  <input 
+                    type="date"
+                    value={newTaskDueDate}
+                    onChange={(e) => setNewTaskDueDate(e.target.value)}
+                    className="w-full px-3.5 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">คำแนะนำหรือโน้ตเพิ่มเติม (Notes)</label>
+                  <textarea 
+                    rows={2}
+                    value={newTaskNotes}
+                    onChange={(e) => setNewTaskNotes(e.target.value)}
+                    placeholder="ระบุข้อกำหนดเฉพาะ เช่น ใช้โทนสีฟ้า, เน้นช่วงนาทีที่ 01:20..."
+                    className="w-full px-3.5 py-2 border border-slate-200 rounded-lg text-sm outline-hidden focus:border-blue-500 resize-none"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateTaskModalOpen(false)}
+                    className="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-xs font-semibold hover:bg-slate-50 cursor-pointer"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submittingTask}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 shadow-xs cursor-pointer disabled:opacity-50"
+                  >
+                    {submittingTask ? 'กำลังสร้าง...' : 'ยืนยันมอบหมายอัตโนมัติ'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Modal: Add/Edit Task Type Master */}
       {isTypeModalOpen && (

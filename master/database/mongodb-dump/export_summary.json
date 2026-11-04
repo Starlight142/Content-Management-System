@@ -1,16 +1,16 @@
 {
   "database": "content_management",
-  "exportedAt": "2026-11-04T07:02:36.943Z",
-  "exportReason": "seed-fresh-rebuild",
-  "overallSha256": "35d24c4845e0a872e507918794d9b28417e0ca5c8e7210644759ed204c248006",
-  "latestRecordUpdatedAt": "2026-11-04T07:02:36.911Z",
-  "totalDocuments": 33,
+  "exportedAt": "2026-11-04T07:14:53.604Z",
+  "exportReason": "boot-auto-export-newer-local",
+  "overallSha256": "f08b60fdcd79e8b94bbee8515a700dadb172d81094c6d922323bc133e24f4317",
+  "latestRecordUpdatedAt": "2026-11-04T07:14:53.504Z",
+  "totalDocuments": 35,
   "collections": [
     {
       "name": "users",
       "count": 6,
-      "sha256": "eec3c8316adbfb7d0a055ddd229343a3cbaa8b509bab0586ae24d5e4b587e671",
-      "latestUpdatedAt": "2026-11-04T07:02:36.891Z"
+      "sha256": "db1022d697ed0c46a28d273235101daa88c1972428a50aabdc9189ac2d65757a",
+      "latestUpdatedAt": "2026-11-04T07:14:53.504Z"
     },
     {
       "name": "teams",
@@ -20,9 +20,9 @@
     },
     {
       "name": "contents",
-      "count": 6,
-      "sha256": "41e56c68b8da369d277dccf6e4906a5d5252d4e805a73f1d080490e529c221b2",
-      "latestUpdatedAt": "2026-11-04T07:02:36.903Z"
+      "count": 7,
+      "sha256": "36651656c806a92b5d66fd1869ede5c3dfe0591e53f4eb9cc54d6b3df33410ba",
+      "latestUpdatedAt": "2026-11-04T07:05:03.911Z"
     },
     {
       "name": "tasks",
@@ -38,9 +38,9 @@
     },
     {
       "name": "teamactivities",
-      "count": 6,
-      "sha256": "723a9f7aadf1246577e624ec9ccd46882011b8049f2e78e97a56316e10d0acc6",
-      "latestUpdatedAt": "2026-11-04T06:47:36.912Z"
+      "count": 7,
+      "sha256": "a2984d901bd223e29aee0fc4a67dd1d4d721af65b24c06149f092df7f4b6b92e",
+      "latestUpdatedAt": "2026-11-04T07:05:03.922Z"
     }
   ]
 }

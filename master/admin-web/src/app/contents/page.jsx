@@ -77,8 +77,6 @@ export default function ContentsPage() {
   // Subtask assignment inside content modal
   const [isAssignTaskOpen, setIsAssignTaskOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState('');
-  const [taskType, setTaskType] = useState('Editing');
-  const [taskAssignee, setTaskAssignee] = useState('');
   const [taskDueDate, setTaskDueDate] = useState(() => new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0]);
   const [taskNotes, setTaskNotes] = useState('');
   const [subtaskSubmitting, setSubtaskSubmitting] = useState(false);
@@ -142,7 +140,6 @@ export default function ContentsPage() {
           if (Array.isArray(tData)) setTasks(tData);
           if (Array.isArray(uData)) {
             setUsers(uData);
-            if (uData.length > 0) setTaskAssignee(uData[0]._id || uData[0].id);
           }
         }
       } catch (err) {
@@ -322,15 +319,15 @@ export default function ContentsPage() {
           platform: newPlatform,
           description: newDescription.trim(),
           dueDate: newDate,
+          autoCreateTasks: true,
         }),
       });
 
       if (created?.content) {
         const item = formatContentItem(created.content);
         setContents((prev) => [item, ...prev.filter((c) => c.id !== item.id)]);
-      } else {
-        await refreshContents();
       }
+      await refreshContents();
 
       setNewTitle('');
       setNewDescription('');
@@ -376,20 +373,62 @@ export default function ContentsPage() {
     }
   };
 
-  // Action: Create Subtask for Content (Admin Req 3 & 4)
+  // Helper: Resolve next sequential pipeline stage (1 -> 2 -> 3 -> 4 -> 5) and matching assignee
+  const resolveNextStageForSelectedContent = (contentObj = selectedContent) => {
+    const stages = [
+      { stage: 1, taskType: 'Scripting', prefix: 'เขียนบทและสคริปต์', positions: ['Script Writer', 'Content Creator', 'Production Manager'] },
+      { stage: 2, taskType: 'Filming', prefix: 'ถ่ายทำฟุตเทจหลัก', positions: ['Video Editor', 'Content Creator', 'Production Manager'] },
+      { stage: 3, taskType: 'Editing', prefix: 'ตัดต่อวิดีโอหลัก', positions: ['Video Editor', 'Content Creator', 'Production Manager'] },
+      { stage: 4, taskType: 'Graphic Design', prefix: 'ออกแบบภาพปกและกราฟิก', positions: ['Graphic Designer', 'Content Creator', 'Production Manager'] },
+      { stage: 5, taskType: 'Sound Design', prefix: 'มิกซ์เสียงและดนตรีประกอบ', positions: ['Video Editor', 'Content Creator', 'Production Manager'] },
+    ];
+    const existingTypes = new Set(
+      tasks
+        .filter((t) => String(t.contentId?._id || t.contentId?.id || t.contentId) === String(contentObj?.id))
+        .map((t) => t.taskType)
+    );
+    const nextStage = stages.find((s) => !existingTypes.has(s.taskType)) || stages[0];
+    const orderedUsers = [
+      ...users.filter((u) => u.role === 'MEMBER'),
+      ...users.filter((u) => u.role !== 'MEMBER'),
+    ];
+    let matchedUser = null;
+    for (const pos of nextStage.positions) {
+      matchedUser = orderedUsers.find((u) => u.position === pos);
+      if (matchedUser) break;
+    }
+    if (!matchedUser && orderedUsers.length > 0) matchedUser = orderedUsers[0];
+    const uName = matchedUser
+      ? (matchedUser.firstName ? `${matchedUser.firstName} ${matchedUser.lastName || ''}`.trim() : matchedUser.username)
+      : 'ระบบจัดสรรอัตโนมัติ';
+    const uPos = matchedUser?.position || nextStage.positions[0];
+
+    return {
+      stage: nextStage.stage,
+      taskType: nextStage.taskType,
+      defaultTitle: contentObj?.title ? `${nextStage.prefix}: ${contentObj.title}` : nextStage.prefix,
+      assigneeId: matchedUser ? (matchedUser._id || matchedUser.id) : '',
+      assigneeDisplay: `${uName} (${uPos})`,
+    };
+  };
+
+  // Action: Create Subtask for Content (Auto-Assigned by Sequential Order 1 -> 5)
   const handleCreateSubtask = async (e) => {
     e.preventDefault();
-    if (!taskTitle.trim() || !selectedContent) return;
+    if (!selectedContent) return;
+    const autoInfo = resolveNextStageForSelectedContent(selectedContent);
+    const finalTitle = taskTitle.trim() || autoInfo.defaultTitle;
 
     try {
       setSubtaskSubmitting(true);
       const res = await apiFetch('/tasks', {
         method: 'POST',
         body: JSON.stringify({
-          title: taskTitle.trim(),
+          title: finalTitle,
           contentId: selectedContent.id,
-          taskType,
-          assignedTo: taskAssignee || null,
+          taskType: autoInfo.taskType,
+          assignedTo: autoInfo.assigneeId || null,
+          autoAssign: true,
           dueDate: taskDueDate,
           notes: taskNotes,
         }),
@@ -398,19 +437,7 @@ export default function ContentsPage() {
       if (res?.task) {
         setTasks((prev) => [res.task, ...prev]);
       } else {
-        const assigneeObj = users.find((u) => String(u._id || u.id) === String(taskAssignee));
-        const fallback = {
-          _id: `task_${Date.now()}`,
-          id: Date.now(),
-          title: taskTitle.trim(),
-          contentId: { _id: selectedContent.id, title: selectedContent.title },
-          taskType,
-          assignedTo: assigneeObj || null,
-          status: 'TODO',
-          dueDate: taskDueDate,
-          notes: taskNotes,
-        };
-        setTasks((prev) => [fallback, ...prev]);
+        await refreshContents();
       }
 
       setTaskTitle('');
@@ -749,102 +776,92 @@ export default function ContentsPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setIsAssignTaskOpen(!isAssignTaskOpen)}
+                  onClick={() => {
+                    const nextState = !isAssignTaskOpen;
+                    if (nextState) {
+                      const autoInfo = resolveNextStageForSelectedContent(selectedContent);
+                      setTaskTitle(autoInfo.defaultTitle);
+                    }
+                    setIsAssignTaskOpen(nextState);
+                  }}
                   className="flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition cursor-pointer"
                 >
                   <Plus size={13} />
-                  <span>{isAssignTaskOpen ? 'ยกเลิก' : '+ มอบหมายงานย่อย'}</span>
+                  <span>{isAssignTaskOpen ? 'ยกเลิก' : '+ มอบหมายงานย่อย (Auto 1→5)'}</span>
                 </button>
               </div>
 
-              {/* Subtask Creation Form */}
-              {isAssignTaskOpen && (
-                <form onSubmit={handleCreateSubtask} className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2.5 animate-in fade-in duration-100">
-                  <p className="text-xs font-bold text-slate-800">มอบหมายงานย่อยใหม่</p>
-                  <div>
-                    <input
-                      type="text"
-                      required
-                      value={taskTitle}
-                      onChange={(e) => setTaskTitle(e.target.value)}
-                      placeholder="ชื่องานย่อย เช่น ตัดต่อคลิปความยาว 60 วินาที..."
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">ประเภทงาน</label>
-                      <select
-                        value={taskType}
-                        onChange={(e) => setTaskType(e.target.value)}
-                        className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
-                      >
-                        <option value="Scripting">Scripting (เขียนบท)</option>
-                        <option value="Filming">Filming (ถ่ายทำ)</option>
-                        <option value="Editing">Editing (ตัดต่อ)</option>
-                        <option value="Graphic Design">Graphic Design (ทำภาพ/ปก)</option>
-                        <option value="Sound Design">Sound Design (ทำเสียง)</option>
-                      </select>
+              {/* Subtask Creation Form (Auto-Assigned by Sequential Order 1 -> 5) */}
+              {isAssignTaskOpen && (() => {
+                const autoInfo = resolveNextStageForSelectedContent(selectedContent);
+                return (
+                  <form onSubmit={handleCreateSubtask} className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2.5 animate-in fade-in duration-100">
+                    <p className="text-xs font-bold text-slate-800">มอบหมายงานย่อยตามลำดับสายงานอัตโนมัติ (1→5)</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">ประเภทงาน (กำหนดอัตโนมัติ)</label>
+                        <div className="w-full px-2.5 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-xs font-semibold text-blue-800">
+                          ขั้นตอนที่ {autoInfo.stage}/5: {autoInfo.taskType}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">ผู้รับผิดชอบ (ตามตำแหน่งอัตโนมัติ)</label>
+                        <div className="w-full px-2.5 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 truncate">
+                          {autoInfo.assigneeDisplay}
+                        </div>
+                      </div>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">ผู้รับผิดชอบ</label>
-                      <select
-                        value={taskAssignee}
-                        onChange={(e) => setTaskAssignee(e.target.value)}
-                        className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
-                      >
-                        <option value="">-- ยังไม่ระบุ --</option>
-                        {users.map((u) => {
-                          const uid = u._id || u.id;
-                          const uName = u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : (u.name || u.username);
-                          return (
-                            <option key={uid} value={uid}>
-                              {uName} ({u.role})
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">กำหนดส่ง</label>
-                      <input
-                        type="date"
-                        value={taskDueDate}
-                        onChange={(e) => setTaskDueDate(e.target.value)}
-                        className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">บันทึกเพิ่มเติม</label>
+                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">ชื่องานย่อย</label>
                       <input
                         type="text"
-                        value={taskNotes}
-                        onChange={(e) => setTaskNotes(e.target.value)}
-                        placeholder="ระบุข้อกำหนดเพิ่มเติม..."
-                        className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
+                        required
+                        value={taskTitle}
+                        onChange={(e) => setTaskTitle(e.target.value)}
+                        placeholder={autoInfo.defaultTitle}
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
                       />
                     </div>
-                  </div>
-                  <div className="flex justify-end gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => setIsAssignTaskOpen(false)}
-                      className="px-2.5 py-1 text-xs text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 cursor-pointer"
-                    >
-                      ยกเลิก
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={subtaskSubmitting}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-xs cursor-pointer disabled:opacity-50"
-                    >
-                      {subtaskSubmitting ? 'กำลังมอบหมาย...' : 'บันทึกงานย่อย'}
-                    </button>
-                  </div>
-                </form>
-              )}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">กำหนดส่ง</label>
+                        <input
+                          type="date"
+                          value={taskDueDate}
+                          onChange={(e) => setTaskDueDate(e.target.value)}
+                          className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">บันทึกเพิ่มเติม</label>
+                        <input
+                          type="text"
+                          value={taskNotes}
+                          onChange={(e) => setTaskNotes(e.target.value)}
+                          placeholder="ระบุข้อกำหนดเพิ่มเติม..."
+                          className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-hidden focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setIsAssignTaskOpen(false)}
+                        className="px-2.5 py-1 text-xs text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 cursor-pointer"
+                      >
+                        ยกเลิก
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={subtaskSubmitting}
+                        className="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-xs cursor-pointer disabled:opacity-50"
+                      >
+                        {subtaskSubmitting ? 'กำลังมอบหมาย...' : 'ยืนยันมอบหมายอัตโนมัติ'}
+                      </button>
+                    </div>
+                  </form>
+                );
+              })()}
 
               {/* Subtask Items List */}
               <div className="space-y-2 max-h-48 overflow-y-auto pr-1">

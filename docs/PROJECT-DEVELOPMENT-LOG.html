@@ -2021,6 +2021,7 @@
             <li><code>package.json</code> & <code>next.config.mjs</code>: ปรับคำสั่งบิลด์เป็น <code>next build --webpack</code>, เพิ่ม <code>experimental: { cpus: 1 }</code> และตัวจัดการ retry บน <code>fs.mkdir</code> แก้ไขปัญหา NTFS concurrent race condition (EPERM -4048) ส่งผลให้ <code>npm run build</code> ผ่านฉลุย 10/10 หน้าใน ~350ms และ <code>npm run lint</code> ผ่าน 0 errors</li>
             <li><code>users/page.jsx</code> & <code>LoginScreen.jsx</code>: ตัดตัวเลือก "Other" ออกจาก Dropdown ทั้งหมด บังคับให้เลือกได้เฉพาะ 5 ตำแหน่งหลัก</li>
             <li>กำจัดอีโมจิฟุ่มเฟือยและคำโฆษณาเกินจริง ปรับชื่อสตูดิโอเป็น "Draftly Studio" และระบุชื่อฐานข้อมูล <code>content_management</code> อย่างชัดเจน</li>
+            <li><strong>Automatic Sequential Task Assignment (1→2→3→4→5):</strong> เพิ่ม <code>PIPELINE_SEQUENCE</code> และ <code>resolveAutoTaskAssignment()</code> ใน <code>workflow.service.js</code>, <code>contents.controller.js</code>, <code>tasks.controller.js</code> พร้อมปรับ UI ใน <code>ManagerDashboard.jsx</code>, <code>contents/page.jsx</code>, และ <code>tasks/page.jsx</code> ให้คำนวณลำดับขั้นตอนถัดไป (<code>1. Scripting</code> → <code>2. Filming</code> → <code>3. Editing</code> → <code>4. Graphic Design</code> → <code>5. Sound Design</code>) และมอบหมายให้สมาชิกตามตำแหน่งงานจริงโดยอัตโนมัติแทนการเลือกเอง</li>
           </ul>
         </li>
         <li><strong>การทดสอบระบบและการยืนยันความถูกต้องแบบครบวงจร (Milestone M4 — E2E Acceptance & Invariants):</strong>

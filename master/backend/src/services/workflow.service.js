@@ -111,7 +111,79 @@ const STAGE_ORDER = {
   Other: 5,
 };
 
+// Ordered 5-Stage Sequential Pipeline Specification for Auto-Assignment (1 -> 2 -> 3 -> 4 -> 5)
+const PIPELINE_SEQUENCE = [
+  {
+    stage: 1,
+    taskType: 'Scripting',
+    titlePrefix: 'เขียนบทและสคริปต์',
+    targetPositions: ['Script Writer', 'Content Creator', 'Production Manager'],
+  },
+  {
+    stage: 2,
+    taskType: 'Filming',
+    titlePrefix: 'ถ่ายทำฟุตเทจหลัก',
+    targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'],
+  },
+  {
+    stage: 3,
+    taskType: 'Editing',
+    titlePrefix: 'ตัดต่อวิดีโอหลัก',
+    targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'],
+  },
+  {
+    stage: 4,
+    taskType: 'Graphic Design',
+    titlePrefix: 'ออกแบบภาพปกและกราฟิก',
+    targetPositions: ['Graphic Designer', 'Content Creator', 'Production Manager'],
+  },
+  {
+    stage: 5,
+    taskType: 'Sound Design',
+    titlePrefix: 'มิกซ์เสียงและดนตรีประกอบ',
+    targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'],
+  },
+];
+
 const getTaskStage = (taskType) => STAGE_ORDER[taskType] || 5;
+
+/**
+ * Finds the best matching team member for a given stage based on studio position
+ */
+const findAssigneeForStage = (stageSpec, teamUsers = []) => {
+  if (!Array.isArray(teamUsers) || teamUsers.length === 0) return null;
+  const membersFirst = [
+    ...teamUsers.filter((u) => u.role === 'MEMBER'),
+    ...teamUsers.filter((u) => u.role !== 'MEMBER'),
+  ];
+  for (const pos of stageSpec.targetPositions) {
+    const match = membersFirst.find((u) => u.position === pos);
+    if (match) return match;
+  }
+  return membersFirst[0] || null;
+};
+
+/**
+ * Automatically determines the next unassigned stage (1 -> 2 -> 3 -> 4 -> 5)
+ * and resolves the responsible team member by position.
+ */
+const resolveAutoTaskAssignment = (existingTasks = [], teamUsers = [], contentTitle = '') => {
+  const existingTypes = new Set((existingTasks || []).map((t) => t.taskType));
+  const nextStageSpec =
+    PIPELINE_SEQUENCE.find((s) => !existingTypes.has(s.taskType)) ||
+    PIPELINE_SEQUENCE[0];
+
+  const matchedUser = findAssigneeForStage(nextStageSpec, teamUsers);
+  const cleanTitle = contentTitle ? `${nextStageSpec.titlePrefix}: ${contentTitle}` : nextStageSpec.titlePrefix;
+
+  return {
+    stage: nextStageSpec.stage,
+    taskType: nextStageSpec.taskType,
+    assignedTo: matchedUser ? (matchedUser._id || matchedUser.id) : null,
+    assignee: matchedUser,
+    defaultTitle: cleanTitle,
+  };
+};
 
 /**
  * Validates task transition, ownership, and position authorization
@@ -205,6 +277,9 @@ module.exports = {
   validateStageProgression,
   isPositionAllowedForTask,
   getTaskStage,
+  findAssigneeForStage,
+  resolveAutoTaskAssignment,
+  PIPELINE_SEQUENCE,
   POSITION_TASK_MAP,
   STAGE_ORDER,
   CONTENT_TRANSITIONS,

@@ -2473,6 +2473,10 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - ลบข้อความโอ้อวด เช่น `" 100%"` หรือ `"99.98%"` ออกจากหน้า Login
    - ปรับชื่อสตูดิโอให้เป็นมาตรฐานสากล `"Draftly Studio"` และระบุชื่อฐานข้อมูลจริง `content_management` ในหน้าการตั้งค่า
    - ตัดอีโมจิรูปคลิปบอร์ดและกลุ่มคนออกจาก Badge รหัสทีมในหน้าภาพรวมทีมของ Mobile App
+5. **ระบบมอบหมายงานย่อยตามลำดับอัตโนมัติ (Automatic Sequential Task Assignment 1→2→3→4→5 by Position):**
+   - **Backend (`workflow.service.js`, `contents.controller.js`, `tasks.controller.js`):** เพิ่ม `PIPELINE_SEQUENCE` และฟังก์ชัน `resolveAutoTaskAssignment()` เพื่อคำนวณขั้นตอนถัดไปตามลำดับ `1. Scripting` → `2. Filming` → `3. Editing` → `4. Graphic Design` → `5. Sound Design` และจับคู่สมาชิกในทีมตามตำแหน่งงานจริง (`Script Writer`, `Video Editor`, `Graphic Designer`) โดยอัตโนมัติเมื่อสร้างชิ้นงานหรือเพิ่มงานย่อยผ่าน UI (`autoCreateTasks: true` / `autoAssign: true`)
+   - **Mobile App (`ManagerDashboard.jsx`):** ปรับ Modal `มอบหมายงานย่อย (Auto-Assign 1→5)` และการ์ดสมาชิกให้แสดงลำดับขั้นตอน `1 -> 2 -> 3 -> 4 -> 5` และผู้รับผิดชอบตามตำแหน่งแบบอัตโนมัติ (Read-only) แทนการกดเลือกเอง
+   - **Admin Web (`contents/page.jsx`, `tasks/page.jsx`):** เปลี่ยนช่องเลือกประเภทงานและผู้รับผิดชอบในฟอร์มมอบหมายงานย่อยเป็นระบบคำนวณลำดับขั้นตอนและจับคู่ตำแหน่งงานอัตโนมัติ (Auto-Assign 1→5)
 
 ---
 

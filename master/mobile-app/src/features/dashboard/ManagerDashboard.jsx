@@ -28,6 +28,82 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 const getDynamicDueDate = (daysAhead = 7) =>
   new Date(Date.now() + daysAhead * 86400000).toISOString().split('T')[0];
 
+// Ordered 5-Stage Sequential Pipeline for Automatic Assignment (1 -> 2 -> 3 -> 4 -> 5)
+const PIPELINE_STAGES = [
+  {
+    stage: 1,
+    taskType: 'Scripting',
+    shortLabel: '1. Scripting',
+    titlePrefix: 'เขียนบทและสคริปต์',
+    targetPositions: ['Script Writer', 'Content Creator', 'Production Manager'],
+  },
+  {
+    stage: 2,
+    taskType: 'Filming',
+    shortLabel: '2. Filming',
+    titlePrefix: 'ถ่ายทำฟุตเทจหลัก',
+    targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'],
+  },
+  {
+    stage: 3,
+    taskType: 'Editing',
+    shortLabel: '3. Editing',
+    titlePrefix: 'ตัดต่อวิดีโอหลัก',
+    targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'],
+  },
+  {
+    stage: 4,
+    taskType: 'Graphic Design',
+    shortLabel: '4. Graphic',
+    titlePrefix: 'ออกแบบภาพปกและกราฟิก',
+    targetPositions: ['Graphic Designer', 'Content Creator', 'Production Manager'],
+  },
+  {
+    stage: 5,
+    taskType: 'Sound Design',
+    shortLabel: '5. Sound',
+    titlePrefix: 'มิกซ์เสียงและดนตรีประกอบ',
+    targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'],
+  },
+];
+
+const resolveAutoStageForContent = (contentItem, tasksList = [], membersList = []) => {
+  const cId = contentItem?._id ? String(contentItem._id) : null;
+  const cTitle = contentItem?.title || '';
+  const contentTasks = (tasksList || []).filter(
+    (t) => (cId && t.contentId && String(t.contentId) === cId) || (cTitle && t.contentTitle === cTitle)
+  );
+  const existingTypes = new Set(contentTasks.map((t) => t.taskType));
+  const nextStage = PIPELINE_STAGES.find((s) => !existingTypes.has(s.taskType)) || PIPELINE_STAGES[0];
+
+  const orderedMembers = [
+    ...(membersList || []).filter((m) => m.role === 'MEMBER'),
+    ...(membersList || []).filter((m) => m.role !== 'MEMBER'),
+  ];
+  let matchedMember = null;
+  for (const pos of nextStage.targetPositions) {
+    matchedMember = orderedMembers.find((m) => m.position === pos);
+    if (matchedMember) break;
+  }
+  if (!matchedMember && orderedMembers.length > 0) {
+    matchedMember = orderedMembers[0];
+  }
+
+  const mName = matchedMember
+    ? (matchedMember.firstName ? `${matchedMember.firstName} ${matchedMember.lastName || ''}`.trim() : matchedMember.username)
+    : 'ระบบจัดสรรอัตโนมัติ';
+  const mPos = matchedMember?.position || nextStage.targetPositions[0];
+
+  return {
+    stage: nextStage.stage,
+    taskType: nextStage.taskType,
+    defaultTitle: cTitle ? `${nextStage.titlePrefix}: ${cTitle}` : nextStage.titlePrefix,
+    assigneeId: matchedMember ? (matchedMember._id || matchedMember.id) : '',
+    assigneeDisplay: `${mName} (${mPos})`,
+    existingTypes,
+  };
+};
+
 export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
   const { colors, isDark } = useTheme();
   const [pipeline, setPipeline] = useState([]);
@@ -122,6 +198,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
             replyNotes: t.replyNotes || '',
             notes: t.notes || '',
             revisionNotes: t.revisionNotes || '',
+            contentId: t.contentId?._id || t.contentId || null,
             contentTitle: t.contentId?.title || 'ชิ้นงานคอนเทนต์หลัก',
             platform: t.contentId?.platform || 'General',
             dueDate: t.dueDate ? t.dueDate.split('T')[0] : getDynamicDueDate(3),
@@ -188,9 +265,10 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         category: newCategory,
         dueDate: newDueDate,
         description: newDesc.trim() || 'สร้างจาก Mobile App (Manager Dashboard)',
-        status: 'PLANNING',
+        status: 'IN_PROGRESS',
+        autoCreateTasks: true,
       });
-      Alert.alert('สำเร็จ', `สร้าง Content "${newTitle.trim()}" สำเร็จแล้ว`);
+      Alert.alert('สำเร็จ', `สร้าง Content "${newTitle.trim()}" และมอบหมายงานอัตโนมัติตามลำดับสายงาน 1->5 เรียบร้อยแล้ว`);
       setCreateModalVisible(false);
       setNewTitle('');
       setNewDesc('');
@@ -202,17 +280,14 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
     }
   };
 
-  const openAssignModal = (contentItem, targetMemberId = null) => {
+  const openAssignModal = (contentItem) => {
+    const autoInfo = resolveAutoStageForContent(contentItem, allTasks, teamMembers);
     setAssignTargetContent(contentItem);
-    setTaskTitle(contentItem ? `ตัดต่อและผลิตงาน: ${contentItem.title}` : 'งานผลิตสื่อใหม่');
-    setTaskType('Editing');
+    setTaskTitle(autoInfo.defaultTitle);
+    setTaskType(autoInfo.taskType);
+    setAssignedToId(autoInfo.assigneeId);
     setTaskDueDate(contentItem?.dueDate || getDynamicDueDate(3));
     setTaskNotes('');
-    if (targetMemberId) {
-      setAssignedToId(targetMemberId);
-    } else if (teamMembers.length > 0 && !assignedToId) {
-      setAssignedToId(teamMembers[0]._id || teamMembers[0].id);
-    }
     setAssignModalVisible(true);
   };
 
@@ -222,25 +297,29 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
       return;
     }
 
-    const selectedAssignee = assignedToId || (teamMembers[0]?._id || teamMembers[0]?.id);
+    const autoInfo = resolveAutoStageForContent(assignTargetContent, allTasks, teamMembers);
     setSubmittingAssign(true);
     try {
       await taskApi.create({
         title: taskTitle.trim(),
-        taskType,
+        taskType: autoInfo.taskType,
         contentId: assignTargetContent?._id,
-        assignedTo: selectedAssignee,
+        assignedTo: autoInfo.assigneeId,
+        autoAssign: true,
         dueDate: taskDueDate,
         notes: taskNotes.trim() || '',
         progress: 0,
       });
 
-      // If Content was in PLANNING, promote to PRODUCTION
+      // If Content was in PLANNING, promote to IN_PROGRESS
       if (assignTargetContent?.status === 'PLANNING') {
-        await contentApi.updateStatus(assignTargetContent._id, 'PRODUCTION').catch(() => {});
+        await contentApi.updateStatus(assignTargetContent._id, 'IN_PROGRESS').catch(() => {});
       }
 
-      Alert.alert('สำเร็จ', `มอบหมายงาน "${taskTitle.trim()}" ให้ลูกทีมเรียบร้อยแล้ว`);
+      Alert.alert(
+        'สำเร็จ',
+        `ระบบมอบหมายงาน "${taskTitle.trim()}" (${autoInfo.taskType}) ให้ ${autoInfo.assigneeDisplay} อัตโนมัติเรียบร้อยแล้ว`
+      );
       setAssignModalVisible(false);
       await fetchLivePipeline();
     } catch (err) {
@@ -982,13 +1061,19 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
                         </View>
                       </View>
 
-                      <TouchableOpacity
+                      <View
                         style={[styles.btnAssignMini, { backgroundColor: colors.surfaceSubtle, borderColor: colors.border }]}
-                        onPress={() => openAssignModal(pipeline[0] || null, memberId)}
-                        activeOpacity={0.7}
                       >
-                        <Text style={[styles.btnAssignMiniText, { color: colors.primary }]}>+ มอบหมายงาน</Text>
-                      </TouchableOpacity>
+                        <Text style={[styles.btnAssignMiniText, { color: colors.textSecondary }]}>
+                          {memberPosition === 'Script Writer'
+                            ? 'Auto Stage 1'
+                            : memberPosition === 'Graphic Designer'
+                              ? 'Auto Stage 4'
+                              : memberPosition === 'Video Editor'
+                                ? 'Auto Stage 2,3,5'
+                                : 'Auto Pipeline'}
+                        </Text>
+                      </View>
                     </View>
 
                     {/* Member Assigned Tasks */}
@@ -1206,96 +1291,120 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
         </View>
       </SmoothModal>
 
-      {/* Assign Task Modal */}
+      {/* Assign Task Modal (Auto-Assigned by Sequential Pipeline Order 1 -> 2 -> 3 -> 4 -> 5) */}
       <SmoothModal
         visible={assignModalVisible}
         onClose={() => setAssignModalVisible(false)}
-        title="มอบหมายงานย่อย"
-        subtitle={assignTargetContent ? `ชิ้นงาน: ${assignTargetContent.title}` : 'มอบหมายงานใหม่'}
+        title="มอบหมายงานย่อย (Auto-Assign 1→5)"
+        subtitle={assignTargetContent ? `ชิ้นงาน: ${assignTargetContent.title}` : 'ระบบจัดสรรตามลำดับสายงานอัตโนมัติ'}
       >
-        <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>ชื่องานย่อย (Task Title) *</Text>
-        <TextInput
-          style={[styles.modalTextInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
-          placeholder="เช่น เขียนบทสคริปต์, ตัดต่อวิดีโอหลัก..."
-          placeholderTextColor={colors.textMuted}
-          value={taskTitle}
-          onChangeText={setTaskTitle}
-        />
-
-        <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>ประเภทงาน</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 6 }}>
-          {['Scripting', 'Filming', 'Editing', 'Graphic Design', 'Sound Design'].map((type) => (
-            <TouchableOpacity
-              key={type}
-              style={[
-                styles.platChoiceBtn,
-                { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
-                taskType === type && { backgroundColor: colors.primary, borderColor: colors.primary },
-              ]}
-              onPress={() => setTaskType(type)}
-            >
-              <Text
-                style={[
-                  styles.platChoiceBtnText,
-                  { color: colors.textSecondary },
-                  taskType === type && { color: '#FFFFFF', fontWeight: '700' },
-                ]}
-              >
-                {type}
+        {(() => {
+          const autoInfo = resolveAutoStageForContent(assignTargetContent, allTasks, teamMembers);
+          return (
+            <>
+              <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>
+                ลำดับสายงานอัตโนมัติ (Sequential Pipeline 1→5)
               </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+                {PIPELINE_STAGES.map((s) => {
+                  const isCreated = autoInfo.existingTypes.has(s.taskType);
+                  const isCurrentAuto = s.taskType === autoInfo.taskType;
+                  return (
+                    <View
+                      key={s.taskType}
+                      style={[
+                        styles.platChoiceBtn,
+                        { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+                        isCreated && { backgroundColor: colors.statusApprovedBg, borderColor: colors.statusApprovedBorder },
+                        isCurrentAuto && { backgroundColor: colors.primary, borderColor: colors.primary },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.platChoiceBtnText,
+                          { color: colors.textSecondary },
+                          isCreated && { color: colors.statusApprovedText, fontWeight: '700' },
+                          isCurrentAuto && { color: '#FFFFFF', fontWeight: '700' },
+                        ]}
+                      >
+                        {s.shortLabel}{isCreated ? ' (มีแล้ว)' : isCurrentAuto ? ' (คิวนี้)' : ''}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </ScrollView>
 
-        <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>ผู้รับผิดชอบงาน</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 6 }}>
-          {teamMembers.map((m) => {
-            const mId = m._id || m.id;
-            const mName = m.firstName ? `${m.firstName} ${m.lastName || ''}`.trim() : (m.username || 'สมาชิก');
-            const isSelected = assignedToId === mId;
-            return (
-              <TouchableOpacity
-                key={mId}
+              <Text style={[styles.modalLabel, { color: colors.textPrimary }]}>
+                ประเภทงาน (ระบบกำหนดอัตโนมัติตามลำดับ)
+              </Text>
+              <View
                 style={[
-                  styles.platChoiceBtn,
-                  { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
-                  isSelected && { backgroundColor: colors.primary, borderColor: colors.primary },
+                  styles.modalTextInput,
+                  {
+                    backgroundColor: colors.surfaceSubtle,
+                    borderColor: colors.primary,
+                    justifyContent: 'center',
+                    marginBottom: 8,
+                  },
                 ]}
-                onPress={() => setAssignedToId(mId)}
               >
-                <Text
-                  style={[
-                    styles.platChoiceBtnText,
-                    { color: colors.textSecondary },
-                    isSelected && { color: '#FFFFFF', fontWeight: '700' },
-                  ]}
-                >
-                  {mName} ({m.position || 'Member'})
+                <Text style={{ color: colors.primary, fontWeight: '700', fontSize: 13 }}>
+                  ขั้นตอนที่ {autoInfo.stage}/5: {autoInfo.taskType}
                 </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+              </View>
 
-        <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>กำหนดส่ง (YYYY-MM-DD)</Text>
-        <TextInput
-          style={[styles.modalTextInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor={colors.textMuted}
-          value={taskDueDate}
-          onChangeText={setTaskDueDate}
-        />
+              <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 4 }]}>
+                ผู้รับผิดชอบงาน (ระบบมอบหมายอัตโนมัติตามตำแหน่ง)
+              </Text>
+              <View
+                style={[
+                  styles.modalTextInput,
+                  {
+                    backgroundColor: colors.surfaceSubtle,
+                    borderColor: colors.border,
+                    justifyContent: 'center',
+                    marginBottom: 8,
+                  },
+                ]}
+              >
+                <Text style={{ color: colors.textPrimary, fontWeight: '700', fontSize: 13 }}>
+                  {autoInfo.assigneeDisplay}
+                </Text>
+              </View>
 
-        <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>หมายเหตุ / บรีฟงาน</Text>
-        <TextInput
-          style={[styles.modalInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
-          placeholder="ระบุข้อกำหนดเพิ่มเติม..."
-          placeholderTextColor={colors.textMuted}
-          value={taskNotes}
-          onChangeText={setTaskNotes}
-          multiline
-          numberOfLines={2}
-        />
+              <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 4 }]}>
+                ชื่องานย่อย (Task Title) *
+              </Text>
+              <TextInput
+                style={[styles.modalTextInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+                placeholder="เช่น เขียนบทและสคริปต์..."
+                placeholderTextColor={colors.textMuted}
+                value={taskTitle}
+                onChangeText={setTaskTitle}
+              />
+
+              <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>กำหนดส่ง (YYYY-MM-DD)</Text>
+              <TextInput
+                style={[styles.modalTextInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+                placeholder="YYYY-MM-DD"
+                placeholderTextColor={colors.textMuted}
+                value={taskDueDate}
+                onChangeText={setTaskDueDate}
+              />
+
+              <Text style={[styles.modalLabel, { color: colors.textPrimary, marginTop: 10 }]}>หมายเหตุ / บรีฟงาน</Text>
+              <TextInput
+                style={[styles.modalInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.textPrimary }]}
+                placeholder="ระบุข้อกำหนดเพิ่มเติม..."
+                placeholderTextColor={colors.textMuted}
+                value={taskNotes}
+                onChangeText={setTaskNotes}
+                multiline
+                numberOfLines={2}
+              />
+            </>
+          );
+        })()}
 
         <View style={styles.modalBtnRow}>
           <TouchableOpacity
@@ -1312,7 +1421,7 @@ export default function ManagerDashboard({ user, onNavigate, refreshKey }) {
             {submittingAssign ? (
               <ActivityIndicator color="#fff" size="small" />
             ) : (
-              <Text style={styles.modalBtnConfirmText}>ยืนยันมอบหมาย</Text>
+              <Text style={styles.modalBtnConfirmText}>ยืนยันมอบหมายอัตโนมัติ</Text>
             )}
           </TouchableOpacity>
         </View>

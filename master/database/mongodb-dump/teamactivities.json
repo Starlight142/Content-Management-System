@@ -76,5 +76,18 @@
     "createdAt": "2026-11-04T04:42:36.912Z",
     "updatedAt": "2026-11-04T04:42:36.912Z",
     "__v": 0
+  },
+  {
+    "_id": "6aead91f2c3cdadf56446c8c",
+    "teamId": "6aead88c2b1d3faf565185a0",
+    "actor": "6aea12d29ed6fa6a275efd3d",
+    "actionType": "CONTENT_CREATED",
+    "title": "somsri_manager เพิ่มแผนคอนเทนต์ใหม่: \"j jhb\"",
+    "details": "",
+    "entityId": "6aead91f2c3cdadf56446c8b",
+    "entityModel": "Content",
+    "createdAt": "2026-11-04T07:05:03.922Z",
+    "updatedAt": "2026-11-04T07:05:03.922Z",
+    "__v": 0
   }
 ]

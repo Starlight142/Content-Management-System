@@ -151,5 +151,25 @@
     "createdAt": "2026-11-04T07:02:36.903Z",
     "updatedAt": "2026-11-04T07:02:36.903Z",
     "__v": 0
+  },
+  {
+    "_id": "6aead91f2c3cdadf56446c8b",
+    "title": "j jhb",
+    "description": "ml",
+    "platform": "YouTube",
+    "status": "PLANNING",
+    "category": "General",
+    "createdBy": "6aea12d29ed6fa6a275efd3d",
+    "teamId": "6aead88c2b1d3faf565185a0",
+    "progress": 0,
+    "dueDate": "2026-11-10T00:00:00.000Z",
+    "ideaId": null,
+    "files": [],
+    "versions": [],
+    "reviewHistory": [],
+    "metrics": [],
+    "createdAt": "2026-11-04T07:05:03.911Z",
+    "updatedAt": "2026-11-04T07:05:03.911Z",
+    "__v": 0
   }
 ]

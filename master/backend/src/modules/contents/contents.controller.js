@@ -7,11 +7,59 @@ const Task = require('../../database/models/Task');
 const { broadcast } = require('../../services/presence.service');
 const workflowService = require('../../services/workflow.service');
 
+// Helper: Auto-generate and assign the 5 sequential pipeline tasks (1 -> 2 -> 3 -> 4 -> 5)
+const ensureSequentialPipelineTasks = async (contentDoc, actorId, actorName) => {
+  const existingTasks = await Task.find({ contentId: contentDoc._id });
+  const existingTypes = new Set(existingTasks.map((t) => t.taskType));
+  const teamFilter = contentDoc.teamId ? { teamId: contentDoc.teamId } : {};
+  let teamUsers = await User.find(teamFilter);
+  if (!teamUsers || teamUsers.length === 0) {
+    teamUsers = await User.find();
+  }
+
+  const createdTasks = [];
+  const baseDate = contentDoc.dueDate ? new Date(contentDoc.dueDate).getTime() : Date.now() + 7 * 86400000;
+
+  for (const stageSpec of workflowService.PIPELINE_SEQUENCE) {
+    if (existingTypes.has(stageSpec.taskType)) continue;
+    const matchedUser = workflowService.findAssigneeForStage(stageSpec, teamUsers);
+    const stageDueMs = Math.max(Date.now() + stageSpec.stage * 86400000, baseDate - (5 - stageSpec.stage) * 86400000);
+
+    const t = await Task.create({
+      title: `${stageSpec.titlePrefix}: ${contentDoc.title}`,
+      contentId: contentDoc._id,
+      teamId: contentDoc.teamId || null,
+      taskType: stageSpec.taskType,
+      assignedTo: matchedUser ? matchedUser._id : null,
+      dueDate: new Date(stageDueMs),
+      notes: `มอบหมายอัตโนมัติตามลำดับสายงาน ขั้นตอนที่ ${stageSpec.stage}/5 (${stageSpec.taskType})`,
+      progress: 0,
+      status: 'TODO',
+    });
+    createdTasks.push(t);
+  }
+
+  if (createdTasks.length > 0 && contentDoc.teamId) {
+    await TeamActivity.create({
+      teamId: contentDoc.teamId,
+      actor: actorId,
+      actionType: 'TASK_ASSIGNED',
+      title: `${actorName} ระบบกระจายงานอัตโนมัติ 5 ขั้นตอน (1->5) สำหรับ "${contentDoc.title}"`,
+      entityId: contentDoc._id,
+      entityModel: 'Content',
+    });
+    broadcast('ACTIVITY_CREATED', { teamId: contentDoc.teamId });
+    broadcast('TASK_CREATED', { contentId: contentDoc._id, count: createdTasks.length });
+  }
+
+  return createdTasks;
+};
+
 // @route POST /api/contents
 // @access Private
 const createContent = async (req, res) => {
   try {
-    const { ideaId, title, description, category, platform, dueDate, teamId } = req.body;
+    const { ideaId, title, description, category, platform, dueDate, teamId, autoCreateTasks } = req.body;
     if (!title || String(title).trim() === '') {
       return res.status(400).json({ message: 'กรุณาระบุชื่อชิ้นงาน (Content title is required)' });
     }
@@ -42,7 +90,7 @@ const createContent = async (req, res) => {
       description,
       category: category || 'General',
       platform: platform || 'TikTok',
-      status: 'PLANNING',
+      status: autoCreateTasks ? 'IN_PROGRESS' : 'PLANNING',
       createdBy,
       teamId: resolvedTeamId || null,
       dueDate: dueDate || new Date(Date.now() + 7 * 86400000),
@@ -50,9 +98,9 @@ const createContent = async (req, res) => {
     });
 
     const populated = await newContent.populate('createdBy', 'username email firstName lastName');
+    const creatorName = populated.createdBy?.firstName || req.user?.username || 'Creator';
 
     if (resolvedTeamId) {
-      const creatorName = populated.createdBy?.firstName || req.user.username || 'Creator';
       await TeamActivity.create({
         teamId: resolvedTeamId,
         actor: createdBy,
@@ -64,11 +112,17 @@ const createContent = async (req, res) => {
       broadcast('ACTIVITY_CREATED', { teamId: resolvedTeamId });
     }
 
+    let generatedTasks = [];
+    if (autoCreateTasks) {
+      generatedTasks = await ensureSequentialPipelineTasks(newContent, createdBy, creatorName);
+    }
+
     broadcast('CONTENT_CREATED', { content: populated });
 
     res.status(201).json({
       message: 'Content created successfully',
       content: populated,
+      tasks: generatedTasks,
     });
   } catch (error) {
     console.error('createContent error:', error);
