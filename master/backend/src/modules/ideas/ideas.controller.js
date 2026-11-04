@@ -133,16 +133,26 @@ const upvoteIdea = async (req, res) => {
 };
 
 // @route DELETE /api/ideas/:id
-// @access Private (Manager/Admin)
+// @access Private (Admin, Manager, or Topic Proposer)
 const deleteIdea = async (req, res) => {
   try {
     const { id } = req.params;
-    const idea = await Idea.findByIdAndDelete(id);
+    const idea = await Idea.findById(id);
 
     if (!idea) {
       return res.status(404).json({ message: 'Idea not found' });
     }
 
+    const isManagerOrAdmin = ['ADMIN', 'MANAGER'].includes(req.user?.role);
+    const isOwner = idea.proposedBy && String(idea.proposedBy) === String(req.user?.userId);
+
+    if (!isManagerOrAdmin && !isOwner) {
+      return res.status(403).json({
+        message: 'คุณไม่มีสิทธิ์ลบไอเดียนี้ (อนุญาตเฉพาะ Admin, Manager หรือสมาชิกผู้เปิดหัวข้อเท่านั้น)',
+      });
+    }
+
+    await Idea.findByIdAndDelete(id);
     res.status(200).json({ message: 'Idea deleted successfully' });
   } catch (error) {
     console.error('deleteIdea error:', error);

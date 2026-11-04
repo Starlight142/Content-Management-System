@@ -174,20 +174,20 @@
     "teamId": {
       "$oid": "6aead88c2b1d3faf565185a0"
     },
-    "progress": 85,
-    "status": "REVIEW",
+    "progress": 90,
+    "status": "REVISION",
     "dueDate": {
       "$date": "2026-11-05T07:02:36.866Z"
     },
     "submissionUrl": "https://docs.google.com/document/d/script_product_review_v2",
-    "notes": "ปรับแก้บทสนทนาและจุดเน้นสปอนเซอร์เรียบร้อยแล้ว ส่งให้ Manager ตรวจสอบ",
-    "revisionNotes": "",
+    "notes": "Nb",
+    "revisionNotes": "Nb",
     "replyNotes": "",
     "createdAt": {
       "$date": "2026-11-04T07:02:36.908Z"
     },
     "updatedAt": {
-      "$date": "2026-11-04T07:02:36.908Z"
+      "$date": "2026-11-04T10:52:05.173Z"
     },
     "__v": 0
   },

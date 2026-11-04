@@ -2475,11 +2475,130 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - ตัดอีโมจิรูปคลิปบอร์ดและกลุ่มคนออกจาก Badge รหัสทีมในหน้าภาพรวมทีมของ Mobile App
 5. **ระบบมอบหมายงานย่อยตามลำดับอัตโนมัติ (Automatic Sequential Task Assignment 1→2→3→4→5 by Position):**
    - **Backend (`workflow.service.js`, `contents.controller.js`, `tasks.controller.js`):** เพิ่ม `PIPELINE_SEQUENCE` และฟังก์ชัน `resolveAutoTaskAssignment()` เพื่อคำนวณขั้นตอนถัดไปตามลำดับ `1. Scripting` → `2. Filming` → `3. Editing` → `4. Graphic Design` → `5. Sound Design` และจับคู่สมาชิกในทีมตามตำแหน่งงานจริง (`Script Writer`, `Video Editor`, `Graphic Designer`) โดยอัตโนมัติเมื่อสร้างชิ้นงานหรือเพิ่มงานย่อยผ่าน UI (`autoCreateTasks: true` / `autoAssign: true`)
-   - **Mobile App (`ManagerDashboard.jsx`):** ปรับ Modal `มอบหมายงานย่อย (Auto-Assign 1→5)` และการ์ดสมาชิกให้แสดงลำดับขั้นตอน `1 -> 2 -> 3 -> 4 -> 5` และผู้รับผิดชอบตามตำแหน่งแบบอัตโนมัติ (Read-only) แทนการกดเลือกเอง
-   - **Admin Web (`contents/page.jsx`, `tasks/page.jsx`):** เปลี่ยนช่องเลือกประเภทงานและผู้รับผิดชอบในฟอร์มมอบหมายงานย่อยเป็นระบบคำนวณลำดับขั้นตอนและจับคู่ตำแหน่งงานอัตโนมัติ (Auto-Assign 1→5)
-6. **การแก้ไขปัญหาคีย์บอร์ดและเคอร์เซอร์ทะลุบัง Modal บน Android (`ServerConfigModal.jsx`, `SmoothModal.jsx`, `api.js`):**
-   - แก้ไข `ServerConfigModal.jsx` และ `SmoothModal.jsx` ให้ดักจับความสูงของแป้นพิมพ์ (`Keyboard.addListener`) เพื่อดันตัวการ์ดขึ้นเหนือแป้นพิมพ์ ย่อรายการ Preset ให้กะทัดรัดขณะพิมพ์ URL และสั่ง `Keyboard.dismiss()` / `blur()` ทันทีเมื่อแตะเลือก Preset หรือเลื่อนหน้าจอ ป้องกันปัญหาช่อง `TextInput` ถูกแป้นพิมพ์ทับแล้วตัวจับเคอร์เซอร์ (`💧`) ทะลุขึ้นมาบนแป้นพิมพ์
-   - ปรับ `pingServer()` ใน `api.js` ให้รองรับการสลับไปยัง `10.0.2.2:5000` โดยอัตโนมัติบน Android Emulator หากรันโดยยังไม่ได้เปิด `adb reverse`
+   - **Mobile App (`ManagerDashboard.jsx`) & Admin Web (`contents/page.jsx`, `tasks/page.jsx`):** ลบปุ่มเลือกประเภทงานและเลือกคนเอง เปลี่ยนเป็นช่องแสดงขั้นตอนและผู้รับผิดชอบตามตำแหน่งอัตโนมัติแบบ Read-only
+   ```diff
+   // master/backend/src/services/workflow.service.js
+   +const PIPELINE_SEQUENCE = [
+   +  { stage: 1, taskType: 'Scripting', titlePrefix: 'เขียนบทและสคริปต์', targetPositions: ['Script Writer', 'Content Creator', 'Production Manager'] },
+   +  { stage: 2, taskType: 'Filming', titlePrefix: 'ถ่ายทำฟุตเทจหลัก', targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'] },
+   +  { stage: 3, taskType: 'Editing', titlePrefix: 'ตัดต่อวิดีโอหลัก', targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'] },
+   +  { stage: 4, taskType: 'Graphic Design', titlePrefix: 'ออกแบบภาพปกและกราฟิก', targetPositions: ['Graphic Designer', 'Content Creator', 'Production Manager'] },
+   +  { stage: 5, taskType: 'Sound Design', titlePrefix: 'มิกซ์เสียงและดนตรีประกอบ', targetPositions: ['Video Editor', 'Content Creator', 'Production Manager'] },
+   +];
+   ```
+6. **ระบบอัปเดตเวอร์ชันอัตโนมัติอิงจาก GitHub Commit (`tools/version/bump_version.js`, `app.js`, `ProfileScreen.jsx`):**
+   - สร้าง `tools/version/bump_version.js` และผูก `.git/hooks/pre-commit` ให้อ่านจำนวน Commit จริง (`git rev-list --count HEAD`) และอัปเดตเป็น `1.5.<commitCount>` ลงใน `package.json` ทั้ง 3 โมดูล และ `android/app/build.gradle`
+   - แก้ไข `master/backend/src/app.js` และ `master/mobile-app/src/features/profile/ProfileScreen.jsx`:
+   ```diff
+   // master/backend/src/app.js
+   +const pkg = require('../package.json');
+    res.status(200).json({
+      status: 'healthy',
+   +  version: pkg.version || '1.5.0',
+      message: 'Content Production Management System API is running',
+   ```
+   ```diff
+   // master/mobile-app/src/features/profile/ProfileScreen.jsx
+   +import pkg from '../../../package.json';
+   +const [appVersion, setAppVersion] = useState(pkg.version || '1.5.0');
+   -<View style={styles.menuItem}>
+   -  <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>เวอร์ชันแอปพลิเคชัน</Text>
+   -  <Text style={[styles.menuValue, { color: colors.textSecondary }]}>v1.0.0 (Production Core)</Text>
+   -</View>
+   +<TouchableOpacity style={styles.menuItem} onPress={syncServerVersion} activeOpacity={0.7}>
+   +  <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>เวอร์ชันแอปพลิเคชัน</Text>
+   +  <Text style={[styles.menuValue, { color: colors.textSecondary }]}>v{appVersion}</Text>
+   +</TouchableOpacity>
+   ```
+7. **การปรับปรุงหน้าตั้งค่าการเชื่อมต่อ (`ServerConfigModal.jsx`) และ `SmoothModal.jsx` ให้เป็นธรรมชาติ:**
+   - ลบ `compactPresetsRow` ที่ยุบการ์ด 3 อันเป็นปุ่มเล็ก และลบ `justifyContent: 'flex-start'` ที่ดันการ์ดไปชิดรูกล้องด้านบน
+   - เพิ่มตัวเลือกที่ 4 `"กำหนด URL เอง (Custom Server)"` ให้ขยายช่อง `TextInput` เฉพาะเมื่อแตะเลือกโหมดกำหนดเอง:
+   ```diff
+   // master/mobile-app/src/components/ServerConfigModal.jsx
+   -isKeyboardOpen && {
+   -  justifyContent: 'flex-start',
+   -  paddingTop: Platform.OS === 'ios' ? 48 : 24,
+   -  paddingBottom: keyboardHeight + 12,
+   -}
+   +isKeyboardOpen && {
+   +  paddingBottom: keyboardHeight,
+   +}
+   +
+   +{/* ตัวเลือกที่ 4: กำหนด URL เอง (แสดงช่องกรอกเฉพาะเมื่อเลือกโหมด custom) */}
+   +<TouchableOpacity onPress={handleSelectCustomMode} style={styles.presetCard}>
+   +  <Text style={styles.presetLabel}>กำหนด URL เอง (Custom Server)</Text>
+   +</TouchableOpacity>
+   +{isCustomSelected && (
+   +  <View style={styles.customInputBox}>
+   +    <TextInput ref={inputRef} value={inputUrl} onChangeText={setInputUrl} disableFullscreenUI />
+   +    <TouchableOpacity style={styles.saveCustomBtn} onPress={handleSaveCustom}>
+   +      <Text style={styles.saveBtnText}>บันทึกและเชื่อมต่อ URL นี้</Text>
+   +    </TouchableOpacity>
+   +  </View>
+   +)}
+   ```
+8. **การเปลี่ยนชื่อแอปและ Package Identifier ทั้งระบบ (`com.mobileapp` → `com.draftly` / `Draftly`):**
+   - ย้าย `MainActivity.kt` และ `MainApplication.kt` จาก `java/com/mobileapp/` ไปยัง `java/com/draftly/` และอัปเดตไฟล์ตั้งค่าทั้งหมด:
+   ```diff
+   // master/mobile-app/package.json
+   -  "name": "MobileApp",
+   +  "name": "draftly-mobile",
+
+   // master/mobile-app/app.json
+   -  "name": "MobileApp",
+   +  "name": "Draftly",
+
+   // master/mobile-app/android/app/build.gradle
+   -  namespace "com.mobileapp"
+   -  defaultConfig { applicationId "com.mobileapp" }
+   +  namespace "com.draftly"
+   +  defaultConfig { applicationId "com.draftly" }
+
+   // master/mobile-app/android/app/src/main/java/com/draftly/MainActivity.kt
+   -package com.mobileapp
+   -  override fun getMainComponentName(): String = "MobileApp"
+   +package com.draftly
+   +  override fun getMainComponentName(): String = "Draftly"
+   ```
+9. **การพัฒนาหน้าคลังไอเดีย (`IdeaListScreen.jsx`) และระบบสิทธิ์ปุ่มลบเฉพาะ `ADMIN`, `MANAGER` และผู้เปิดหัวข้อ (`proposedBy`):**
+   - แก้ไข `ideas.routes.js` และ `ideas.controller.js` ให้ตรวจสอบสิทธิ์เจ้าของหัวข้อ (`isOwner`) คู่กับ `ADMIN` / `MANAGER`:
+   ```diff
+   // master/backend/src/modules/ideas/ideas.routes.js
+   -router.delete('/:id', verifyRole(['ADMIN', 'MANAGER']), ideasController.deleteIdea);
+   +router.delete('/:id', ideasController.deleteIdea);
+
+   // master/backend/src/modules/ideas/ideas.controller.js
+   -const idea = await Idea.findByIdAndDelete(id);
+   +const idea = await Idea.findById(id);
+   +if (!idea) return res.status(404).json({ message: 'Idea not found' });
+   +const isManagerOrAdmin = ['ADMIN', 'MANAGER'].includes(req.user?.role);
+   +const isOwner = idea.proposedBy && String(idea.proposedBy) === String(req.user?.userId);
+   +if (!isManagerOrAdmin && !isOwner) {
+   +  return res.status(403).json({
+   +    message: 'คุณไม่มีสิทธิ์ลบไอเดียนี้ (อนุญาตเฉพาะ Admin, Manager หรือสมาชิกผู้เปิดหัวข้อเท่านั้น)',
+   +  });
+   +}
+   +await Idea.findByIdAndDelete(id);
+   ```
+   - แก้ไข `IdeaListScreen.jsx` ลบปุ่ม `← กลับ` ที่เบียดหัวข้อด้านบน ส่ง `user={user}` จาก `ManagerNavigator` และ `MemberNavigator` และแสดงปุ่ม `ลบ` เฉพาะเมื่อ `canDeleteIdea(item)` เป็นจริง:
+   ```diff
+   // master/mobile-app/src/features/ideas/IdeaListScreen.jsx
+   -<TouchableOpacity onPress={onBack} style={styles.backBtn}>
+   -  <Text style={styles.backText}>← กลับ</Text>
+   -</TouchableOpacity>
+   +const canDeleteIdea = (item) => {
+   +  if (isManagerOrAdmin) return true;
+   +  return Boolean(currentUserId && item.proposerId && String(item.proposerId) === currentUserId);
+   +};
+   +{allowDelete && (
+   +  <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDeleteIdea(item)}>
+   +    <Text style={styles.deleteBtnText}>ลบ</Text>
+   +  </TouchableOpacity>
+   +)}
+   ```
+10. **การจัดระเบียบไฟล์ในโปรเจกต์ และสร้าง Skill `draftly-portable` สำหรับย้ายเครื่อง:**
+    - ลบโฟลเดอร์ซ้ำซ้อนที่ว่างเปล่าใน Root (`diagram-design/`, `ponytail/`, `.next/`) และย้าย `TEST_INFRA.md`, `TEST_READY.md` เข้าสู่ `docs/testing/` รวมถึงย้ายไฟล์ PDF รายงานเข้าสู่ `docs/academic/reports/` (โดยไม่แตะต้อง `PROJECT-HANDOVER.md`)
+    - อัปเดต `AI-MEMORY.md`, `AI-PORTABLE-PROMPT.md` และสร้าง `.agents/skills/draftly-portable/SKILL.md` พร้อมสคริปต์ติดตั้ง `tools/ai-skills/install-skills-to-machine.ps1` / `.bat`
 
 ---
 

@@ -10,9 +10,9 @@ router.get('/', ideasController.getAllIdeas);
 router.post('/', ideasController.createIdea);
 router.post('/:id/upvote', ideasController.upvoteIdea);
 
-// Only Managers and Admins can update idea status or delete ideas
+// Only Managers and Admins can update idea status; delete is allowed for Admin, Manager, or Topic Creator
 router.patch('/:id/status', verifyRole(['ADMIN', 'MANAGER']), ideasController.updateIdeaStatus);
-router.delete('/:id', verifyRole(['ADMIN', 'MANAGER']), ideasController.deleteIdea);
+router.delete('/:id', ideasController.deleteIdea);
 
 module.exports = router;
 

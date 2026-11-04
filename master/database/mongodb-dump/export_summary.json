@@ -1,22 +1,22 @@
 {
   "database": "content_management",
-  "exportedAt": "2026-11-04T10:40:10.813Z",
+  "exportedAt": "2026-11-04T11:29:20.369Z",
   "exportReason": "boot-auto-export-newer-local",
-  "overallSha256": "316a99e9d1819337ea4a350d97704cec0d32be6641fd46452c01a7cef4fd113b",
-  "latestRecordUpdatedAt": "2026-11-04T10:40:10.733Z",
-  "totalDocuments": 36,
+  "overallSha256": "096ff7a7b1130777148784ad15803f51c4f5d08557a55b46b57c3b147c6ca5e9",
+  "latestRecordUpdatedAt": "2026-11-04T11:29:20.281Z",
+  "totalDocuments": 47,
   "collections": [
     {
       "name": "users",
       "count": 6,
-      "sha256": "6ae73ac5992332464f38d326648a8fd72c036e3fc3fa7ca2daa8469e8ab68445",
-      "latestUpdatedAt": "2026-11-04T10:40:10.733Z"
+      "sha256": "17f821f3da035d303dd41e6f3a77cf4348070f9d2bb85e50d628c2f25ed2cec7",
+      "latestUpdatedAt": "2026-11-04T11:29:20.281Z"
     },
     {
       "name": "teams",
-      "count": 2,
-      "sha256": "5f56cd8d0c94565ce1a513b6532755afa63d458aece80a9a213105c05009d88e",
-      "latestUpdatedAt": "2026-11-04T07:02:36.886Z"
+      "count": 3,
+      "sha256": "f604f0813fbdd7a22150e61b03b5bdab2e1eab9bf9b16edbb6d274bf39358cf8",
+      "latestUpdatedAt": "2026-11-04T11:15:46.033Z"
     },
     {
       "name": "contents",
@@ -27,8 +27,8 @@
     {
       "name": "tasks",
       "count": 10,
-      "sha256": "a3f0079da98838a26fa41003f67833560b15edd99c3f3e27530ea800860b959d",
-      "latestUpdatedAt": "2026-11-04T07:02:36.911Z"
+      "sha256": "57c0e7f2b972eab46e3d481911c665e994dd4b3b14a984724d57ed28ab9f967c",
+      "latestUpdatedAt": "2026-11-04T10:52:05.173Z"
     },
     {
       "name": "ideas",
@@ -38,9 +38,9 @@
     },
     {
       "name": "teamactivities",
-      "count": 8,
-      "sha256": "0cdef89f8509892bf25abcb4ec03fcadd09067ffd04139d4118146d78405142b",
-      "latestUpdatedAt": "2026-11-04T10:38:59.067Z"
+      "count": 18,
+      "sha256": "c536cfd132a4145a3867add7e6212cb4ca396e1a8ec7cbe5874af1dc5d9c8993",
+      "latestUpdatedAt": "2026-11-04T11:15:46.035Z"
     }
   ]
 }

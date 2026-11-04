@@ -198,5 +198,253 @@
       "$date": "2026-11-04T10:38:59.067Z"
     },
     "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb0df2d4f90bbca3dacfa9"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-04T10:50:26.573Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T10:50:26.573Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb0df7d4f90bbca3dacfaa"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859d"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "Jane เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: jane@studio.com (ตำแหน่ง: Script Writer, สิทธิ์: MEMBER)",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf5651859d"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-04T10:50:31.169Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T10:50:31.169Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb0e08d4f90bbca3dacfab"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "TASK_STATUS_CHANGED",
+    "title": "สมศรี อัปเดตงาน \"เขียนบทและตรวจทานสคริปต์ (Script Product Review v2)\" เป็น REVISION",
+    "details": "",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf565185b0"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-04T10:50:48.375Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T10:50:48.375Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb0e15d4f90bbca3dacfac"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859d"
+    },
+    "actionType": "TASK_SUBMITTED",
+    "title": "Jane ส่งงาน \"เขียนบทและตรวจทานสคริปต์ (Script Product Review v2)\" ให้ตรวจสอบ",
+    "details": "ลิงก์ส่งงาน: https://docs.google.com/document/d/script_product_review_v2",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf565185b0"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-04T10:51:01.667Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T10:51:01.667Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb0e1fd4f90bbca3dacfad"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "TASK_STATUS_CHANGED",
+    "title": "สมศรี อัปเดตงาน \"เขียนบทและตรวจทานสคริปต์ (Script Product Review v2)\" เป็น REVISION",
+    "details": "",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf565185b0"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-04T10:51:11.738Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T10:51:11.738Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb0e3ed4f90bbca3dacfae"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859d"
+    },
+    "actionType": "TASK_SUBMITTED",
+    "title": "Jane ส่งงาน \"เขียนบทและตรวจทานสคริปต์ (Script Product Review v2)\" ให้ตรวจสอบ",
+    "details": "ลิงก์ส่งงาน: https://docs.google.com/document/d/script_product_review_v2",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf565185b0"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-04T10:51:42.065Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T10:51:42.065Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb0e55d4f90bbca3dacfaf"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "TASK_STATUS_CHANGED",
+    "title": "สมศรี อัปเดตงาน \"เขียนบทและตรวจทานสคริปต์ (Script Product Review v2)\" เป็น REVISION",
+    "details": "",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf565185b0"
+    },
+    "entityModel": "Task",
+    "createdAt": {
+      "$date": "2026-11-04T10:52:05.178Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T10:52:05.178Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb1104d4f90bbca3dacfb0"
+    },
+    "teamId": {
+      "$oid": "6aead88c2b1d3faf565185a0"
+    },
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมศรี เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: manager@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: MANAGER)",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf5651859b"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-04T11:03:32.853Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:03:32.853Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb13bad4f90bbca3dacfb1"
+    },
+    "teamId": null,
+    "actor": {
+      "$oid": "6aead88c2b1d3faf5651859a"
+    },
+    "actionType": "USER_LOGIN",
+    "title": "สมชาย เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: admin@studio.com (ตำแหน่ง: Production Manager, สิทธิ์: ADMIN)",
+    "entityId": {
+      "$oid": "6aead88c2b1d3faf5651859a"
+    },
+    "entityModel": "User",
+    "createdAt": {
+      "$date": "2026-11-04T11:15:06.798Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:15:06.798Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6aeb13e2d4f90bbca3dacfb3"
+    },
+    "teamId": {
+      "$oid": "6aeb13e2d4f90bbca3dacfb2"
+    },
+    "actor": {
+      "$oid": "6ab3570cd5bcf77b8c995b1c"
+    },
+    "actionType": "TEAM_CREATED",
+    "title": "ผู้จัดการ สร้างทีมใหม่: \"dadad\" (รหัส: TK4TA2)",
+    "details": "รหัสเข้าร่วมทีม: TK4TA2, รหัสอ้างอิง: TEAM-TK4T",
+    "entityId": {
+      "$oid": "6aeb13e2d4f90bbca3dacfb2"
+    },
+    "entityModel": "Team",
+    "createdAt": {
+      "$date": "2026-11-04T11:15:46.035Z"
+    },
+    "updatedAt": {
+      "$date": "2026-11-04T11:15:46.035Z"
+    },
+    "__v": 0
   }
 ]

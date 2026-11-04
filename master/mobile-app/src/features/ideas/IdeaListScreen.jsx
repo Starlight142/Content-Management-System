@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,34 +15,53 @@ import { ideaApi } from '../../services/api';
 import { useTheme } from '../../theme/ThemeContext';
 import SmoothModal from '../../components/SmoothModal';
 
-export default function IdeaListScreen({ onBack }) {
+const CATEGORIES = ['Tech Review', 'News & Tech', 'Lifestyle', 'Tutorial'];
+const PLATFORMS = ['YouTube', 'TikTok', 'Instagram'];
+
+export default function IdeaListScreen({ user }) {
   const { isDark, colors } = useTheme();
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL');
   const [refreshing, setRefreshing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [platform, setPlatform] = useState('YouTube');
-  const [category] = useState('Tech Review');
+  const [category, setCategory] = useState('Tech Review');
 
-  const fetchIdeas = async () => {
+  const currentUserId = String(user?.id || user?._id || '');
+  const isManagerOrAdmin = user?.role === 'ADMIN' || user?.role === 'MANAGER';
+
+  const mapIdeaRecord = useCallback((i) => {
+    const rawProposer = i.proposedBy;
+    const proposerId = rawProposer && typeof rawProposer === 'object'
+      ? String(rawProposer._id || rawProposer.id || '')
+      : String(rawProposer || '');
+    const proposerName = rawProposer && typeof rawProposer === 'object'
+      ? `${rawProposer.firstName || ''} ${rawProposer.lastName || ''}`.trim() || rawProposer.username || 'สมาชิกทีม'
+      : 'สมาชิกทีม';
+
+    return {
+      id: String(i._id || i.id || Date.now()),
+      title: i.title || 'ไม่มีชื่อหัวข้อ',
+      desc: i.description || 'ไม่มีคำอธิบายเพิ่มเติม',
+      platform: i.platform || 'YouTube',
+      category: i.category || 'General',
+      proposer: proposerName,
+      proposerId,
+      status: i.status || 'DRAFT',
+      upvotes: Number(i.upvotes || 0),
+    };
+  }, []);
+
+  const fetchIdeas = useCallback(async () => {
     try {
       const res = await ideaApi.getAll();
       const list = Array.isArray(res) ? res : (res?.ideas || []);
       if (Array.isArray(list)) {
-        const mapped = list.map((i) => ({
-          id: i._id || String(Date.now()),
-          title: i.title,
-          desc: i.description || 'ไม่มีคำอธิบาย',
-          platform: i.platform || 'YouTube',
-          category: i.category || 'General',
-          proposer: i.proposedBy ? `${i.proposedBy.firstName || ''} ${i.proposedBy.lastName || ''}`.trim() || i.proposedBy.username : 'สมาชิกทีม',
-          status: i.status || 'DRAFT',
-          upvotes: i.upvotes || 0,
-        }));
-        setIdeas(mapped);
+        setIdeas(list.map(mapIdeaRecord));
       }
     } catch (e) {
       console.warn('fetchIdeas error:', e.message);
@@ -50,11 +69,11 @@ export default function IdeaListScreen({ onBack }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [mapIdeaRecord]);
 
   useEffect(() => {
     fetchIdeas();
-  }, []);
+  }, [fetchIdeas]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -62,48 +81,101 @@ export default function IdeaListScreen({ onBack }) {
     setRefreshing(false);
   };
 
+  const canDeleteIdea = (item) => {
+    if (isManagerOrAdmin) return true;
+    if (currentUserId && item.proposerId && String(item.proposerId) === currentUserId) {
+      return true;
+    }
+    return false;
+  };
+
   const handleCreateIdea = async () => {
     if (!title.trim()) {
-      Alert.alert('แจ้งเตือน', 'กรุณาระบุชื่อไอเดีย');
+      Alert.alert('แจ้งเตือน', 'กรุณาระบุชื่อหัวข้อไอเดีย');
       return;
     }
 
-    const newIdea = {
-      id: String(Date.now()),
-      title: title.trim(),
-      desc: desc.trim() || 'ไม่มีคำอธิบายเพิ่มเติม',
-      platform,
-      category,
-      proposer: 'ผู้ใช้งานปัจจุบัน (You)',
-      status: 'DRAFT',
-      upvotes: 1,
-    };
-
-    setIdeas([newIdea, ...ideas]);
-    setIsModalOpen(false);
-    setTitle('');
-    setDesc('');
-
+    setSubmitting(true);
     try {
-      await ideaApi.create({
-        title: newIdea.title,
-        description: newIdea.desc,
-        category: newIdea.category,
+      const res = await ideaApi.create({
+        title: title.trim(),
+        description: desc.trim() || 'ไม่มีคำอธิบายเพิ่มเติม',
+        platform,
+        category,
       });
+      const created = res?.idea ? mapIdeaRecord(res.idea) : {
+        id: String(Date.now()),
+        title: title.trim(),
+        desc: desc.trim() || 'ไม่มีคำอธิบายเพิ่มเติม',
+        platform,
+        category,
+        proposer: user?.name || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'คุณ',
+        proposerId: currentUserId,
+        status: 'DRAFT',
+        upvotes: 0,
+      };
+      setIdeas((prev) => [created, ...prev]);
+      setIsModalOpen(false);
+      setTitle('');
+      setDesc('');
     } catch (e) {
-      console.warn('Saved idea locally');
+      Alert.alert('ข้อผิดพลาด', e.message || 'ไม่สามารถสร้างไอเดียได้');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleUpvote = async (id) => {
+    setIdeas((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, upvotes: item.upvotes + 1 } : item))
+    );
+    try {
+      await ideaApi.upvote(id);
+    } catch (e) {
+      console.warn('upvote error:', e.message);
+    }
+  };
+
+  const handleApproveIdea = async (item) => {
+    try {
+      await ideaApi.updateStatus(item.id, 'APPROVED');
+      setIdeas((prev) =>
+        prev.map((idea) => (idea.id === item.id ? { ...idea, status: 'APPROVED' } : idea))
+      );
+    } catch (e) {
+      Alert.alert('ข้อผิดพลาด', e.message || 'ไม่สามารถอนุมัติไอเดียได้');
+    }
+  };
+
+  const handleDeleteIdea = (item) => {
+    if (!canDeleteIdea(item)) {
+      Alert.alert('ไม่มีสิทธิ์', 'เฉพาะ Admin, Manager หรือสมาชิกผู้เปิดหัวข้อเท่านั้นที่สามารถลบได้');
+      return;
     }
 
-    Alert.alert('สำเร็จ', 'ไอเดียของคุณถูกบันทึกเข้าสู่กระดาน Brainstorming แล้ว');
-  };
-
-  const handleUpvote = (id) => {
-    setIdeas(
-      ideas.map((item) =>
-        item.id === id ? { ...item, upvotes: item.upvotes + 1 } : item
-      )
+    Alert.alert(
+      'ยืนยันการลบไอเดีย',
+      `ต้องการลบหัวข้อ "${item.title}" ออกจากคลังไอเดียใช่หรือไม่?`,
+      [
+        { text: 'ยกเลิก', style: 'cancel' },
+        {
+          text: 'ลบหัวข้อ',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await ideaApi.delete(item.id);
+              setIdeas((prev) => prev.filter((i) => i.id !== item.id));
+            } catch (e) {
+              Alert.alert('ไม่สามารถลบได้', e.message || 'เกิดข้อผิดพลาดในการลบไอเดีย');
+            }
+          },
+        },
+      ]
     );
   };
+
+  const draftCount = ideas.filter((i) => i.status === 'DRAFT').length;
+  const approvedCount = ideas.filter((i) => i.status === 'APPROVED').length;
 
   const filteredIdeas = ideas.filter((item) => {
     if (filter === 'ALL') return true;
@@ -112,20 +184,22 @@ export default function IdeaListScreen({ onBack }) {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
-      {/* App Top Bar */}
+      {/* Clean Balanced Top Bar */}
       <View style={[styles.topBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <TouchableOpacity onPress={onBack} style={[styles.backBtn, { backgroundColor: colors.surfaceSubtle }]}>
-          <Text style={[styles.backText, { color: colors.textPrimary }]}>← กลับ</Text>
-        </TouchableOpacity>
-        <View>
-          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>คลังไอเดีย (Idea Brainstorming)</Text>
-          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>ระดมไอเดียและคัดกรองเข้าสายพานผลิต</Text>
+        <View style={styles.headerTextWrap}>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+            คลังไอเดีย (Idea Brainstorming)
+          </Text>
+          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+            ระดมไอเดียและคัดกรองเข้าสายพานการผลิตของทีม
+          </Text>
         </View>
         <TouchableOpacity
           style={[styles.addBtn, { backgroundColor: colors.primary }]}
           onPress={() => setIsModalOpen(true)}
+          activeOpacity={0.8}
         >
-          <Text style={styles.addBtnText}>+ เสนอ</Text>
+          <Text style={styles.addBtnText}>+ เสนอไอเดีย</Text>
         </TouchableOpacity>
       </View>
 
@@ -133,160 +207,213 @@ export default function IdeaListScreen({ onBack }) {
         contentContainerStyle={styles.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
-        {/* Filter Tabs */}
+        {/* Filter Tabs with Counts */}
         <View style={styles.filterRow}>
           {[
-            { id: 'ALL', label: 'ทั้งหมด' },
-            { id: 'DRAFT', label: 'รอพิจารณา (Draft)' },
-            { id: 'APPROVED', label: 'ผ่านเกณฑ์ (Approved)' },
-          ].map((tab) => (
-            <TouchableOpacity
-              key={tab.id}
-              style={[
-                styles.filterPill,
-                { backgroundColor: colors.surface, borderColor: colors.border },
-                filter === tab.id && { backgroundColor: colors.primary, borderColor: colors.primary },
-              ]}
-              onPress={() => setFilter(tab.id)}
-            >
-              <Text
+            { id: 'ALL', label: `ทั้งหมด (${ideas.length})` },
+            { id: 'DRAFT', label: `รอพิจารณา (${draftCount})` },
+            { id: 'APPROVED', label: `ผ่านเกณฑ์ (${approvedCount})` },
+          ].map((tab) => {
+            const isActive = filter === tab.id;
+            return (
+              <TouchableOpacity
+                key={tab.id}
                 style={[
-                  styles.filterPillText,
-                  { color: colors.textSecondary },
-                  filter === tab.id && { color: '#FFFFFF' },
+                  styles.filterPill,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  isActive && { backgroundColor: colors.primary, borderColor: colors.primary },
                 ]}
+                onPress={() => setFilter(tab.id)}
+                activeOpacity={0.75}
               >
-                {tab.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  style={[
+                    styles.filterPillText,
+                    { color: colors.textSecondary },
+                    isActive && { color: '#FFFFFF', fontWeight: '700' },
+                  ]}
+                >
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         {/* Ideas Cards */}
         {loading ? (
-          <View style={{ padding: 32, alignItems: 'center' }}>
-            <ActivityIndicator size="small" color={colors.textPrimary} />
-            <Text style={{ marginTop: 8, fontSize: 13, color: colors.textSecondary }}>
-              กำลังโหลดไอเดียคอนเทนต์จาก MongoDB...
+          <View style={styles.centerBox}>
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+              กำลังโหลดคลังไอเดียจากระบบ...
             </Text>
           </View>
         ) : filteredIdeas.length === 0 ? (
-          <View
-            style={{
-              padding: 32,
-              alignItems: 'center',
-              backgroundColor: colors.surface,
-              borderRadius: 12,
-              marginTop: 12,
-              borderWidth: 1,
-              borderColor: colors.border,
-            }}
-          >
-            <Text style={{ fontSize: 14, fontWeight: '700', color: colors.textPrimary, textAlign: 'center' }}>
+          <View style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
               ยังไม่มีไอเดียในหมวดหมู่นี้
             </Text>
-            <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 4, textAlign: 'center' }}>
-              กดปุ่ม "+ เสนอไอเดียใหม่" ด้านบนเพื่อเริ่มเสนอไอเดียเข้าสู่คลังของทีม
+            <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
+              กดปุ่ม "+ เสนอไอเดีย" ด้านบนเพื่อเปิดหัวข้อคอนเทนต์ใหม่ให้ทีมร่วมโหวต
             </Text>
           </View>
         ) : (
-          filteredIdeas.map((item) => (
-            <View
-              key={item.id}
-              style={[
-                styles.ideaCard,
-                { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
-              ]}
-            >
-              <View style={styles.cardHeaderRow}>
-                <View style={styles.badgeRow}>
-                  <View
-                    style={[
-                      styles.platformPill,
-                      { backgroundColor: isDark ? '#312E81' : '#EEF2FF' },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.platformPillText,
-                        { color: isDark ? '#C7D2FE' : '#4338CA' },
-                      ]}
-                    >
-                      {item.platform}
-                    </Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.categoryPill,
-                      { backgroundColor: colors.surfaceSubtle },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.categoryPillText,
-                        { color: colors.textSecondary },
-                      ]}
-                    >
-                      {item.category}
-                    </Text>
-                  </View>
-                </View>
+          filteredIdeas.map((item) => {
+            const isOwner = Boolean(currentUserId && item.proposerId && String(item.proposerId) === currentUserId);
+            const allowDelete = canDeleteIdea(item);
+            const isApproved = item.status === 'APPROVED';
 
-                <View
-                  style={[
-                    styles.statusBadge,
-                    {
-                      backgroundColor:
-                        item.status === 'APPROVED'
+            return (
+              <View
+                key={item.id}
+                style={[
+                  styles.ideaCard,
+                  { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
+                ]}
+              >
+                {/* Top Badges & Status */}
+                <View style={styles.cardHeaderRow}>
+                  <View style={styles.badgeRow}>
+                    <View
+                      style={[
+                        styles.platformPill,
+                        { backgroundColor: isDark ? '#312E81' : '#EEF2FF' },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.platformPillText,
+                          { color: isDark ? '#C7D2FE' : '#4338CA' },
+                        ]}
+                      >
+                        {item.platform}
+                      </Text>
+                    </View>
+                    <View
+                      style={[
+                        styles.categoryPill,
+                        { backgroundColor: colors.surfaceSubtle },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.categoryPillText,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
+                        {item.category}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor: isApproved
                           ? colors.statusApprovedBg
                           : colors.statusReviewBg,
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.statusBadgeText,
-                      {
-                        color:
-                          item.status === 'APPROVED'
-                            ? colors.statusApprovedText
-                            : colors.statusReviewText,
                       },
                     ]}
                   >
-                    {item.status}
-                  </Text>
+                    <Text
+                      style={[
+                        styles.statusBadgeText,
+                        {
+                          color: isApproved
+                            ? colors.statusApprovedText
+                            : colors.statusReviewText,
+                        },
+                      ]}
+                    >
+                      {isApproved ? 'ผ่านเกณฑ์' : 'รอพิจารณา'}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Title & Description */}
+                <Text style={[styles.ideaTitle, { color: colors.textPrimary }]}>{item.title}</Text>
+                <Text style={[styles.ideaDesc, { color: colors.textSecondary }]}>{item.desc}</Text>
+
+                {/* Footer: Proposer & Role-Gated Actions */}
+                <View style={[styles.cardFooter, { borderTopColor: colors.divider }]}>
+                  <View style={styles.proposerRow}>
+                    <Text style={[styles.proposerText, { color: colors.textSecondary }]}>
+                      ผู้เปิดหัวข้อ: <Text style={{ color: colors.textPrimary, fontWeight: '600' }}>{item.proposer}</Text>
+                      {isOwner ? ' (คุณ)' : ''}
+                    </Text>
+                  </View>
+
+                  <View style={styles.actionGroup}>
+                    {/* Manager / Admin Approve Button for DRAFT ideas */}
+                    {isManagerOrAdmin && item.status === 'DRAFT' && (
+                      <TouchableOpacity
+                        style={[
+                          styles.approveBtn,
+                          {
+                            backgroundColor: colors.statusApprovedBg,
+                            borderColor: colors.statusApprovedBorder,
+                          },
+                        ]}
+                        onPress={() => handleApproveIdea(item)}
+                        activeOpacity={0.75}
+                      >
+                        <Text style={[styles.approveBtnText, { color: colors.statusApprovedText }]}>
+                          อนุมัติ
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {/* Upvote Button */}
+                    <TouchableOpacity
+                      style={[
+                        styles.upvoteBtn,
+                        {
+                          backgroundColor: isDark ? '#331B0B' : '#FFF7ED',
+                          borderColor: isDark ? '#7C2D12' : '#FFEDD5',
+                        },
+                      ]}
+                      onPress={() => handleUpvote(item.id)}
+                      activeOpacity={0.75}
+                    >
+                      <Text
+                        style={[
+                          styles.upvoteText,
+                          { color: isDark ? '#FB923C' : '#C2410C' },
+                        ]}
+                      >
+                        โหวต ({item.upvotes})
+                      </Text>
+                    </TouchableOpacity>
+
+                    {/* Delete Button: Only visible for Admin, Manager, or Topic Proposer */}
+                    {allowDelete && (
+                      <TouchableOpacity
+                        style={[
+                          styles.deleteBtn,
+                          {
+                            backgroundColor: isDark ? '#450A0A' : '#FEF2F2',
+                            borderColor: isDark ? '#7F1D1D' : '#FECACA',
+                          },
+                        ]}
+                        onPress={() => handleDeleteIdea(item)}
+                        activeOpacity={0.75}
+                      >
+                        <Text
+                          style={[
+                            styles.deleteBtnText,
+                            { color: isDark ? '#FCA5A5' : '#DC2626' },
+                          ]}
+                        >
+                          ลบ
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 </View>
               </View>
-
-              <Text style={[styles.ideaTitle, { color: colors.textPrimary }]}>{item.title}</Text>
-              <Text style={[styles.ideaDesc, { color: colors.textSecondary }]}>{item.desc}</Text>
-
-              <View style={[styles.cardFooter, { borderTopColor: colors.divider }]}>
-                <Text style={[styles.proposerText, { color: colors.textSecondary }]}>โดย: {item.proposer}</Text>
-
-                <TouchableOpacity
-                  style={[
-                    styles.upvoteBtn,
-                    {
-                      backgroundColor: isDark ? '#331B0B' : '#FFF7ED',
-                      borderColor: isDark ? '#7C2D12' : '#FFEDD5',
-                    },
-                  ]}
-                  onPress={() => handleUpvote(item.id)}
-                >
-                  <Text
-                    style={[
-                      styles.upvoteText,
-                      { color: isDark ? '#FB923C' : '#C2410C' },
-                    ]}
-                  >
-                    {item.upvotes} Upvotes
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))
+            );
+          })
         )}
       </ScrollView>
 
@@ -294,10 +421,10 @@ export default function IdeaListScreen({ onBack }) {
       <SmoothModal
         visible={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="นำเสนอไอเดียใหม่"
-        subtitle="เสนอแนวคิดคอนเทนต์ใหม่เข้าสู่สตูดิโอ"
+        title="นำเสนอหัวข้อไอเดียใหม่"
+        subtitle="เปิดหัวข้อแนวคิดคอนเทนต์ใหม่เพื่อให้ทีมร่วมโหวตและคัดกรอง"
       >
-        <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>ชื่อไอเดีย (Title)</Text>
+        <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>ชื่อหัวข้อไอเดีย (Topic Title) *</Text>
         <TextInput
           style={[
             styles.textInput,
@@ -315,7 +442,7 @@ export default function IdeaListScreen({ onBack }) {
 
         <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>แพลตฟอร์มเป้าหมาย</Text>
         <View style={styles.platformSelectRow}>
-          {['YouTube', 'TikTok', 'Instagram'].map((p) => (
+          {PLATFORMS.map((p) => (
             <TouchableOpacity
               key={p}
               style={[
@@ -333,6 +460,31 @@ export default function IdeaListScreen({ onBack }) {
                 ]}
               >
                 {p}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text style={[styles.inputLabel, { color: colors.textPrimary }]}>หมวดหมู่คอนเทนต์</Text>
+        <View style={styles.categorySelectRow}>
+          {CATEGORIES.map((c) => (
+            <TouchableOpacity
+              key={c}
+              style={[
+                styles.catOption,
+                { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+                category === c && { backgroundColor: colors.primary, borderColor: colors.primary },
+              ]}
+              onPress={() => setCategory(c)}
+            >
+              <Text
+                style={[
+                  styles.catOptionText,
+                  { color: colors.textSecondary },
+                  category === c && { color: '#FFFFFF' },
+                ]}
+              >
+                {c}
               </Text>
             </TouchableOpacity>
           ))}
@@ -358,10 +510,15 @@ export default function IdeaListScreen({ onBack }) {
         />
 
         <TouchableOpacity
-          style={[styles.submitIdeaBtn, { backgroundColor: colors.primary, marginTop: 16 }]}
+          style={[styles.submitIdeaBtn, { backgroundColor: colors.primary }]}
           onPress={handleCreateIdea}
+          disabled={submitting}
         >
-          <Text style={styles.submitIdeaBtnText}>ส่งข้อเสนอไอเดีย (Submit)</Text>
+          {submitting ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={styles.submitIdeaBtnText}>บันทึกและเปิดหัวข้อไอเดีย</Text>
+          )}
         </TouchableOpacity>
       </SmoothModal>
     </SafeAreaView>
@@ -378,38 +535,30 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
-  backBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    backgroundColor: '#F1F5F9',
+  headerTextWrap: {
+    flex: 1,
+    marginRight: 12,
   },
-  backText: {
-    fontSize: 13,
+  headerTitle: {
+    fontSize: 16,
     fontWeight: '700',
     color: '#0F172A',
   },
-  headerTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#0F172A',
-    textAlign: 'center',
-  },
   headerSubtitle: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#64748B',
-    textAlign: 'center',
+    marginTop: 2,
   },
   addBtn: {
     backgroundColor: '#2563EB',
-    paddingVertical: 6,
     paddingHorizontal: 12,
-    borderRadius: 8,
+    paddingVertical: 8,
+    borderRadius: 10,
   },
   addBtnText: {
     color: '#FFFFFF',
@@ -418,109 +567,113 @@ const styles = StyleSheet.create({
   },
   scroll: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 32,
   },
   filterRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 14,
+    marginBottom: 16,
+    flexWrap: 'wrap',
   },
   filterPill: {
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 7,
     borderRadius: 20,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
-  filterPillActive: {
-    backgroundColor: '#4F46E5',
-    borderColor: '#4F46E5',
-  },
   filterPillText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
     color: '#64748B',
   },
-  filterPillTextActive: {
-    color: '#FFFFFF',
+  centerBox: {
+    padding: 32,
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 8,
+    fontSize: 13,
+  },
+  emptyCard: {
+    padding: 28,
+    alignItems: 'center',
+    borderRadius: 14,
+    marginTop: 8,
+    borderWidth: 1,
+  },
+  emptyTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  emptyDesc: {
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: 'center',
   },
   ideaCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
-    padding: 14,
-    marginBottom: 12,
+    padding: 16,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    shadowColor: '#000',
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 1,
+    marginBottom: 12,
   },
   cardHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   badgeRow: {
     flexDirection: 'row',
     gap: 6,
+    flexWrap: 'wrap',
   },
   platformPill: {
     backgroundColor: '#EEF2FF',
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: 6,
   },
   platformPillText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '700',
     color: '#4338CA',
   },
   categoryPill: {
     backgroundColor: '#F1F5F9',
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: 6,
   },
   categoryPillText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '600',
     color: '#475569',
   },
   statusBadge: {
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: 6,
-  },
-  statusApproved: {
-    backgroundColor: '#DCFCE7',
-  },
-  statusDraft: {
-    backgroundColor: '#FEF3C7',
   },
   statusBadgeText: {
     fontSize: 10,
-    fontWeight: '800',
-  },
-  statusTextApproved: {
-    color: '#15803D',
-  },
-  statusTextDraft: {
-    color: '#B45309',
+    fontWeight: '700',
   },
   ideaTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '700',
     color: '#0F172A',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   ideaDesc: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#475569',
-    lineHeight: 17,
-    marginBottom: 10,
+    lineHeight: 19,
+    marginBottom: 12,
   },
   cardFooter: {
     flexDirection: 'row',
@@ -528,105 +681,116 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#F1F5F9',
-    paddingTop: 8,
+    paddingTop: 10,
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  proposerRow: {
+    flex: 1,
+    minWidth: 120,
   },
   proposerText: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#64748B',
+  },
+  actionGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  approveBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  approveBtnText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   upvoteBtn: {
     backgroundColor: '#FFF7ED',
     borderWidth: 1,
     borderColor: '#FFEDD5',
     paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
+    paddingVertical: 5,
+    borderRadius: 8,
   },
   upvoteText: {
     fontSize: 11,
     fontWeight: '700',
     color: '#C2410C',
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
-    justifyContent: 'flex-end',
+  deleteBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    borderWidth: 1,
   },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    paddingBottom: 36,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#0F172A',
-  },
-  modalCloseText: {
-    fontSize: 20,
-    color: '#94A3B8',
-    fontWeight: '600',
+  deleteBtnText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   inputLabel: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#334155',
     marginBottom: 6,
+    marginTop: 8,
   },
   textInput: {
     backgroundColor: '#F8FAFC',
     borderWidth: 1,
     borderColor: '#CBD5E1',
     borderRadius: 10,
-    padding: 10,
-    fontSize: 13,
-    marginBottom: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: '#0F172A',
   },
   textArea: {
-    height: 70,
+    height: 76,
     textAlignVertical: 'top',
   },
   platformSelectRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 12,
   },
   platOption: {
     flex: 1,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: '#F1F5F9',
-    alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  platOptionActive: {
-    backgroundColor: '#2563EB',
-    borderColor: '#2563EB',
+    borderColor: '#CBD5E1',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
   },
   platOptionText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
     color: '#475569',
   },
-  platOptionTextActive: {
-    color: '#FFFFFF',
+  categorySelectRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  catOption: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  catOptionText: {
+    fontSize: 11,
+    fontWeight: '600',
   },
   submitIdeaBtn: {
-    backgroundColor: '#2563EB',
-    minHeight: 44,
-    justifyContent: 'center',
+    backgroundColor: '#0F172A',
+    paddingVertical: 13,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 6,
+    marginTop: 14,
   },
   submitIdeaBtnText: {
     color: '#FFFFFF',

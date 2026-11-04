@@ -12,6 +12,7 @@ const logsRoutes = require('./modules/logs/logs.routes');
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const { scheduleAutoExport, exportAllCollections } = require('./services/dbSync.service');
+const pkg = require('../package.json');
 
 const app = express();
 
@@ -61,6 +62,7 @@ app.get('/api/health', async (req, res) => {
 
   res.status(200).json({ 
     status: 'healthy', 
+    version: pkg.version || '1.5.0',
     message: 'Content Production Management System API is running',
     timestamp: new Date().toISOString(),
     uptimeSeconds: Math.floor(process.uptime()),

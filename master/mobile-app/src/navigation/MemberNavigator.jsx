@@ -74,7 +74,7 @@ export default function MemberNavigator({ user, onLogout }) {
         )}
         {visitedScreens.ideas && (
           <View style={[styles.screenSlot, currentScreen !== 'ideas' && styles.hiddenSlot]}>
-            <IdeaListScreen onBack={() => handleNavigate('team')} />
+            <IdeaListScreen user={user} onBack={() => handleNavigate('team')} />
           </View>
         )}
         {visitedScreens.profile && (

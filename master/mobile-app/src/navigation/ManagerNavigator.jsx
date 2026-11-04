@@ -76,7 +76,7 @@ export default function ManagerNavigator({ user, onLogout }) {
         )}
         {visitedScreens.ideas && (
           <View style={[styles.screenSlot, currentScreen !== 'ideas' && styles.hiddenSlot]}>
-            <IdeaListScreen onBack={() => handleNavigate('dashboard')} />
+            <IdeaListScreen user={user} onBack={() => handleNavigate('dashboard')} />
           </View>
         )}
         {visitedScreens.profile && (

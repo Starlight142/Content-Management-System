@@ -207,6 +207,16 @@ export const ideaApi = {
     method: 'POST',
     body: JSON.stringify(ideaData),
   }),
+  upvote: (id) => request(`/ideas/${id}/upvote`, {
+    method: 'POST',
+  }),
+  updateStatus: (id, status) => request(`/ideas/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  }),
+  delete: (id) => request(`/ideas/${id}`, {
+    method: 'DELETE',
+  }),
 };
 
 // Teams APIs (Team-Based Workspace)

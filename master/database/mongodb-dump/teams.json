@@ -56,5 +56,18 @@
     "createdAt": "2026-11-04T07:02:36.886Z",
     "updatedAt": "2026-11-04T07:02:36.886Z",
     "__v": 0
+  },
+  {
+    "_id": "6aeb13e2d4f90bbca3dacfb2",
+    "name": "dadad",
+    "code": "TEAM-TK4T",
+    "joinCode": "TK4TA2",
+    "leader": "6ab3570cd5bcf77b8c995b1c",
+    "status": "ACTIVE",
+    "description": "",
+    "members": [],
+    "createdAt": "2026-11-04T11:15:46.033Z",
+    "updatedAt": "2026-11-04T11:15:46.033Z",
+    "__v": 0
   }
 ]

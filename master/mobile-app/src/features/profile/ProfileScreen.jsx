@@ -13,12 +13,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { presenceService } from '../../services/presenceService';
-import { userApi } from '../../services/api';
+import { userApi, pingServer } from '../../services/api';
 import SmoothModal from '../../components/SmoothModal';
+import pkg from '../../../package.json';
 
 export default function ProfileScreen({ user, onLogout }) {
   const { isDark, toggleTheme, colors } = useTheme();
   const [isOnline, setIsOnline] = useState(presenceService.isConnected);
+  const [appVersion, setAppVersion] = useState(pkg.version || '1.5.0');
 
   // Local user profile state
   const [localUser, setLocalUser] = useState(user || {});
@@ -27,11 +29,23 @@ export default function ProfileScreen({ user, onLogout }) {
   const [editLastName, setEditLastName] = useState('');
   const [saving, setSaving] = useState(false);
 
+  const syncServerVersion = async () => {
+    try {
+      const res = await pingServer();
+      if (res?.data?.version) {
+        setAppVersion(res.data.version);
+      }
+    } catch {
+      // Keep package.json version if offline
+    }
+  };
+
   useEffect(() => {
     if (user) setLocalUser(user);
   }, [user]);
 
   useEffect(() => {
+    syncServerVersion();
     setIsOnline(presenceService.isConnected);
     const unsubscribe = presenceService.subscribe((event) => {
       if (event.type === 'CONNECTION_CHANGE') {
@@ -199,10 +213,10 @@ export default function ProfileScreen({ user, onLogout }) {
             <Text style={[styles.menuValue, { color: colors.textSecondary }]}>Draftly CMS</Text>
           </View>
           <View style={[styles.divider, { backgroundColor: colors.divider }]} />
-          <View style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={syncServerVersion} activeOpacity={0.7}>
             <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>เวอร์ชันแอปพลิเคชัน</Text>
-            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>v1.0.0 (Production Core)</Text>
-          </View>
+            <Text style={[styles.menuValue, { color: colors.textSecondary }]}>v{appVersion}</Text>
+          </TouchableOpacity>
           <View style={[styles.divider, { backgroundColor: colors.divider }]} />
           <View style={styles.menuItem}>
             <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>การเชื่อมต่อฐานข้อมูล</Text>

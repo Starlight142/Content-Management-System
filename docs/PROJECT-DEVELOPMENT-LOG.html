@@ -2022,7 +2022,43 @@
             <li><code>users/page.jsx</code> & <code>LoginScreen.jsx</code>: ตัดตัวเลือก "Other" ออกจาก Dropdown ทั้งหมด บังคับให้เลือกได้เฉพาะ 5 ตำแหน่งหลัก</li>
             <li>กำจัดอีโมจิฟุ่มเฟือยและคำโฆษณาเกินจริง ปรับชื่อสตูดิโอเป็น "Draftly Studio" และระบุชื่อฐานข้อมูล <code>content_management</code> อย่างชัดเจน</li>
             <li><strong>Automatic Sequential Task Assignment (1→2→3→4→5):</strong> เพิ่ม <code>PIPELINE_SEQUENCE</code> และ <code>resolveAutoTaskAssignment()</code> ใน <code>workflow.service.js</code>, <code>contents.controller.js</code>, <code>tasks.controller.js</code> พร้อมปรับ UI ใน <code>ManagerDashboard.jsx</code>, <code>contents/page.jsx</code>, และ <code>tasks/page.jsx</code> ให้คำนวณลำดับขั้นตอนถัดไป (<code>1. Scripting</code> → <code>2. Filming</code> → <code>3. Editing</code> → <code>4. Graphic Design</code> → <code>5. Sound Design</code>) และมอบหมายให้สมาชิกตามตำแหน่งงานจริงโดยอัตโนมัติแทนการเลือกเอง</li>
-            <li><strong>Android Modal Keyboard & Cursor Handle Overlap Fix:</strong> ปรับปรุง <code>ServerConfigModal.jsx</code> และ <code>SmoothModal.jsx</code> ให้คำนวณความสูงคีย์บอร์ดแบบไดนามิก ย่อการ์ด Preset ขณะพิมพ์ URL และสั่งซ่อนคีย์บอร์ด/โฟกัสอัตโนมัติเมื่อเลือกโหมดการเชื่อมต่อ ป้องกันปัญหาแป้นพิมพ์ทับ <code>TextInput</code> จนหมุดเคอร์เซอร์ทะลุขึ้นมา พร้อมเสริม Fallback <code>10.0.2.2:5000</code> ใน <code>api.js</code> สำหรับ Android Emulator</li>
+            <li><strong>GitHub Commit-Based Auto-Versioning (<code>bump_version.js</code>, <code>app.js</code>, <code>ProfileScreen.jsx</code>):</strong>
+              <pre><code>// master/backend/src/app.js
++ const pkg = require('../package.json');
++ version: pkg.version || '1.5.0',
+
+// master/mobile-app/src/features/profile/ProfileScreen.jsx
+- &lt;Text style={[styles.menuValue, { color: colors.textSecondary }]}&gt;v1.0.0 (Production Core)&lt;/Text&gt;
++ &lt;Text style={[styles.menuValue, { color: colors.textSecondary }]}&gt;v{appVersion}&lt;/Text&gt;</code></pre>
+            </li>
+            <li><strong>Natural Connection Selector UX (<code>ServerConfigModal.jsx</code> &amp; <code>SmoothModal.jsx</code>):</strong> ลบ <code>compactPresetsRow</code> และ <code>justifyContent: 'flex-start'</code> ออก เพิ่มตัวเลือกที่ 4 <code>กำหนด URL เอง (Custom Server)</code> ให้แสดงช่อง <code>TextInput</code> เฉพาะเมื่อเลือกโหมดกำหนดเอง:
+              <pre><code>// master/mobile-app/src/components/ServerConfigModal.jsx
+- isKeyboardOpen &amp;&amp; { justifyContent: 'flex-start', paddingTop: 24, paddingBottom: keyboardHeight + 12 }
++ isKeyboardOpen &amp;&amp; { paddingBottom: keyboardHeight }
++ {isCustomSelected &amp;&amp; (&lt;View style={styles.customInputBox}&gt;&lt;TextInput ... /&gt;&lt;/View&gt;)}</code></pre>
+            </li>
+            <li><strong>App &amp; Package Rename (<code>com.mobileapp</code> → <code>com.draftly</code> / <code>Draftly</code>):</strong>
+              <pre><code>// master/mobile-app/package.json &amp; app.json &amp; android/app/build.gradle
+- "name": "MobileApp", namespace "com.mobileapp", applicationId "com.mobileapp"
++ "name": "draftly-mobile" ("Draftly"), namespace "com.draftly", applicationId "com.draftly"
+// master/mobile-app/android/app/src/main/java/com/draftly/MainActivity.kt
+- package com.mobileapp / override fun getMainComponentName(): String = "MobileApp"
++ package com.draftly / override fun getMainComponentName(): String = "Draftly"</code></pre>
+            </li>
+            <li><strong>Idea Brainstorming Upgrade &amp; Role/Owner Delete Permission (<code>ideas.controller.js</code>, <code>ideas.routes.js</code>, <code>IdeaListScreen.jsx</code>):</strong>
+              <pre><code>// master/backend/src/modules/ideas/ideas.routes.js &amp; ideas.controller.js
+- router.delete('/:id', verifyRole(['ADMIN', 'MANAGER']), ideasController.deleteIdea);
++ router.delete('/:id', ideasController.deleteIdea);
++ const isManagerOrAdmin = ['ADMIN', 'MANAGER'].includes(req.user?.role);
++ const isOwner = idea.proposedBy &amp;&amp; String(idea.proposedBy) === String(req.user?.userId);
++ if (!isManagerOrAdmin &amp;&amp; !isOwner) return res.status(403).json({ message: '...' });
+
+// master/mobile-app/src/features/ideas/IdeaListScreen.jsx
+- &lt;TouchableOpacity onPress={onBack} style={styles.backBtn}&gt;&lt;Text&gt;← กลับ&lt;/Text&gt;&lt;/TouchableOpacity&gt;
++ const canDeleteIdea = (item) =&gt; isManagerOrAdmin || (currentUserId &amp;&amp; String(item.proposerId) === currentUserId);
++ {allowDelete &amp;&amp; (&lt;TouchableOpacity style={styles.deleteBtn} onPress={() =&gt; handleDeleteIdea(item)}&gt;&lt;Text&gt;ลบ&lt;/Text&gt;&lt;/TouchableOpacity&gt;)}</code></pre>
+            </li>
+            <li><strong>Workspace Cleanup &amp; Portable Migration Skill (<code>draftly-portable</code>):</strong> ลบโฟลเดอร์ซ้ำซ้อนใน Root (<code>diagram-design/</code>, <code>ponytail/</code>, <code>.next/</code>) ย้าย <code>TEST_INFRA.md</code> และ <code>TEST_READY.md</code> ไปยัง <code>docs/testing/</code> และอัปเดต <code>AI-MEMORY.md</code>, <code>AI-PORTABLE-PROMPT.md</code> พร้อมทักษะ <code>.agents/skills/draftly-portable/SKILL.md</code></li>
           </ul>
         </li>
         <li><strong>การทดสอบระบบและการยืนยันความถูกต้องแบบครบวงจร (Milestone M4 — E2E Acceptance & Invariants):</strong>

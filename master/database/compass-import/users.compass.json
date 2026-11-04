@@ -14,13 +14,13 @@
     "workingStatus": "WORKING",
     "isOnline": false,
     "lastActiveAt": {
-      "$date": "2026-11-04T07:02:36.869Z"
+      "$date": "2026-11-04T11:15:06.796Z"
     },
     "createdAt": {
       "$date": "2026-11-04T07:02:36.871Z"
     },
     "updatedAt": {
-      "$date": "2026-11-04T10:40:10.733Z"
+      "$date": "2026-11-04T11:29:20.281Z"
     },
     "__v": 0
   },
@@ -39,13 +39,13 @@
     "workingStatus": "WORKING",
     "isOnline": false,
     "lastActiveAt": {
-      "$date": "2026-11-04T07:02:36.874Z"
+      "$date": "2026-11-04T11:25:37.958Z"
     },
     "createdAt": {
       "$date": "2026-11-04T07:02:36.874Z"
     },
     "updatedAt": {
-      "$date": "2026-11-04T10:40:10.733Z"
+      "$date": "2026-11-04T11:29:20.281Z"
     },
     "__v": 0,
     "teamId": {
@@ -73,7 +73,7 @@
       "$date": "2026-11-04T07:02:36.875Z"
     },
     "updatedAt": {
-      "$date": "2026-11-04T10:40:10.733Z"
+      "$date": "2026-11-04T11:29:20.281Z"
     },
     "__v": 0,
     "teamId": {
@@ -92,16 +92,16 @@
     "position": "Script Writer",
     "role": "MEMBER",
     "status": "ACTIVE",
-    "workingStatus": "REVIEWING",
+    "workingStatus": "IDLE",
     "isOnline": false,
     "lastActiveAt": {
-      "$date": "2026-11-04T10:39:26.312Z"
+      "$date": "2026-11-04T10:52:16.140Z"
     },
     "createdAt": {
       "$date": "2026-11-04T07:02:36.878Z"
     },
     "updatedAt": {
-      "$date": "2026-11-04T10:40:10.733Z"
+      "$date": "2026-11-04T11:29:20.281Z"
     },
     "__v": 0,
     "teamId": {
@@ -129,7 +129,7 @@
       "$date": "2026-11-04T07:02:36.879Z"
     },
     "updatedAt": {
-      "$date": "2026-11-04T10:40:10.733Z"
+      "$date": "2026-11-04T11:29:20.281Z"
     },
     "__v": 0,
     "teamId": {
@@ -157,7 +157,7 @@
       "$date": "2026-11-04T07:02:36.880Z"
     },
     "updatedAt": {
-      "$date": "2026-11-04T10:40:10.733Z"
+      "$date": "2026-11-04T11:29:20.281Z"
     },
     "__v": 0,
     "teamId": {

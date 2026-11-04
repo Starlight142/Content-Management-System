@@ -10,6 +10,7 @@
 | :--- | :--- | :--- |
 | **`ponytail`** | `skills/ponytail/SKILL.md` | ควบคุม AI ให้เขียนโค้ดสั้น กระชับ ยึดหลัก YAGNI นำโค้ดเดิมมาใช้ซ้ำ ใช้คำสั่งมาตรฐาน ไม่ลง Library ฟุ่มเฟือย |
 | **`diagram-design`** | `skills/diagram-design/SKILL.md` | ออกแบบและสร้างแผนภาพสถาปัตยกรรม/โฟลว์ระบบ 45 รูปแบบในรูปแบบ HTML + Inline SVG ระดับ Editorial |
+| **`draftly-portable`** | `skills/draftly-portable/SKILL.md` | ทักษะสำหรับย้ายเครื่องและตั้งค่าระบบ Draftly (`com.draftly`), ตรวจสอบฐานข้อมูล `content_management`, ผูกพอร์ต ADB และรันชุดทดสอบอัตโนมัติ |
 | **`ponytail.md` (Rule)** | `rules/ponytail.md` | กฎระเบียบข้อบังคับระดับ Workspace สำหรับการพัฒนาโค้ดแบบ Minimalist Engineering |
 
 ---
@@ -21,7 +22,7 @@
 ### ตัวเลือกที่ 1: ผ่านไฟล์ Batch (.bat)
 1. เปิดโฟลเดอร์ `tools/ai-skills/`
 2. ดับเบิลคลิกไฟล์ `install-skills-to-machine.bat`
-3. สคริปต์จะคัดลอกทักษะเข้าสู่:
+3. สคริปต์จะคัดลอกทักษะทั้ง 3 รายการ (`ponytail`, `diagram-design`, `draftly-portable`) เข้าสู่:
    - `%USERPROFILE%\.gemini\config\skills\` (สำหรับ Antigravity / Gemini)
    - `%USERPROFILE%\.agents\` (สำหรับ Agentic Tools ทั่วไป)
 
@@ -38,12 +39,13 @@
 ### 3.1 Google Antigravity
 ทักษะจะถูกเรียกใช้โดยอัตโนมัติเมื่ออยู่ในโฟลเดอร์ `.agents/skills/` ของโปรเจกต์ หรือสามารถสั่งงานผ่าน Slash Command:
 ```text
-/ponytail full
+/ponytail
 /diagram-design
+/draftly-portable
 ```
 
 ### 3.2 Claude Code / Codex CLI
-คัดลอกโฟลเดอร์ `skills/ponytail` และ `skills/diagram-design` ไปไว้ที่:
+คัดลอกโฟลเดอร์ `skills/ponytail`, `skills/diagram-design` และ `skills/draftly-portable` ไปไว้ที่:
 ```text
 ~/.claude/skills/
 หรือ
@@ -60,4 +62,3 @@
 
 ### 3.4 ChatGPT / Claude Web / GitHub Copilot Chat
 คัดลอกเนื้อหาจากไฟล์ [AI-PORTABLE-PROMPT.md](../../AI-PORTABLE-PROMPT.md) ไปวางที่ช่อง Custom Instructions หรือส่งเป็นข้อความแรกของการเริ่มสนทนา
-

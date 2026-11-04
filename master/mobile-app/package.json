@@ -1,6 +1,6 @@
 {
-  "name": "MobileApp",
-  "version": "0.0.1",
+  "name": "draftly-mobile",
+  "version": "1.5.67",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
