@@ -14,7 +14,7 @@
       "isOnline": false,
       "lastActiveAt": "2026-11-04T07:02:36.869Z",
       "createdAt": "2026-11-04T07:02:36.871Z",
-      "updatedAt": "2026-11-04T07:14:53.504Z",
+      "updatedAt": "2026-11-04T10:40:10.733Z",
       "__v": 0
     },
     {
@@ -31,7 +31,7 @@
       "isOnline": false,
       "lastActiveAt": "2026-11-04T07:02:36.874Z",
       "createdAt": "2026-11-04T07:02:36.874Z",
-      "updatedAt": "2026-11-04T07:14:53.504Z",
+      "updatedAt": "2026-11-04T10:40:10.733Z",
       "__v": 0,
       "teamId": "6aead88c2b1d3faf565185a0"
     },
@@ -49,7 +49,7 @@
       "isOnline": false,
       "lastActiveAt": "2026-11-04T07:02:36.875Z",
       "createdAt": "2026-11-04T07:02:36.875Z",
-      "updatedAt": "2026-11-04T07:14:53.504Z",
+      "updatedAt": "2026-11-04T10:40:10.733Z",
       "__v": 0,
       "teamId": "6aead88c2b1d3faf565185a0"
     },
@@ -65,9 +65,9 @@
       "status": "ACTIVE",
       "workingStatus": "REVIEWING",
       "isOnline": false,
-      "lastActiveAt": "2026-11-04T07:02:36.878Z",
+      "lastActiveAt": "2026-11-04T10:39:26.312Z",
       "createdAt": "2026-11-04T07:02:36.878Z",
-      "updatedAt": "2026-11-04T07:14:53.504Z",
+      "updatedAt": "2026-11-04T10:40:10.733Z",
       "__v": 0,
       "teamId": "6aead88c2b1d3faf565185a0"
     },
@@ -85,7 +85,7 @@
       "isOnline": false,
       "lastActiveAt": "2026-11-04T07:02:36.879Z",
       "createdAt": "2026-11-04T07:02:36.879Z",
-      "updatedAt": "2026-11-04T07:14:53.504Z",
+      "updatedAt": "2026-11-04T10:40:10.733Z",
       "__v": 0,
       "teamId": "6aead88c2b1d3faf565185a0"
     },
@@ -103,7 +103,7 @@
       "isOnline": false,
       "lastActiveAt": "2026-11-04T07:02:36.880Z",
       "createdAt": "2026-11-04T07:02:36.880Z",
-      "updatedAt": "2026-11-04T07:14:53.504Z",
+      "updatedAt": "2026-11-04T10:40:10.733Z",
       "__v": 0,
       "teamId": "6aead88c2b1d3faf565185a1"
     }
@@ -659,6 +659,19 @@
       "entityModel": "Content",
       "createdAt": "2026-11-04T07:05:03.922Z",
       "updatedAt": "2026-11-04T07:05:03.922Z",
+      "__v": 0
+    },
+    {
+      "_id": "6aeb0b435cf15435cbe6abc4",
+      "teamId": "6aead88c2b1d3faf565185a0",
+      "actor": "6aead88c2b1d3faf5651859d",
+      "actionType": "USER_LOGIN",
+      "title": "Jane เข้าสู่ระบบสำเร็จ",
+      "details": "อีเมล: jane@studio.com (ตำแหน่ง: Script Writer, สิทธิ์: MEMBER)",
+      "entityId": "6aead88c2b1d3faf5651859d",
+      "entityModel": "User",
+      "createdAt": "2026-11-04T10:38:59.067Z",
+      "updatedAt": "2026-11-04T10:38:59.067Z",
       "__v": 0
     }
   ]

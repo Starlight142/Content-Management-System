@@ -25,9 +25,27 @@ export default function SmoothModal({
 }) {
   const { colors, isDark } = useTheme();
   const [showModal, setShowModal] = useState(visible);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.92)).current;
   const slideAnim = useRef(new Animated.Value(24)).current;
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      setKeyboardHeight(e?.endCoordinates?.height || 280);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   useEffect(() => {
     fadeAnim.stopAnimation();
@@ -35,6 +53,7 @@ export default function SmoothModal({
     slideAnim.stopAnimation();
 
     if (visible) {
+      setKeyboardHeight(0);
       setShowModal(true);
       Animated.parallel([
         Animated.timing(fadeAnim, {
@@ -57,6 +76,7 @@ export default function SmoothModal({
         }),
       ]).start();
     } else {
+      Keyboard.dismiss();
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 0,
@@ -84,12 +104,17 @@ export default function SmoothModal({
 
   if (!showModal) return null;
 
+  const isKeyboardOpen = keyboardHeight > 0;
+
   return (
     <Modal
       visible={showModal}
       transparent
       animationType="none"
-      onRequestClose={onClose}
+      onRequestClose={() => {
+        Keyboard.dismiss();
+        if (onClose) onClose();
+      }}
       statusBarTranslucent
     >
       <View style={styles.container}>
@@ -122,83 +147,94 @@ export default function SmoothModal({
 
         {/* Keyboard-avoiding container with scrollable content */}
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardContainer}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={[
+            styles.keyboardContainer,
+            Platform.OS === 'android' && isKeyboardOpen && {
+              paddingBottom: keyboardHeight + 12,
+            },
+          ]}
         >
           <ScrollView
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={[
+              styles.scrollContent,
+              isKeyboardOpen && {
+                justifyContent: 'flex-start',
+                paddingTop: Platform.OS === 'ios' ? 48 : 36,
+                paddingBottom: 16,
+              },
+            ]}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
             showsVerticalScrollIndicator={false}
             bounces={false}
           >
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <View style={styles.scrollInner}>
-                <Animated.View
-                  renderToHardwareTextureAndroid
-                  shouldRasterizeIOS
-                  style={[
-                    styles.card,
-                    {
-                      maxWidth,
-                      backgroundColor: isDark ? 'rgba(30, 41, 59, 0.98)' : 'rgba(255, 255, 255, 0.98)',
-                      borderColor: isDark ? 'rgba(71, 85, 105, 0.6)' : 'rgba(226, 232, 240, 0.9)',
-                      borderTopColor: isDark ? 'rgba(255, 255, 255, 0.18)' : '#FFFFFF',
-                      opacity: fadeAnim,
-                      transform: [
-                        { scale: scaleAnim },
-                        { translateY: slideAnim },
-                      ],
-                    },
-                  ]}
-                >
-                  {/* Subtle top drag handle */}
-                  <View style={styles.handleContainer}>
-                    <View
-                      style={[
-                        styles.handleBar,
-                        {
-                          backgroundColor: isDark
-                            ? 'rgba(148, 163, 184, 0.3)'
-                            : 'rgba(203, 213, 225, 0.8)',
-                        },
-                      ]}
-                    />
-                  </View>
+            <View style={styles.scrollInner}>
+              <Animated.View
+                style={[
+                  styles.card,
+                  {
+                    maxWidth,
+                    backgroundColor: isDark ? 'rgba(30, 41, 59, 0.98)' : 'rgba(255, 255, 255, 0.98)',
+                    borderColor: isDark ? 'rgba(71, 85, 105, 0.6)' : 'rgba(226, 232, 240, 0.9)',
+                    borderTopColor: isDark ? 'rgba(255, 255, 255, 0.18)' : '#FFFFFF',
+                    opacity: fadeAnim,
+                    transform: [
+                      { scale: scaleAnim },
+                      { translateY: slideAnim },
+                    ],
+                  },
+                ]}
+              >
+                {/* Subtle top drag handle */}
+                <View style={styles.handleContainer}>
+                  <View
+                    style={[
+                      styles.handleBar,
+                      {
+                        backgroundColor: isDark
+                          ? 'rgba(148, 163, 184, 0.3)'
+                          : 'rgba(203, 213, 225, 0.8)',
+                      },
+                    ]}
+                  />
+                </View>
 
-                  {/* Header Row */}
-                  {(title || onClose) && (
-                    <View style={styles.headerRow}>
-                      <View style={styles.headerTextCol}>
-                        {title && (
-                          <Text style={[styles.title, { color: colors.textPrimary }]}>
-                            {title}
-                          </Text>
-                        )}
-                        {subtitle && (
-                          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-                            {subtitle}
-                          </Text>
-                        )}
-                      </View>
-                      {onClose && (
-                        <TouchableOpacity
-                          onPress={onClose}
-                          style={[styles.closeBtn, { backgroundColor: colors.surfaceSubtle }]}
-                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                          activeOpacity={0.7}
-                        >
-                          <Text style={[styles.closeBtnText, { color: colors.textSecondary }]}>✕</Text>
-                        </TouchableOpacity>
+                {/* Header Row */}
+                {(title || onClose) && (
+                  <View style={styles.headerRow}>
+                    <View style={styles.headerTextCol}>
+                      {title && (
+                        <Text style={[styles.title, { color: colors.textPrimary }]}>
+                          {title}
+                        </Text>
+                      )}
+                      {subtitle && (
+                        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                          {subtitle}
+                        </Text>
                       )}
                     </View>
-                  )}
+                    {onClose && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          Keyboard.dismiss();
+                          onClose();
+                        }}
+                        style={[styles.closeBtn, { backgroundColor: colors.surfaceSubtle }]}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={[styles.closeBtnText, { color: colors.textSecondary }]}>✕</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )}
 
-                  {/* Body Content */}
-                  {children}
-                </Animated.View>
-              </View>
-            </TouchableWithoutFeedback>
+                {/* Body Content */}
+                {children}
+              </Animated.View>
+            </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </View>

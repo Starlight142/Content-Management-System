@@ -5,11 +5,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   StyleSheet,
   ActivityIndicator,
   Alert,
   ScrollView,
   Platform,
+  Keyboard,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { getBaseUrl, setCustomBaseUrl, pingServer } from '../services/api';
@@ -28,7 +30,7 @@ const PRESETS = [
   {
     key: 'usb',
     label: 'USB / ADB Reverse',
-    desc: '127.0.0.1:5000 (ต่อสาย USB กับคอม)',
+    desc: '127.0.0.1:5000 (ต่อสาย USB / Emulator)',
     url: 'http://127.0.0.1:5000/api',
     tag: 'สาย USB',
     tagColor: '#6D28D9',
@@ -52,7 +54,32 @@ export default function ServerConfigModal({ visible, onClose, onServerChanged })
   const [selectedPresetKey, setSelectedPresetKey] = useState('');
   const [testing, setTesting] = useState(false);
   const [pingResult, setPingResult] = useState(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const activeRequestRef = useRef(0);
+  const scrollViewRef = useRef(null);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      const kbHeight = e?.endCoordinates?.height || 280;
+      setKeyboardHeight(kbHeight);
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 80);
+    });
+
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const executePing = async (targetUrl) => {
     const url = (targetUrl || inputUrl || '').trim();
@@ -66,6 +93,12 @@ export default function ServerConfigModal({ visible, onClose, onServerChanged })
       const res = await pingServer(url, 2500);
       if (activeRequestRef.current === reqId) {
         setPingResult(res);
+        if (res?.resolvedBaseUrl && res.resolvedBaseUrl !== url) {
+          setCurrentUrl(res.resolvedBaseUrl);
+          if (onServerChanged) {
+            onServerChanged(res.resolvedBaseUrl);
+          }
+        }
       }
     } catch (err) {
       if (activeRequestRef.current === reqId) {
@@ -80,13 +113,15 @@ export default function ServerConfigModal({ visible, onClose, onServerChanged })
 
   useEffect(() => {
     if (visible) {
+      setKeyboardHeight(0);
       const active = getBaseUrl();
       setCurrentUrl(active);
       setInputUrl(active);
 
       // Identify preset key
       const cleanActive = active.trim().replace(/\/+$/, '');
-      const matched = PRESETS.find((p) => p.url.replace(/\/+$/, '') === cleanActive);
+      const matched = PRESETS.find((p) => p.url.replace(/\/+$/, '') === cleanActive) ||
+        (cleanActive === 'http://10.0.2.2:5000/api' ? PRESETS[1] : null);
       setSelectedPresetKey(matched ? matched.key : 'custom');
 
       executePing(active);
@@ -96,6 +131,8 @@ export default function ServerConfigModal({ visible, onClose, onServerChanged })
 
   // Direct 1-tap preset selection: immediate visual color update + live switch
   const handleSelectPreset = (preset) => {
+    inputRef.current?.blur();
+    Keyboard.dismiss();
     setSelectedPresetKey(preset.key);
     setInputUrl(preset.url);
 
@@ -114,6 +151,8 @@ export default function ServerConfigModal({ visible, onClose, onServerChanged })
 
   // Manual input save button
   const handleSaveCustom = () => {
+    inputRef.current?.blur();
+    Keyboard.dismiss();
     if (!inputUrl.trim()) {
       Alert.alert('แจ้งเตือน', 'กรุณากรอก URL ที่ถูกต้อง');
       return;
@@ -134,178 +173,251 @@ export default function ServerConfigModal({ visible, onClose, onServerChanged })
     Alert.alert('สลับเซิร์ฟเวอร์สำเร็จ', `ใช้งานที่:\n${appliedUrl}`);
   };
 
+  const handleClose = () => {
+    inputRef.current?.blur();
+    Keyboard.dismiss();
+    onClose();
+  };
+
+  const isKeyboardOpen = keyboardHeight > 0;
+
   return (
     <Modal
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
     >
-      <View style={styles.overlay}>
-        <View style={[styles.modalCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          {/* Header */}
-          <View style={styles.header}>
-            <View>
-              <Text style={[styles.title, { color: colors.textPrimary }]}>ตั้งค่า Server URL</Text>
-              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-                สลับ Wi-Fi, Cloudflare หรือ USB
-              </Text>
-            </View>
-            <TouchableOpacity
-              onPress={onClose}
-              style={[styles.closeIconBtn, { backgroundColor: colors.surfaceSubtle }]}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View
+          style={[
+            styles.overlay,
+            isKeyboardOpen && {
+              justifyContent: 'flex-start',
+              paddingTop: Platform.OS === 'ios' ? 48 : 24,
+              paddingBottom: keyboardHeight + 12,
+            },
+          ]}
+        >
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View
+              style={[
+                styles.modalCard,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  maxHeight: isKeyboardOpen ? '100%' : '85%',
+                },
+              ]}
             >
-              <Text style={[styles.closeIconText, { color: colors.textSecondary }]}>✕</Text>
-            </TouchableOpacity>
-          </View>
+              {/* Header */}
+              <View style={styles.header}>
+                <View>
+                  <Text style={[styles.title, { color: colors.textPrimary }]}>ตั้งค่า Server URL</Text>
+                  <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                    สลับ Wi-Fi, Cloudflare หรือ USB
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={handleClose}
+                  style={[styles.closeIconBtn, { backgroundColor: colors.surfaceSubtle }]}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Text style={[styles.closeIconText, { color: colors.textSecondary }]}>✕</Text>
+                </TouchableOpacity>
+              </View>
 
-          <ScrollView
-            style={styles.body}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="always"
-          >
-            {/* Status Card */}
-            <View style={[styles.statusCard, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC', borderColor: colors.border }]}>
-              <View style={styles.statusRow}>
-                <Text style={[styles.statusLabel, { color: colors.textSecondary }]}>สถานะเซิร์ฟเวอร์:</Text>
-                {testing ? (
-                  <View style={styles.badgeTesting}>
-                    <ActivityIndicator size="small" color="#2563EB" />
-                    <Text style={styles.badgeTestingText}>กำลังตรวจสอบ...</Text>
+              <ScrollView
+                ref={scrollViewRef}
+                style={styles.body}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
+              >
+                {/* Status Card */}
+                <View style={[styles.statusCard, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC', borderColor: colors.border }]}>
+                  <View style={styles.statusRow}>
+                    <Text style={[styles.statusLabel, { color: colors.textSecondary }]}>สถานะเซิร์ฟเวอร์:</Text>
+                    {testing ? (
+                      <View style={styles.badgeTesting}>
+                        <ActivityIndicator size="small" color="#2563EB" />
+                        <Text style={styles.badgeTestingText}>กำลังตรวจสอบ...</Text>
+                      </View>
+                    ) : pingResult?.ok ? (
+                      <View style={styles.badgeSuccess}>
+                        <Text style={styles.badgeSuccessText}>Online ({pingResult.latency}ms)</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.badgeError}>
+                        <Text style={styles.badgeErrorText}>
+                          {pingResult ? (pingResult.error || 'Offline') : 'ยังไม่ได้เชื่อมต่อ'}
+                        </Text>
+                      </View>
+                    )}
                   </View>
-                ) : pingResult?.ok ? (
-                  <View style={styles.badgeSuccess}>
-                    <Text style={styles.badgeSuccessText}>Online ({pingResult.latency}ms)</Text>
+                  <Text style={[styles.currentUrlText, { color: colors.textPrimary }]} numberOfLines={1}>
+                    {currentUrl || 'ยังไม่ได้ระบุ Server URL'}
+                  </Text>
+                </View>
+
+                {/* Presets List: compact pills when keyboard is open so Custom URL input is never pushed behind keyboard */}
+                {!isKeyboardOpen ? (
+                  <View style={styles.presetsSection}>
+                    <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                      เลือกโหมดการเชื่อมต่อ (แตะเพื่อใช้งานทันที):
+                    </Text>
+
+                    {PRESETS.map((preset) => {
+                      const isSelected = selectedPresetKey === preset.key ||
+                        inputUrl.trim().replace(/\/+$/, '') === preset.url.replace(/\/+$/, '');
+
+                      return (
+                        <TouchableOpacity
+                          key={preset.key}
+                          activeOpacity={0.7}
+                          style={[
+                            styles.presetCard,
+                            {
+                              backgroundColor: isSelected
+                                ? (isDark ? '#1E293B' : '#EFF6FF')
+                                : (isDark ? '#0F172A' : '#FFFFFF'),
+                              borderColor: isSelected ? '#2563EB' : colors.cardBorder,
+                              borderWidth: isSelected ? 2 : 1,
+                            },
+                          ]}
+                          onPress={() => handleSelectPreset(preset)}
+                        >
+                          <View style={styles.presetLeft}>
+                            <View style={styles.presetTitleRow}>
+                              <Text
+                                style={[
+                                  styles.presetLabel,
+                                  { color: colors.textPrimary },
+                                  isSelected && { color: '#2563EB', fontWeight: 'bold' },
+                                ]}
+                              >
+                                {preset.label}
+                              </Text>
+                              <View style={[styles.tagBadge, { backgroundColor: isSelected ? '#DBEAFE' : preset.tagBg }]}>
+                                <Text style={[styles.tagBadgeText, { color: isSelected ? '#1D4ED8' : preset.tagColor }]}>
+                                  {preset.tag}
+                                </Text>
+                              </View>
+                            </View>
+                            <Text style={[styles.presetDesc, { color: colors.textSecondary }]}>{preset.desc}</Text>
+                          </View>
+
+                          {/* Radio / Active Indicator */}
+                          <View style={styles.radioArea}>
+                            {isSelected ? (
+                              <View style={styles.activePill}>
+                                <Text style={styles.activeCheckText}>✓ ใช้งาน</Text>
+                              </View>
+                            ) : (
+                              <View style={[styles.radioCircle, { borderColor: colors.border }]} />
+                            )}
+                          </View>
+                        </TouchableOpacity>
+                      );
+                    })}
                   </View>
                 ) : (
-                  <View style={styles.badgeError}>
-                    <Text style={styles.badgeErrorText}>
-                      {pingResult ? (pingResult.error || 'Offline') : 'ยังไม่ได้เชื่อมต่อ'}
-                    </Text>
-                  </View>
-                )}
-              </View>
-              <Text style={[styles.currentUrlText, { color: colors.textPrimary }]} numberOfLines={1}>
-                {currentUrl || 'ยังไม่ได้ระบุ Server URL'}
-              </Text>
-            </View>
-
-            {/* Presets List */}
-            <View style={styles.presetsSection}>
-              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                เลือกโหมดการเชื่อมต่อ (แตะเพื่อใช้งานทันที):
-              </Text>
-
-              {PRESETS.map((preset) => {
-                const isSelected = selectedPresetKey === preset.key ||
-                  inputUrl.trim().replace(/\/+$/, '') === preset.url.replace(/\/+$/, '');
-
-                return (
-                  <TouchableOpacity
-                    key={preset.key}
-                    activeOpacity={0.7}
-                    style={[
-                      styles.presetCard,
-                      {
-                        backgroundColor: isSelected
-                          ? (isDark ? '#1E293B' : '#EFF6FF')
-                          : (isDark ? '#0F172A' : '#FFFFFF'),
-                        borderColor: isSelected ? '#2563EB' : colors.cardBorder,
-                        borderWidth: isSelected ? 2 : 1,
-                      },
-                    ]}
-                    onPress={() => handleSelectPreset(preset)}
-                  >
-                    <View style={styles.presetLeft}>
-                      <View style={styles.presetTitleRow}>
-                        <Text
+                  <View style={styles.compactPresetsRow}>
+                    {PRESETS.map((preset) => {
+                      const isSelected = selectedPresetKey === preset.key;
+                      return (
+                        <TouchableOpacity
+                          key={preset.key}
                           style={[
-                            styles.presetLabel,
-                            { color: colors.textPrimary },
-                            isSelected && { color: '#2563EB', fontWeight: 'bold' },
+                            styles.compactPresetPill,
+                            {
+                              backgroundColor: isSelected ? '#EFF6FF' : colors.surfaceSubtle,
+                              borderColor: isSelected ? '#2563EB' : colors.border,
+                            },
                           ]}
+                          onPress={() => handleSelectPreset(preset)}
                         >
-                          {preset.label}
-                        </Text>
-                        <View style={[styles.tagBadge, { backgroundColor: isSelected ? '#DBEAFE' : preset.tagBg }]}>
-                          <Text style={[styles.tagBadgeText, { color: isSelected ? '#1D4ED8' : preset.tagColor }]}>
+                          <Text
+                            style={[
+                              styles.compactPresetText,
+                              { color: isSelected ? '#2563EB' : colors.textSecondary },
+                            ]}
+                            numberOfLines={1}
+                          >
                             {preset.tag}
                           </Text>
-                        </View>
-                      </View>
-                      <Text style={[styles.presetDesc, { color: colors.textSecondary }]}>{preset.desc}</Text>
-                    </View>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                )}
 
-                    {/* Radio / Active Indicator */}
-                    <View style={styles.radioArea}>
-                      {isSelected ? (
-                        <View style={styles.activePill}>
-                          <Text style={styles.activeCheckText}>✓ ใช้งาน</Text>
-                        </View>
-                      ) : (
-                        <View style={[styles.radioCircle, { borderColor: colors.border }]} />
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
+                {/* Custom Input URL */}
+                <View style={styles.inputSection}>
+                  <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                    หรือกำหนด URL เอง (Custom IP / Tunnel):
+                  </Text>
+                  <TextInput
+                    ref={inputRef}
+                    style={[
+                      styles.input,
+                      {
+                        backgroundColor: colors.inputBg,
+                        borderColor: colors.inputBorder,
+                        color: colors.textPrimary,
+                      },
+                    ]}
+                    placeholder="เช่น http://192.168.0.104:5000/api"
+                    placeholderTextColor={colors.textMuted}
+                    value={inputUrl}
+                    onFocus={() => {
+                      setTimeout(() => {
+                        scrollViewRef.current?.scrollToEnd({ animated: true });
+                      }, 100);
+                    }}
+                    onChangeText={(text) => {
+                      setInputUrl(text);
+                      const clean = text.trim().replace(/\/+$/, '');
+                      const match = PRESETS.find((p) => p.url.replace(/\/+$/, '') === clean);
+                      setSelectedPresetKey(match ? match.key : 'custom');
+                    }}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    disableFullscreenUI
+                  />
+                </View>
+              </ScrollView>
+
+              {/* Action Buttons */}
+              <View style={styles.actions}>
+                <TouchableOpacity
+                  style={[styles.testBtn, { borderColor: colors.border }]}
+                  onPress={() => {
+                    Keyboard.dismiss();
+                    executePing(inputUrl);
+                  }}
+                  disabled={testing}
+                  activeOpacity={0.7}
+                >
+                  {testing ? (
+                    <ActivityIndicator size="small" color="#2563EB" />
+                  ) : (
+                    <Text style={styles.testBtnText}>ตรวจสอบการเชื่อมต่อ</Text>
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.saveBtn}
+                  onPress={handleSaveCustom}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.saveBtnText}>บันทึกและเชื่อมต่อ</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-
-            {/* Custom Input URL */}
-            <View style={styles.inputSection}>
-              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                หรือกำหนด URL เอง (Custom IP / Tunnel):
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: colors.inputBg,
-                    borderColor: colors.inputBorder,
-                    color: colors.textPrimary,
-                  },
-                ]}
-                placeholder="เช่น http://192.168.0.104:5000/api"
-                placeholderTextColor={colors.textMuted}
-                value={inputUrl}
-                onChangeText={(text) => {
-                  setInputUrl(text);
-                  const clean = text.trim().replace(/\/+$/, '');
-                  const match = PRESETS.find((p) => p.url.replace(/\/+$/, '') === clean);
-                  setSelectedPresetKey(match ? match.key : 'custom');
-                }}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
-          </ScrollView>
-
-          {/* Action Buttons */}
-          <View style={styles.actions}>
-            <TouchableOpacity
-              style={[styles.testBtn, { borderColor: colors.border }]}
-              onPress={() => executePing(inputUrl)}
-              disabled={testing}
-              activeOpacity={0.7}
-            >
-              {testing ? (
-                <ActivityIndicator size="small" color="#2563EB" />
-              ) : (
-                <Text style={styles.testBtnText}>ตรวจสอบการเชื่อมต่อ</Text>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.saveBtn}
-              onPress={handleSaveCustom}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.saveBtnText}>บันทึกและเชื่อมต่อ</Text>
-            </TouchableOpacity>
-          </View>
+          </TouchableWithoutFeedback>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 }
@@ -470,6 +582,24 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     borderWidth: 1.5,
+  },
+  compactPresetsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 10,
+  },
+  compactPresetPill: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  compactPresetText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   inputSection: {
     marginTop: 4,

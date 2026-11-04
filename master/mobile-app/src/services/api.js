@@ -28,37 +28,57 @@ export const setCustomBaseUrl = (url) => {
 };
 
 export const pingServer = async (urlToTest, timeoutMs = 2500) => {
-  let target = (urlToTest || activeBaseUrl).trim().replace(/\/+$/, '');
-  const healthEndpoint = target.endsWith('/api') ? `${target}/health` : `${target}/api/health`;
-  const start = Date.now();
+  const trySingleUrl = async (rawUrl) => {
+    const target = rawUrl.trim().replace(/\/+$/, '');
+    const baseUrl = target.endsWith('/api') ? target : `${target}/api`;
+    const healthEndpoint = `${baseUrl}/health`;
+    const start = Date.now();
 
-  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-  const timeoutId = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
 
-  try {
-    const response = await fetch(healthEndpoint, {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
-      signal: controller ? controller.signal : undefined,
-    });
-    if (timeoutId) clearTimeout(timeoutId);
-    const latency = Date.now() - start;
-    if (response.ok) {
-      const data = await response.json().catch(() => ({}));
-      return { ok: true, latency, status: response.status, data, endpoint: healthEndpoint };
+    try {
+      const response = await fetch(healthEndpoint, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        signal: controller ? controller.signal : undefined,
+      });
+      if (timeoutId) clearTimeout(timeoutId);
+      const latency = Date.now() - start;
+      if (response.ok) {
+        const data = await response.json().catch(() => ({}));
+        activeBaseUrl = baseUrl;
+        return { ok: true, latency, status: response.status, data, endpoint: healthEndpoint, resolvedBaseUrl: baseUrl };
+      }
+      return { ok: false, latency, status: response.status, error: `HTTP ${response.status}`, endpoint: healthEndpoint };
+    } catch (err) {
+      if (timeoutId) clearTimeout(timeoutId);
+      const latency = Date.now() - start;
+      const isTimeout = err.name === 'AbortError' || (err.message && err.message.toLowerCase().includes('abort'));
+      return {
+        ok: false,
+        latency,
+        error: isTimeout ? `หมดเวลาตอบสนอง (${timeoutMs}ms)` : (err.message || 'Cannot reach server'),
+        endpoint: healthEndpoint,
+      };
     }
-    return { ok: false, latency, status: response.status, error: `HTTP ${response.status}`, endpoint: healthEndpoint };
-  } catch (err) {
-    if (timeoutId) clearTimeout(timeoutId);
-    const latency = Date.now() - start;
-    const isTimeout = err.name === 'AbortError' || (err.message && err.message.toLowerCase().includes('abort'));
-    return {
-      ok: false,
-      latency,
-      error: isTimeout ? `หมดเวลาตอบสนอง (${timeoutMs}ms)` : (err.message || 'Cannot reach server'),
-      endpoint: healthEndpoint,
-    };
+  };
+
+  const primaryUrl = (urlToTest || activeBaseUrl).trim();
+  const primaryResult = await trySingleUrl(primaryUrl);
+  if (primaryResult.ok) {
+    return primaryResult;
   }
+
+  // If USB / localhost (127.0.0.1) fails on Android Emulator (e.g. adb reverse not active), seamlessly fallback to 10.0.2.2
+  if (Platform.OS === 'android' && (primaryUrl.includes('127.0.0.1:5000') || primaryUrl.includes('localhost:5000'))) {
+    const emulatorResult = await trySingleUrl('http://10.0.2.2:5000/api');
+    if (emulatorResult.ok) {
+      return emulatorResult;
+    }
+  }
+
+  return primaryResult;
 };
 
 let authToken = null;

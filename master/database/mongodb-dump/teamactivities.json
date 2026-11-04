@@ -89,5 +89,18 @@
     "createdAt": "2026-11-04T07:05:03.922Z",
     "updatedAt": "2026-11-04T07:05:03.922Z",
     "__v": 0
+  },
+  {
+    "_id": "6aeb0b435cf15435cbe6abc4",
+    "teamId": "6aead88c2b1d3faf565185a0",
+    "actor": "6aead88c2b1d3faf5651859d",
+    "actionType": "USER_LOGIN",
+    "title": "Jane เข้าสู่ระบบสำเร็จ",
+    "details": "อีเมล: jane@studio.com (ตำแหน่ง: Script Writer, สิทธิ์: MEMBER)",
+    "entityId": "6aead88c2b1d3faf5651859d",
+    "entityModel": "User",
+    "createdAt": "2026-11-04T10:38:59.067Z",
+    "updatedAt": "2026-11-04T10:38:59.067Z",
+    "__v": 0
   }
 ]

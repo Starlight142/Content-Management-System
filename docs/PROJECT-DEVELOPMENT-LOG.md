@@ -2477,6 +2477,9 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    - **Backend (`workflow.service.js`, `contents.controller.js`, `tasks.controller.js`):** เพิ่ม `PIPELINE_SEQUENCE` และฟังก์ชัน `resolveAutoTaskAssignment()` เพื่อคำนวณขั้นตอนถัดไปตามลำดับ `1. Scripting` → `2. Filming` → `3. Editing` → `4. Graphic Design` → `5. Sound Design` และจับคู่สมาชิกในทีมตามตำแหน่งงานจริง (`Script Writer`, `Video Editor`, `Graphic Designer`) โดยอัตโนมัติเมื่อสร้างชิ้นงานหรือเพิ่มงานย่อยผ่าน UI (`autoCreateTasks: true` / `autoAssign: true`)
    - **Mobile App (`ManagerDashboard.jsx`):** ปรับ Modal `มอบหมายงานย่อย (Auto-Assign 1→5)` และการ์ดสมาชิกให้แสดงลำดับขั้นตอน `1 -> 2 -> 3 -> 4 -> 5` และผู้รับผิดชอบตามตำแหน่งแบบอัตโนมัติ (Read-only) แทนการกดเลือกเอง
    - **Admin Web (`contents/page.jsx`, `tasks/page.jsx`):** เปลี่ยนช่องเลือกประเภทงานและผู้รับผิดชอบในฟอร์มมอบหมายงานย่อยเป็นระบบคำนวณลำดับขั้นตอนและจับคู่ตำแหน่งงานอัตโนมัติ (Auto-Assign 1→5)
+6. **การแก้ไขปัญหาคีย์บอร์ดและเคอร์เซอร์ทะลุบัง Modal บน Android (`ServerConfigModal.jsx`, `SmoothModal.jsx`, `api.js`):**
+   - แก้ไข `ServerConfigModal.jsx` และ `SmoothModal.jsx` ให้ดักจับความสูงของแป้นพิมพ์ (`Keyboard.addListener`) เพื่อดันตัวการ์ดขึ้นเหนือแป้นพิมพ์ ย่อรายการ Preset ให้กะทัดรัดขณะพิมพ์ URL และสั่ง `Keyboard.dismiss()` / `blur()` ทันทีเมื่อแตะเลือก Preset หรือเลื่อนหน้าจอ ป้องกันปัญหาช่อง `TextInput` ถูกแป้นพิมพ์ทับแล้วตัวจับเคอร์เซอร์ (`💧`) ทะลุขึ้นมาบนแป้นพิมพ์
+   - ปรับ `pingServer()` ใน `api.js` ให้รองรับการสลับไปยัง `10.0.2.2:5000` โดยอัตโนมัติบน Android Emulator หากรันโดยยังไม่ได้เปิด `adb reverse`
 
 ---
 
