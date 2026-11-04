@@ -56,3 +56,4 @@ if (isPreCommit) {
 }
 
 console.log(`Updated Draftly version to v${nextVersion} (commit count: ${buildNumber})`);
+

@@ -2037,9 +2037,10 @@
 + isKeyboardOpen &amp;&amp; { paddingBottom: keyboardHeight }
 + {isCustomSelected &amp;&amp; (&lt;View style={styles.customInputBox}&gt;&lt;TextInput ... /&gt;&lt;/View&gt;)}</code></pre>
             </li>
-            <li><strong>App &amp; Package Rename (<code>com.mobileapp</code> → <code>com.draftly</code> / <code>Draftly</code>):</strong>
+            <li><strong>App &amp; Package Rename (<code>com.mobileapp</code> → <code>com.draftly</code> / <code>Draftly</code>) &amp; Remove Unused iOS Target:</strong> ลบโฟลเดอร์ <code>master/mobile-app/ios/</code>, <code>.bundle/</code>, <code>Gemfile</code> และแพ็กเกจ iOS ที่ไม่ได้ใช้งานออก:
               <pre><code>// master/mobile-app/package.json &amp; app.json &amp; android/app/build.gradle
-- "name": "MobileApp", namespace "com.mobileapp", applicationId "com.mobileapp"
+- "name": "MobileApp", "ios": "react-native run-ios", "@react-native-community/cli-platform-ios": "20.2.0"
+- namespace "com.mobileapp", applicationId "com.mobileapp"
 + "name": "draftly-mobile" ("Draftly"), namespace "com.draftly", applicationId "com.draftly"
 // master/mobile-app/android/app/src/main/java/com/draftly/MainActivity.kt
 - package com.mobileapp / override fun getMainComponentName(): String = "MobileApp"

@@ -1,6 +1,6 @@
 {
   "name": "draftly-backend",
-  "version": "1.5.67",
+  "version": "1.5.68",
   "description": "RESTful API Server for Draftly Content Production Management System",
   "main": "index.js",
   "scripts": {

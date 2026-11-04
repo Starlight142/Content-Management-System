@@ -2537,12 +2537,14 @@ $$\text{bottomPadding} = \max(\text{insets.bottom},\; \text{isAndroid} \mathbin{
    +  </View>
    +)}
    ```
-8. **การเปลี่ยนชื่อแอปและ Package Identifier ทั้งระบบ (`com.mobileapp` → `com.draftly` / `Draftly`):**
-   - ย้าย `MainActivity.kt` และ `MainApplication.kt` จาก `java/com/mobileapp/` ไปยัง `java/com/draftly/` และอัปเดตไฟล์ตั้งค่าทั้งหมด:
+8. **การเปลี่ยนชื่อแอปและ Package Identifier ทั้งระบบ (`com.mobileapp` → `com.draftly` / `Draftly`) และลบโค้ด iOS ที่ไม่ได้ใช้งานออก:**
+   - ย้าย `MainActivity.kt` และ `MainApplication.kt` จาก `java/com/mobileapp/` ไปยัง `java/com/draftly/`, ลบโฟลเดอร์ `master/mobile-app/ios/`, `.bundle/`, `Gemfile`, สคริปต์ `"ios"` และ `@react-native-community/cli-platform-ios` ออกจาก `package.json`:
    ```diff
    // master/mobile-app/package.json
    -  "name": "MobileApp",
    +  "name": "draftly-mobile",
+   -    "ios": "react-native run-ios",
+   -    "@react-native-community/cli-platform-ios": "20.2.0",
 
    // master/mobile-app/app.json
    -  "name": "MobileApp",

@@ -88,3 +88,4 @@ npm run dev
   # Or launch directly via ADB:
   adb shell am start -n com.draftly/.MainActivity
   ```
+

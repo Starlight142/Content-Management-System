@@ -1,16 +1,16 @@
 {
   "database": "content_management",
-  "exportedAt": "2026-11-04T11:29:20.369Z",
+  "exportedAt": "2026-11-04T11:39:02.233Z",
   "exportReason": "boot-auto-export-newer-local",
-  "overallSha256": "096ff7a7b1130777148784ad15803f51c4f5d08557a55b46b57c3b147c6ca5e9",
-  "latestRecordUpdatedAt": "2026-11-04T11:29:20.281Z",
+  "overallSha256": "f9cea5ab4e5775a541167a2795f10baca8089d376b3cd72367521f7f512a57e9",
+  "latestRecordUpdatedAt": "2026-11-04T11:39:02.109Z",
   "totalDocuments": 47,
   "collections": [
     {
       "name": "users",
       "count": 6,
-      "sha256": "17f821f3da035d303dd41e6f3a77cf4348070f9d2bb85e50d628c2f25ed2cec7",
-      "latestUpdatedAt": "2026-11-04T11:29:20.281Z"
+      "sha256": "49562ef7fd6822ad02c36068afe3c5f4baee61974472f4aba0c06026b05c92b6",
+      "latestUpdatedAt": "2026-11-04T11:39:02.109Z"
     },
     {
       "name": "teams",
